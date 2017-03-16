@@ -1,0 +1,39 @@
+﻿
+HIGH PRIORITY:
+Implement loading of:
+	MaterialDictionary
+	Scene
+	AnimationList
+
+Create tree node wrappers for:
+	MaterialDictionary
+	Scene
+	AnimationList
+
+MED PRIORITY:
+Create renderer based on OpenGL or DirectX capable of 
+	- Displaying a 2D DDS texture on a plane (and rendering them in general)
+	- Displaying a grid
+	- Displaying a scene's hierarchy consisting out of:
+		- Node hierarchy, with attachments that can be
+			- A mesh, consisting out of submeshes split by material
+			- A camera
+			- A light (multiple types)
+			- A particle
+		- Animations that can be played in the renderer
+
+	- Provides an independent camera view capable of: (heavily based on 3ds Max)
+		- Rotation & translation around mouse origin (mouse & keyboard controlled)
+		- Centering the camera view on the scene (zoom to extents)
+
+	- Highlighting selected nodes in the viewport
+
+Create a binary writer class for writing back the values in big endian byte order
+
+Implement a system for writing back GfdResources
+
+LOW PRIORITY:
+RPCS3 supports decompiling of PS3 shaders to GLSL, possibly use them the model viewer?
+Either:
+	-> Dump shaders from the emulator
+	-> Dump shaders stored in the shader cache, and somehow find a way to convert them to their normal format?

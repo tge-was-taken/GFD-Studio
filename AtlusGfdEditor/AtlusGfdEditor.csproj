@@ -1,0 +1,223 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{75D72552-D73F-47F9-BC26-A5C6BE341901}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>AtlusGfdEditor</RootNamespace>
+    <AssemblyName>AtlusGfdEditor</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Framework\Gui\PropertyGrid\UInt32HexTypeConverter.cs" />
+    <Compile Include="Framework\IO\BinaryFileSourceReader.cs" />
+    <Compile Include="Framework\IO\BinaryMemoryStreamSourceReader.cs" />
+    <Compile Include="Framework\IO\BinaryStreamSourceReader.cs" />
+    <Compile Include="Framework\IO\FourCC.cs" />
+    <Compile Include="Framework\SingletonException.cs" />
+    <Compile Include="GfdLib\Enums\GfdAnimationControllerType.cs" />
+    <Compile Include="GfdLib\GfdAnimation.cs" />
+    <Compile Include="GfdLib\GfdAnimationList.cs" />
+    <Compile Include="GfdLib\Enums\GfdResourceType.cs" />
+    <Compile Include="GfdLib\Enums\GfdMaterialFlags.cs" />
+    <Compile Include="GfdLib\Enums\GfdMeshVertexFormats.cs" />
+    <Compile Include="GfdLib\Enums\GfdNodeAttachmentType.cs" />
+    <Compile Include="GfdLib\GfdMaterialColor.cs" />
+    <Compile Include="GfdLib\GfdMaterialTextureReference.cs" />
+    <Compile Include="GfdLib\GfdResource.cs" />
+    <Compile Include="GfdLib\Enums\GfdSceneFlags.cs" />
+    <Compile Include="GfdLib\GfdResourceBundle.cs" />
+    <Compile Include="GfdLib\GfdShader.cs" />
+    <Compile Include="GfdLib\GfdShaderBundle.cs" />
+    <Compile Include="GfdLib\GfdString.cs" />
+    <Compile Include="GfdLib\GfdStringHasher.cs" />
+    <Compile Include="GfdLib\GfdTexture.cs" />
+    <Compile Include="GfdLib\GfdTextureDictionary.cs" />
+    <Compile Include="GfdLib\Enums\GfdUserPropertyType.cs" />
+    <Compile Include="GfdLib\GfdTextureFormat.cs" />
+    <Compile Include="GfdLib\GfdMaterial.cs" />
+    <Compile Include="GfdLib\GfdMaterialDictionary.cs" />
+    <Compile Include="GfdLib\Internal\GfdChunkHeader.cs" />
+    <Compile Include="GfdLib\Internal\GfdResourceReader.cs" />
+    <Compile Include="Framework\IO\BinarySourceReader.cs" />
+    <Compile Include="Framework\IO\Endianness.cs" />
+    <Compile Include="GfdLib\Internal\GfdChunkType.cs" />
+    <Compile Include="GfdLib\Internal\GfdConstants.cs" />
+    <Compile Include="GfdLib\GfdScene.cs" />
+    <Compile Include="Gui\MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Gui\MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Framework\Gui\TreeView\BaseWrapperTreeNode.cs" />
+    <Compile Include="Framework\Gui\TreeView\ChildNodeChangedEvent.cs" />
+    <Compile Include="Framework\Gui\TreeView\ContextMenuStripFlags.cs" />
+    <Compile Include="Gui\ApplicationSettings.cs" />
+    <Compile Include="Gui\MainFormSettingsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Gui\MainFormSettingsForm.Designer.cs">
+      <DependentUpon>MainFormSettingsForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Gui\WrapperTreeNodes\GfdAnimationListWrapperTreeNode.cs" />
+    <Compile Include="Gui\WrapperTreeNodes\GfdMaterialDictionaryWrapperTreeNode.cs" />
+    <Compile Include="Gui\WrapperTreeNodes\GfdResourceBundleWrapperTreeNode.cs" />
+    <Compile Include="Gui\WrapperTreeNodes\GfdResourceWrapperTreeNode.cs" />
+    <Compile Include="Gui\WrapperTreeNodes\GfdSceneWrapperTreeNode.cs" />
+    <Compile Include="Gui\WrapperTreeNodes\GfdTextureDictionaryWrapperTreeNode.cs" />
+    <Compile Include="Gui\WrapperTreeNodes\GfdTextureWrapperTreeNode.cs" />
+    <Compile Include="Gui\WrapperTreeNodes\WrapperTreeNodeFactory.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Gui\MainForm.resx">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Gui\MainFormSettingsForm.resx">
+      <DependentUpon>MainFormSettingsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Todo.txt" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
