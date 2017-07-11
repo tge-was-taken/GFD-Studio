@@ -50,15 +50,13 @@
     <Compile Include="IO\EndianBinaryWriter.cs" />
     <Compile Include="IO\StringBinaryFormat.cs" />
     <Compile Include="IO\Unsafe.cs" />
-    <Compile Include="Loaders\FileHeader.cs" />
-    <Compile Include="Loaders\FileType.cs" />
+    <Compile Include="IO\FileHeader.cs" />
     <Compile Include="Material.cs" />
-    <Compile Include="Color.cs" />
     <Compile Include="MaterialProperty.cs" />
     <Compile Include="MaterialDictionary.cs" />
     <Compile Include="TextureReference.cs" />
     <Compile Include="Resource.cs" />
-    <Compile Include="ResourceBundle.cs" />
+    <Compile Include="Model.cs" />
     <Compile Include="Scene.cs" />
     <Compile Include="Shader.cs" />
     <Compile Include="ShaderCache.cs" />
@@ -67,12 +65,9 @@
     <Compile Include="TextureDictionary.cs" />
     <Compile Include="IO\EndianBinaryReader.cs" />
     <Compile Include="IO\Endianness.cs" />
-    <Compile Include="Loaders\ChunkHeader.cs" />
-    <Compile Include="Loaders\ChunkType.cs" />
-    <Compile Include="Loaders\Constants.cs" />
-    <Compile Include="Loaders\ResourceReader.cs" />
+    <Compile Include="IO\ChunkHeader.cs" />
+    <Compile Include="IO\ResourceReader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Version.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

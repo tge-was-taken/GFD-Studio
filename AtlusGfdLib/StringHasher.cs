@@ -7,7 +7,7 @@ namespace AtlusGfdLib
 {
     public static class StringHasher
     {
-        private static uint[] s_HashTable = new uint[256]
+        private static uint[] sHashTable = new uint[256]
         {
             0x00000000, 0x77073096, 0xEE0E612C, 0x990951BA, 0x076DC419, 0x706AF48F, 0xE963A535, 0x9E6495A3,
             0x0EDB8832, 0x79DCB8A4, 0xE0D5E91E, 0x97D2D988, 0x09B64C2B, 0x7EB17CBD, 0xE7B82D07, 0x90BF1D91,
@@ -61,7 +61,7 @@ namespace AtlusGfdLib
                     uint tableIdx = hash ^ (byte)(value[i]);
                     tableIdx = (BitwiseRotateLeft(tableIdx, 2) & 0x000003FC) / sizeof(uint);
                     hash = BitwiseRotateLeft(hash, 24) & 0x00FFFFFF;
-                    hash ^= s_HashTable[tableIdx];
+                    hash ^= sHashTable[tableIdx];
                 }
             }
 

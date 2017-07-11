@@ -5,12 +5,12 @@ namespace AtlusGfdLib
 {
     public sealed class ShaderCache : Resource, IList<Shader>
     {
-        private List<Shader> m_Shaders;
+        private List<Shader> mShaders;
 
         internal ShaderCache(uint version)
             : base(ResourceType.ShaderCache, version)
         {
-            m_Shaders = new List<Shader>();
+            mShaders = new List<Shader>();
         }
 
         #region IList implementation
@@ -19,7 +19,7 @@ namespace AtlusGfdLib
         {
             get
             {
-                return m_Shaders[index];
+                return mShaders[index];
             }
         }
 
@@ -27,12 +27,12 @@ namespace AtlusGfdLib
         {
             get
             {
-                return m_Shaders[index];
+                return mShaders[index];
             }
 
             set
             {
-                m_Shaders[index] = value;
+                mShaders[index] = value;
             }
         }
 
@@ -40,7 +40,7 @@ namespace AtlusGfdLib
         {
             get
             {
-                return m_Shaders.Count;
+                return mShaders.Count;
             }
         }
 
@@ -54,52 +54,52 @@ namespace AtlusGfdLib
 
         public void Add(Shader item)
         {
-            m_Shaders.Add(item);
+            mShaders.Add(item);
         }
 
         public void Clear()
         {
-            m_Shaders.Clear();
+            mShaders.Clear();
         }
 
         public bool Contains(Shader item)
         {
-            return m_Shaders.Contains(item);
+            return mShaders.Contains(item);
         }
 
         public void CopyTo(Shader[] array, int arrayIndex)
         {
-            m_Shaders.CopyTo(array, arrayIndex);
+            mShaders.CopyTo(array, arrayIndex);
         }
 
         public IEnumerator<Shader> GetEnumerator()
         {
-            return m_Shaders.GetEnumerator();
+            return mShaders.GetEnumerator();
         }
 
         public int IndexOf(Shader item)
         {
-            return m_Shaders.IndexOf(item);
+            return mShaders.IndexOf(item);
         }
 
         public void Insert(int index, Shader item)
         {
-            m_Shaders.Insert(index, item);
+            mShaders.Insert(index, item);
         }
 
         public bool Remove(Shader item)
         {
-            return m_Shaders.Remove(item);
+            return mShaders.Remove(item);
         }
 
         public void RemoveAt(int index)
         {
-            m_Shaders.RemoveAt(index);
+            mShaders.RemoveAt(index);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return m_Shaders.GetEnumerator();
+            return mShaders.GetEnumerator();
         }
 
         #endregion

@@ -5,12 +5,19 @@ namespace AtlusGfdLib
     public sealed class Shader
     {
         public ushort Type { get; }
+
         public ushort Field06 { get; }
+
         public uint Field08 { get; }
+
         public uint Field0C { get; }
+
         public uint Field10 { get; }
+
         public float Field14 { get; }
+
         public float Field18 { get; }
+
         public byte[] Data { get; }
 
         internal Shader(ushort type, ushort field06, uint field08, uint field0C, uint field10, float field14, float field18, byte[] data)

@@ -39,7 +39,7 @@ namespace AtlusGfdLib
             }
         }
 
-        public ICollection<Texture> Materials => mDictionary.Values;
+        public ICollection<Texture> Textures => mDictionary.Values;
 
         public void Add( Texture texture ) => mDictionary[StringHasher.GenerateStringHash( texture.Name )] = texture;
 

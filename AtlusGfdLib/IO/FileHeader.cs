@@ -13,8 +13,14 @@ namespace AtlusGfdLib.Loaders
         public FileType Type;
         public int Unknown;
 
-        public const int CSIZE                 = 16;
-        public const string MAGIC_FS       = "GFS0";
-        public const string MAGIC_SHADERCACHE = "GSC0";
+        public const int    CSIZE              = 16;
+        public const string CMAGIC_FS          = "GFS0";
+        public const string CMAGIC_SHADERCACHE = "GSC0";
+    }
+
+    internal enum FileType
+    {
+        Model = 1,
+        ShaderCache = 2,
     }
 }

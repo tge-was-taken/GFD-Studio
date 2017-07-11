@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Numerics;
 
@@ -117,5 +118,20 @@ namespace AtlusGfdLib
         {
             return Name;
         }
+    }
+
+    [Flags]
+    public enum MaterialFlags
+    {
+        HasProperties    = 1 << 16,
+        HasDiffuseMap    = 1 << 20,
+        HasNormalMap     = 1 << 21,
+        HasSpecularMap   = 1 << 22,
+        HasReflectionMap = 1 << 23,
+        HasHighlightMap  = 1 << 24,
+        HasGlowMap       = 1 << 25,
+        HasNightMap      = 1 << 26,
+        HasDetailMap     = 1 << 27,
+        HasShadowMap     = 1 << 28,
     }
 }

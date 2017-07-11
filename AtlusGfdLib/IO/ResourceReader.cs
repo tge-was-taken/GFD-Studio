@@ -623,7 +623,7 @@ namespace AtlusGfdLib
         // Shader read methods
         private ShaderCache ReadShaderCache()
         {
-            if ( !ReadFileHeader( out FileHeader header ) || header.Magic != FileHeader.MAGIC_SHADERCACHE )
+            if ( !ReadFileHeader( out FileHeader header ) || header.Magic != FileHeader.CMAGIC_SHADERCACHE )
                 return null;
 
             // Read shaders into the shader cache
@@ -649,7 +649,7 @@ namespace AtlusGfdLib
         // Resource read methods
         private Resource ReadResourceFile()
         {
-            if ( !ReadFileHeader( out FileHeader header ) || header.Magic != FileHeader.MAGIC_FS )
+            if ( !ReadFileHeader( out FileHeader header ) || header.Magic != FileHeader.CMAGIC_FS )
                 return null;
 
             // Read resource depending on type
