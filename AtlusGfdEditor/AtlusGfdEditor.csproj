@@ -109,40 +109,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Framework\Gui\PropertyGrid\UInt32HexTypeConverter.cs" />
-    <Compile Include="Framework\IO\BinaryFileSourceReader.cs" />
-    <Compile Include="Framework\IO\BinaryMemoryStreamSourceReader.cs" />
-    <Compile Include="Framework\IO\BinaryStreamSourceReader.cs" />
-    <Compile Include="Framework\IO\FourCC.cs" />
     <Compile Include="Framework\SingletonException.cs" />
-    <Compile Include="GfdLib\Enums\GfdAnimationControllerType.cs" />
-    <Compile Include="GfdLib\GfdAnimation.cs" />
-    <Compile Include="GfdLib\GfdAnimationList.cs" />
-    <Compile Include="GfdLib\Enums\GfdResourceType.cs" />
-    <Compile Include="GfdLib\Enums\GfdMaterialFlags.cs" />
-    <Compile Include="GfdLib\Enums\GfdMeshVertexFormats.cs" />
-    <Compile Include="GfdLib\Enums\GfdNodeAttachmentType.cs" />
-    <Compile Include="GfdLib\GfdMaterialColor.cs" />
-    <Compile Include="GfdLib\GfdMaterialTextureReference.cs" />
-    <Compile Include="GfdLib\GfdResource.cs" />
-    <Compile Include="GfdLib\Enums\GfdSceneFlags.cs" />
-    <Compile Include="GfdLib\GfdResourceBundle.cs" />
-    <Compile Include="GfdLib\GfdShader.cs" />
-    <Compile Include="GfdLib\GfdShaderBundle.cs" />
-    <Compile Include="GfdLib\GfdString.cs" />
-    <Compile Include="GfdLib\GfdStringHasher.cs" />
-    <Compile Include="GfdLib\GfdTexture.cs" />
-    <Compile Include="GfdLib\GfdTextureDictionary.cs" />
-    <Compile Include="GfdLib\Enums\GfdUserPropertyType.cs" />
-    <Compile Include="GfdLib\GfdTextureFormat.cs" />
-    <Compile Include="GfdLib\GfdMaterial.cs" />
-    <Compile Include="GfdLib\GfdMaterialDictionary.cs" />
-    <Compile Include="GfdLib\Internal\GfdChunkHeader.cs" />
-    <Compile Include="GfdLib\Internal\GfdResourceReader.cs" />
-    <Compile Include="Framework\IO\BinarySourceReader.cs" />
-    <Compile Include="Framework\IO\Endianness.cs" />
-    <Compile Include="GfdLib\Internal\GfdChunkType.cs" />
-    <Compile Include="GfdLib\Internal\GfdConstants.cs" />
-    <Compile Include="GfdLib\GfdScene.cs" />
     <Compile Include="Gui\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -207,6 +174,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Todo.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AtlusGfdLibrary\AtlusGfdFramework.csproj">
+      <Project>{a41ac644-a107-4788-8e4f-e10cca64f3b6}</Project>
+      <Name>AtlusGfdFramework</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

@@ -2,7 +2,7 @@
 using System.Windows.Forms;
 using System.IO;
 using AtlusGfdEditor.Framework;
-using AtlusGfdEditor.GfdLib;
+using AtlusGfdFramework;
 using AtlusGfdEditor.Gui.WrapperTreeNodes;
 using System.ComponentModel;
 using System.Drawing;

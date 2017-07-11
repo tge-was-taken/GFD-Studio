@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using AtlusGfdEditor.Framework.Gui.TreeView;
 using AtlusGfdEditor.Framework.Gui.PropertyGrid;
-using AtlusGfdEditor.GfdLib;
+using AtlusGfdFramework;
 
 namespace AtlusGfdEditor.Gui.WrapperTreeNodes
 {

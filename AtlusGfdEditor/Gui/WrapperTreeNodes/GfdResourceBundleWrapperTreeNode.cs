@@ -1,5 +1,5 @@
 ﻿using AtlusGfdEditor.Framework.Gui.TreeView;
-using AtlusGfdEditor.GfdLib;
+using AtlusGfdFramework;
 
 namespace AtlusGfdEditor.Gui.WrapperTreeNodes
 {

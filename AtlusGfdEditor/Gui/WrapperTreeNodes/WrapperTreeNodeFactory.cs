@@ -1,4 +1,4 @@
-﻿using AtlusGfdEditor.GfdLib;
+﻿using AtlusGfdFramework;
 using System;
 
 namespace AtlusGfdEditor.Gui.WrapperTreeNodes

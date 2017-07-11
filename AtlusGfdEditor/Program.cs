@@ -2,8 +2,7 @@
 using System.Diagnostics;
 using System.Windows.Forms;
 using AtlusGfdEditor;
-using AtlusGfdEditor.GfdLib;
-using AtlusGfdEditor.GfdLib.Internal;
+using AtlusGfdFramework;
 
 namespace AtlusGfdEditor
 {
