@@ -22,7 +22,7 @@ namespace AtlusGfdLib
 
         public static Resource Load(Stream stream)
         {
-            return new ResourceReader().ReadFromStream( stream );
+            return new ResourceReader().ReadResourceFile( stream );
         }
     }
 }

@@ -10,7 +10,7 @@ namespace AtlusGfdLib
             { typeof(Scene),                 ResourceType.Scene },
             { typeof(MaterialDictionary),    ResourceType.MaterialDictionary },
             { typeof(TextureDictionary),     ResourceType.TextureDictionary },
-            { typeof(AnimationList),         ResourceType.AnimationList }
+            { typeof(AnimationPackage),         ResourceType.AnimationList }
         };
     }
 }

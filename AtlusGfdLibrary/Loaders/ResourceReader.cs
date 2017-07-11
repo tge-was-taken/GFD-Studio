@@ -10,17 +10,22 @@ using AtlusGfdLib.Loaders;
 
 namespace AtlusGfdLib
 {
-    internal class ResourceReader
+    internal class ResourceReader : IDisposable
     {
-        private static byte[] GfsFourCC = Encoding.ASCII.GetBytes("GFS0");
-        private static byte[] GscFourCC = Encoding.ASCII.GetBytes("GSC0");
         private EndianBinaryReader mReader;
 
+        public ResourceReader( Stream stream, Endianness endianness )
+        {
+            mReader = new EndianBinaryReader( stream, endianness );
+        }
+
+        // Debug methods
         private string GetMethodName([CallerMemberName]string name = null)
         {
             return $"{nameof(ResourceReader)}.{name}";
         }
 
+        // Primitive read methods
         private byte ReadByte()
         {
             return mReader.ReadByte();
@@ -96,10 +101,11 @@ namespace AtlusGfdLib
             return str;
         }
 
+        // Header reading methods
         private bool ReadFileHeader( out FileHeader header )
         {
             if ( mReader.Position >= mReader.BaseStreamLength ||
-                mReader.Position + FileHeader.SIZE > mReader.BaseStreamLength )
+                mReader.Position + FileHeader.CSIZE > mReader.BaseStreamLength )
             {
                 header = new FileHeader();
                 return false;
@@ -121,7 +127,7 @@ namespace AtlusGfdLib
         private bool ReadChunkHeader( out ChunkHeader header )
         {
             if ( mReader.Position >= mReader.BaseStreamLength ||
-                mReader.Position + ChunkHeader.SIZE > mReader.BaseStreamLength )
+                mReader.Position + ChunkHeader.CSIZE > mReader.BaseStreamLength )
             {
                 header = new ChunkHeader();
                 return false;
@@ -140,22 +146,20 @@ namespace AtlusGfdLib
             return true;
         }
 
-        private ResourceBundle ReadModel( uint version )
+        // Resource read methods
+        private Model ReadModel( uint version )
         {
-            var bundle = new ResourceBundle( version );
+            var model = new Model( version );
 
             while (ReadChunkHeader(out ChunkHeader header) && header.Type != 0)
             {
-                // Read resource data
-                Resource resource = null;
-
                 switch ( header.Type )
                 {
                     case ChunkType.TextureDictionary:
-                        resource = ReadTextureDictionary( header.Version );
+                        model.TextureDictionary = ReadTextureDictionary( header.Version );
                         break;
                     case ChunkType.MaterialDictionary:
-                        resource = ReadMaterialDictionary( header.Version );
+                        model.MaterialDictionary = ReadMaterialDictionary( header.Version );
                         break;
 
                     default:
@@ -163,16 +167,12 @@ namespace AtlusGfdLib
                         mReader.SeekCurrent( header.Size - 12);
                         continue;
                 }
-
-                bundle.AddResource(resource);
-
-                if ( header.Type == ChunkType.MaterialDictionary )
-                    break;
             }
 
-            return bundle;
+            return model;
         }
 
+        // Texture read methods
         private TextureDictionary ReadTextureDictionary( uint version )
         {
             var textureDictionary = new TextureDictionary( version );
@@ -205,11 +205,7 @@ namespace AtlusGfdLib
             return texture;
         }
 
-        private AnimationList ReadAnimationList()
-        {
-            throw new NotImplementedException();
-        }
-
+        // Material read methods
         private MaterialDictionary ReadMaterialDictionary( uint version )
         {
             MaterialDictionary materialDictionary = new MaterialDictionary( version );
@@ -612,11 +608,19 @@ namespace AtlusGfdLib
             return property;
         }
 
+        // Scene read methods
         private Scene ReadScene()
         {
             throw new NotImplementedException();
         }
 
+        // Animation read methods
+        private AnimationPackage ReadAnimationPackage()
+        {
+            throw new NotImplementedException();
+        }
+
+        // Shader read methods
         private ShaderCache ReadShaderCache()
         {
             if ( !ReadFileHeader( out FileHeader header ) || header.Magic != FileHeader.MAGIC_SHADERCACHE )
@@ -642,32 +646,48 @@ namespace AtlusGfdLib
             return cache;
         }
 
-        public Resource ReadFromStream(Stream stream)
+        // Resource read methods
+        private Resource ReadResourceFile()
         {
-            using (mReader = new EndianBinaryReader(stream, Endianness.BigEndian))
+            if ( !ReadFileHeader( out FileHeader header ) || header.Magic != FileHeader.MAGIC_FS )
+                return null;
+
+            // Read resource depending on type
+            Resource resource;
+
+            switch ( header.Type )
             {
-                if ( !ReadFileHeader( out FileHeader header ) || header.Magic != FileHeader.MAGIC_MODEL )
-                    return null;
+                case FileType.Model:
+                    resource = ReadModel( header.Version );
+                    break;
 
-                // Read resource depending on type
-                Resource resource;
+                case FileType.ShaderCache:
+                    resource = ReadShaderCache();
+                    break;
 
-                switch ( header.Type )
-                {
-                    case FileType.Model:
-                        resource = ReadModel( header.Version );
-                        break;
-
-                    case FileType.ShaderCache:
-                        resource = ReadShaderCache();
-                        break;
-
-                    default:
-                        throw new NotSupportedException();
-                }
-
-                return resource;
+                default:
+                    throw new NotSupportedException();
             }
+
+            return resource;
+        }
+
+        public static Resource ReadFromStream(Stream stream, Endianness endianness )
+        {
+            using ( var reader = new ResourceReader( stream, endianness ) )
+                return reader.ReadResourceFile();
+        }
+
+        public static TResource ReadFromStream<TResource>( Stream stream, Endianness endianness )
+            where TResource : Resource
+        {
+            return ( TResource )ReadFromStream( stream, endianness );
+        }
+
+        // Dispose implementation
+        public void Dispose()
+        {
+            ( ( IDisposable )mReader ).Dispose();
         }
     }
 }

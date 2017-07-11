@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace AtlusGfdLib
 {
-    public sealed class AnimationList : Resource, IList<Animation>
+    public sealed class AnimationPackage : Resource, IList<Animation>
     {
         private List<Animation> m_Animations;
 
-        internal AnimationList(uint version)
+        internal AnimationPackage(uint version)
             : base(ResourceType.AnimationList, version)
         {
             m_Animations = new List<Animation>();

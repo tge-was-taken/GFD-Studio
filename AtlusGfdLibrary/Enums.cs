@@ -58,7 +58,7 @@ namespace AtlusGfdLib
     public enum ResourceType
     {
         Invalid = 0,
-        ResourceBundle,
+        Model,
         AnimationList,
         TextureDictionary,
         MaterialDictionary,

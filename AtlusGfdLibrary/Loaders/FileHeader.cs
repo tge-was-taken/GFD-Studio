@@ -13,8 +13,8 @@ namespace AtlusGfdLib.Loaders
         public FileType Type;
         public int Unknown;
 
-        public const int SIZE                 = 16;
-        public const string MAGIC_MODEL       = "GFS0";
+        public const int CSIZE                 = 16;
+        public const string MAGIC_FS       = "GFS0";
         public const string MAGIC_SHADERCACHE = "GSC0";
     }
 }

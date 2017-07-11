@@ -7,6 +7,6 @@
         public int Size;
         public int Unknown;
 
-        public const int SIZE = 12;
+        public const int CSIZE = 12;
     }
 }
