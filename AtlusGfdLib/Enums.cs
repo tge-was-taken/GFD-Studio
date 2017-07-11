@@ -51,23 +51,6 @@ namespace AtlusGfdLib
         ShaderCache,
     }
 
-    [Flags]
-    public enum SceneFlags
-    {
-        BoundingBox = 1 << 0,
-        Skinning = 1 << 2,
-        Morphers = 1 << 3
-    }
-
-    public enum UserPropertyType
-    {
-        None = 0,
-        Int = 1,
-        Float = 2,
-        Bool = 3,
-        String = 4
-    }
-
     public enum TextureFormat : ushort
     {
         Invalid = 0,

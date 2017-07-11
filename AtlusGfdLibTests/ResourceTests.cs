@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace AtlusGfdLib.Tests
 {
@@ -20,7 +21,8 @@ namespace AtlusGfdLib.Tests
         [TestMethod()]
         public void LoadFromStreamTest()
         {
-            Assert.Fail();
+            using ( var fileStream = File.OpenRead( @"D:\Modding\Persona 5 EU\Main game\Extracted\data\model\character\0001\c0001_001_00.GMD" ) )
+                Resource.Load( fileStream );
         }
     }
 }
