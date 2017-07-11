@@ -91,7 +91,7 @@ namespace AtlusGfdLib
         private string ReadString()
         {
             ushort length = mReader.ReadUInt16();
-            return mReader.ReadCString( length );
+            return mReader.ReadString( StringBinaryFormat.FixedLength, length );
         }
 
         private string ReadStringWithHash()
@@ -113,7 +113,7 @@ namespace AtlusGfdLib
 
             header = new FileHeader()
             {
-                Magic = mReader.ReadCString( 4 ),
+                Magic = mReader.ReadString( StringBinaryFormat.FixedLength, 4 ),
                 Version = mReader.ReadUInt32(),
                 Type = (FileType)mReader.ReadInt32(),
                 Unknown = mReader.ReadInt32(),
@@ -684,7 +684,7 @@ namespace AtlusGfdLib
             return ( TResource )ReadFromStream( stream, endianness );
         }
 
-        // Dispose implementation
+        // IDispose implementation
         public void Dispose()
         {
             ( ( IDisposable )mReader ).Dispose();

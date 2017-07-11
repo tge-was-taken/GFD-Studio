@@ -47,6 +47,9 @@
     <Compile Include="Animation.cs" />
     <Compile Include="AnimationList.cs" />
     <Compile Include="Enums.cs" />
+    <Compile Include="IO\EndianBinaryWriter.cs" />
+    <Compile Include="IO\StringBinaryFormat.cs" />
+    <Compile Include="IO\Unsafe.cs" />
     <Compile Include="Loaders\FileHeader.cs" />
     <Compile Include="Loaders\FileType.cs" />
     <Compile Include="Material.cs" />

@@ -1,13 +1,37 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace AtlusGfdLib.IO
 {
     public class EndianBinaryReader : BinaryReader
     {
-        private StringBuilder m_StringBuilder;
+        private StringBuilder mStringBuilder;
+        private Endianness mEndianness;
+        private bool mSwap;
+        private Encoding mEncoding;
+        private Queue<long> mPosQueue;
 
-        public Endianness Endianness { get; set; }
+        public Endianness Endianness
+        {
+            get { return mEndianness; }
+            set
+            {
+                if (value != EndiannessHelper.SystemEndianness)
+                    mSwap = true;
+                else
+                    mSwap = false;
+
+                mEndianness = value;
+            }
+        }
+
+        public bool EndiannessNeedsSwapping
+        {
+            get { return mSwap; }
+        }
 
         public long Position
         {
@@ -23,18 +47,26 @@ namespace AtlusGfdLib.IO
         public EndianBinaryReader(Stream input, Endianness endianness)
             : base(input)
         {
-            Endianness = endianness;
+            Init(Encoding.Default, endianness);
         }
 
         public EndianBinaryReader(Stream input, Encoding encoding, Endianness endianness)
             : base(input, encoding)
         {
-            Endianness = endianness;
+            Init(encoding, endianness);
         }
 
         public EndianBinaryReader(Stream input, Encoding encoding, bool leaveOpen, Endianness endianness)
             : base(input, encoding, leaveOpen)
         {
+            Init(encoding, endianness);
+        }
+
+        private void Init(Encoding encoding, Endianness endianness)
+        {
+            mStringBuilder = new StringBuilder();
+            mEncoding = encoding;
+            mPosQueue = new Queue<long>();
             Endianness = endianness;
         }
 
@@ -58,18 +90,100 @@ namespace AtlusGfdLib.IO
             BaseStream.Seek(offset, SeekOrigin.End);
         }
 
+        public void EnqueuePosition()
+        {
+            mPosQueue.Enqueue(Position);
+        }
+
+        public long PeekEnqueuedPosition()
+        {
+            return mPosQueue.Peek();
+        }
+
+        public void EnqueuePositionAndSeekBegin(long offset)
+        {
+            mPosQueue.Enqueue(Position);
+            SeekBegin(offset);
+        }
+
+        public void SeekBeginToDequedPosition()
+        {
+            SeekBegin(mPosQueue.Dequeue());
+        }
+
+        public long DequeuePosition()
+        {
+            return mPosQueue.Dequeue();
+        }
+
+        public sbyte[] ReadSBytes(int count)
+        {
+            sbyte[] array = new sbyte[count];
+            for (int i = 0; i < array.Length; i++)
+                array[i] = ReadSByte();
+
+            return array;
+        }
+
+        public bool[] ReadBooleans(int count)
+        {
+            bool[] array = new bool[count];
+            for (int i = 0; i < array.Length; i++)
+                array[i] = ReadBoolean();
+
+            return array;
+        }
+
+        public override short ReadInt16()
+        {
+            if (mSwap)
+                return EndiannessHelper.Swap(base.ReadInt16());
+            else
+                return base.ReadInt16();
+        }
+
+        public short[] ReadInt16s(int count)
+        {
+            short[] array = new short[count];
+            for (int i = 0; i < array.Length; i++)
+            {
+                array[i] = ReadInt16();
+            }
+
+            return array;
+        }
+
+        public override ushort ReadUInt16()
+        {
+            if (mSwap)
+                return EndiannessHelper.Swap(base.ReadUInt16());
+            else
+                return base.ReadUInt16();
+        }
+
+        public ushort[] ReadUInt16s(int count)
+        {
+            ushort[] array = new ushort[count];
+            for (int i = 0; i < array.Length; i++)
+            {
+                array[i] = ReadUInt16();
+            }
+
+            return array;
+        }
+
         public override decimal ReadDecimal()
         {
-            if (Endianness == Endianness.LittleEndian)
-                return base.ReadDecimal();
+            if (mSwap)
+                return EndiannessHelper.Swap(base.ReadDecimal());
             else
-                return EndiannessHelper.SwapEndianness(base.ReadDecimal());
+                return base.ReadDecimal();
         }
 
         public decimal[] ReadDecimals(int count)
         {
             decimal[] array = new decimal[count];
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < array.Length; i++)
             {
                 array[i] = ReadDecimal();
             }
@@ -79,16 +193,16 @@ namespace AtlusGfdLib.IO
 
         public override double ReadDouble()
         {
-            if (Endianness == Endianness.LittleEndian)
-                return base.ReadDouble();
+            if (mSwap)
+                return EndiannessHelper.Swap(base.ReadDouble());
             else
-                return EndiannessHelper.SwapEndianness(base.ReadDouble());
+                return base.ReadDouble();
         }
 
         public double[] ReadDoubles(int count)
         {
             double[] array = new double[count];
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < array.Length; i++)
             {
                 array[i] = ReadDouble();
             }
@@ -96,37 +210,18 @@ namespace AtlusGfdLib.IO
             return array;
         }
 
-        public override short ReadInt16()
-        {
-            if (Endianness == Endianness.LittleEndian)
-                return base.ReadInt16();
-            else
-                return EndiannessHelper.SwapEndianness(base.ReadInt16());
-        }
-
-        public short[] ReadInt16s(int count)
-        {
-            short[] array = new short[count];
-            for (int i = 0; i < count; i++)
-            {
-                array[i] = ReadInt16();
-            }
-
-            return array;
-        }
-
         public override int ReadInt32()
         {
-            if (Endianness == Endianness.LittleEndian)
-                return base.ReadInt32();
+            if (mSwap)
+                return EndiannessHelper.Swap(base.ReadInt32());
             else
-                return EndiannessHelper.SwapEndianness(base.ReadInt32());
+                return base.ReadInt32();
         }
 
         public int[] ReadInt32s(int count)
         {
             int[] array = new int[count];
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < array.Length; i++)
             {
                 array[i] = ReadInt32();
             }
@@ -136,16 +231,16 @@ namespace AtlusGfdLib.IO
 
         public override long ReadInt64()
         {
-            if (Endianness == Endianness.LittleEndian)
-                return base.ReadInt64();
+            if (mSwap)
+                return EndiannessHelper.Swap(base.ReadInt64());
             else
-                return EndiannessHelper.SwapEndianness(base.ReadInt64());
+                return base.ReadInt64();
         }
 
         public long[] ReadInt64s(int count)
         {
             long[] array = new long[count];
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < array.Length; i++)
             {
                 array[i] = ReadInt64();
             }
@@ -155,37 +250,18 @@ namespace AtlusGfdLib.IO
 
         public override float ReadSingle()
         {
-            if (Endianness == Endianness.LittleEndian)
-                return base.ReadSingle();
+            if (mSwap)
+                return EndiannessHelper.Swap(base.ReadSingle());
             else
-                return EndiannessHelper.SwapEndianness(base.ReadSingle());
+                return base.ReadSingle();
         }
 
         public float[] ReadSingles(int count)
         {
             float[] array = new float[count];
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < array.Length; i++)
             {
-                array[i] = ReadInt64();
-            }
-
-            return array;
-        }
-
-        public override ushort ReadUInt16()
-        {
-            if (Endianness == Endianness.LittleEndian)
-                return base.ReadUInt16();
-            else
-                return EndiannessHelper.SwapEndianness(base.ReadUInt16());
-        }
-
-        public ushort[] ReadUInt16s(int count)
-        {
-            ushort[] array = new ushort[count];
-            for (int i = 0; i < count; i++)
-            {
-                array[i] = ReadUInt16();
+                array[i] = ReadSingle();
             }
 
             return array;
@@ -193,16 +269,16 @@ namespace AtlusGfdLib.IO
 
         public override uint ReadUInt32()
         {
-            if (Endianness == Endianness.LittleEndian)
-                return base.ReadUInt32();
+            if (mSwap)
+                return EndiannessHelper.Swap(base.ReadUInt32());
             else
-                return EndiannessHelper.SwapEndianness(base.ReadUInt32());
+                return base.ReadUInt32();
         }
 
         public uint[] ReadUInt32s(int count)
         {
             uint[] array = new uint[count];
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < array.Length; i++)
             {
                 array[i] = ReadUInt32();
             }
@@ -212,16 +288,16 @@ namespace AtlusGfdLib.IO
 
         public override ulong ReadUInt64()
         {
-            if (Endianness == Endianness.LittleEndian)
-                return base.ReadUInt64();
+            if (mSwap)
+                return EndiannessHelper.Swap(base.ReadUInt64());
             else
-                return EndiannessHelper.SwapEndianness(base.ReadUInt64());
+                return base.ReadUInt64();
         }
 
         public ulong[] ReadUInt64s(int count)
         {
             ulong[] array = new ulong[count];
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < array.Length; i++)
             {
                 array[i] = ReadUInt64();
             }
@@ -229,39 +305,119 @@ namespace AtlusGfdLib.IO
             return array;
         }
 
-        public string ReadCString()
+        public string ReadString(StringBinaryFormat format, int fixedLength = -1)
         {
-            if (m_StringBuilder == null)
-                m_StringBuilder = new StringBuilder();
-            else
-                m_StringBuilder.Clear();
+            mStringBuilder.Clear();
 
-            byte b;
-            while ( (b = ReadByte()) != 0)
+            switch (format)
             {
-                m_StringBuilder.Append((char)b);
+                case StringBinaryFormat.NullTerminated:
+                    {
+                        byte b;
+                        while ((b = ReadByte()) != 0)
+                            mStringBuilder.Append((char)b);
+                    }
+                    break;
+
+                case StringBinaryFormat.FixedLength:
+                    {
+                        if (fixedLength == -1)
+                            throw new ArgumentException("Invalid fixed length specified");
+
+                        byte b;
+                        for (int i = 0; i < fixedLength; i++)
+                        {
+                            b = ReadByte();
+                            if (b != 0)
+                                mStringBuilder.Append((char)b);
+                        }
+                    }
+                    break;
+
+                case StringBinaryFormat.PrefixedLength8:
+                    {
+                        byte length = ReadByte();
+                        for (int i = 0; i < length; i++)
+                            mStringBuilder.Append((char)ReadByte());
+                    }
+                    break;
+
+                case StringBinaryFormat.PrefixedLength16:
+                    {
+                        ushort length = ReadUInt16();
+                        for (int i = 0; i < length; i++)
+                            mStringBuilder.Append((char)ReadByte());
+                    }
+                    break;
+
+                case StringBinaryFormat.PrefixedLength32:
+                    {
+                        uint length = ReadUInt32();
+                        for (int i = 0; i < length; i++)
+                            mStringBuilder.Append((char)ReadByte());
+                    }
+                    break;
+
+                default:
+                    throw new ArgumentException("Unknown string format", nameof(format));
             }
 
-            return m_StringBuilder.ToString();
+            return mStringBuilder.ToString();
         }
 
-        public string ReadCString(int fixedLength)
+        public string[] ReadStrings(int count, StringBinaryFormat format, int fixedLength = -1)
         {
-            if (m_StringBuilder == null)
-                m_StringBuilder = new StringBuilder();
-            else
-                m_StringBuilder.Clear();
+            string[] value = new string[count];
+            for (int i = 0; i < value.Length; i++)
+                value[i] = ReadString(format, fixedLength);
 
-            byte b;
-            for (int i = 0; i < fixedLength; i++)
+            return value;
+        }
+
+        public T ReadStruct<T>()
+            where T : struct
+        {
+            T obj;
+
+            var bytes = ReadBytes(Marshal.SizeOf<T>());
+
+            unsafe
             {
-                b = ReadByte();
-
-                if (b != 0)
-                    m_StringBuilder.Append((char)b);
+                fixed (byte* ptr = bytes)
+                {
+                    obj = Marshal.PtrToStructure<T>((IntPtr)ptr);
+                }
             }
 
-            return m_StringBuilder.ToString();
+            if (mSwap)
+                obj = EndiannessHelper.Swap(obj);
+
+            return obj;
+        }
+
+        public T[] ReadStruct<T>(int count)
+            where T : struct
+        {
+            T[] objects = new T[count];
+
+            int typeSize = Marshal.SizeOf<T>();
+            var bytes = ReadBytes(typeSize * count);
+
+            unsafe
+            {
+                fixed (byte* ptr = bytes)
+                {
+                    for (int i = 0; i < objects.Length; i++)
+                    {
+                        if (mSwap)
+                            objects[i] = EndiannessHelper.Swap(Marshal.PtrToStructure<T>((IntPtr)(ptr + (i * typeSize))));
+                        else
+                            objects[i] = Marshal.PtrToStructure<T>((IntPtr)(ptr + (i * typeSize)));
+                    }
+                }
+            }
+
+            return objects;
         }
     }
 }

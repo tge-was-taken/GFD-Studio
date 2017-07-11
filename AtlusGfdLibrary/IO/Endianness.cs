@@ -1,4 +1,7 @@
-﻿namespace AtlusGfdLib.IO
+﻿using System;
+using System.Linq;
+
+namespace AtlusGfdLib.IO
 {
     public enum Endianness
     {
@@ -8,63 +11,261 @@
 
     public static class EndiannessHelper
     {
-        public static short SwapEndianness(short value)
+        public static Endianness SystemEndianness
+        {
+            get
+            {
+                if (BitConverter.IsLittleEndian)
+                    return Endianness.LittleEndian;
+                else
+                    return Endianness.BigEndian;
+            }
+        }
+
+        public static short Swap(short value)
         {
             return (short)((value << 8) | ((value >> 8) & 0xFF));
         }
 
-        public static ushort SwapEndianness(ushort value)
+        public static void Swap(ref short value)
+        {
+            value = Swap(value);
+        }
+
+        public static ushort Swap(ushort value)
         {
             return (ushort)((value << 8) | (value >> 8));
         }
 
-        public static int SwapEndianness(int value)
+        public static void Swap(ref ushort value)
+        {
+            value = Swap(value);
+        }
+
+        public static int Swap(int value)
         {
             value = (int)((value << 8) & 0xFF00FF00) | ((value >> 8) & 0xFF00FF);
             return (value << 16) | ((value >> 16) & 0xFFFF);
         }
 
-        public static uint SwapEndianness(uint value)
+        public static void Swap(ref int value)
+        {
+            value = Swap(value);
+        }
+
+        public static uint Swap(uint value)
         {
             value = ((value << 8) & 0xFF00FF00) | ((value >> 8) & 0xFF00FF);
             return (value << 16) | (value >> 16);
         }
 
-        public static long SwapEndianness(long value)
+        public static void Swap(ref uint value)
+        {
+            value = Swap(value);
+        }
+
+        public static long Swap(long value)
         {
             value = (long)(((ulong)(value << 8) & 0xFF00FF00FF00FF00UL) | ((ulong)(value >> 8) & 0x00FF00FF00FF00FFUL));
             value = (long)(((ulong)(value << 16) & 0xFFFF0000FFFF0000UL) | ((ulong)(value >> 16) & 0x0000FFFF0000FFFFUL));
             return (long)((ulong)(value << 32) | ((ulong)(value >> 32) & 0xFFFFFFFFUL));
         }
 
-        public static ulong SwapEndianness(ulong value)
+        public static void Swap(ref long value)
+        {
+            value = Swap(value);
+        }
+
+        public static ulong Swap(ulong value)
         {
             value = ((value << 8) & 0xFF00FF00FF00FF00UL ) | ((value >> 8) & 0x00FF00FF00FF00FFUL );
             value = ((value << 16) & 0xFFFF0000FFFF0000UL ) | ((value >> 16) & 0x0000FFFF0000FFFFUL );
             return (value << 32) | (value >> 32);
         }
 
-        public unsafe static float SwapEndianness(float value)
+        public static void Swap(ref ulong value)
         {
-            uint temp = SwapEndianness(*(uint*)&value);
-            return *(float*)&temp;
+            value = Swap(value);
         }
 
-        public unsafe static double SwapEndianness(double value)
+        public unsafe static float Swap(float value)
         {
-            ulong temp = SwapEndianness(*(ulong*)&value);
-            return *(double*)&temp;
+            return Unsafe.ReinterpretCast<uint, float>(
+                Swap(Unsafe.ReinterpretCast<float, uint>(value))
+            );
         }
 
-        public unsafe static decimal SwapEndianness(decimal value)
+        public static void Swap(ref float value)
         {
-            fixed (byte* pBytes = new byte[32])
+            value = Swap(value);
+        }
+
+        public unsafe static double Swap(double value)
+        {
+            return Unsafe.ReinterpretCast<ulong, double>(
+                Swap(Unsafe.ReinterpretCast<double, ulong>(value))
+            );
+        }
+
+        public static void Swap(ref double value)
+        {
+            value = Swap(value);
+        }
+
+        public unsafe static decimal Swap(decimal value)
+        {
+            ulong* pData = stackalloc ulong[2];
+
+            *pData = Swap(*(ulong*)&value);
+            pData++;
+            *pData = Swap(*((ulong*)&value + 16));
+
+            return *(decimal*)pData;
+        }
+
+        public static void Swap(ref decimal value)
+        {
+            value = Swap(value);
+        }
+
+        private static object SwapRecursive(object obj, Type type)
+        {
+            if (type.IsArray)
             {
-                *(ulong*)pBytes = SwapEndianness(*(ulong*)&value);
-                *(ulong*)(pBytes + 16) = SwapEndianness(*((ulong*)&value + 16));
+                var array = (Array)obj;
+                var elemType = type.GetElementType();
 
-                return *(decimal*)pBytes;
+                for (int i = 0; i < array.Length; i++)
+                {
+                    array.SetValue(SwapRecursive(array.GetValue(i), elemType), i);
+                }
+
+                return array;
             }
+            else if (type.IsClass)
+            {
+                Swap(obj, type);
+                return obj;
+            }
+            else if (type.IsEnum)
+            {
+                return SwapRecursive(obj, type.GetEnumUnderlyingType());
+            }
+            else if (type.IsGenericType)
+            {
+                throw new NotImplementedException();
+            }
+            else if (type.IsInterface)
+            {
+                throw new NotImplementedException();
+            }
+            else if (type.IsPointer)
+            {
+                throw new NotImplementedException();
+            }
+            else if (type.IsPrimitive)
+            {
+                return Swap((dynamic)obj);
+                //return SwapEndiannessPrimitive(type, obj);
+            }
+            else if (type.IsValueType)
+            {
+                Swap(obj, type);
+                return obj;
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        private static object Swap(object obj, Type type)
+        {         
+            var fields = type.GetFields().ToList();
+
+            // Handle tuples
+            //if (type.GetCustomAttribute<StructLayoutAttribute>()?.Value == LayoutKind.Explicit)
+            //{
+            //    var fieldOffsetDictionary = new Dictionary<int, List<FieldInfo>>();
+            //    for (int i = 0; i < fields.Count; i++)
+            //    {
+            //        var attrib = fields[i].GetCustomAttribute<FieldOffsetAttribute>();
+
+            //        if (attrib != null)
+            //        {
+            //            if (!fieldOffsetDictionary.ContainsKey(attrib.Value))
+            //                fieldOffsetDictionary[attrib.Value] = new List<FieldInfo>();
+
+            //            fieldOffsetDictionary[attrib.Value].Add(fields[i]);
+            //        }
+            //    }
+
+            //    if (fieldOffsetDictionary.Count > 0)
+            //    {
+            //        int lastBiggestFieldEndIndex = -1;
+            //        foreach (var fieldOffset in fieldOffsetDictionary.Keys)
+            //        {
+            //            var fieldsWithOffsets = fieldOffsetDictionary[fieldOffset];
+            //            int biggestFieldEndIndex = -1;
+
+            //            var biggestField = fieldsWithOffsets.MaxBy(x =>
+            //            {
+            //                var val = x.GetValue(obj);
+            //                var size = 0;
+
+            //                if (x.FieldType.IsEnum)
+            //                    size = Marshal.SizeOf(x.FieldType.GetEnumUnderlyingType());
+            //                else
+            //                    size = Marshal.SizeOf(val);
+
+            //                if (fieldOffset + size > biggestFieldEndIndex)
+            //                    biggestFieldEndIndex = fieldOffset + size;
+
+            //                return size;
+            //            });
+
+            //            if (lastBiggestFieldEndIndex >= biggestFieldEndIndex)
+            //            {
+            //                for (int i = 0; i < fieldsWithOffsets.Count; i++)
+            //                {
+            //                    fields.Remove(fieldsWithOffsets[i]);
+            //                }
+            //            }
+            //            else
+            //            {
+            //                for (int i = 0; i < fieldsWithOffsets.Count; i++)
+            //                {
+            //                    if (fieldsWithOffsets[i] != biggestField)
+            //                        fields.Remove(fieldsWithOffsets[i]);
+            //                }
+
+            //                lastBiggestFieldEndIndex = biggestFieldEndIndex;
+            //            }
+            //        }
+            //    }
+            //}
+
+            foreach (var field in fields)
+            {
+                if (field.IsLiteral || field.IsStatic)
+                    continue;
+
+                field.SetValue(obj, SwapRecursive(field.GetValue(obj), field.FieldType));
+            }
+
+            return obj;
+        }
+
+        public static T Swap<T>(T obj)
+        {
+            object temp = obj;
+            temp = Swap(temp, typeof(T));
+            return (T)temp;
+        }
+
+        public static void Swap<T>(ref T obj)
+        {
+            obj = Swap(obj);
         }
     }
 }
