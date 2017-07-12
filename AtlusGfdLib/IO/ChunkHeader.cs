@@ -7,7 +7,7 @@
         public int Size;
         public int Unknown;
 
-        public const int CSIZE = 12;
+        public const int CSIZE = 16;
     }
 
     internal enum ChunkType : uint

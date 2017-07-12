@@ -40,4 +40,10 @@ namespace AtlusGfdLib
             return Name;
         }
     }
+
+    public enum TextureFormat : ushort
+    {
+        Invalid = 0,
+        DDS = 1,
+    }
 }

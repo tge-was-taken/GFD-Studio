@@ -73,6 +73,15 @@ namespace AtlusGfdLib
             return value;
         }
 
+        private ByteVector3 ReadByteVector3()
+        {
+            ByteVector3 value;
+            value.X = ReadByte();
+            value.Y = ReadByte();
+            value.Z = ReadByte();
+            return value;
+        }
+
         private Vector4 ReadVector4()
         {
             Vector4 value;
@@ -80,6 +89,64 @@ namespace AtlusGfdLib
             value.Y = ReadFloat();
             value.Z = ReadFloat();
             value.W = ReadFloat();
+            return value;
+        }
+
+        private ByteVector4 ReadByteVector4()
+        {
+            ByteVector4 value;
+            value.X = ReadByte();
+            value.Y = ReadByte();
+            value.Z = ReadByte();
+            value.W = ReadByte();
+            return value;
+        }
+
+        private Quaternion ReadQuaternion()
+        {
+            Quaternion value;
+            value.X = ReadFloat();
+            value.Y = ReadFloat();
+            value.Z = ReadFloat();
+            value.W = ReadFloat();
+            return value;
+        }
+
+        private Matrix4x4 ReadMatrix4x4()
+        {
+            Matrix4x4 value;
+            value.M11 = ReadFloat();
+            value.M12 = ReadFloat();
+            value.M13 = ReadFloat();
+            value.M14 = ReadFloat();
+            value.M21 = ReadFloat();
+            value.M22 = ReadFloat();
+            value.M23 = ReadFloat();
+            value.M24 = ReadFloat();
+            value.M31 = ReadFloat();
+            value.M32 = ReadFloat();
+            value.M33 = ReadFloat();
+            value.M34 = ReadFloat();
+            value.M41 = ReadFloat();
+            value.M42 = ReadFloat();
+            value.M43 = ReadFloat();
+            value.M44 = ReadFloat();
+            return value;
+        }
+
+        private BoundingBox ReadBoundingBox()
+        {
+            BoundingBox value;
+            value.Min = ReadVector3();
+            value.Max = ReadVector3();
+            return value;
+        }
+
+        private BoundingSphere ReadBoundingSphere()
+        {
+            BoundingSphere value;
+            value.Center = ReadVector3();
+            value.Radius = ReadFloat();
             return value;
         }
 
@@ -94,10 +161,24 @@ namespace AtlusGfdLib
             return mReader.ReadString( StringBinaryFormat.FixedLength, length );
         }
 
-        private string ReadStringWithHash()
+        private string ReadString( int length )
+        {
+            return mReader.ReadString( StringBinaryFormat.FixedLength, length );
+        }
+
+        private string ReadStringWithHash( uint version )
         {
             var str = ReadString();
-            uint hash = mReader.ReadUInt32();
+
+            if ( version > 0x1080000 )
+            {
+                uint hash = mReader.ReadUInt32();
+                // if ( version <= 0x1104990 )
+                // {
+                //    hash = StringHasher.GenerateStringHash(str);
+                // }
+            }
+
             return str;
         }
 
@@ -160,6 +241,12 @@ namespace AtlusGfdLib
                         break;
                     case ChunkType.MaterialDictionary:
                         model.MaterialDictionary = ReadMaterialDictionary( header.Version );
+                        break;
+                    case ChunkType.Scene:
+                        model.Scene = ReadScene( header.Version );
+                        break;
+                    case ChunkType.AnimationPackage:
+                        model.AnimationPackage = ReadAnimationPackage( header.Version );
                         break;
 
                     default:
@@ -226,7 +313,7 @@ namespace AtlusGfdLib
             var material = new Material();
 
             // Read material header
-            material.Name = ReadStringWithHash();
+            material.Name = ReadStringWithHash( version );
             material.Flags = ( MaterialFlags )ReadUInt();
 
             if ( version < 0x1104000 )
@@ -290,47 +377,47 @@ namespace AtlusGfdLib
 
             if ( material.Flags.HasFlag( MaterialFlags.HasDiffuseMap ) )
             {
-                material.DiffuseMap = ReadTextureMap();
+                material.DiffuseMap = ReadTextureMap( version );
             }
 
             if ( material.Flags.HasFlag( MaterialFlags.HasNormalMap ) )
             {
-                material.NormalMap = ReadTextureMap();
+                material.NormalMap = ReadTextureMap( version );
             }
 
             if ( material.Flags.HasFlag( MaterialFlags.HasSpecularMap ) )
             {
-                material.SpecularMap = ReadTextureMap();
+                material.SpecularMap = ReadTextureMap( version );
             }
 
             if ( material.Flags.HasFlag( MaterialFlags.HasReflectionMap ) )
             {
-                material.ReflectionMap = ReadTextureMap();
+                material.ReflectionMap = ReadTextureMap( version );
             }
 
             if ( material.Flags.HasFlag( MaterialFlags.HasHighlightMap ) )
             {
-                material.HighlightMap = ReadTextureMap();
+                material.HighlightMap = ReadTextureMap( version );
             }
 
             if ( material.Flags.HasFlag( MaterialFlags.HasGlowMap ) )
             {
-                material.GlowMap = ReadTextureMap();
+                material.GlowMap = ReadTextureMap( version );
             }
 
             if ( material.Flags.HasFlag( MaterialFlags.HasNightMap ) )
             {
-                material.NightMap = ReadTextureMap();
+                material.NightMap = ReadTextureMap( version );
             }
 
             if ( material.Flags.HasFlag( MaterialFlags.HasDetailMap ) )
             {
-                material.DetailMap = ReadTextureMap();
+                material.DetailMap = ReadTextureMap( version );
             }
 
             if ( material.Flags.HasFlag( MaterialFlags.HasShadowMap ) ) 
             {
-                material.ShadowMap = ReadTextureMap();
+                material.ShadowMap = ReadTextureMap( version );
             }
 
             if ( material.Flags.HasFlag( MaterialFlags.HasProperties ) ) 
@@ -341,11 +428,11 @@ namespace AtlusGfdLib
             return material;
         }
 
-        private TextureMap ReadTextureMap()
+        private TextureMap ReadTextureMap( uint version )
         {
             return new TextureMap()
             {
-                Name = ReadStringWithHash(),
+                Name = ReadStringWithHash( version ),
                 Field44 = ReadInt(),
                 Field48 = ReadByte(),
                 Field49 = ReadByte(),
@@ -609,19 +696,183 @@ namespace AtlusGfdLib
         }
 
         // Scene read methods
-        private Scene ReadScene()
+        private Scene ReadScene( uint version )
+        {
+            Scene scene = new Scene( version );
+            scene.Flags = ( SceneFlags )ReadInt();
+
+            if ( scene.Flags.HasFlag( SceneFlags.HasSkinning ) ) 
+                scene.InverseBindPoseMatrixMap = ReadInverseBindPoseMatrixMap();
+
+            if ( scene.Flags.HasFlag( SceneFlags.HasBoundingBox ) )
+                scene.BoundingBox = ReadBoundingBox();
+
+            if ( scene.Flags.HasFlag( SceneFlags.HasBoundingSphere ) )
+                scene.BoundingSphere = ReadBoundingSphere();
+
+            scene.RootNode = ReadNodeRecursive( version );
+
+            return scene;
+        }
+
+        private InverseBindPoseMatrixMap ReadInverseBindPoseMatrixMap()
+        {
+            int matrixCount = ReadInt();
+            var map = new InverseBindPoseMatrixMap( matrixCount );
+
+            for ( int i = 0; i < map.InverseBindPoseMatrices.Length; i++ )
+                map.InverseBindPoseMatrices[i] = ReadMatrix4x4();
+
+            for ( int i = 0; i < map.RemapIndices.Length; i++ )
+                map.RemapIndices[i] = ReadUShort();
+
+            return map;
+        }
+
+        private Node ReadNodeRecursive( uint version )
+        {
+            var node = ReadNode( version );
+            int childCount = ReadInt();
+
+            for ( int i = 0; i < childCount; i++ )
+            {
+                var childNode = ReadNodeRecursive( version );
+                node.AddChildNode( childNode );
+            }
+
+            return node;
+        }
+
+        private Node ReadNode( uint version )
+        {
+            Node node = new Node();
+            node.Name = ReadStringWithHash( version );
+            node.Position = ReadVector3();
+            node.Rotation = ReadQuaternion();
+            node.Scale = ReadVector3();
+
+            if ( version <= 0x1090000 )
+                ReadByte();
+
+            int attachmentCount = ReadInt();
+            for ( int i = 0; i < attachmentCount; i++ )
+            {
+                var attachment = ReadNodeAttachment( version );
+                node.Attachments.Add( attachment );
+            }
+
+            if ( version > 0x1060000 )
+            {
+                bool hasProperties = ReadByte() == 1;
+                if ( hasProperties )
+                {
+                    node.Properties = ReadNodeProperties( version );
+                }
+            }
+
+            if ( version > 0x1104230 )
+            {
+                node.FieldE0 = ReadFloat();
+            }
+
+            return node;
+        }
+
+        private NodeAttachment ReadNodeAttachment( uint version )
+        {
+            NodeAttachmentType type = ( NodeAttachmentType )ReadInt();
+
+            switch ( type )
+            {
+                case NodeAttachmentType.Invalid:
+                case NodeAttachmentType.Scene:
+                    throw new NotSupportedException();
+
+                //case NodeAttachmentType.Mesh:
+                //  return new NodeMeshAttachment( ReadMesh( version ) );
+                case NodeAttachmentType.Node:
+                    return new NodeNodeAttachment( ReadNode( version ) );
+                case NodeAttachmentType.Geometry:
+                    return new NodeGeometryAttachment( ReadGeometry( version ) );
+                //case NodeAttachmentType.Camera:
+                //    return new NodeCameraAttachment( ReadCamera( version ) );
+                //case NodeAttachmentType.Light:
+                //    return new NodeLightAttachment( ReadLight( version ) );
+                //case NodeAttachmentType.Epl:
+                //    return new NodeEplAttachment( ReadEpl( version ) );
+                //case NodeAttachmentType.EplLeaf:
+                //    return new NodeEplLeafAttachment( ReadEplLeaf( version ) );
+                //case NodeAttachmentType.Morph:
+                //    return new NodeMorphAttachment( ReadMorph( version ) );
+                default:
+                    throw new Exception( $"Unknown node attachment: {type}" );
+            }
+        }
+
+        private Dictionary<string, NodeProperty> ReadNodeProperties( uint version )
+        {
+            int propertyCount = ReadInt();
+            var properties = new Dictionary<string, NodeProperty>( propertyCount );
+
+            for ( int i = 0; i < propertyCount; i++ )
+            {
+                var type = ( PropertyValueType )ReadInt();
+                var name = ReadStringWithHash( version );
+                var size = ReadInt();
+                NodeProperty property;
+
+                switch ( type )
+                {
+                    case PropertyValueType.Int:
+                        property = new NodeIntProperty( name, ReadInt() );
+                        break;
+                    case PropertyValueType.Float:
+                        property = new NodeFloatProperty( name, ReadFloat() );
+                        break;
+                    case PropertyValueType.Bool:
+                        property = new NodeBoolProperty( name, ReadByte() == 1 );
+                        break;
+                    case PropertyValueType.String:
+                        property = new NodeStringProperty( name, ReadString( size ) );
+                        break;
+                    case PropertyValueType.ByteVector3:
+                        property = new NodeByteVector3Property( name, ReadByteVector3() );
+                        break;
+                    case PropertyValueType.ByteVector4:
+                        property = new NodeByteVector4Property( name, ReadByteVector4() );
+                        break;
+                    case PropertyValueType.Vector3:
+                        property = new NodeVector3Property( name, ReadVector3() );
+                        break;
+                    case PropertyValueType.Vector4:
+                        property = new NodeVector4Property( name, ReadVector4() );
+                        break;
+                    case PropertyValueType.Array:
+                        property = new NodeArrayProperty( name, ReadBytes( size ) );
+                        break;
+                    default:
+                        throw new Exception( $"Unknown node property type: {type}" );
+                }
+
+                properties[property.Name] = property;
+            }
+
+            return properties;
+        }
+
+        private Geometry ReadGeometry( uint version )
         {
             throw new NotImplementedException();
         }
 
         // Animation read methods
-        private AnimationPackage ReadAnimationPackage()
+        private AnimationPackage ReadAnimationPackage( uint version )
         {
             throw new NotImplementedException();
         }
 
         // Shader read methods
-        private ShaderCache ReadShaderCache()
+        private ShaderCache ReadShaderCache( uint version )
         {
             if ( !ReadFileHeader( out FileHeader header ) || header.Magic != FileHeader.CMAGIC_SHADERCACHE )
                 return null;
@@ -662,7 +913,7 @@ namespace AtlusGfdLib
                     break;
 
                 case FileType.ShaderCache:
-                    resource = ReadShaderCache();
+                    resource = ReadShaderCache( header.Version );
                     break;
 
                 default:

@@ -46,14 +46,29 @@
   <ItemGroup>
     <Compile Include="Animation.cs" />
     <Compile Include="AnimationList.cs" />
+    <Compile Include="BoundingBox.cs" />
+    <Compile Include="BoundingSphere.cs" />
+    <Compile Include="ByteVector3.cs" />
+    <Compile Include="ByteVector4.cs" />
+    <Compile Include="Camera.cs" />
     <Compile Include="Enums.cs" />
+    <Compile Include="Epl.cs" />
+    <Compile Include="EplLeaf.cs" />
+    <Compile Include="Geometry.cs" />
+    <Compile Include="InverseBindPoseMatrixMap.cs" />
     <Compile Include="IO\EndianBinaryWriter.cs" />
     <Compile Include="IO\StringBinaryFormat.cs" />
     <Compile Include="IO\Unsafe.cs" />
     <Compile Include="IO\FileHeader.cs" />
+    <Compile Include="Light.cs" />
     <Compile Include="Material.cs" />
     <Compile Include="MaterialProperty.cs" />
     <Compile Include="MaterialDictionary.cs" />
+    <Compile Include="Mesh.cs" />
+    <Compile Include="Morph.cs" />
+    <Compile Include="Node.cs" />
+    <Compile Include="NodeAttachment.cs" />
+    <Compile Include="NodeProperty.cs" />
     <Compile Include="TextureReference.cs" />
     <Compile Include="Resource.cs" />
     <Compile Include="Model.cs" />
@@ -68,6 +83,8 @@
     <Compile Include="IO\ChunkHeader.cs" />
     <Compile Include="IO\ResourceReader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Triangle.cs" />
+    <Compile Include="VertexWeight.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

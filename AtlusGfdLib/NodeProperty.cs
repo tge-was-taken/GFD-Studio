@@ -15,7 +15,7 @@ namespace AtlusGfdLib
             Name = name;
         }
 
-        protected abstract object GetValue();
+        public abstract object GetValue();
 
         public T GetValue<T>() => ( T )GetValue();
     }
@@ -28,7 +28,7 @@ namespace AtlusGfdLib
 
         public NodeIntProperty( string name, int value ) : base(PropertyValueType.Int, name) => Value = value;
 
-        protected override object GetValue()
+        public override object GetValue()
         {
             return Value;
         }
@@ -42,7 +42,7 @@ namespace AtlusGfdLib
 
         public NodeFloatProperty( string name, float value ) : base( PropertyValueType.Float, name ) => Value = value;
 
-        protected override object GetValue()
+        public override object GetValue()
         {
             return Value;
         }
@@ -56,7 +56,7 @@ namespace AtlusGfdLib
 
         public NodeBoolProperty( string name, bool value ) : base( PropertyValueType.Bool, name ) => Value = value;
 
-        protected override object GetValue()
+        public override object GetValue()
         {
             return Value;
         }
@@ -70,7 +70,7 @@ namespace AtlusGfdLib
 
         public NodeStringProperty( string name, string value ) : base( PropertyValueType.String, name ) => Value = value;
 
-        protected override object GetValue()
+        public override object GetValue()
         {
             return Value;
         }
@@ -84,7 +84,7 @@ namespace AtlusGfdLib
 
         public NodeByteVector3Property( string name, ByteVector3 value ) : base( PropertyValueType.ByteVector3, name ) => Value = value;
 
-        protected override object GetValue()
+        public override object GetValue()
         {
             return Value;
         }
@@ -98,7 +98,7 @@ namespace AtlusGfdLib
 
         public NodeByteVector4Property( string name, ByteVector4 value ) : base( PropertyValueType.ByteVector4, name ) => Value = value;
 
-        protected override object GetValue()
+        public override object GetValue()
         {
             return Value;
         }
@@ -112,7 +112,7 @@ namespace AtlusGfdLib
 
         public NodeVector3Property( string name, Vector3 value ) : base( PropertyValueType.Vector3, name ) => Value = value;
 
-        protected override object GetValue()
+        public override object GetValue()
         {
             return Value;
         }
@@ -126,7 +126,21 @@ namespace AtlusGfdLib
 
         public NodeVector4Property( string name, Vector4 value ) : base( PropertyValueType.Vector4, name ) => Value = value;
 
-        protected override object GetValue()
+        public override object GetValue()
+        {
+            return Value;
+        }
+    }
+
+    public class NodeArrayProperty : NodeProperty
+    {
+        public byte[] Value { get; set; }
+
+        public NodeArrayProperty( string name ) : base( PropertyValueType.Array, name ) { }
+
+        public NodeArrayProperty( string name, byte[] value ) : base( PropertyValueType.Array, name ) => Value = value;
+
+        public override object GetValue()
         {
             return Value;
         }

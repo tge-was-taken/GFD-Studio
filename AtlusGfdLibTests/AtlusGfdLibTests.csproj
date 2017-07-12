@@ -63,8 +63,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AtlusGfdLibrary\AtlusGfdLib.csproj">
-      <Project>{A41AC644-A107-4788-8E4F-E10CCA64F3B6}</Project>
+    <ProjectReference Include="..\AtlusGfdLib\AtlusGfdLib.csproj">
+      <Project>{a41ac644-a107-4788-8e4f-e10cca64f3b6}</Project>
       <Name>AtlusGfdLib</Name>
     </ProjectReference>
   </ItemGroup>
