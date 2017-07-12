@@ -1,6 +1,6 @@
 ﻿namespace AtlusGfdLib
 {
-    public class EplLeaf
+    public sealed class EplLeaf
     {
     }
 }

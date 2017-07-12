@@ -57,7 +57,7 @@ namespace AtlusGfdLib
         Type7 = 7,
     }
 
-    public class MaterialPropertyType0 : MaterialProperty
+    public sealed class MaterialPropertyType0 : MaterialProperty
     {
         // 0C
         public Vector4 Field0C { get; set; }
@@ -89,7 +89,7 @@ namespace AtlusGfdLib
         }
     }
 
-    public class MaterialPropertyType1 : MaterialProperty
+    public sealed class MaterialPropertyType1 : MaterialProperty
     {
         // 10
         public Vector4 Field0C { get; set; }
@@ -121,7 +121,7 @@ namespace AtlusGfdLib
         }
     }
 
-    public class MaterialPropertyType2 : MaterialProperty
+    public sealed class MaterialPropertyType2 : MaterialProperty
     {
         // 0C
         public int Field0C { get; set; }
@@ -138,7 +138,7 @@ namespace AtlusGfdLib
         }
     }
 
-    public class MaterialPropertyType3 : MaterialProperty
+    public sealed class MaterialPropertyType3 : MaterialProperty
     {
         // 0C
         public float Field0C { get; set; }
@@ -188,7 +188,7 @@ namespace AtlusGfdLib
         }
     }
 
-    public class MaterialPropertyType4 : MaterialProperty
+    public sealed class MaterialPropertyType4 : MaterialProperty
     {
         // 0C
         public Vector4 Field0C { get; set; }
@@ -244,7 +244,7 @@ namespace AtlusGfdLib
         }
     }
 
-    public class MaterialPropertyType5 : MaterialProperty
+    public sealed class MaterialPropertyType5 : MaterialProperty
     {
         public int Field0C { get; set; }
 
@@ -279,7 +279,7 @@ namespace AtlusGfdLib
         }
     }
 
-    public class MaterialPropertyType6 : MaterialProperty
+    public sealed class MaterialPropertyType6 : MaterialProperty
     {
         public int Field0C { get; set; }
 
@@ -296,7 +296,7 @@ namespace AtlusGfdLib
         }
     }
 
-    public class MaterialPropertyType7 : MaterialProperty
+    public sealed class MaterialPropertyType7 : MaterialProperty
     {
         public MaterialPropertyType7() : base( MaterialPropertyFlags.Flag1, MaterialPropertyType.Type7 ) { }
 

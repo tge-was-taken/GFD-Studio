@@ -1,6 +1,6 @@
 ﻿namespace AtlusGfdLib
 {
-    public class TextureMap
+    public sealed class TextureMap
     {
         public string Name { get; set; }
 
@@ -66,5 +66,35 @@
 
         // 0x88
         public float Field88 { get; set; }
+
+        internal TextureMap()
+        {
+        }
+
+        public TextureMap( string name )
+        {
+            Name = name;
+            Field44 = 0;
+            Field48 = 1;
+            Field49 = 1;
+            Field4A = 0;
+            Field4B = 0;
+            Field4C = 1;
+            Field50 = 0;
+            Field54 = 0;
+            Field58 = 0;
+            Field5C = 0;
+            Field60 = 1;
+            Field64 = 0;
+            Field68 = 0;
+            Field6C = 0;
+            Field70 = 0;
+            Field74 = 0;
+            Field78 = 0;
+            Field7C = 0;
+            Field80 = 0;
+            Field84 = 0;
+            Field88 = 0;
+        }
     }
 }

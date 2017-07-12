@@ -4,7 +4,7 @@ using System.Numerics;
 
 namespace AtlusGfdLib
 {
-    public class Node
+    public sealed class Node
     {
         public string Name { get; set; }
 

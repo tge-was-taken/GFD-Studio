@@ -772,7 +772,7 @@ namespace AtlusGfdLib
             scene.Flags = ( SceneFlags )ReadInt();
 
             if ( scene.Flags.HasFlag( SceneFlags.HasSkinning ) ) 
-                scene.InverseBindPoseMatrixMap = ReadInverseBindPoseMatrixMap();
+                scene.MatrixMap = ReadInverseBindPoseMatrixMap();
 
             if ( scene.Flags.HasFlag( SceneFlags.HasBoundingBox ) )
                 scene.BoundingBox = ReadBoundingBox();
@@ -785,13 +785,13 @@ namespace AtlusGfdLib
             return scene;
         }
 
-        private InverseBindPoseMatrixMap ReadInverseBindPoseMatrixMap()
+        private MatrixMap ReadInverseBindPoseMatrixMap()
         {
             int matrixCount = ReadInt();
-            var map = new InverseBindPoseMatrixMap( matrixCount );
+            var map = new MatrixMap( matrixCount );
 
-            for ( int i = 0; i < map.InverseBindPoseMatrices.Length; i++ )
-                map.InverseBindPoseMatrices[i] = ReadMatrix4x4();
+            for ( int i = 0; i < map.Matrices.Length; i++ )
+                map.Matrices[i] = ReadMatrix4x4();
 
             for ( int i = 0; i < map.RemapIndices.Length; i++ )
                 map.RemapIndices[i] = ReadUShort();
@@ -917,8 +917,8 @@ namespace AtlusGfdLib
                     case PropertyValueType.Vector4:
                         property = new NodeVector4Property( name, ReadVector4() );
                         break;
-                    case PropertyValueType.Array:
-                        property = new NodeArrayProperty( name, ReadBytes( size ) );
+                    case PropertyValueType.ByteArray:
+                        property = new NodeByteArrayProperty( name, ReadBytes( size ) );
                         break;
                     default:
                         throw new Exception( $"Unknown node property type: {type}" );

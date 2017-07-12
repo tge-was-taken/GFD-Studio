@@ -1,6 +1,6 @@
 ﻿namespace AtlusGfdLib
 {
-    public class Camera
+    public sealed class Camera
     {
     }
 }

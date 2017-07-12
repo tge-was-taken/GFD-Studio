@@ -7,7 +7,7 @@ namespace AtlusGfdLib
     {
         private List<Shader> mShaders;
 
-        internal ShaderCache(uint version)
+        public ShaderCache(uint version)
             : base(ResourceType.ShaderCache, version)
         {
             mShaders = new List<Shader>();

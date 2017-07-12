@@ -1,6 +1,6 @@
 ﻿namespace AtlusGfdLib
 {
-    public class Epl
+    public sealed class Epl
     {
     }
 }

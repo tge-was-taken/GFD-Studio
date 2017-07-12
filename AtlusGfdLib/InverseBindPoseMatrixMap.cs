@@ -2,15 +2,15 @@
 
 namespace AtlusGfdLib
 {
-    public sealed class InverseBindPoseMatrixMap
+    public sealed class MatrixMap
     {
-        public Matrix4x4[] InverseBindPoseMatrices { get; set; }
+        public Matrix4x4[] Matrices { get; set; }
 
         public ushort[] RemapIndices { get; set; }
 
-        public InverseBindPoseMatrixMap( int matrixCount )
+        public MatrixMap( int matrixCount )
         {
-            InverseBindPoseMatrices = new Matrix4x4[matrixCount];
+            Matrices = new Matrix4x4[matrixCount];
             RemapIndices = new ushort[matrixCount];
         }
     }

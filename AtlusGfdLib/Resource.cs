@@ -25,4 +25,15 @@ namespace AtlusGfdLib
             return ResourceReader.ReadFromStream( stream, IO.Endianness.BigEndian );
         }
     }
+
+    public enum ResourceType
+    {
+        Invalid = 0,
+        Model,
+        AnimationList,
+        TextureDictionary,
+        MaterialDictionary,
+        Scene,
+        ShaderCache,
+    }
 }

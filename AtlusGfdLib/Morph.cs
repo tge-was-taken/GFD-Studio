@@ -1,6 +1,6 @@
 ﻿namespace AtlusGfdLib
 {
-    public class Morph
+    public sealed class Morph
     {
     }
 }

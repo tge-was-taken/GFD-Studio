@@ -13,7 +13,7 @@ namespace AtlusGfdLib
 
         public AnimationPackage AnimationPackage { get; set; } 
 
-        internal Model(uint version)
+        public Model(uint version)
             : base(ResourceType.Model, version)
         {
         }

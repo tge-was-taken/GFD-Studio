@@ -3,48 +3,230 @@ using System.Numerics;
 
 namespace AtlusGfdLib
 {
-    public class Geometry
+    public sealed class Geometry
     {
         public GeometryFlags Flags { get; set; }
 
         public VertexAttributeFlags VertexAttributeFlags { get; set; }
 
-        public int TriangleCount => Triangles.Length;
+        public int TriangleCount => Triangles != null ? Triangles.Length : 0;
 
         public TriangleIndexType TriangleIndexType { get; set; }
 
-        public Triangle[] Triangles { get; set; }
+        private Triangle[] mTriangles;
+        public Triangle[] Triangles
+        {
+            get => mTriangles;
+            set
+            {
+                if ( value != null )
+                    Flags |= GeometryFlags.HasTriangles;
+                else
+                    Flags &= ~GeometryFlags.HasTriangles;
+
+                mTriangles = value;
+            }
+        }
 
         public int VertexCount => Vertices.Length;
 
         public int Field14 { get; set; }
 
         // Vertex attributes
-        public Vector3[] Vertices { get; set; }
+        private Vector3[] mVertices;
+        public Vector3[] Vertices
+        {
+            get => mVertices;
+            set
+            {
+                if ( value != null )
+                    VertexAttributeFlags |= VertexAttributeFlags.Position;
+                else
+                    VertexAttributeFlags &= ~VertexAttributeFlags.Position;
 
-        public Vector3[] Normals { get; set; }
+                mVertices = value;
+            }
+        }
 
-        public Vector3[] Tangents { get; set; }
+        private Vector3[] mNormals;
+        public Vector3[] Normals
+        {
+            get => mNormals;
+            set
+            {
+                if ( value != null )
+                    VertexAttributeFlags |= VertexAttributeFlags.Normal;
+                else
+                    VertexAttributeFlags &= ~VertexAttributeFlags.Normal;
 
-        public Vector3[] Binormals { get; set; }
+                mNormals = value;
+            }
+        }
 
-        public uint[] ColorChannel0 { get; set; }
+        private Vector3[] mTangents;
+        public Vector3[] Tangents
+        {
+            get => mTangents;
+            set
+            {
+                if ( value != null )
+                    VertexAttributeFlags |= VertexAttributeFlags.Tangent;
+                else
+                    VertexAttributeFlags &= ~VertexAttributeFlags.Tangent;
 
-        public Vector2[] TexCoordsChannel0 { get; set; }
+                mTangents = value;
+            }
+        }
 
-        public Vector2[] TexCoordsChannel1 { get; set; }
+        private Vector3[] mBinormals;
+        public Vector3[] Binormals
+        {
+            get => mBinormals;
+            set
+            {
+                if ( value != null )
+                    VertexAttributeFlags |= VertexAttributeFlags.Binormal;
+                else
+                    VertexAttributeFlags &= ~VertexAttributeFlags.Binormal;
 
-        public Vector2[] TexCoordsChannel2 { get; set; }
+                mBinormals = value;
+            }
+        }
 
-        public uint[] ColorChannel1 { get; set; }
+        private uint[] mColorChannel0;
+        public uint[] ColorChannel0
+        {
+            get => mColorChannel0;
+            set
+            {
+                if ( value != null )
+                    VertexAttributeFlags |= VertexAttributeFlags.Color0;
+                else
+                    VertexAttributeFlags &= ~VertexAttributeFlags.Color0;
 
-        public VertexWeight[] VertexWeights { get; set; }
+                mColorChannel0 = value;
+            }
+        }
 
-        public string MaterialName { get; set; }
+        private Vector2[] mTexCoordsChannel0;
+        public Vector2[] TexCoordsChannel0
+        {
+            get => mTexCoordsChannel0;
+            set
+            {
+                if ( value != null )
+                    VertexAttributeFlags |= VertexAttributeFlags.TexCoord0;
+                else
+                    VertexAttributeFlags &= ~VertexAttributeFlags.TexCoord0;
 
-        public BoundingBox? BoundingBox { get; set; }
+                mTexCoordsChannel0 = value;
+            }
+        }
 
-        public BoundingSphere? BoundingSphere { get; set; }
+        private Vector2[] mTexCoordsChannel1;
+        public Vector2[] TexCoordsChannel1
+        {
+            get => mTexCoordsChannel1;
+            set
+            {
+                if ( value != null )
+                    VertexAttributeFlags |= VertexAttributeFlags.TexCoord1;
+                else
+                    VertexAttributeFlags &= ~VertexAttributeFlags.TexCoord1;
+
+                mTexCoordsChannel1 = value;
+            }
+        }
+
+        private Vector2[] mTexCoordsChannel2;
+        public Vector2[] TexCoordsChannel2
+        {
+            get => mTexCoordsChannel2;
+            set
+            {
+                if ( value != null )
+                    VertexAttributeFlags |= VertexAttributeFlags.TexCoord2;
+                else
+                    VertexAttributeFlags &= ~VertexAttributeFlags.TexCoord2;
+
+                mTexCoordsChannel2 = value;
+            }
+        }
+
+        private uint[] mColorChannel1;
+        public uint[] ColorChannel1
+        {
+            get => mColorChannel1;
+            set
+            {
+                if ( value != null )
+                    VertexAttributeFlags |= VertexAttributeFlags.Color1;
+                else
+                    VertexAttributeFlags &= ~VertexAttributeFlags.Color1;
+
+                mColorChannel1 = value;
+            }
+        }
+
+        private VertexWeight[] mVertexWeights;
+        public VertexWeight[] VertexWeights
+        {
+            get => mVertexWeights;
+            set
+            {
+                if ( value != null )
+                    Flags |= GeometryFlags.HasVertexWeights;
+                else
+                    Flags &= ~GeometryFlags.HasVertexWeights;
+
+                mVertexWeights = value;
+            }
+        }
+
+        private string mMaterialName;
+        public string MaterialName
+        {
+            get => mMaterialName;
+            set
+            {
+                if ( !string.IsNullOrEmpty( value ) )
+                    Flags |= GeometryFlags.HasMaterial;
+                else
+                    Flags &= ~GeometryFlags.HasMaterial;
+
+                mMaterialName = value;
+            }
+        }
+
+        private BoundingBox? mBoundingBox;
+        public BoundingBox? BoundingBox
+        {
+            get => mBoundingBox;
+            set
+            {
+                if ( value != null )
+                    Flags |= GeometryFlags.HasBoundingBox;
+                else
+                    Flags &= ~GeometryFlags.HasBoundingBox;
+
+                mBoundingBox = value;
+            }
+        }
+
+        private BoundingSphere? mBoundingSphere;
+        public BoundingSphere? BoundingSphere
+        {
+            get => mBoundingSphere;
+            set
+            {
+                if ( value != null )
+                    Flags |= GeometryFlags.HasBoundingSphere;
+                else
+                    Flags &= ~GeometryFlags.HasBoundingSphere;
+
+                mBoundingSphere = value;
+            }
+        }
 
         public float FieldD4 { get; set; }
 

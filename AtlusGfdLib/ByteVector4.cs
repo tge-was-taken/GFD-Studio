@@ -12,5 +12,21 @@ namespace AtlusGfdLib
         public byte Y;
         public byte Z;
         public byte W;
+
+        public ByteVector4( byte x, byte y, byte z, byte w )
+        {
+            X = x;
+            Y = y;
+            Z = z;
+            W = w;
+        }
+
+        public ByteVector4( ByteVector3 vec3, byte w )
+        {
+            X = vec3.X;
+            Y = vec3.Y;
+            Z = vec3.Z;
+            W = w;
+        }
     }
 }

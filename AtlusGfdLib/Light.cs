@@ -1,6 +1,6 @@
 ﻿namespace AtlusGfdLib
 {
-    public class Light
+    public sealed class Light
     {
     }
 }

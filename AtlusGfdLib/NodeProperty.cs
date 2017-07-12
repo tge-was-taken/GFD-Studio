@@ -20,7 +20,7 @@ namespace AtlusGfdLib
         public T GetValue<T>() => ( T )GetValue();
     }
 
-    public class NodeIntProperty : NodeProperty
+    public sealed class NodeIntProperty : NodeProperty
     {
         public int Value { get; set; }
 
@@ -34,7 +34,7 @@ namespace AtlusGfdLib
         }
     }
 
-    public class NodeFloatProperty : NodeProperty
+    public sealed class NodeFloatProperty : NodeProperty
     {
         public float Value { get; set; }
 
@@ -48,7 +48,7 @@ namespace AtlusGfdLib
         }
     }
 
-    public class NodeBoolProperty : NodeProperty
+    public sealed class NodeBoolProperty : NodeProperty
     {
         public bool Value { get; set; }
 
@@ -62,7 +62,7 @@ namespace AtlusGfdLib
         }
     }
 
-    public class NodeStringProperty : NodeProperty
+    public sealed class NodeStringProperty : NodeProperty
     {
         public string Value { get; set; }
 
@@ -76,7 +76,7 @@ namespace AtlusGfdLib
         }
     }
 
-    public class NodeByteVector3Property : NodeProperty
+    public sealed class NodeByteVector3Property : NodeProperty
     {
         public ByteVector3 Value { get; set; }
 
@@ -90,7 +90,7 @@ namespace AtlusGfdLib
         }
     }
 
-    public class NodeByteVector4Property : NodeProperty
+    public sealed class NodeByteVector4Property : NodeProperty
     {
         public ByteVector4 Value { get; set; }
 
@@ -104,7 +104,7 @@ namespace AtlusGfdLib
         }
     }
 
-    public class NodeVector3Property : NodeProperty
+    public sealed class NodeVector3Property : NodeProperty
     {
         public Vector3 Value { get; set; }
 
@@ -118,7 +118,7 @@ namespace AtlusGfdLib
         }
     }
 
-    public class NodeVector4Property : NodeProperty
+    public sealed class NodeVector4Property : NodeProperty
     {
         public Vector4 Value { get; set; }
 
@@ -132,13 +132,13 @@ namespace AtlusGfdLib
         }
     }
 
-    public class NodeArrayProperty : NodeProperty
+    public sealed class NodeByteArrayProperty : NodeProperty
     {
         public byte[] Value { get; set; }
 
-        public NodeArrayProperty( string name ) : base( PropertyValueType.Array, name ) { }
+        public NodeByteArrayProperty( string name ) : base( PropertyValueType.ByteArray, name ) { }
 
-        public NodeArrayProperty( string name, byte[] value ) : base( PropertyValueType.Array, name ) => Value = value;
+        public NodeByteArrayProperty( string name, byte[] value ) : base( PropertyValueType.ByteArray, name ) => Value = value;
 
         public override object GetValue()
         {
@@ -157,6 +157,6 @@ namespace AtlusGfdLib
         ByteVector4  = 6,
         Vector3      = 7,
         Vector4      = 8,
-        Array        = 9,
+        ByteArray        = 9,
     }
 }

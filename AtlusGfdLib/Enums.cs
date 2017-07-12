@@ -14,15 +14,4 @@ namespace AtlusGfdLib
         Camera = 3,
         Morph = 4
     }
-
-    public enum ResourceType
-    {
-        Invalid = 0,
-        Model,
-        AnimationList,
-        TextureDictionary,
-        MaterialDictionary,
-        Scene,
-        ShaderCache,
-    }
 }

@@ -5,12 +5,12 @@ namespace AtlusGfdLib
 {
     public sealed class AnimationPackage : Resource, IList<Animation>
     {
-        private List<Animation> m_Animations;
+        private List<Animation> mAnimations;
 
         internal AnimationPackage(uint version)
             : base(ResourceType.AnimationList, version)
         {
-            m_Animations = new List<Animation>();
+            mAnimations = new List<Animation>();
         }
 
         #region IList implementation
@@ -19,12 +19,12 @@ namespace AtlusGfdLib
         {
             get
             {
-                return m_Animations[index];
+                return mAnimations[index];
             }
 
             set
             {
-                m_Animations[index] = value;
+                mAnimations[index] = value;
             }
         }
 
@@ -32,7 +32,7 @@ namespace AtlusGfdLib
         {
             get
             {
-                return m_Animations.Count;
+                return mAnimations.Count;
             }
         }
 
@@ -46,52 +46,52 @@ namespace AtlusGfdLib
 
         public void Add(Animation item)
         {
-            m_Animations.Add(item);
+            mAnimations.Add(item);
         }
 
         public void Clear()
         {
-            m_Animations.Clear();
+            mAnimations.Clear();
         }
 
         public bool Contains(Animation item)
         {
-            return m_Animations.Contains(item);
+            return mAnimations.Contains(item);
         }
 
         public void CopyTo(Animation[] array, int arrayIndex)
         {
-            m_Animations.CopyTo(array, arrayIndex);
+            mAnimations.CopyTo(array, arrayIndex);
         }
 
         public IEnumerator<Animation> GetEnumerator()
         {
-            return m_Animations.GetEnumerator();
+            return mAnimations.GetEnumerator();
         }
 
         public int IndexOf(Animation item)
         {
-            return m_Animations.IndexOf(item);
+            return mAnimations.IndexOf(item);
         }
 
         public void Insert(int index, Animation item)
         {
-            m_Animations.Insert(index, item);
+            mAnimations.Insert(index, item);
         }
 
         public bool Remove(Animation item)
         {
-            return m_Animations.Remove(item);
+            return mAnimations.Remove(item);
         }
 
         public void RemoveAt(int index)
         {
-            m_Animations.RemoveAt(index);
+            mAnimations.RemoveAt(index);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return m_Animations.GetEnumerator();
+            return mAnimations.GetEnumerator();
         }
 
         #endregion

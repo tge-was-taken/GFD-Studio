@@ -20,7 +20,7 @@ namespace AtlusGfdLib
 
         public byte[] Data { get; }
 
-        internal Shader(ushort type, ushort field06, uint field08, uint field0C, uint field10, float field14, float field18, byte[] data)
+        public Shader(ushort type, ushort field06, uint field08, uint field0C, uint field10, float field14, float field18, byte[] data)
         {
             Type = type;
             Field06 = field06;
@@ -30,6 +30,10 @@ namespace AtlusGfdLib
             Field14 = field14;
             Field18 = field18;
             Data = data;
+        }
+
+        internal Shader()
+        {
         }
     }
 }

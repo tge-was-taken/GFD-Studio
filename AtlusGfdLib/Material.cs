@@ -75,27 +75,163 @@ namespace AtlusGfdLib
         // 0x98
         public int Field98 { get; set; }
 
-        public TextureMap DiffuseMap { get; set; }
+        private TextureMap mDiffuseMap;
+        public TextureMap DiffuseMap
+        {
+            get => mDiffuseMap;
+            set
+            {
+                if ( value != null )
+                    Flags |= MaterialFlags.HasDiffuseMap;
+                else
+                    Flags &= ~MaterialFlags.HasDiffuseMap;
 
-        public TextureMap NormalMap { get; set; }
+                mDiffuseMap = value;
+            }
+        }
 
-        public TextureMap SpecularMap { get; set; }
+        private TextureMap mNormalMap;
+        public TextureMap NormalMap
+        {
+            get => mNormalMap;
+            set
+            {
+                if ( value != null )
+                    Flags |= MaterialFlags.HasNormalMap;
+                else
+                    Flags &= ~MaterialFlags.HasNormalMap;
 
-        public TextureMap ReflectionMap { get; set; }
+                mNormalMap = value;
+            }
+        }
 
-        public TextureMap HighlightMap { get; set; }
+        private TextureMap mSpecularMap;
+        public TextureMap SpecularMap
+        {
+            get => mSpecularMap;
+            set
+            {
+                if ( value != null )
+                    Flags |= MaterialFlags.HasSpecularMap;
+                else
+                    Flags &= ~MaterialFlags.HasSpecularMap;
 
-        public TextureMap GlowMap { get; set; }
+                mSpecularMap = value;
+            }
+        }
 
-        public TextureMap NightMap { get; set; }
+        private TextureMap mReflectionMap;
+        public TextureMap ReflectionMap
+        {
+            get => mReflectionMap;
+            set
+            {
+                if ( value != null )
+                    Flags |= MaterialFlags.HasReflectionMap;
+                else
+                    Flags &= ~MaterialFlags.HasReflectionMap;
 
-        public TextureMap DetailMap { get; set; }
+                mReflectionMap = value;
+            }
+        }
 
-        public TextureMap ShadowMap { get; set; }
+        private TextureMap mHightlightMap;
+        public TextureMap HighlightMap
+        {
+            get => mHightlightMap;
+            set
+            {
+                if ( value != null )
+                    Flags |= MaterialFlags.HasHighlightMap;
+                else
+                    Flags &= ~MaterialFlags.HasHighlightMap;
 
-        public List<MaterialProperty> Properties { get; set; }
+                mHightlightMap = value;
+            }
+        }
 
-        public Material()
+        private TextureMap mGlowMap;
+        public TextureMap GlowMap
+        {
+            get => mGlowMap;
+            set
+            {
+                if ( value != null )
+                    Flags |= MaterialFlags.HasGlowMap;
+                else
+                    Flags &= ~MaterialFlags.HasGlowMap;
+
+                mGlowMap = value;
+            }
+        }
+
+        private TextureMap mNightMap;
+        public TextureMap NightMap
+        {
+            get => mNightMap;
+            set
+            {
+                if ( value != null )
+                    Flags |= MaterialFlags.HasNightMap;
+                else
+                    Flags &= ~MaterialFlags.HasNightMap;
+
+                mNightMap = value;
+            }
+        }
+
+        private TextureMap mDetailMap;
+        public TextureMap DetailMap
+        {
+            get => mDetailMap;
+            set
+            {
+                if ( value != null )
+                    Flags |= MaterialFlags.HasDetailMap;
+                else
+                    Flags &= ~MaterialFlags.HasDetailMap;
+
+                mDetailMap = value;
+            }
+        }
+
+        private TextureMap mShadowMap;
+        public TextureMap ShadowMap
+        {
+            get => mShadowMap;
+            set
+            {
+                if ( value != null )
+                    Flags |= MaterialFlags.HasShadowMap;
+                else
+                    Flags &= ~MaterialFlags.HasShadowMap;
+
+                mShadowMap = value;
+            }
+        }
+
+        private List<MaterialProperty> mProperties;
+        public List<MaterialProperty> Properties
+        {
+            get => mProperties;
+            set
+            {
+                if ( value != null )
+                    Flags |= MaterialFlags.HasProperties;
+                else
+                    Flags &= ~MaterialFlags.HasProperties;
+
+                mProperties = value;
+            }
+        }
+
+        public Material( string name )
+            : this()
+        {
+            Name = name;
+        }
+
+        internal Material()
         {
             Field40 = 1.0f;
             Field44 = 0;
@@ -106,12 +242,11 @@ namespace AtlusGfdLib
             Field4A = 0;
             Field4C = 0;
             Field5C = 0;
-            Flags = (MaterialFlags)3; 
+            Flags = MaterialFlags.Flag1 | MaterialFlags.Flag2;
             Field92 = 4;
             Field70 = -1;
             Field98 = -1;
             Field6C = -1;
-            Properties = new List<MaterialProperty>();
         }
 
         public override string ToString()

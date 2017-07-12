@@ -7,7 +7,7 @@ namespace AtlusGfdLib
     {
         public SceneFlags Flags { get; set; }
 
-        public InverseBindPoseMatrixMap InverseBindPoseMatrixMap { get; set; }
+        public MatrixMap MatrixMap { get; set; }
 
         public BoundingBox? BoundingBox { get; set; }
 
