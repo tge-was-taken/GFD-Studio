@@ -121,9 +121,28 @@ namespace AtlusGfdLib
     }
 
     [Flags]
-    public enum MaterialFlags
+    public enum MaterialFlags : uint
     {
+        Flag1            = 1 << 00,
+        Flag2            = 1 << 01,
+        Flag4            = 1 << 02,
+        Flag8            = 1 << 03,
+        Flag10           = 1 << 04,
+        Flag20           = 1 << 05,
+        Flag40           = 1 << 06,
+        Flag80           = 1 << 07,
+        Flag100          = 1 << 08,
+        Flag200          = 1 << 09,
+        Flag400          = 1 << 10,
+        Flag800          = 1 << 11,
+        Flag1000         = 1 << 12,
+        Flag2000         = 1 << 13,
+        Flag4000         = 1 << 14,
+        Flag8000         = 1 << 15,
         HasProperties    = 1 << 16,
+        Flag20000        = 1 << 17,
+        Flag40000        = 1 << 18,
+        Flag80000        = 1 << 19,
         HasDiffuseMap    = 1 << 20,
         HasNormalMap     = 1 << 21,
         HasSpecularMap   = 1 << 22,
@@ -133,5 +152,8 @@ namespace AtlusGfdLib
         HasNightMap      = 1 << 26,
         HasDetailMap     = 1 << 27,
         HasShadowMap     = 1 << 28,
+        Flag20000000     = 1 << 29,
+        Flag40000000     = 1 << 30,
+        Flag80000000     = 1u << 31
     }
 }

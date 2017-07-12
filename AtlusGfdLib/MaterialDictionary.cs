@@ -5,60 +5,45 @@ namespace AtlusGfdLib
 {
     public sealed class MaterialDictionary : Resource
     {
-        private Dictionary<int, Material> mDictionary;
+        private Dictionary<string, Material> mDictionary;
 
         public MaterialDictionary(uint version)
             : base(ResourceType.MaterialDictionary, version)
         {
-            mDictionary = new Dictionary<int, Material>();
+            mDictionary = new Dictionary<string, Material>();
         }
 
-        public Material this[int key]
+        public Material this[string name]
         {
             get
             {
-                return mDictionary[key];
-            }
-
-            set
-            {
-                mDictionary[key] = value;
-            }
-        }
-
-        public Material this[string key]
-        {
-            get
-            {
-                return mDictionary[StringHasher.GenerateStringHash( key )];
+                return mDictionary[name];
             }
             set
             {
-                mDictionary[StringHasher.GenerateStringHash( key )] = value;
+                mDictionary[name] = value;
             }
         }
 
         public ICollection<Material> Materials => mDictionary.Values;
 
-        public void Add( Material material ) => mDictionary[StringHasher.GenerateStringHash( material.Name )] = material;
+        public void Add( Material material ) => mDictionary[material.Name] = material;
 
         public int Count => mDictionary.Count;
 
-        public bool IsReadOnly => false;
-
         public void Clear() => mDictionary.Clear();
 
-        public bool ContainsKey( int key ) => mDictionary.ContainsKey( key );
+        public bool ContainsMaterial( string name ) => mDictionary.ContainsKey( name );
 
         public bool ContainsMaterial( Material material ) => mDictionary.ContainsValue( material );
 
-        public bool Remove( int key ) => mDictionary.Remove( key );
+        public bool Remove( string name ) => mDictionary.Remove( name );
 
-        public bool Remove( Material material ) => mDictionary.Remove( StringHasher.GenerateStringHash( material.Name ) );
+        public bool Remove( Material material ) => mDictionary.Remove( material.Name );
 
-        public bool TryGetValue( int key, out Material value)
+        public bool TryGetMaterial( string name, out Material material)
         {
-            return mDictionary.TryGetValue(key, out value);
+            return mDictionary.TryGetValue( name, out material);
         }
     }
 }

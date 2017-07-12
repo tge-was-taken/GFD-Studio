@@ -15,7 +15,7 @@ namespace AtlusGfdLib.Tests
         [TestMethod()]
         public void LoadFromFileTest()
         {
-            Resource.Load( @"D:\Modding\Persona 5 EU\Main game\Extracted\data\model\character\0001\c0001_001_00.GMD" );
+            var res = Resource.Load( @"D:\Modding\Persona 4 Dancing CPK RIP\data\dance\player\pc001_01.GMD" );
         }
 
         [TestMethod()]

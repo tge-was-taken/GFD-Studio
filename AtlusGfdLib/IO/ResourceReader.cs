@@ -19,6 +19,108 @@ namespace AtlusGfdLib
             mReader = new EndianBinaryReader( stream, endianness );
         }
 
+        public static Resource ReadFromStream( Stream stream, Endianness endianness )
+        {
+            using ( var reader = new ResourceReader( stream, endianness ) )
+                return reader.ReadResourceFile();
+        }
+
+        public static TResource ReadFromStream<TResource>( Stream stream, Endianness endianness )
+            where TResource : Resource
+        {
+            return ( TResource )ReadFromStream( stream, endianness );
+        }
+
+        // IDispose implementation
+        public void Dispose()
+        {
+            ( ( IDisposable )mReader ).Dispose();
+        }
+
+        // Resource read methods
+        private Resource ReadResourceFile()
+        {
+            if ( !ReadFileHeader( out FileHeader header ) || header.Magic != FileHeader.CMAGIC_FS )
+                return null;
+
+            // Read resource depending on type
+            Resource resource;
+
+            switch ( header.Type )
+            {
+                case FileType.Model:
+                    resource = ReadModel( header.Version );
+                    break;
+
+                case FileType.ShaderCache:
+                    resource = ReadShaderCache( header.Version );
+                    break;
+
+                default:
+                    throw new NotSupportedException();
+            }
+
+            return resource;
+        }
+
+        // Resource read methods
+        private Model ReadModel( uint version )
+        {
+            var model = new Model( version );
+
+            while ( ReadChunkHeader( out ChunkHeader header ) && header.Type != 0 )
+            {
+                switch ( header.Type )
+                {
+                    case ChunkType.TextureDictionary:
+                        model.TextureDictionary = ReadTextureDictionary( header.Version );
+                        break;
+                    case ChunkType.MaterialDictionary:
+                        model.MaterialDictionary = ReadMaterialDictionary( header.Version );
+                        break;
+                    case ChunkType.Scene:
+                        model.Scene = ReadScene( header.Version );
+                        break;
+                    case ChunkType.AnimationPackage:
+                        model.AnimationPackage = ReadAnimationPackage( header.Version );
+                        break;
+
+                    default:
+                        Debug.WriteLine( $"{GetMethodName()}: Unknown chunk type '{header.Type}' at offset 0x{mReader.Position.ToString( "X" )}" );
+                        mReader.SeekCurrent( header.Size - 12 );
+                        continue;
+                }
+            }
+
+            return model;
+        }
+
+        // Shader read methods
+        private ShaderCache ReadShaderCache( uint version )
+        {
+            if ( !ReadFileHeader( out FileHeader header ) || header.Magic != FileHeader.CMAGIC_SHADERCACHE )
+                return null;
+
+            // Read shaders into the shader cache
+            ShaderCache cache = new ShaderCache( header.Version );
+            while ( mReader.Position != mReader.BaseStreamLength )
+            {
+                ushort type = mReader.ReadUInt16();
+                uint size = mReader.ReadUInt32();
+                ushort field06 = mReader.ReadUInt16();
+                uint field08 = mReader.ReadUInt32();
+                uint field0C = mReader.ReadUInt32();
+                uint field10 = mReader.ReadUInt32();
+                float field14 = mReader.ReadSingle();
+                float field18 = mReader.ReadSingle();
+                byte[] data = mReader.ReadBytes( ( int )size );
+
+                cache.Add( new Shader( type, field06, field08, field0C, field10, field14, field18, data ) );
+            }
+
+            return cache;
+        }
+
         // Debug methods
         private string GetMethodName([CallerMemberName]string name = null)
         {
@@ -29,6 +131,11 @@ namespace AtlusGfdLib
         private byte ReadByte()
         {
             return mReader.ReadByte();
+        }
+
+        private byte[] ReadBytes( int count )
+        {
+            return mReader.ReadBytes( count );
         }
 
         private short ReadShort()
@@ -150,11 +257,6 @@ namespace AtlusGfdLib
             return value;
         }
 
-        private byte[] ReadBytes(int count)
-        {
-            return mReader.ReadBytes(count);
-        }
-
         private string ReadString()
         {
             ushort length = mReader.ReadUInt16();
@@ -200,7 +302,7 @@ namespace AtlusGfdLib
                 Unknown = mReader.ReadInt32(),
             };
 
-            Debug.WriteLine( $"{GetMethodName()}: {header.Magic} ver: {header.Version} type: {header.Type} unk: {header.Unknown}" );
+            Debug.WriteLine( $"{GetMethodName()}: {header.Magic} ver: {header.Version:X4} type: {header.Type} unk: {header.Unknown}" );
 
             return true;
         }
@@ -222,41 +324,9 @@ namespace AtlusGfdLib
                 Unknown = mReader.ReadInt32()
             };
 
-            Debug.WriteLine( $"{GetMethodName()}: {header.Type} ver: {header.Version} size: {header.Size}" );
+            Debug.WriteLine( $"{GetMethodName()}: {header.Type} ver: {header.Version:X4} size: {header.Size}" );
 
             return true;
-        }
-
-        // Resource read methods
-        private Model ReadModel( uint version )
-        {
-            var model = new Model( version );
-
-            while (ReadChunkHeader(out ChunkHeader header) && header.Type != 0)
-            {
-                switch ( header.Type )
-                {
-                    case ChunkType.TextureDictionary:
-                        model.TextureDictionary = ReadTextureDictionary( header.Version );
-                        break;
-                    case ChunkType.MaterialDictionary:
-                        model.MaterialDictionary = ReadMaterialDictionary( header.Version );
-                        break;
-                    case ChunkType.Scene:
-                        model.Scene = ReadScene( header.Version );
-                        break;
-                    case ChunkType.AnimationPackage:
-                        model.AnimationPackage = ReadAnimationPackage( header.Version );
-                        break;
-
-                    default:
-                        Debug.WriteLine($"{GetMethodName()}: Unknown chunk type '{header.Type}' at offset 0x{mReader.Position.ToString("X")}");
-                        mReader.SeekCurrent( header.Size - 12);
-                        continue;
-                }
-            }
-
-            return model;
         }
 
         // Texture read methods
@@ -862,83 +932,159 @@ namespace AtlusGfdLib
 
         private Geometry ReadGeometry( uint version )
         {
-            throw new NotImplementedException();
+            var geometry = new Geometry();
+
+            geometry.Flags = ( GeometryFlags )ReadInt();
+            geometry.VertexAttributeFlags = ( VertexAttributeFlags )ReadInt();
+
+            Debug.WriteLine( geometry.VertexAttributeFlags );
+            int triangleCount = 0;
+
+            if ( geometry.Flags.HasFlag( GeometryFlags.HasTriangles ) ) 
+            {
+                triangleCount = ReadInt();
+                geometry.TriangleIndexType = ( TriangleIndexType )ReadShort();
+                geometry.Triangles = new Triangle[triangleCount];
+            }
+
+            int vertexCount = ReadInt();
+
+            if ( version > 0x1103020 )
+            {
+                geometry.Field14 = ReadInt();
+            }
+
+            if ( geometry.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Position ) )
+                geometry.Vertices = new Vector3[vertexCount];
+
+            if ( geometry.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Normal ))
+                geometry.Normals = new Vector3[vertexCount];
+
+            if ( geometry.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Tangent ))
+                geometry.Tangents = new Vector3[vertexCount];
+
+            if ( geometry.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Binormal ))
+                geometry.Binormals = new Vector3[vertexCount];
+
+            if ( geometry.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color0 ))
+                geometry.ColorChannel0 = new uint[vertexCount];
+
+            if ( geometry.VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord0 ))
+                geometry.TexCoordsChannel0 = new Vector2[vertexCount];
+
+            if ( geometry.VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord1 ) )
+                geometry.TexCoordsChannel1 = new Vector2[vertexCount];
+
+            if ( geometry.VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord2 ) )
+                geometry.TexCoordsChannel2 = new Vector2[vertexCount];
+
+            if ( geometry.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color1 ) )
+                geometry.ColorChannel1 = new uint[vertexCount];
+
+            if ( geometry.Flags.HasFlag( GeometryFlags.HasVertexWeights ) )
+                geometry.VertexWeights = new VertexWeight[vertexCount];
+
+            for ( int i = 0; i < vertexCount; i++ )
+            {
+                if ( geometry.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Position ) )
+                    geometry.Vertices[i] = ReadVector3();
+
+                if ( geometry.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Normal ) )
+                    geometry.Normals[i] = ReadVector3();
+
+                if ( geometry.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Tangent ) )
+                    geometry.Tangents[i] = ReadVector3();
+
+                if ( geometry.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Binormal ) )
+                    geometry.Binormals[i] = ReadVector3();
+
+                if ( geometry.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color0 ))
+                    geometry.ColorChannel0[i] = ReadUInt();
+
+                if ( geometry.VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord0 ))
+                    geometry.TexCoordsChannel0[i] = ReadVector2();
+
+                if ( geometry.VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord1 ) )
+                    geometry.TexCoordsChannel1[i] = ReadVector2();
+
+                if ( geometry.VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord2 ) )
+                    geometry.TexCoordsChannel2[i] = ReadVector2();
+
+                if ( geometry.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color1 ) )
+                    geometry.ColorChannel1[i] = ReadUInt();
+
+                if ( geometry.Flags.HasFlag( GeometryFlags.HasVertexWeights ) )
+                {
+                    geometry.VertexWeights[i].Weights = new float[4];
+
+                    for ( int j = 0; j < 4; j++ )
+                    {
+                        geometry.VertexWeights[i].Weights[j] = ReadFloat();
+                    }
+
+                    geometry.VertexWeights[i].Indices = new byte[4];
+
+                    for ( int j = 0; j < 4; j++ )
+                    {
+                        geometry.VertexWeights[i].Indices[j] = ReadByte();
+                    }
+                }
+            }
+
+            if ( geometry.Flags.HasFlag( GeometryFlags.HasTriangles ) )
+            {
+                for ( int i = 0; i < geometry.Triangles.Length; i++ )
+                {
+                    geometry.Triangles[i].Indices = new uint[3];
+
+                    for ( int j = 0; j < geometry.Triangles[i].Indices.Length; j++ )
+                    {
+                        uint index;
+                        switch ( geometry.TriangleIndexType )
+                        {
+                            case TriangleIndexType.UInt16:
+                                index = ReadUShort();
+                                break;
+                            case TriangleIndexType.UInt32:
+                                index = ReadUInt();
+                                break;
+                            default:
+                                throw new Exception( $"Unsupported triangle index type: {geometry.TriangleIndexType}" );
+                        }
+
+                        geometry.Triangles[i].Indices[j] = index;
+                    }
+                }
+            }
+
+            if ( geometry.Flags.HasFlag( GeometryFlags.HasMaterial ) ) 
+            {
+                geometry.MaterialName = ReadStringWithHash( version );
+            }
+
+            if ( geometry.Flags.HasFlag( GeometryFlags.HasBoundingBox ) ) 
+            {
+                geometry.BoundingBox = ReadBoundingBox();
+            }
+
+            if ( geometry.Flags.HasFlag( GeometryFlags.HasBoundingSphere ) )
+            {
+                geometry.BoundingSphere = ReadBoundingSphere();
+            }
+
+            if ( geometry.Flags.HasFlag( GeometryFlags.Flag1000 ))
+            {
+                geometry.FieldD4 = ReadFloat();
+                geometry.FieldD8 = ReadFloat();
+            }
+
+            return geometry;
         }
 
         // Animation read methods
         private AnimationPackage ReadAnimationPackage( uint version )
         {
             throw new NotImplementedException();
-        }
-
-        // Shader read methods
-        private ShaderCache ReadShaderCache( uint version )
-        {
-            if ( !ReadFileHeader( out FileHeader header ) || header.Magic != FileHeader.CMAGIC_SHADERCACHE )
-                return null;
-
-            // Read shaders into the shader cache
-            ShaderCache cache = new ShaderCache( header.Version );
-            while (mReader.Position != mReader.BaseStreamLength)
-            {
-                ushort type = mReader.ReadUInt16();
-                uint size = mReader.ReadUInt32();
-                ushort field06 = mReader.ReadUInt16();
-                uint field08 = mReader.ReadUInt32();
-                uint field0C = mReader.ReadUInt32();
-                uint field10 = mReader.ReadUInt32();
-                float field14 = mReader.ReadSingle();
-                float field18 = mReader.ReadSingle();
-                byte[] data = mReader.ReadBytes((int)size);
-
-                cache.Add(new Shader(type, field06, field08, field0C, field10, field14, field18, data));
-            }
-
-            return cache;
-        }
-
-        // Resource read methods
-        private Resource ReadResourceFile()
-        {
-            if ( !ReadFileHeader( out FileHeader header ) || header.Magic != FileHeader.CMAGIC_FS )
-                return null;
-
-            // Read resource depending on type
-            Resource resource;
-
-            switch ( header.Type )
-            {
-                case FileType.Model:
-                    resource = ReadModel( header.Version );
-                    break;
-
-                case FileType.ShaderCache:
-                    resource = ReadShaderCache( header.Version );
-                    break;
-
-                default:
-                    throw new NotSupportedException();
-            }
-
-            return resource;
-        }
-
-        public static Resource ReadFromStream(Stream stream, Endianness endianness )
-        {
-            using ( var reader = new ResourceReader( stream, endianness ) )
-                return reader.ReadResourceFile();
-        }
-
-        public static TResource ReadFromStream<TResource>( Stream stream, Endianness endianness )
-            where TResource : Resource
-        {
-            return ( TResource )ReadFromStream( stream, endianness );
-        }
-
-        // IDispose implementation
-        public void Dispose()
-        {
-            ( ( IDisposable )mReader ).Dispose();
         }
     }
 }
