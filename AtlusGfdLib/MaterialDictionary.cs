@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace AtlusGfdLib
 {
@@ -25,7 +26,7 @@ namespace AtlusGfdLib
             }
         }
 
-        public ICollection<Material> Materials => mDictionary.Values;
+        public IList<Material> Materials => mDictionary.Values.ToList();
 
         public void Add( Material material ) => mDictionary[material.Name] = material;
 

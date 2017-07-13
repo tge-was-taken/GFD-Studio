@@ -2,7 +2,7 @@
 
 namespace AtlusGfdLib.IO
 {
-    public static unsafe class Unsafe
+    internal static unsafe class Unsafe
     {
         public static TDest ReinterpretCast<TSource, TDest>(TSource source)
         {

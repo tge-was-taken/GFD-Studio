@@ -1,6 +1,6 @@
 ﻿namespace AtlusGfdLib.IO
 {
-    public enum StringBinaryFormat
+    internal enum StringBinaryFormat
     {
         Unknown,
         NullTerminated,

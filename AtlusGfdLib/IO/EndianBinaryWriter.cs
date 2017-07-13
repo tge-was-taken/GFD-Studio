@@ -6,7 +6,7 @@ using System.Text;
 
 namespace AtlusGfdLib.IO
 {
-    public class EndianBinaryWriter : BinaryWriter
+    internal class EndianBinaryWriter : BinaryWriter
     {
         private StringBuilder   mStringBuilder;
         private Endianness      mEndianness;

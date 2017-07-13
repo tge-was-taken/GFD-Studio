@@ -4,6 +4,8 @@ namespace AtlusGfdLib
 {
     public sealed class MatrixMap
     {
+        public int MatrixCount => Matrices.Length;
+
         public Matrix4x4[] Matrices { get; set; }
 
         public ushort[] RemapIndices { get; set; }

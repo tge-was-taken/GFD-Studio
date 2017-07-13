@@ -9,7 +9,7 @@ namespace AtlusGfdLib
         public string Name { get; set; }
 
         // 90
-        public Vector3 Position { get; set; }
+        public Vector3 Translation { get; set; }
 
         // A0
         public Quaternion Rotation { get; set; }
@@ -20,8 +20,14 @@ namespace AtlusGfdLib
         // 
         public List<NodeAttachment> Attachments { get; set; }
 
+        public int AttachmentCount => Attachments.Count;
+
         // EC
         public Dictionary<string, NodeProperty> Properties { get; set; }
+
+        public bool HasProperties => Properties != null && PropertyCount != 0;
+
+        public int PropertyCount => Properties.Count;
 
         // E0
         public float FieldE0 { get; set; }
@@ -45,6 +51,8 @@ namespace AtlusGfdLib
         private List<Node> mChildren;
         public ReadOnlyCollection<Node> Children => mChildren.AsReadOnly();
 
+        public int ChildCount => Children.Count;
+
         internal Node()
         {
             Attachments = new List<NodeAttachment>();
@@ -55,7 +63,7 @@ namespace AtlusGfdLib
         public Node( string name )
         {
             Name = name;
-            Position = Vector3.Zero;
+            Translation = Vector3.Zero;
             Rotation = Quaternion.Identity;
             Scale = Vector3.Zero;
             Attachments = new List<NodeAttachment>();
@@ -67,7 +75,7 @@ namespace AtlusGfdLib
         public Node( string name, Vector3 position, Quaternion rotation, Vector3 scale )
         {
             Name = name;
-            Position = position;
+            Translation = position;
             Rotation = rotation;
             Scale = scale;
             Attachments = new List<NodeAttachment>();

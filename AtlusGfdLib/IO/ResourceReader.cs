@@ -4,9 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using System.Text;
 using AtlusGfdLib.IO;
-using AtlusGfdLib.Loaders;
 
 namespace AtlusGfdLib
 {
@@ -772,7 +770,7 @@ namespace AtlusGfdLib
             scene.Flags = ( SceneFlags )ReadInt();
 
             if ( scene.Flags.HasFlag( SceneFlags.HasSkinning ) ) 
-                scene.MatrixMap = ReadInverseBindPoseMatrixMap();
+                scene.MatrixMap = ReadMatrixMap();
 
             if ( scene.Flags.HasFlag( SceneFlags.HasBoundingBox ) )
                 scene.BoundingBox = ReadBoundingBox();
@@ -785,7 +783,7 @@ namespace AtlusGfdLib
             return scene;
         }
 
-        private MatrixMap ReadInverseBindPoseMatrixMap()
+        private MatrixMap ReadMatrixMap()
         {
             int matrixCount = ReadInt();
             var map = new MatrixMap( matrixCount );
@@ -817,7 +815,7 @@ namespace AtlusGfdLib
         {
             Node node = new Node();
             node.Name = ReadStringWithHash( version );
-            node.Position = ReadVector3();
+            node.Translation = ReadVector3();
             node.Rotation = ReadQuaternion();
             node.Scale = ReadVector3();
 

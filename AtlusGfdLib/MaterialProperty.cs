@@ -9,29 +9,29 @@ namespace AtlusGfdLib
         private const int FLAG_SHIFT = 16;
         private const uint TYPE_MASK = 0x0000FFFF;
 
-        private uint mPrivateFlags;
+        public uint RawFlags { get; private set; } 
 
         public MaterialPropertyFlags Flags
         {
-            get { return ( MaterialPropertyFlags )( (mPrivateFlags & FLAG_MASK) >> FLAG_SHIFT ); }
+            get { return ( MaterialPropertyFlags )( (RawFlags & FLAG_MASK) >> FLAG_SHIFT ); }
             set
             {
-                mPrivateFlags &= ~FLAG_MASK;
-                mPrivateFlags |= (uint)( ( (ushort)value << FLAG_SHIFT ) & FLAG_MASK );
+                RawFlags &= ~FLAG_MASK;
+                RawFlags |= (uint)( ( (ushort)value << FLAG_SHIFT ) & FLAG_MASK );
             }
         }
 
         public MaterialPropertyType Type
         {
-            get { return ( MaterialPropertyType )( mPrivateFlags & TYPE_MASK ); }
+            get { return ( MaterialPropertyType )( RawFlags & TYPE_MASK ); }
             set
             {
-                mPrivateFlags &= ~TYPE_MASK;
-                mPrivateFlags |= ( (ushort)value & TYPE_MASK );
+                RawFlags &= ~TYPE_MASK;
+                RawFlags |= ( (ushort)value & TYPE_MASK );
             }
         }
 
-        protected MaterialProperty( uint privateFlags ) => mPrivateFlags = privateFlags;
+        protected MaterialProperty( uint privateFlags ) => RawFlags = privateFlags;
 
         protected MaterialProperty( MaterialPropertyFlags flags, MaterialPropertyType type )
         {

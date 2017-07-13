@@ -57,6 +57,7 @@
     <Compile Include="Geometry.cs" />
     <Compile Include="InverseBindPoseMatrixMap.cs" />
     <Compile Include="IO\EndianBinaryWriter.cs" />
+    <Compile Include="IO\ResourceWriter.cs" />
     <Compile Include="IO\StringBinaryFormat.cs" />
     <Compile Include="IO\Unsafe.cs" />
     <Compile Include="IO\FileHeader.cs" />

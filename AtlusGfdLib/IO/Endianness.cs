@@ -9,7 +9,7 @@ namespace AtlusGfdLib.IO
         BigEndian
     }
 
-    public static class EndiannessHelper
+    internal static class EndiannessHelper
     {
         public static Endianness SystemEndianness
         {
