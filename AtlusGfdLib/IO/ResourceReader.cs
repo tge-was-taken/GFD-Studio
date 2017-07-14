@@ -126,40 +126,21 @@ namespace AtlusGfdLib
         }
 
         // Primitive read methods
-        private byte ReadByte()
-        {
-            return mReader.ReadByte();
-        }
+        private byte ReadByte() => mReader.ReadByte();
 
-        private byte[] ReadBytes( int count )
-        {
-            return mReader.ReadBytes( count );
-        }
+        private bool ReadBool() => ReadByte() == 1;
 
-        private short ReadShort()
-        {
-            return mReader.ReadInt16();
-        }
+        private byte[] ReadBytes( int count ) => mReader.ReadBytes( count );
 
-        private ushort ReadUShort()
-        {
-            return mReader.ReadUInt16();
-        }
+        private short ReadShort() => mReader.ReadInt16();
 
-        private int ReadInt()
-        {
-            return mReader.ReadInt32();
-        }
+        private ushort ReadUShort() => mReader.ReadUInt16();
 
-        private uint ReadUInt()
-        {
-            return mReader.ReadUInt32();
-        }
+        private int ReadInt() => mReader.ReadInt32();
 
-        private float ReadFloat()
-        {
-            return mReader.ReadSingle();
-        }
+        private uint ReadUInt() => mReader.ReadUInt32();
+
+        private float ReadFloat() => mReader.ReadSingle();
 
         private Vector2 ReadVector2()
         {
@@ -593,7 +574,7 @@ namespace AtlusGfdLib
                 property.Field24 = ReadFloat();
                 property.Field28 = ReadFloat();
                 property.Field2C = ReadFloat();
-                property.Field30 = ReadInt();
+                property.Type0Flags = ( MaterialPropertyType0Flags )ReadInt();
             }
             else if ( version > 0x1104220 )
             {
@@ -604,19 +585,19 @@ namespace AtlusGfdLib
                 property.Field28 = ReadFloat();
                 property.Field2C = ReadFloat();
 
-                if ( ReadByte() != 0 )
-                    property.Field30 |= 1;
+                if ( ReadBool() )
+                    property.Type0Flags |= MaterialPropertyType0Flags.Flag1;
 
-                if ( ReadByte() != 0 )
-                    property.Field30 |= 2;
+                if ( ReadBool() )
+                    property.Type0Flags |= MaterialPropertyType0Flags.Flag2;
 
-                if ( ReadByte() != 0 )
-                    property.Field30 |= 4;
+                if ( ReadBool() )
+                    property.Type0Flags |= MaterialPropertyType0Flags.Flag4;
 
                 if ( version > 0x1104260 )
                 {
-                    if ( ReadByte() != 0 )
-                        property.Field30 |= 8;
+                    if ( ReadBool() )
+                        property.Type0Flags |= MaterialPropertyType0Flags.Flag8;
                 }
             }
             else
@@ -645,30 +626,30 @@ namespace AtlusGfdLib
 
             if ( version <= 0x1104500 )
             {
-                if ( ReadByte() != 0 )
-                    property.Field3C |= 1;
+                if ( ReadBool() )
+                    property.Type1Flags |= MaterialPropertyType1Flags.Flag1;
 
                 if ( version > 0x1104180 )
                 {
-                    if ( ReadByte() != 0 )
-                        property.Field3C |= 2;
+                    if ( ReadBool() )
+                        property.Type1Flags |= MaterialPropertyType1Flags.Flag2;
                 }
 
                 if ( version > 0x1104210 )
                 {
-                    if ( ReadByte() != 0 )
-                        property.Field3C |= 4;
+                    if ( ReadBool() )
+                        property.Type1Flags |= MaterialPropertyType1Flags.Flag4;
                 }
 
                 if ( version > 0x1104400 )
                 {
-                    if ( ReadByte() != 0 )
-                        property.Field3C |= 8;
+                    if ( ReadBool() )
+                        property.Type1Flags |= MaterialPropertyType1Flags.Flag8;
                 }
             }
             else
             {
-                property.Field3C = ReadInt();
+                property.Type1Flags = ( MaterialPropertyType1Flags )ReadInt();
             }
 
             return property;
@@ -834,7 +815,7 @@ namespace AtlusGfdLib
 
             if ( version > 0x1060000 )
             {
-                bool hasProperties = ReadByte() == 1;
+                var hasProperties = ReadBool();
                 if ( hasProperties )
                 {
                     node.Properties = ReadNodeProperties( version );
@@ -901,7 +882,7 @@ namespace AtlusGfdLib
                         property = new NodeFloatProperty( name, ReadFloat() );
                         break;
                     case PropertyValueType.Bool:
-                        property = new NodeBoolProperty( name, ReadByte() == 1 );
+                        property = new NodeBoolProperty( name, ReadBool() );
                         break;
                     case PropertyValueType.String:
                         property = new NodeStringProperty( name, ReadString( size ) );

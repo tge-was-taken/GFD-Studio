@@ -490,7 +490,7 @@ namespace AtlusGfdLib.IO
                 WriteFloat( property.Field24 );
                 WriteFloat( property.Field28 );
                 WriteFloat( property.Field2C );
-                WriteInt( property.Field30 );
+                WriteInt( (int)property.Type0Flags );
             }
             else if ( version > 0x1104220 )
             {
@@ -501,27 +501,13 @@ namespace AtlusGfdLib.IO
                 WriteFloat( property.Field28 );
                 WriteFloat( property.Field2C );
 
-                if ( ( property.Field30 & 1 ) == 1 )
-                    WriteByte( 1 );
-                else
-                    WriteByte( 0 );
-
-                if ( ( property.Field30 & 2 ) == 2 )
-                    WriteByte( 1 );
-                else
-                    WriteByte( 0 );
-
-                if ( ( property.Field30 & 4 ) == 4 )
-                    WriteByte( 1 );
-                else
-                    WriteByte( 0 );
+                WriteBool( property.Type0Flags.HasFlag( MaterialPropertyType0Flags.Flag1 ) );
+                WriteBool( property.Type0Flags.HasFlag( MaterialPropertyType0Flags.Flag2 ) );
+                WriteBool( property.Type0Flags.HasFlag( MaterialPropertyType0Flags.Flag4 ) );
 
                 if ( version > 0x1104260 )
                 {
-                    if ( ( property.Field30 & 8 ) == 8 )
-                        WriteByte( 1 );
-                    else
-                        WriteByte( 0 );
+                    WriteBool( property.Type0Flags.HasFlag( MaterialPropertyType0Flags.Flag8 ) );
                 }
             }
             else
@@ -545,38 +531,26 @@ namespace AtlusGfdLib.IO
 
             if ( version <= 0x1104500 )
             {
-                if ( ( property.Field3C & 1 ) == 1 )
-                    WriteByte( 1 );
-                else
-                    WriteByte( 0 );
+                WriteBool( property.Type1Flags.HasFlag( MaterialPropertyType1Flags.Flag1 ) );
 
                 if ( version > 0x1104180 )
                 {
-                    if ( ( property.Field3C & 2 ) == 2 )
-                        WriteByte( 1 );
-                    else
-                        WriteByte( 0 );
+                    WriteBool( property.Type1Flags.HasFlag( MaterialPropertyType1Flags.Flag2 ) );
                 }
 
                 if ( version > 0x1104210 )
                 {
-                    if ( ( property.Field3C & 4 ) == 4 )
-                        WriteByte( 1 );
-                    else
-                        WriteByte( 0 );
+                    WriteBool( property.Type1Flags.HasFlag( MaterialPropertyType1Flags.Flag4 ) );
                 }
 
                 if ( version > 0x1104400 )
                 {
-                    if ( ( property.Field3C & 8 ) == 8 )
-                        WriteByte( 1 );
-                    else
-                        WriteByte( 0 );
+                    WriteBool( property.Type1Flags.HasFlag( MaterialPropertyType1Flags.Flag8 ) );
                 }
             }
             else
             {
-                WriteInt( property.Field3C );
+                WriteInt( (int)property.Type1Flags );
             }
         }
 

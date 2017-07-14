@@ -78,7 +78,7 @@ namespace AtlusGfdLib
         public float Field2C { get; set; }
 
         // 30
-        public int Field30 { get; set; }
+        public MaterialPropertyType0Flags Type0Flags { get; set; }
 
         public MaterialPropertyType0() : base( MaterialPropertyFlags.Flag1, MaterialPropertyType.Type0 ) { }
 
@@ -87,6 +87,14 @@ namespace AtlusGfdLib
         public MaterialPropertyType0( MaterialPropertyFlags flags ) : base( flags, MaterialPropertyType.Type0 )
         {
         }
+    }
+
+    public enum MaterialPropertyType0Flags
+    {
+        Flag1 = 0b0001,
+        Flag2 = 0b0010,
+        Flag4 = 0b0100,
+        Flag8 = 0b1000,
     }
 
     public sealed class MaterialPropertyType1 : MaterialProperty
@@ -110,7 +118,7 @@ namespace AtlusGfdLib
         public float Field38 { get; set; }
 
         // 3C
-        public int Field3C { get; set; }
+        public MaterialPropertyType1Flags Type1Flags { get; set; }
 
         public MaterialPropertyType1() : base( MaterialPropertyFlags.Flag1, MaterialPropertyType.Type1 ) { }
 
@@ -119,6 +127,14 @@ namespace AtlusGfdLib
         public MaterialPropertyType1( MaterialPropertyFlags flags ) : base( flags, MaterialPropertyType.Type1 )
         {
         }
+    }
+
+    public enum MaterialPropertyType1Flags
+    {
+        Flag1 = 0b0001,
+        Flag2 = 0b0010,
+        Flag4 = 0b0100,
+        Flag8 = 0b1000,
     }
 
     public sealed class MaterialPropertyType2 : MaterialProperty
