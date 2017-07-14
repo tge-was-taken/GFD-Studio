@@ -8,14 +8,12 @@ namespace AtlusGfdLib.IO
     internal class ResourceWriter : IDisposable
     {
         private Stack<EndianBinaryWriter> mWriterStack;
+        private EndianBinaryWriter mCurWriter;
         private Endianness mEndianness;
 
         public ResourceWriter( Stream stream, Endianness endianness )
         {
-            mWriterStack = new Stack<EndianBinaryWriter>();
-            mWriterStack.Push( new EndianBinaryWriter( stream, endianness ) );
-
-            mEndianness = endianness;
+            InitWriterStack( stream, endianness );
         }
 
         public static void WriteToStream( Resource resource, Stream stream, Endianness endianness )
@@ -32,23 +30,23 @@ namespace AtlusGfdLib.IO
             }
         }
 
-        private EndianBinaryWriter GetWriter() => mWriterStack.Peek();
+        private void WriteByte( byte value ) => mCurWriter.Write( value );
 
-        private void WriteByte( byte value ) => GetWriter().Write( value );
+        private void WriteBool( bool value ) => mCurWriter.Write( ( byte )( value ? 1 : 0 ) );
 
-        private void WriteBytes( byte[] value ) => GetWriter().Write( value );
+        private void WriteBytes( byte[] value ) => mCurWriter.Write( value );
 
-        private void WriteShort( short value ) => GetWriter().Write( value );
+        private void WriteShort( short value ) => mCurWriter.Write( value );
 
-        private void WriteUShort( ushort value ) => GetWriter().Write( value );
+        private void WriteUShort( ushort value ) => mCurWriter.Write( value );
 
-        private void WriteInt( int value ) => GetWriter().Write( value );
+        private void WriteInt( int value ) => mCurWriter.Write( value );
 
-        private void WriteUInt( uint value ) => GetWriter().Write( value );
+        private void WriteUInt( uint value ) => mCurWriter.Write( value );
 
-        private void WriteFloat( float value ) => GetWriter().Write( value );
+        private void WriteFloat( float value ) => mCurWriter.Write( value );
 
-        private void WriteString( string value, int length ) => GetWriter().Write( value, StringBinaryFormat.FixedLength, length );
+        private void WriteString( string value, int length ) => mCurWriter.Write( value, StringBinaryFormat.FixedLength, length );
 
         private void WriteString( string value )
         {
@@ -147,10 +145,37 @@ namespace AtlusGfdLib.IO
             WriteFloat( boundingSphere.Radius );
         }
 
-        private void StartChunk( uint version, ChunkType type )
+        private void InitWriterStack( Stream stream, Endianness endianness )
+        {
+            mWriterStack = new Stack<EndianBinaryWriter>();
+            PushWriter( new EndianBinaryWriter( stream, endianness ) );
+            mEndianness = endianness;
+        }
+
+        private void PushWriter( EndianBinaryWriter writer )
+        {
+            mWriterStack.Push( writer );
+            mCurWriter = writer;
+        }
+
+        private void PushWriter()
+        {
+            var writer = new EndianBinaryWriter( new MemoryStream(), mEndianness );
+            PushWriter( writer );
+        }
+
+        private EndianBinaryWriter PopWriter()
+        {
+            var writer = mWriterStack.Pop();
+            mCurWriter = mWriterStack.Peek();
+
+            return writer;
+        }
+
+        private void StartWritingChunk( uint version, ChunkType type )
         {
             // push new writer
-            mWriterStack.Push( new EndianBinaryWriter( new MemoryStream(), mEndianness ) );
+            PushWriter();
 
             // write header
             WriteUInt( version );
@@ -159,10 +184,10 @@ namespace AtlusGfdLib.IO
             WriteUInt( 0 ); // unknown
         }
 
-        private void FinishChunk()
+        private void FinishWritingChunk()
         {
             // pop writer and dispose of it after we're done -- it won't be used anymore
-            using ( var writer = mWriterStack.Pop() )
+            using ( var writer = PopWriter() )
             {
                 // write actual chunk size         
                 writer.Position = 8;
@@ -170,7 +195,7 @@ namespace AtlusGfdLib.IO
                 writer.Position = 0;
 
                 // copy contents of the previous chunk stream to the underlying stream
-                writer.BaseStream.CopyTo( GetWriter().BaseStream );
+                writer.BaseStream.CopyTo( mCurWriter.BaseStream );
             }
         }
 
@@ -233,14 +258,19 @@ namespace AtlusGfdLib.IO
                 WriteAnimationPackage( model.AnimationPackage );
             }
 
+            bool animationOnly = model.AnimationPackage != null &
+                model.TextureDictionary == null &&
+                model.MaterialDictionary == null &&
+                model.Scene == null;
+
             // end chunk is not present in gap files
-            if ( !( model.TextureDictionary == null && model.MaterialDictionary == null && model.Scene == null && model.AnimationPackage != null ) )
+            if ( !animationOnly )
                 WriteEndChunk( model.Version );
         }
 
         private void WriteTextureDictionary( TextureDictionary textureDictionary )
         {
-            StartChunk( textureDictionary.Version, ChunkType.TextureDictionary );
+            StartWritingChunk( textureDictionary.Version, ChunkType.TextureDictionary );
 
             WriteInt( textureDictionary.Count );
             foreach ( var texture in textureDictionary.Textures )
@@ -248,7 +278,7 @@ namespace AtlusGfdLib.IO
                 WriteTexture( texture );
             }
 
-            FinishChunk();
+            FinishWritingChunk();
         }
 
         private void WriteTexture( Texture texture )
@@ -265,7 +295,7 @@ namespace AtlusGfdLib.IO
 
         private void WriteMaterialDictionary( MaterialDictionary materialDictionary )
         {
-            StartChunk( materialDictionary.Version, ChunkType.MaterialDictionary );
+            StartWritingChunk( materialDictionary.Version, ChunkType.MaterialDictionary );
 
             WriteInt( materialDictionary.Count );
             foreach ( var material in materialDictionary.Materials )
@@ -273,7 +303,7 @@ namespace AtlusGfdLib.IO
                 WriteMaterial( materialDictionary.Version, material );
             }
 
-            FinishChunk();
+            FinishWritingChunk();
         }
 
         private void WriteMaterial( uint version, Material material )
@@ -620,7 +650,7 @@ namespace AtlusGfdLib.IO
 
         private void WriteScene( Scene scene )
         {
-            StartChunk( scene.Version, ChunkType.Scene );
+            StartWritingChunk( scene.Version, ChunkType.Scene );
 
             WriteInt( (int)scene.Flags );
 
@@ -635,18 +665,18 @@ namespace AtlusGfdLib.IO
 
             WriteNodeRecursive( scene.Version, scene.RootNode );
 
-            FinishChunk();
+            FinishWritingChunk();
         }
 
-        private void WriteMatrixMap( MatrixMap matrixMap )
+        private void WriteMatrixMap( SkinnedBoneMap matrixMap )
         {
             WriteInt( matrixMap.MatrixCount );
 
-            for ( int i = 0; i < matrixMap.Matrices.Length; i++ )
-                WriteMatrix4x4( matrixMap.Matrices[i] );
+            for ( int i = 0; i < matrixMap.BoneInverseBindMatrices.Length; i++ )
+                WriteMatrix4x4( matrixMap.BoneInverseBindMatrices[i] );
 
-            for ( int i = 0; i < matrixMap.RemapIndices.Length; i++ )
-                WriteUShort( matrixMap.RemapIndices[i] );
+            for ( int i = 0; i < matrixMap.BoneToNodeIndices.Length; i++ )
+                WriteUShort( matrixMap.BoneToNodeIndices[i] );
         }
 
         private void WriteNodeRecursive( uint version, Node node )
@@ -678,7 +708,7 @@ namespace AtlusGfdLib.IO
 
             if ( version > 0x1060000 )
             {
-                WriteByte( ( byte )( node.HasProperties ? 1 : 0 ) );
+                WriteBool( node.HasProperties );
                 if ( node.HasProperties )
                 {
                     WriteNodeProperties( version, node.Properties );
@@ -750,8 +780,8 @@ namespace AtlusGfdLib.IO
                         WriteFloat( property.GetValue<float>() );
                         break;
                     case PropertyValueType.Bool:
-                        WriteInt( sizeof( byte ) );
-                        WriteByte( (byte)(property.GetValue<bool>() ? 1 : 0) );
+                        WriteInt( sizeof( bool ) );
+                        WriteBool( property.GetValue<bool>() );
                         break;
                     case PropertyValueType.String:
                         {
@@ -838,11 +868,14 @@ namespace AtlusGfdLib.IO
 
                 if ( geometry.Flags.HasFlag( GeometryFlags.HasVertexWeights ) )
                 {
+                    var vertexWeight = geometry.VertexWeights[i];
                     for ( int j = 0; j < 4; j++ )
-                        WriteFloat( geometry.VertexWeights[i].Weights[j] );
+                        WriteFloat( vertexWeight.Weights[j] );
 
-                    for ( int j = 0; j < 4; j++ )
-                        WriteByte( geometry.VertexWeights[i].Indices[j] );                     
+                    int indices = vertexWeight.Indices[0] << 00 | ( vertexWeight.Indices[1] << 08 ) |
+                                  vertexWeight.Indices[2] << 16 | ( vertexWeight.Indices[3] << 24 );
+
+                    WriteInt( indices );                
                 }
             }
 
@@ -858,7 +891,7 @@ namespace AtlusGfdLib.IO
                                 WriteUShort( (ushort)geometry.Triangles[i].Indices[j] );
                                 break;
                             case TriangleIndexType.UInt32:
-                                WriteUInt( geometry.Triangles[i].Indices[j] );
+                                WriteInt( geometry.Triangles[i].Indices[j] );
                                 break;
                             default:
                                 throw new Exception( $"Unsupported triangle index type: {geometry.TriangleIndexType}" );
@@ -893,8 +926,8 @@ namespace AtlusGfdLib.IO
         {
             throw new NotImplementedException();
 
-            StartChunk( animationPackage.Version, ChunkType.AnimationPackage );
-            FinishChunk();
+            StartWritingChunk( animationPackage.Version, ChunkType.AnimationPackage );
+            FinishWritingChunk();
         }
 
         private void WriteEndChunk( uint version )

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Numerics;
 
@@ -6,28 +7,94 @@ namespace AtlusGfdLib
 {
     public sealed class Node
     {
-        public string Name { get; set; }
+        private string mName;
+        public string Name
+        {
+            get => mName;
+            set
+            {
+                mName = value ?? throw new ArgumentNullException( nameof( value ) );
+            }
+        }
 
         // 90
-        public Vector3 Translation { get; set; }
+        private Vector3 mTranslation;
+        public Vector3 Translation
+        {
+            get => mTranslation;
+            set
+            {
+                mTranslation = value;
+                mTransformDirty = true;
+            }
+        }
 
         // A0
-        public Quaternion Rotation { get; set; }
+        private Quaternion mRotation;
+        public Quaternion Rotation
+        {
+            get => mRotation;
+            set
+            {
+                mRotation = value;
+                mTransformDirty = true;
+            }
+        }
 
         // B0
-        public Vector3 Scale { get; set; }
+        private Vector3 mScale;
+        public Vector3 Scale
+        {
+            get => mScale;
+            set
+            {
+                mScale = value;
+                mTransformDirty = true;
+            }
+        }
+
+        private bool mTransformDirty;
+        private Matrix4x4 mLocalTransform;
+        public Matrix4x4 LocalTransform
+        {
+            get
+            {
+                if (mTransformDirty)
+                {
+                    mLocalTransform = Matrix4x4.CreateFromQuaternion(Rotation) * Matrix4x4.CreateScale( Scale );
+                    mLocalTransform.Translation = Translation;
+                    mTransformDirty = false;
+                }
+
+                return mLocalTransform;
+            }
+        }
+
+        public Matrix4x4 WorldTransform
+        {
+            get
+            {
+                var transform = LocalTransform;
+                if ( Parent != null )
+                    transform *= Parent.WorldTransform;
+
+                return transform;
+            }
+        }
 
         // 
         public List<NodeAttachment> Attachments { get; set; }
 
         public int AttachmentCount => Attachments.Count;
 
+        public bool HasAttachments => Attachments != null && AttachmentCount > 0;
+
         // EC
         public Dictionary<string, NodeProperty> Properties { get; set; }
 
-        public bool HasProperties => Properties != null && PropertyCount != 0;
-
         public int PropertyCount => Properties.Count;
+
+        public bool HasProperties => Properties != null && PropertyCount > 0;
 
         // E0
         public float FieldE0 { get; set; }
@@ -48,10 +115,14 @@ namespace AtlusGfdLib
             }
         }
 
+        public bool HasParent => Parent != null;
+
         private List<Node> mChildren;
         public ReadOnlyCollection<Node> Children => mChildren.AsReadOnly();
 
         public int ChildCount => Children.Count;
+
+        public bool HasChildren => ChildCount > 0;
 
         internal Node()
         {
@@ -92,7 +163,7 @@ namespace AtlusGfdLib
                 mChildren.Add( node );
         }
 
-        public bool FindNode( string name, out Node node )
+        public bool FindNodeDepthFirst( string name, out Node node )
         {
             if ( Name == name )
             {
@@ -102,7 +173,34 @@ namespace AtlusGfdLib
 
             foreach ( var childNode in Children )
             {
-                if ( childNode.FindNode( name, out node ) )
+                if ( childNode.FindNodeDepthFirst( name, out node ) )
+                    return true;
+            }
+
+            node = null;
+            return false;
+        }
+
+        public bool FindNodeBreadthFirst( string name, out Node node )
+        {
+            if ( Name == name )
+            {
+                node = this;
+                return true;
+            }
+
+            foreach ( var childNode in Children )
+            {
+                if ( childNode.Name == name )
+                {
+                    node = childNode;
+                    return true;
+                }
+            }
+
+            foreach ( var childNode in Children )
+            {
+                if ( childNode.FindNodeBreadthFirst( name, out node ) )
                     return true;
             }
 

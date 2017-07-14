@@ -176,7 +176,7 @@
     <Content Include="Todo.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AtlusGfdLibrary\AtlusGfdFramework.csproj">
+    <ProjectReference Include="..\AtlusGfdLib\AtlusGfdLib.csproj">
       <Project>{a41ac644-a107-4788-8e4f-e10cca64f3b6}</Project>
       <Name>AtlusGfdFramework</Name>
     </ProjectReference>

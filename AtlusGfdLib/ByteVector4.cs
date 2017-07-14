@@ -28,5 +28,10 @@ namespace AtlusGfdLib
             Z = vec3.Z;
             W = w;
         }
+
+        public override string ToString()
+        {
+            return $"[{X}, {Y}, {Z}, {W}]";
+        }
     }
 }

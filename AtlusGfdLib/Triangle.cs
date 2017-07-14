@@ -6,17 +6,17 @@ namespace AtlusGfdLib
 {
     public struct Triangle
     {
-        public uint[] Indices;
+        public int[] Indices;
 
-        public Triangle( uint[] indices )
+        public Triangle( int[] indices )
         {
             CheckIndices( indices );
             Indices = indices;
         }
 
-        public Triangle( uint a, uint b, uint c )
+        public Triangle( int a, int b, int c )
         {
-            Indices = new uint[3];
+            Indices = new int[3];
             Indices[0] = a;
             Indices[1] = b;
             Indices[2] = c;
@@ -26,19 +26,19 @@ namespace AtlusGfdLib
         {
             CheckIndices( indices );
 
-            Indices = new uint[indices.Length];
+            Indices = new int[indices.Length];
             for ( int i = 0; i < Indices.Length; i++ )
             {
-                Indices[i] = ( uint )indices[i];
+                Indices[i] = ( int )indices[i];
             }
         }
 
         public Triangle( IConvertible a, IConvertible b, IConvertible c )
         {
-            Indices = new uint[3];
-            Indices[0] = ( uint )a;
-            Indices[1] = ( uint )b;
-            Indices[2] = ( uint )c;
+            Indices = new int[3];
+            Indices[0] = ( int )a;
+            Indices[1] = ( int )b;
+            Indices[2] = ( int )c;
         }
 
         private static void CheckIndices( ICollection indices )

@@ -7,10 +7,24 @@ namespace AtlusGfdLib
 {
     public sealed class Material
     {
-        public string Name { get; set; }
+        private string mName;
+        public string Name
+        {
+            get => mName;
+            set => mName = value ?? throw new ArgumentNullException( nameof( value ) );
+        }
 
         // 0x54
-        public MaterialFlags Flags { get; set; }
+        private MaterialFlags mFlags;
+        public MaterialFlags Flags
+        {
+            get => mFlags;
+            set
+            {
+                mFlags = value;
+                ValidateFlags();
+            }
+        }
 
         // 0x00
         public Vector4 Ambient { get; set; }
@@ -81,12 +95,8 @@ namespace AtlusGfdLib
             get => mDiffuseMap;
             set
             {
-                if ( value != null )
-                    Flags |= MaterialFlags.HasDiffuseMap;
-                else
-                    Flags &= ~MaterialFlags.HasDiffuseMap;
-
                 mDiffuseMap = value;
+                ValidateFlags();
             }
         }
 
@@ -96,12 +106,8 @@ namespace AtlusGfdLib
             get => mNormalMap;
             set
             {
-                if ( value != null )
-                    Flags |= MaterialFlags.HasNormalMap;
-                else
-                    Flags &= ~MaterialFlags.HasNormalMap;
-
                 mNormalMap = value;
+                ValidateFlags();
             }
         }
 
@@ -111,12 +117,8 @@ namespace AtlusGfdLib
             get => mSpecularMap;
             set
             {
-                if ( value != null )
-                    Flags |= MaterialFlags.HasSpecularMap;
-                else
-                    Flags &= ~MaterialFlags.HasSpecularMap;
-
                 mSpecularMap = value;
+                ValidateFlags();
             }
         }
 
@@ -126,12 +128,8 @@ namespace AtlusGfdLib
             get => mReflectionMap;
             set
             {
-                if ( value != null )
-                    Flags |= MaterialFlags.HasReflectionMap;
-                else
-                    Flags &= ~MaterialFlags.HasReflectionMap;
-
                 mReflectionMap = value;
+                ValidateFlags();
             }
         }
 
@@ -141,12 +139,8 @@ namespace AtlusGfdLib
             get => mHightlightMap;
             set
             {
-                if ( value != null )
-                    Flags |= MaterialFlags.HasHighlightMap;
-                else
-                    Flags &= ~MaterialFlags.HasHighlightMap;
-
                 mHightlightMap = value;
+                ValidateFlags();
             }
         }
 
@@ -156,12 +150,8 @@ namespace AtlusGfdLib
             get => mGlowMap;
             set
             {
-                if ( value != null )
-                    Flags |= MaterialFlags.HasGlowMap;
-                else
-                    Flags &= ~MaterialFlags.HasGlowMap;
-
                 mGlowMap = value;
+                ValidateFlags();
             }
         }
 
@@ -171,12 +161,8 @@ namespace AtlusGfdLib
             get => mNightMap;
             set
             {
-                if ( value != null )
-                    Flags |= MaterialFlags.HasNightMap;
-                else
-                    Flags &= ~MaterialFlags.HasNightMap;
-
                 mNightMap = value;
+                ValidateFlags();
             }
         }
 
@@ -186,12 +172,8 @@ namespace AtlusGfdLib
             get => mDetailMap;
             set
             {
-                if ( value != null )
-                    Flags |= MaterialFlags.HasDetailMap;
-                else
-                    Flags &= ~MaterialFlags.HasDetailMap;
-
                 mDetailMap = value;
+                ValidateFlags();
             }
         }
 
@@ -201,12 +183,8 @@ namespace AtlusGfdLib
             get => mShadowMap;
             set
             {
-                if ( value != null )
-                    Flags |= MaterialFlags.HasShadowMap;
-                else
-                    Flags &= ~MaterialFlags.HasShadowMap;
-
                 mShadowMap = value;
+                ValidateFlags();
             }
         }
 
@@ -216,12 +194,8 @@ namespace AtlusGfdLib
             get => mProperties;
             set
             {
-                if ( value != null )
-                    Flags |= MaterialFlags.HasProperties;
-                else
-                    Flags &= ~MaterialFlags.HasProperties;
-
                 mProperties = value;
+                ValidateFlags();
             }
         }
 
@@ -252,6 +226,40 @@ namespace AtlusGfdLib
         public override string ToString()
         {
             return Name;
+        }
+
+        private void ValidateFlags()
+        {
+            ValidateMapFlags( DiffuseMap,    MaterialFlags.HasDiffuseMap );
+            ValidateMapFlags( NormalMap,     MaterialFlags.HasNormalMap );
+            ValidateMapFlags( SpecularMap,   MaterialFlags.HasSpecularMap );
+            ValidateMapFlags( ReflectionMap, MaterialFlags.HasReflectionMap );
+            ValidateMapFlags( HighlightMap,  MaterialFlags.HasHighlightMap );
+            ValidateMapFlags( GlowMap,       MaterialFlags.HasGlowMap );
+            ValidateMapFlags( NightMap,      MaterialFlags.HasNightMap );
+            ValidateMapFlags( DetailMap,     MaterialFlags.HasDetailMap );
+            ValidateMapFlags( ShadowMap,     MaterialFlags.HasShadowMap );
+
+            if ( Properties == null )
+            {
+                mFlags &= ~MaterialFlags.HasProperties;
+            }
+            else
+            {
+                mFlags |= MaterialFlags.HasProperties;
+            }
+        }
+
+        private void ValidateMapFlags( TextureMap map, MaterialFlags flag )
+        {
+            if ( map == null )
+            {
+                mFlags &= ~flag;
+            }
+            else
+            {
+                mFlags |= flag;
+            }
         }
     }
 

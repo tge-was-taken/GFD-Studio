@@ -32,6 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AssimpNet">
+      <HintPath>..\..\..\..\..\..\..\Programming\Amicitia\Dependencies\Managed\AssimpNet.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -55,7 +58,9 @@
     <Compile Include="Epl.cs" />
     <Compile Include="EplLeaf.cs" />
     <Compile Include="Geometry.cs" />
-    <Compile Include="InverseBindPoseMatrixMap.cs" />
+    <Compile Include="IO\ResourceBuilder.cs" />
+    <Compile Include="IO\ResourceExporter.cs" />
+    <Compile Include="MatrixMap.cs" />
     <Compile Include="IO\EndianBinaryWriter.cs" />
     <Compile Include="IO\ResourceWriter.cs" />
     <Compile Include="IO\StringBinaryFormat.cs" />

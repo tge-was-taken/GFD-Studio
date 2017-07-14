@@ -21,9 +21,20 @@ namespace AtlusGfdLib
                 return Load( stream );
         }
 
+        public static TResource Load<TResource>(string filepath) where TResource : Resource
+        {
+            using ( var stream = File.OpenRead( filepath ) )
+                return Load<TResource>( stream );
+        }
+
         public static Resource Load(Stream stream)
         {
-            return ResourceReader.ReadFromStream( stream, IO.Endianness.BigEndian );
+            return ResourceReader.ReadFromStream( stream, Endianness.BigEndian );
+        }
+
+        public static TResource Load<TResource>(Stream stream) where TResource : Resource
+        {
+            return ResourceReader.ReadFromStream<TResource>( stream, Endianness.BigEndian );
         }
 
         public static void Save( Resource resource, string filepath )

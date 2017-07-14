@@ -5,18 +5,100 @@ namespace AtlusGfdLib
 {
     public sealed class Scene : Resource
     {
-        public SceneFlags Flags { get; set; }
+        private SceneFlags mFlags;
+        public SceneFlags Flags
+        {
+            get => mFlags;
+            set
+            {
+                mFlags = value;
+                ValidateFlags();
+            }
+        }
 
-        public MatrixMap MatrixMap { get; set; }
+        private SkinnedBoneMap mMatrixMap;
+        public SkinnedBoneMap MatrixMap
+        {
+            get => mMatrixMap;
+            set
+            {
+                mMatrixMap = value;
+                ValidateFlags();
+            }
+        }
 
-        public BoundingBox? BoundingBox { get; set; }
+        private BoundingBox? mBoundingBox;
+        public BoundingBox? BoundingBox
+        {
+            get => mBoundingBox;
+            set
+            {
+                mBoundingBox = value;
+                ValidateFlags();
+            }
+        }
 
-        public BoundingSphere? BoundingSphere { get; set; }
+        private BoundingSphere? mBoundingSphere;
+        public BoundingSphere? BoundingSphere
+        {
+            get => mBoundingSphere;
+            set
+            {
+                mBoundingSphere = value;
+                ValidateFlags();
+            }
+        }
 
-        public Node RootNode { get; set; }
+        private Node mRootNode;
+        public Node RootNode
+        {
+            get => mRootNode;
+            set
+            {
+                mRootNode = value;
+                PopulateNodeList();
+            }
+        }
+
+        private List<Node> mNodeList;
+        public IReadOnlyList<Node> Nodes => mNodeList;
 
         public Scene(uint version) : base(ResourceType.Scene, version)
         {
+        }
+
+        private void PopulateNodeList()
+        {
+            mNodeList = new List<Node>();
+
+            void RecursivelyAddToList(Node node)
+            {
+                mNodeList.Add( node );
+                foreach ( var childNode in node.Children )
+                {
+                    RecursivelyAddToList( childNode );
+                }
+            }
+
+            RecursivelyAddToList( RootNode );
+        }
+
+        private void ValidateFlags()
+        {
+            if ( MatrixMap == null )
+                mFlags &= ~SceneFlags.HasSkinning;
+            else
+                mFlags |= SceneFlags.HasSkinning;
+
+            if ( BoundingBox == null )
+                mFlags &= ~SceneFlags.HasBoundingBox;
+            else
+                mFlags |= SceneFlags.HasBoundingBox;
+
+            if ( BoundingSphere == null )
+                mFlags &= ~SceneFlags.HasBoundingSphere;
+            else
+                mFlags |= SceneFlags.HasBoundingSphere;
         }
     }
 

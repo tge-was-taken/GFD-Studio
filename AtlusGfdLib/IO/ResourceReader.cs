@@ -378,15 +378,15 @@ namespace AtlusGfdLib
 
         private Material ReadMaterial( uint version )
         {
-            var material = new Material();
+            var material = new Material( );
 
             // Read material header
             material.Name = ReadStringWithHash( version );
-            material.Flags = ( MaterialFlags )ReadUInt();
+            var flags = ( MaterialFlags )ReadUInt();
 
             if ( version < 0x1104000 )
             {
-                material.Flags = ( MaterialFlags )( ( uint )material.Flags & 0x7FFFFFFF );
+                flags = ( MaterialFlags )( ( uint )material.Flags & 0x7FFFFFFF );
             }
 
             material.Ambient = ReadVector4();
@@ -443,55 +443,57 @@ namespace AtlusGfdLib
                 material.Field98 = ReadInt();
             }
 
-            if ( material.Flags.HasFlag( MaterialFlags.HasDiffuseMap ) )
+            if ( flags.HasFlag( MaterialFlags.HasDiffuseMap ) )
             {
                 material.DiffuseMap = ReadTextureMap( version );
             }
 
-            if ( material.Flags.HasFlag( MaterialFlags.HasNormalMap ) )
+            if ( flags.HasFlag( MaterialFlags.HasNormalMap ) )
             {
                 material.NormalMap = ReadTextureMap( version );
             }
 
-            if ( material.Flags.HasFlag( MaterialFlags.HasSpecularMap ) )
+            if ( flags.HasFlag( MaterialFlags.HasSpecularMap ) )
             {
                 material.SpecularMap = ReadTextureMap( version );
             }
 
-            if ( material.Flags.HasFlag( MaterialFlags.HasReflectionMap ) )
+            if ( flags.HasFlag( MaterialFlags.HasReflectionMap ) )
             {
                 material.ReflectionMap = ReadTextureMap( version );
             }
 
-            if ( material.Flags.HasFlag( MaterialFlags.HasHighlightMap ) )
+            if ( flags.HasFlag( MaterialFlags.HasHighlightMap ) )
             {
                 material.HighlightMap = ReadTextureMap( version );
             }
 
-            if ( material.Flags.HasFlag( MaterialFlags.HasGlowMap ) )
+            if ( flags.HasFlag( MaterialFlags.HasGlowMap ) )
             {
                 material.GlowMap = ReadTextureMap( version );
             }
 
-            if ( material.Flags.HasFlag( MaterialFlags.HasNightMap ) )
+            if ( flags.HasFlag( MaterialFlags.HasNightMap ) )
             {
                 material.NightMap = ReadTextureMap( version );
             }
 
-            if ( material.Flags.HasFlag( MaterialFlags.HasDetailMap ) )
+            if ( flags.HasFlag( MaterialFlags.HasDetailMap ) )
             {
                 material.DetailMap = ReadTextureMap( version );
             }
 
-            if ( material.Flags.HasFlag( MaterialFlags.HasShadowMap ) ) 
+            if ( flags.HasFlag( MaterialFlags.HasShadowMap ) ) 
             {
                 material.ShadowMap = ReadTextureMap( version );
             }
 
-            if ( material.Flags.HasFlag( MaterialFlags.HasProperties ) ) 
+            if ( flags.HasFlag( MaterialFlags.HasProperties ) ) 
             {
                 material.Properties = ReadMaterialProperties( version );
             }
+
+            material.Flags = flags;
 
             return material;
         }
@@ -767,32 +769,33 @@ namespace AtlusGfdLib
         private Scene ReadScene( uint version )
         {
             Scene scene = new Scene( version );
-            scene.Flags = ( SceneFlags )ReadInt();
+            var flags = ( SceneFlags )ReadInt();
 
-            if ( scene.Flags.HasFlag( SceneFlags.HasSkinning ) ) 
+            if ( flags.HasFlag( SceneFlags.HasSkinning ) ) 
                 scene.MatrixMap = ReadMatrixMap();
 
-            if ( scene.Flags.HasFlag( SceneFlags.HasBoundingBox ) )
+            if ( flags.HasFlag( SceneFlags.HasBoundingBox ) )
                 scene.BoundingBox = ReadBoundingBox();
 
-            if ( scene.Flags.HasFlag( SceneFlags.HasBoundingSphere ) )
+            if ( flags.HasFlag( SceneFlags.HasBoundingSphere ) )
                 scene.BoundingSphere = ReadBoundingSphere();
 
             scene.RootNode = ReadNodeRecursive( version );
+            scene.Flags = flags;
 
             return scene;
         }
 
-        private MatrixMap ReadMatrixMap()
+        private SkinnedBoneMap ReadMatrixMap()
         {
             int matrixCount = ReadInt();
-            var map = new MatrixMap( matrixCount );
+            var map = new SkinnedBoneMap( matrixCount );
 
-            for ( int i = 0; i < map.Matrices.Length; i++ )
-                map.Matrices[i] = ReadMatrix4x4();
+            for ( int i = 0; i < map.BoneInverseBindMatrices.Length; i++ )
+                map.BoneInverseBindMatrices[i] = ReadMatrix4x4();
 
-            for ( int i = 0; i < map.RemapIndices.Length; i++ )
-                map.RemapIndices[i] = ReadUShort();
+            for ( int i = 0; i < map.BoneToNodeIndices.Length; i++ )
+                map.BoneToNodeIndices[i] = ReadUShort();
 
             return map;
         }
@@ -1013,18 +1016,21 @@ namespace AtlusGfdLib
 
                 if ( geometry.Flags.HasFlag( GeometryFlags.HasVertexWeights ) )
                 {
-                    geometry.VertexWeights[i].Weights = new float[4];
+                    const int MAX_NUM_WEIGHTS = 4;
+                    geometry.VertexWeights[i].Weights = new float[MAX_NUM_WEIGHTS];
 
-                    for ( int j = 0; j < 4; j++ )
+                    for ( int j = 0; j < geometry.VertexWeights[i].Weights.Length; j++ )
                     {
                         geometry.VertexWeights[i].Weights[j] = ReadFloat();
                     }
 
-                    geometry.VertexWeights[i].Indices = new byte[4];
+                    geometry.VertexWeights[i].Indices = new byte[MAX_NUM_WEIGHTS];
+                    uint indices = ReadUInt();
 
-                    for ( int j = 0; j < 4; j++ )
+                    for ( int j = 0; j < geometry.VertexWeights[i].Indices.Length; j++ )
                     {
-                        geometry.VertexWeights[i].Indices[j] = ReadByte();
+                        int shift = j * 8;
+                        geometry.VertexWeights[i].Indices[j] = ( byte )( ( indices & ( 0xFF << shift ) ) >> shift );
                     }
                 }
             }
@@ -1033,18 +1039,18 @@ namespace AtlusGfdLib
             {
                 for ( int i = 0; i < geometry.Triangles.Length; i++ )
                 {
-                    geometry.Triangles[i].Indices = new uint[3];
+                    geometry.Triangles[i].Indices = new int[3];
 
                     for ( int j = 0; j < geometry.Triangles[i].Indices.Length; j++ )
                     {
-                        uint index;
+                        int index;
                         switch ( geometry.TriangleIndexType )
                         {
                             case TriangleIndexType.UInt16:
                                 index = ReadUShort();
                                 break;
                             case TriangleIndexType.UInt32:
-                                index = ReadUInt();
+                                index = ReadInt();
                                 break;
                             default:
                                 throw new Exception( $"Unsupported triangle index type: {geometry.TriangleIndexType}" );

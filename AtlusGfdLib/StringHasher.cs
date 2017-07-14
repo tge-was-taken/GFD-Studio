@@ -50,19 +50,17 @@ namespace AtlusGfdLib
 
         public static int GenerateStringHash(string value)
         {
-            uint hash = 0;
+            if ( value.Length == 0 )
+                return 0;
 
-            if (value.Length != 0)
+            uint hash = ( uint )value.Length;
+
+            for ( int i = 0; i < value.Length; i++ )
             {
-                hash = (uint)value.Length;         
-
-                for (int i = 0; i < value.Length; i++)
-                {
-                    uint tableIdx = hash ^ (byte)(value[i]);
-                    tableIdx = (BitwiseRotateLeft(tableIdx, 2) & 0x000003FC) / sizeof(uint);
-                    hash = BitwiseRotateLeft(hash, 24) & 0x00FFFFFF;
-                    hash ^= sHashTable[tableIdx];
-                }
+                uint tableIdx = hash ^ ( byte )( value[i] );
+                tableIdx = ( BitwiseRotateLeft( tableIdx, 2 ) & 0x000003FC ) / sizeof( uint );
+                hash = BitwiseRotateLeft( hash, 24 ) & 0x00FFFFFF;
+                hash ^= sHashTable[tableIdx];
             }
 
             return (int)hash;

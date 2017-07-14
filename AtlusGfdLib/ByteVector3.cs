@@ -25,5 +25,10 @@ namespace AtlusGfdLib
             Y = vec4.Y;
             Z = vec4.Z;
         }
+
+        public override string ToString()
+        {
+            return $"[{X}, {Y}, {Z}]";
+        }
     }
 }
