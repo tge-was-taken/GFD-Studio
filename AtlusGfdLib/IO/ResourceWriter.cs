@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Numerics;
 
@@ -190,7 +191,7 @@ namespace AtlusGfdLib.IO
             using ( var writer = PopWriter() )
             {
                 // write actual chunk size         
-                writer.Position = 8;
+                writer.Position = ChunkHeader.SIZE_OFFSET;
                 writer.Write( (uint)writer.BaseStreamLength );
                 writer.Position = 0;
 
@@ -199,12 +200,17 @@ namespace AtlusGfdLib.IO
             }
         }
 
-        private void WriteFileHeader( uint version, FileType type )
+        private void WriteFileHeader( string magic, uint version, FileType type )
         {
-            WriteString( FileHeader.CMAGIC_FS, 4 );
+            WriteString( magic, 4 );
             WriteUInt( version );
             WriteUInt( ( uint )type );
             WriteUInt( 0 ); // unknown
+        }
+
+        private void WriteResourceFileHeader( uint version, FileType type )
+        {
+            WriteFileHeader( FileHeader.CMAGIC_FS, version, type );
         }
 
         private void WriteResourceFile( Resource resource )
@@ -216,22 +222,28 @@ namespace AtlusGfdLib.IO
                 case ResourceType.Model:
                     fileType = FileType.Model;
                     break;
-                case ResourceType.ShaderCache:
-                    fileType = FileType.ShaderCache;
+                case ResourceType.ShaderCachePS3:
+                    fileType = FileType.ShaderCachePS3;
+                    break;
+                case ResourceType.ShaderCachePSP2:
+                    fileType = FileType.ShaderCachePSP2;
                     break;
                 default:
-                    throw new Exception( $"Resource type { resource.Type } can not be written to a file directly. Wrap it in a {nameof( Model )} or a {nameof( ShaderCache )}" );
+                    throw new Exception( $"Resource type { resource.Type } can not be written to a file directly." );
             }
 
-            WriteFileHeader( resource.Version, fileType );
+            WriteResourceFileHeader( resource.Version, fileType );
 
             switch ( fileType )
             {
                 case FileType.Model:
                     WriteModel( ( Model )resource );
                     break;
-                case FileType.ShaderCache:
-                    WriteShaderCache( ( ShaderCache )resource );
+                case FileType.ShaderCachePS3:
+                    WriteShaderCache( ( ShaderCachePS3 )resource, fileType );
+                    break;
+                case FileType.ShaderCachePSP2:
+                    WriteShaderCache( ( ShaderCachePSP2 )resource, fileType );
                     break;
             }
         }
@@ -655,6 +667,7 @@ namespace AtlusGfdLib.IO
 
         private void WriteNodeRecursive( uint version, Node node )
         {
+            Debug.WriteLine( node.Name );
             WriteNode( version, node );
             WriteInt( node.ChildCount );
 
@@ -912,9 +925,33 @@ namespace AtlusGfdLib.IO
             WriteUInt( 0 ); 
         }
 
-        private void WriteShaderCache( ShaderCache resource )
+        // shader cache
+        private void WriteShaderCacheFileHeader( uint version, FileType type )
         {
-            throw new NotImplementedException();
+            WriteFileHeader( FileHeader.CMAGIC_SHADERCACHE, version, type );
+        }
+
+        private void WriteShaderCache<TShader>( ShaderCacheBase<TShader> shaderCache, FileType type ) where TShader : ShaderBase
+        {
+            WriteShaderCacheFileHeader( shaderCache.Version, type );
+
+            foreach ( var shader in shaderCache )
+            {
+                WriteShader( shaderCache.Version, type, shader );
+            }
+        }
+
+        private void WriteShader( uint version, FileType type, ShaderBase shader )
+        {
+            WriteUShort( shader.Type );
+            WriteInt( shader.DataLength );
+            WriteUShort( shader.Field06 );
+            WriteUInt( shader.Field08 );
+            WriteUInt( shader.Field0C );
+            WriteUInt( shader.Field10 );
+            WriteUInt( shader.Field14 );
+            WriteUInt( shader.Field18 );
+            WriteBytes( shader.Data );
         }
     }
 }

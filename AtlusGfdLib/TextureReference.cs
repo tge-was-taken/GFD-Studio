@@ -1,6 +1,8 @@
-﻿namespace AtlusGfdLib
+﻿using System;
+
+namespace AtlusGfdLib
 {
-    public sealed class TextureMap
+    public sealed class TextureMap 
     {
         public string Name { get; set; }
 

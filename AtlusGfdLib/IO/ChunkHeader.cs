@@ -8,6 +8,7 @@
         public int Unknown;
 
         public const int CSIZE = 16;
+        public const int SIZE_OFFSET = 8;
     }
 
     internal enum ChunkType : uint

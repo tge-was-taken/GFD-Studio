@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Numerics;
 
 namespace AtlusGfdLib
@@ -85,16 +86,17 @@ namespace AtlusGfdLib
         // 
         public List<NodeAttachment> Attachments { get; set; }
 
-        public int AttachmentCount => Attachments.Count;
 
-        public bool HasAttachments => Attachments != null && AttachmentCount > 0;
+        public bool HasAttachments => Attachments != null && Attachments.Count > 0;
+
+        public int AttachmentCount => HasAttachments ? Attachments.Count : 0;
 
         // EC
         public Dictionary<string, NodeProperty> Properties { get; set; }
 
-        public int PropertyCount => Properties.Count;
+        public bool HasProperties => Properties != null && Properties.Count > 0;
 
-        public bool HasProperties => Properties != null && PropertyCount > 0;
+        public int PropertyCount => HasProperties ? Properties.Count : 0;
 
         // E0
         public float FieldE0 { get; set; }
@@ -120,9 +122,9 @@ namespace AtlusGfdLib
         private List<Node> mChildren;
         public ReadOnlyCollection<Node> Children => mChildren.AsReadOnly();
 
-        public int ChildCount => Children.Count;
+        public bool HasChildren => Children != null && Children.Count > 0;
 
-        public bool HasChildren => ChildCount > 0;
+        public int ChildCount => HasChildren ? Children.Count : 0;
 
         internal Node()
         {

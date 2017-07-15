@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace AtlusGfdLib
 {
-    public struct BoundingSphere
+    public struct BoundingSphere : IEquatable<BoundingSphere>
     {
         public Vector3 Center;
         public float Radius;
@@ -36,6 +36,30 @@ namespace AtlusGfdLib
             float sphereRadius = ( float )Math.Sqrt( maxDistSq );
 
             return new BoundingSphere( sphereCentre, sphereRadius );
+        }
+
+        public override bool Equals( object obj )
+        {
+            if ( obj == null || obj.GetType() != typeof( BoundingSphere ) )
+                return false;
+
+            return Equals( ( BoundingSphere )obj );
+        }
+
+        public bool Equals( BoundingSphere other )
+        {
+            return Center == other.Center && Radius == other.Radius;
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = 11;
+                hash = hash * 33 + Center.GetHashCode();
+                hash = hash * 33 + Radius.GetHashCode();
+                return hash;
+            }
         }
     }
 }

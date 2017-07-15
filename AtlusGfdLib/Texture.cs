@@ -1,8 +1,10 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace AtlusGfdLib
 {
-    public sealed class Texture 
+    public sealed class Texture
     {
         public string Name { get; set; }
 

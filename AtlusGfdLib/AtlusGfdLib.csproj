@@ -79,7 +79,7 @@
     <Compile Include="Resource.cs" />
     <Compile Include="Model.cs" />
     <Compile Include="Scene.cs" />
-    <Compile Include="Shader.cs" />
+    <Compile Include="ShaderPS3.cs" />
     <Compile Include="ShaderCache.cs" />
     <Compile Include="StringHasher.cs" />
     <Compile Include="Texture.cs" />
@@ -90,6 +90,7 @@
     <Compile Include="IO\ResourceReader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Triangle.cs" />
+    <Compile Include="Utilities.cs" />
     <Compile Include="VertexWeight.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

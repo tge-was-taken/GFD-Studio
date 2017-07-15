@@ -3,19 +3,19 @@ using System.Collections.Generic;
 
 namespace AtlusGfdLib
 {
-    public sealed class ShaderCache : Resource, IList<Shader>
+    public abstract class ShaderCacheBase<TShader> : Resource, IList<TShader>
     {
-        private List<Shader> mShaders;
+        private List<TShader> mShaders;
 
-        public ShaderCache(uint version)
-            : base(ResourceType.ShaderCache, version)
+        protected ShaderCacheBase( ResourceType type, uint version )
+            : base( type, version)
         {
-            mShaders = new List<Shader>();
+            mShaders = new List<TShader>();
         }
 
         #region IList implementation
 
-        public Shader this[int index]
+        public TShader this[int index]
         {
             get
             {
@@ -23,7 +23,7 @@ namespace AtlusGfdLib
             }
         }
 
-        Shader IList<Shader>.this[int index]
+        TShader IList<TShader>.this[int index]
         {
             get
             {
@@ -52,7 +52,7 @@ namespace AtlusGfdLib
             }
         }
 
-        public void Add(Shader item)
+        public void Add(TShader item)
         {
             mShaders.Add(item);
         }
@@ -62,32 +62,32 @@ namespace AtlusGfdLib
             mShaders.Clear();
         }
 
-        public bool Contains(Shader item)
+        public bool Contains(TShader item)
         {
             return mShaders.Contains(item);
         }
 
-        public void CopyTo(Shader[] array, int arrayIndex)
+        public void CopyTo(TShader[] array, int arrayIndex)
         {
             mShaders.CopyTo(array, arrayIndex);
         }
 
-        public IEnumerator<Shader> GetEnumerator()
+        public IEnumerator<TShader> GetEnumerator()
         {
             return mShaders.GetEnumerator();
         }
 
-        public int IndexOf(Shader item)
+        public int IndexOf(TShader item)
         {
             return mShaders.IndexOf(item);
         }
 
-        public void Insert(int index, Shader item)
+        public void Insert(int index, TShader item)
         {
             mShaders.Insert(index, item);
         }
 
-        public bool Remove(Shader item)
+        public bool Remove(TShader item)
         {
             return mShaders.Remove(item);
         }
@@ -103,5 +103,19 @@ namespace AtlusGfdLib
         }
 
         #endregion
+    }
+
+    public sealed class ShaderCachePS3 : ShaderCacheBase<ShaderPS3>
+    {
+        public ShaderCachePS3(uint version ) : base( ResourceType.ShaderCachePS3, version )
+        {
+        }
+    }
+
+    public sealed class ShaderCachePSP2 : ShaderCacheBase<ShaderPSP2>
+    {
+        public ShaderCachePSP2( uint version ) : base( ResourceType.ShaderCachePSP2, version )
+        {
+        }
     }
 }

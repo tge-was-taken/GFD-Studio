@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace AtlusGfdLib
 {
-    public struct Triangle
+    public struct Triangle : IEquatable<Triangle>
     {
         public int[] Indices;
 
@@ -45,6 +45,43 @@ namespace AtlusGfdLib
         {
             if ( indices.Count != 3 )
                 throw new ArgumentException( "Invalid number of indices for a triangle" );
+        }
+
+        public override bool Equals( object obj )
+        {
+            if ( obj == null || obj.GetType() != typeof( Triangle ) )
+                return false;
+
+            return Equals( ( Triangle)obj );
+        }
+
+        public bool Equals( Triangle other )
+        {
+            if ( Indices != null && other.Indices == null || Indices == null && other.Indices != null )
+                return false;
+
+            if ( Indices.Length != other.Indices.Length )
+                return false;
+
+            for ( int i = 0; i < Indices.Length; i++ )
+            {
+                if ( Indices[i] != other.Indices[i] )
+                    return false;
+            }
+
+            return true;
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = 11;
+                if ( Indices != null )
+                    hash = hash * 33 + Indices.GetHashCode();
+
+                return hash;
+            }
         }
     }
 }

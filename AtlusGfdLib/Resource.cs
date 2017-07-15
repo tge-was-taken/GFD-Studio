@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using AtlusGfdLib.IO;
 
 namespace AtlusGfdLib
@@ -57,6 +58,7 @@ namespace AtlusGfdLib
         TextureDictionary,
         MaterialDictionary,
         Scene,
-        ShaderCache,
+        ShaderCachePS3,
+        ShaderCachePSP2,
     }
 }

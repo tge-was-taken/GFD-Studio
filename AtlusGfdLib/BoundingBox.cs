@@ -4,7 +4,7 @@ using System.Numerics;
 
 namespace AtlusGfdLib
 {
-    public struct BoundingBox
+    public struct BoundingBox : IEquatable<BoundingBox>
     {
         public Vector3 Min;
         public Vector3 Max;
@@ -31,6 +31,30 @@ namespace AtlusGfdLib
             }
 
             return new BoundingBox( minExtent, maxExtent );
+        }
+
+        public override bool Equals( object obj )
+        {
+            if ( obj == null || obj.GetType() != typeof(BoundingBox))
+                return false;
+
+            return Equals( (BoundingBox)obj );
+        }
+
+        public bool Equals( BoundingBox other )
+        {
+            return Min == other.Min && Max == other.Max;
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = 11;
+                hash = hash * 33 + Min.GetHashCode();
+                hash = hash * 33 + Max.GetHashCode();
+                return hash;
+            }
         }
     }
 }

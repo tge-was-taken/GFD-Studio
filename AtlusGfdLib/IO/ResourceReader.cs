@@ -50,8 +50,12 @@ namespace AtlusGfdLib
                     resource = ReadModel( header.Version );
                     break;
 
-                case FileType.ShaderCache:
-                    resource = ReadShaderCache( header.Version );
+                case FileType.ShaderCachePS3:
+                    resource = ReadShaderCachePS3( header.Version );
+                    break;
+
+                case FileType.ShaderCachePSP2:
+                    resource = ReadShaderCachePSP2( header.Version );
                     break;
 
                 default:
@@ -94,29 +98,68 @@ namespace AtlusGfdLib
         }
 
         // Shader read methods
-        private ShaderCache ReadShaderCache( uint version )
+        private ShaderCachePS3 ReadShaderCachePS3( uint version )
         {
             if ( !ReadFileHeader( out FileHeader header ) || header.Magic != FileHeader.CMAGIC_SHADERCACHE )
                 return null;
 
             // Read shaders into the shader cache
-            ShaderCache cache = new ShaderCache( header.Version );
+            ShaderCachePS3 cache = new ShaderCachePS3( header.Version );
             while ( mReader.Position != mReader.BaseStreamLength )
             {
-                ushort type = mReader.ReadUInt16();
-                uint size = mReader.ReadUInt32();
-                ushort field06 = mReader.ReadUInt16();
-                uint field08 = mReader.ReadUInt32();
-                uint field0C = mReader.ReadUInt32();
-                uint field10 = mReader.ReadUInt32();
-                float field14 = mReader.ReadSingle();
-                float field18 = mReader.ReadSingle();
-                byte[] data = mReader.ReadBytes( ( int )size );
-
-                cache.Add( new Shader( type, field06, field08, field0C, field10, field14, field18, data ) );
+                var shader = ReadShaderPS3( version );
+                cache.Add( shader );
             }
 
             return cache;
+        }
+
+        private ShaderPS3 ReadShaderPS3( uint version )
+        {
+            var shader = new ShaderPS3();
+            shader.Type = ReadUShort();
+            int size = ReadInt();
+            shader.Field06 = ReadUShort();
+            shader.Field08 = ReadUInt();
+            shader.Field0C = ReadUInt();
+            shader.Field10 = ReadUInt();
+            shader.Field14 = ReadUInt();
+            shader.Field18 = ReadUInt();
+            shader.Data = ReadBytes( size );
+
+            return shader;
+        }
+
+        private ShaderCachePSP2 ReadShaderCachePSP2( uint version )
+        {
+            if ( !ReadFileHeader( out FileHeader header ) || header.Magic != FileHeader.CMAGIC_SHADERCACHE )
+                return null;
+
+            // Read shaders into the shader cache
+            ShaderCachePSP2 cache = new ShaderCachePSP2( header.Version );
+            while ( mReader.Position != mReader.BaseStreamLength )
+            {
+                var shader = ReadShaderPSP2( version );
+                cache.Add( shader );
+            }
+
+            return cache;
+        }
+
+        private ShaderPSP2 ReadShaderPSP2( uint version )
+        {
+            var shader = new ShaderPSP2();
+            shader.Type = ReadUShort();
+            int size = ReadInt();
+            shader.Field06 = ReadUShort();
+            shader.Field08 = ReadUInt();
+            shader.Field0C = ReadUInt();
+            shader.Field10 = ReadUInt();
+            shader.Field14 = ReadUInt();
+            shader.Field18 = ReadUInt();
+            shader.Data = ReadBytes( size );
+
+            return shader;
         }
 
         // Debug methods
