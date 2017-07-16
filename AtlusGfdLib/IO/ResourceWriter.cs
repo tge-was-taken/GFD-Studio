@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Numerics;
+using System.Text;
 
 namespace AtlusGfdLib.IO
 {
     internal class ResourceWriter : IDisposable
     {
+        private static Encoding sSJISEncoding = Encoding.GetEncoding( 932 );
         private Stack<EndianBinaryWriter> mWriterStack;
         private EndianBinaryWriter mCurWriter;
         private Endianness mEndianness;
@@ -47,11 +49,14 @@ namespace AtlusGfdLib.IO
 
         private void WriteFloat( float value ) => mCurWriter.Write( value );
 
-        private void WriteString( string value, int length ) => mCurWriter.Write( value, StringBinaryFormat.FixedLength, length );
+        private void WriteString( string value, int length )
+        {
+            WriteBytes( sSJISEncoding.GetBytes( value ) );
+        }
 
         private void WriteString( string value )
         {
-            WriteUShort( ( ushort )value.Length );
+            WriteUShort( (ushort)sSJISEncoding.GetByteCount( value ) );
             WriteString( value, value.Length );
         }
 
@@ -727,24 +732,96 @@ namespace AtlusGfdLib.IO
                 case NodeAttachmentType.Geometry:
                     WriteGeometry( version, attachment.GetValue<Geometry>() );
                     break;
-                //case NodeAttachmentType.Camera:
-                //    WriteCamera( version, attachment.GetValue<Camera>() );
-                //    break;
-                //case NodeAttachmentType.Light:
-                //    WriteLight( version, attachment.GetValue<Light>() );
-                //    break;
+                case NodeAttachmentType.Camera:
+                    WriteCamera( version, attachment.GetValue<Camera>() );
+                    break;
+                case NodeAttachmentType.Light:
+                    WriteLight( version, attachment.GetValue<Light>() );
+                    break;
                 //case NodeAttachmentType.Epl:
                 //    WriteEpl( version, attachment.GetValue<Epl>() );
                 //    break;
                 //case NodeAttachmentType.EplLeaf:
                 //    WriteEplLeafs version, attachment.GetValue<EplLeaf>() );
                 //    break;
-                //case NodeAttachmentType.Morph:
-                //    WriteMorph( version, attachment.GetValue<Morph>() );
-                //    break;
+                case NodeAttachmentType.Morph:
+                    WriteMorph( version, attachment.GetValue<Morph>() );
+                    break;
                 default:
                     throw new Exception( $"Unknown node attachment: {attachment.Type}" );
             }
+        }
+
+        private void WriteLight( uint version, Light light )
+        {
+            if ( version > 0x1104190 )
+            {
+                WriteInt( ( int )light.Flags );
+            }
+
+            WriteInt( ( int )light.Type );
+            WriteVector4( light.Field30 );
+            WriteVector4( light.Field40 );
+            WriteVector4( light.Field50 );
+
+            switch ( light.Type )
+            {
+                case LightType.Type1:
+                    WriteFloat( light.Field20 );
+                    WriteFloat( light.Field04 );
+                    WriteFloat( light.Field08 );
+                    break;
+                case LightType.Sky:
+                    WriteFloat( light.Field10 );
+                    WriteFloat( light.Field04 );
+                    WriteFloat( light.Field08 );
+
+                    if ( light.Flags.HasFlag( LightFlags.Flag2 ) )
+                    {
+                        WriteFloat( light.Field6C );
+                        WriteFloat( light.Field70 );
+                    }
+                    else
+                    {
+                        WriteFloat( light.Field60 );
+                        WriteFloat( light.Field64 );
+                        WriteFloat( light.Field68 );
+                    }
+                    break;
+                case LightType.Type3:
+                    WriteFloat( light.Field20 );
+                    WriteFloat( light.Field08 );
+                    WriteFloat( light.Field04 );
+                    WriteFloat( light.Field74 );
+                    WriteFloat( light.Field78 );
+                    goto case LightType.Sky;
+            }
+        }
+
+        private void WriteCamera( uint version, Camera camera )
+        {
+            WriteMatrix4x4( camera.Transform );
+            WriteFloat( camera.Field180 );
+            WriteFloat( camera.Field184 );
+            WriteFloat( camera.Field188 );
+            WriteFloat( camera.Field18C );
+            
+            if ( version > 0x1104060 )
+            {
+                WriteFloat( camera.Field190 );
+            }
+        }
+
+        private void WriteMorph( uint version, Morph morph )
+        {
+            WriteInt( morph.TargetCount );
+
+            for ( int i = 0; i < morph.TargetInts.Length; i++ )
+            {
+                WriteInt( morph.TargetInts[i] );
+            }
+
+            WriteStringWithHash( version, morph.MaterialName );
         }
 
         private void WriteNodeProperties( uint version, Dictionary<string, NodeProperty> properties )
@@ -866,6 +943,11 @@ namespace AtlusGfdLib.IO
                 }
             }
 
+            if ( geometry.Flags.HasFlag( GeometryFlags.HasMorphTargets ) )
+            {
+                WriteMorphTargetList( geometry.MorphTargets );
+            }
+
             if ( geometry.Flags.HasFlag( GeometryFlags.HasTriangles ) )
             {
                 for ( int i = 0; i < geometry.Triangles.Length; i++ )
@@ -906,6 +988,28 @@ namespace AtlusGfdLib.IO
             {
                 WriteFloat( geometry.FieldD4 );
                 WriteFloat( geometry.FieldD8 );
+            }
+        }
+
+        private void WriteMorphTargetList( MorphTargetList morphTargets )
+        {
+            WriteInt( morphTargets.Flags );
+            WriteInt( morphTargets.Count );
+
+            foreach ( var morphTarget in morphTargets )
+            {
+                WriteMorphTarget( morphTarget );
+            }
+        }
+
+        private void WriteMorphTarget( MorphTarget morphTarget )
+        {
+            WriteInt( morphTarget.Flags );
+            WriteInt( morphTarget.VertexCount );
+
+            foreach ( var vertex in morphTarget.Vertices )
+            {
+                WriteVector3( vertex );
             }
         }
 

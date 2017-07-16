@@ -60,5 +60,6 @@ namespace AtlusGfdLib
         Scene,
         ShaderCachePS3,
         ShaderCachePSP2,
+        ChunkType000100F9,
     }
 }

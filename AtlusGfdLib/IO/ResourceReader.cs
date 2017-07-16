@@ -4,13 +4,18 @@ using System.Diagnostics;
 using System.IO;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Text;
 using AtlusGfdLib.IO;
 
 namespace AtlusGfdLib
 {
     internal class ResourceReader : IDisposable
     {
+        private static Encoding sSJISEncoding = Encoding.GetEncoding( 932 );
         private EndianBinaryReader mReader;
+
+        public float Field34 { get; private set; }
+        public float Field38 { get; private set; }
 
         public ResourceReader( Stream stream, Endianness endianness )
         {
@@ -35,137 +40,20 @@ namespace AtlusGfdLib
             ( ( IDisposable )mReader ).Dispose();
         }
 
-        // Resource read methods
-        private Resource ReadResourceFile()
-        {
-            if ( !ReadFileHeader( out FileHeader header ) || header.Magic != FileHeader.CMAGIC_FS )
-                return null;
-
-            // Read resource depending on type
-            Resource resource;
-
-            switch ( header.Type )
-            {
-                case FileType.Model:
-                    resource = ReadModel( header.Version );
-                    break;
-
-                case FileType.ShaderCachePS3:
-                    resource = ReadShaderCachePS3( header.Version );
-                    break;
-
-                case FileType.ShaderCachePSP2:
-                    resource = ReadShaderCachePSP2( header.Version );
-                    break;
-
-                default:
-                    throw new NotSupportedException();
-            }
-
-            return resource;
-        }
-
-        // Resource read methods
-        private Model ReadModel( uint version )
-        {
-            var model = new Model( version );
-
-            while ( ReadChunkHeader( out ChunkHeader header ) && header.Type != 0 )
-            {
-                switch ( header.Type )
-                {
-                    case ChunkType.TextureDictionary:
-                        model.TextureDictionary = ReadTextureDictionary( header.Version );
-                        break;
-                    case ChunkType.MaterialDictionary:
-                        model.MaterialDictionary = ReadMaterialDictionary( header.Version );
-                        break;
-                    case ChunkType.Scene:
-                        model.Scene = ReadScene( header.Version );
-                        break;
-                    case ChunkType.AnimationPackage:
-                        model.AnimationPackage = ReadAnimationPackage( header.Version );
-                        break;
-
-                    default:
-                        Debug.WriteLine( $"{GetMethodName()}: Unknown chunk type '{header.Type}' at offset 0x{mReader.Position.ToString( "X" )}" );
-                        mReader.SeekCurrent( header.Size - 12 );
-                        continue;
-                }
-            }
-
-            return model;
-        }
-
-        // Shader read methods
-        private ShaderCachePS3 ReadShaderCachePS3( uint version )
-        {
-            if ( !ReadFileHeader( out FileHeader header ) || header.Magic != FileHeader.CMAGIC_SHADERCACHE )
-                return null;
-
-            // Read shaders into the shader cache
-            ShaderCachePS3 cache = new ShaderCachePS3( header.Version );
-            while ( mReader.Position != mReader.BaseStreamLength )
-            {
-                var shader = ReadShaderPS3( version );
-                cache.Add( shader );
-            }
-
-            return cache;
-        }
-
-        private ShaderPS3 ReadShaderPS3( uint version )
-        {
-            var shader = new ShaderPS3();
-            shader.Type = ReadUShort();
-            int size = ReadInt();
-            shader.Field06 = ReadUShort();
-            shader.Field08 = ReadUInt();
-            shader.Field0C = ReadUInt();
-            shader.Field10 = ReadUInt();
-            shader.Field14 = ReadUInt();
-            shader.Field18 = ReadUInt();
-            shader.Data = ReadBytes( size );
-
-            return shader;
-        }
-
-        private ShaderCachePSP2 ReadShaderCachePSP2( uint version )
-        {
-            if ( !ReadFileHeader( out FileHeader header ) || header.Magic != FileHeader.CMAGIC_SHADERCACHE )
-                return null;
-
-            // Read shaders into the shader cache
-            ShaderCachePSP2 cache = new ShaderCachePSP2( header.Version );
-            while ( mReader.Position != mReader.BaseStreamLength )
-            {
-                var shader = ReadShaderPSP2( version );
-                cache.Add( shader );
-            }
-
-            return cache;
-        }
-
-        private ShaderPSP2 ReadShaderPSP2( uint version )
-        {
-            var shader = new ShaderPSP2();
-            shader.Type = ReadUShort();
-            int size = ReadInt();
-            shader.Field06 = ReadUShort();
-            shader.Field08 = ReadUInt();
-            shader.Field0C = ReadUInt();
-            shader.Field10 = ReadUInt();
-            shader.Field14 = ReadUInt();
-            shader.Field18 = ReadUInt();
-            shader.Data = ReadBytes( size );
-
-            return shader;
-        }
-
         // Debug methods
         private string GetMethodName([CallerMemberName]string name = null)
         {
             return $"{nameof(ResourceReader)}.{name}";
+        }
+
+        private void DebugLog( string what, [CallerMemberName]string name = null )
+        {
+            Debug.WriteLine( $"{name}: {what}" );
+        }
+
+        private void DebugLogPosition( string what, [CallerMemberName]string name = null )
+        {
+            Debug.WriteLine( $"{name}: {what} read @ 0x{mReader.Position:X4}" );
         }
 
         // Primitive read methods
@@ -282,12 +170,14 @@ namespace AtlusGfdLib
         private string ReadString()
         {
             ushort length = mReader.ReadUInt16();
-            return mReader.ReadString( StringBinaryFormat.FixedLength, length );
+            var bytes = ReadBytes( length );
+            return sSJISEncoding.GetString( bytes );
         }
 
         private string ReadString( int length )
         {
-            return mReader.ReadString( StringBinaryFormat.FixedLength, length );
+            var bytes = ReadBytes( length );
+            return sSJISEncoding.GetString( bytes );
         }
 
         private string ReadStringWithHash( uint version )
@@ -349,6 +239,71 @@ namespace AtlusGfdLib
             Debug.WriteLine( $"{GetMethodName()}: {header.Type} ver: {header.Version:X4} size: {header.Size}" );
 
             return true;
+        }
+
+        // Resource read methods
+        private Resource ReadResourceFile()
+        {
+            if ( !ReadFileHeader( out FileHeader header ) || header.Magic != FileHeader.CMAGIC_FS )
+                return null;
+
+            // Read resource depending on type
+            Resource resource;
+
+            switch ( header.Type )
+            {
+                case FileType.Model:
+                    resource = ReadModel( header.Version );
+                    break;
+
+                case FileType.ShaderCachePS3:
+                    resource = ReadShaderCachePS3( header.Version );
+                    break;
+
+                case FileType.ShaderCachePSP2:
+                    resource = ReadShaderCachePSP2( header.Version );
+                    break;
+
+                default:
+                    throw new NotSupportedException();
+            }
+
+            return resource;
+        }
+
+        // Model read methods
+        private Model ReadModel( uint version )
+        {
+            var model = new Model( version );
+
+            while ( ReadChunkHeader( out ChunkHeader header ) && header.Type != 0 )
+            {
+                switch ( header.Type )
+                {
+                    case ChunkType.TextureDictionary:
+                        model.TextureDictionary = ReadTextureDictionary( header.Version );
+                        break;
+                    case ChunkType.MaterialDictionary:
+                        model.MaterialDictionary = ReadMaterialDictionary( header.Version );
+                        break;
+                    case ChunkType.Scene:
+                        model.Scene = ReadScene( header.Version );
+                        break;
+                    case ChunkType.Type000100F9:
+                        //model.ChunkType000100F9 = ReadChunkType000100F9( header.Version );
+                        break;
+                    case ChunkType.AnimationPackage:
+                        model.AnimationPackage = ReadAnimationPackage( header.Version );
+                        break;
+
+                    default:
+                        Debug.WriteLine( $"{GetMethodName()}: Unknown chunk type '{header.Type}' at offset 0x{mReader.Position.ToString( "X" )}" );
+                        mReader.SeekCurrent( header.Size - 12 );
+                        continue;
+                }
+            }
+
+            return model;
         }
 
         // Texture read methods
@@ -792,6 +747,8 @@ namespace AtlusGfdLib
         // Scene read methods
         private Scene ReadScene( uint version )
         {
+            DebugLogPosition( $"Scene" );
+
             Scene scene = new Scene( version );
             var flags = ( SceneFlags )ReadInt();
 
@@ -826,7 +783,10 @@ namespace AtlusGfdLib
 
         private Node ReadNodeRecursive( uint version )
         {
+            DebugLogPosition( "Node" );
             var node = ReadNode( version );
+            
+
             int childCount = ReadInt();
 
             for ( int i = 0; i < childCount; i++ )
@@ -845,6 +805,8 @@ namespace AtlusGfdLib
             node.Translation = ReadVector3();
             node.Rotation = ReadQuaternion();
             node.Scale = ReadVector3();
+
+            DebugLog( $"{node.Name}" );
 
             if ( version <= 0x1090000 )
                 ReadByte();
@@ -868,6 +830,7 @@ namespace AtlusGfdLib
             if ( version > 0x1104230 )
             {
                 node.FieldE0 = ReadFloat();
+                DebugLog( $"FieldE0: {node.FieldE0}" );
             }
 
             return node;
@@ -876,6 +839,8 @@ namespace AtlusGfdLib
         private NodeAttachment ReadNodeAttachment( uint version )
         {
             NodeAttachmentType type = ( NodeAttachmentType )ReadInt();
+
+            DebugLogPosition( $"{type}" );
 
             switch ( type )
             {
@@ -889,19 +854,34 @@ namespace AtlusGfdLib
                     return new NodeNodeAttachment( ReadNode( version ) );
                 case NodeAttachmentType.Geometry:
                     return new NodeGeometryAttachment( ReadGeometry( version ) );
-                //case NodeAttachmentType.Camera:
-                //    return new NodeCameraAttachment( ReadCamera( version ) );
-                //case NodeAttachmentType.Light:
-                //    return new NodeLightAttachment( ReadLight( version ) );
+                case NodeAttachmentType.Camera:
+                    return new NodeCameraAttachment( ReadCamera( version ) );
+                case NodeAttachmentType.Light:
+                    return new NodeLightAttachment( ReadLight( version ) );
                 //case NodeAttachmentType.Epl:
                 //    return new NodeEplAttachment( ReadEpl( version ) );
                 //case NodeAttachmentType.EplLeaf:
                 //    return new NodeEplLeafAttachment( ReadEplLeaf( version ) );
-                //case NodeAttachmentType.Morph:
-                //    return new NodeMorphAttachment( ReadMorph( version ) );
+                case NodeAttachmentType.Morph:
+                    return new NodeMorphAttachment( ReadMorph( version ) );
                 default:
                     throw new Exception( $"Unknown node attachment: {type}" );
             }
+        }
+
+        private Morph ReadMorph( uint version )
+        {
+            Morph morph = new Morph();
+
+            int morphTargetCount = ReadInt();
+
+            morph.TargetInts = new int[morphTargetCount];
+            for ( int i = 0; i < morph.TargetInts.Length; i++ )
+                morph.TargetInts[i] = ReadInt();
+
+            morph.MaterialName = ReadStringWithHash( version );
+
+            return morph;
         }
 
         private Dictionary<string, NodeProperty> ReadNodeProperties( uint version )
@@ -911,6 +891,7 @@ namespace AtlusGfdLib
 
             for ( int i = 0; i < propertyCount; i++ )
             {
+                DebugLogPosition( "Property" );
                 var type = ( PropertyValueType )ReadInt();
                 var name = ReadStringWithHash( version );
                 var size = ReadInt();
@@ -949,6 +930,8 @@ namespace AtlusGfdLib
                         throw new Exception( $"Unknown node property type: {type}" );
                 }
 
+                DebugLog( $"{type} {name} {size} {property.GetValue()}" );
+
                 properties[property.Name] = property;
             }
 
@@ -962,7 +945,9 @@ namespace AtlusGfdLib
             geometry.Flags = ( GeometryFlags )ReadInt();
             geometry.VertexAttributeFlags = ( VertexAttributeFlags )ReadInt();
 
-            Debug.WriteLine( geometry.VertexAttributeFlags );
+            DebugLog( $"{nameof( geometry.Flags )}: {geometry.Flags}" );
+            DebugLog( $"{nameof( geometry.VertexAttributeFlags )}: {geometry.VertexAttributeFlags.ToString()}" );
+
             int triangleCount = 0;
 
             if ( geometry.Flags.HasFlag( GeometryFlags.HasTriangles ) ) 
@@ -970,45 +955,23 @@ namespace AtlusGfdLib
                 triangleCount = ReadInt();
                 geometry.TriangleIndexType = ( TriangleIndexType )ReadShort();
                 geometry.Triangles = new Triangle[triangleCount];
+
+                DebugLog( $"{nameof( triangleCount )}: {triangleCount.ToString()}" );
+                DebugLog( $"{nameof( geometry.TriangleIndexType )}: {geometry.TriangleIndexType}");              
             }
 
             int vertexCount = ReadInt();
+            DebugLog( "vertexCount: " + vertexCount.ToString() );
 
             if ( version > 0x1103020 )
             {
                 geometry.Field14 = ReadInt();
+                DebugLog( $"{nameof(geometry.Field14)}: {geometry.Field14.ToString()}" );
             }
 
-            if ( geometry.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Position ) )
-                geometry.Vertices = new Vector3[vertexCount];
+            AllocateVertexBuffers( geometry, vertexCount );
 
-            if ( geometry.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Normal ))
-                geometry.Normals = new Vector3[vertexCount];
-
-            if ( geometry.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Tangent ))
-                geometry.Tangents = new Vector3[vertexCount];
-
-            if ( geometry.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Binormal ))
-                geometry.Binormals = new Vector3[vertexCount];
-
-            if ( geometry.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color0 ))
-                geometry.ColorChannel0 = new uint[vertexCount];
-
-            if ( geometry.VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord0 ))
-                geometry.TexCoordsChannel0 = new Vector2[vertexCount];
-
-            if ( geometry.VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord1 ) )
-                geometry.TexCoordsChannel1 = new Vector2[vertexCount];
-
-            if ( geometry.VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord2 ) )
-                geometry.TexCoordsChannel2 = new Vector2[vertexCount];
-
-            if ( geometry.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color1 ) )
-                geometry.ColorChannel1 = new uint[vertexCount];
-
-            if ( geometry.Flags.HasFlag( GeometryFlags.HasVertexWeights ) )
-                geometry.VertexWeights = new VertexWeight[vertexCount];
-
+            DebugLogPosition( $"vertexbuffer with {vertexCount} vertices" );
             for ( int i = 0; i < vertexCount; i++ )
             {
                 if ( geometry.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Position ) )
@@ -1059,8 +1022,14 @@ namespace AtlusGfdLib
                 }
             }
 
+            if ( geometry.Flags.HasFlag( GeometryFlags.HasMorphTargets ) ) 
+            {
+                geometry.MorphTargets = ReadMorphTargetList();
+            }
+
             if ( geometry.Flags.HasFlag( GeometryFlags.HasTriangles ) )
             {
+                DebugLogPosition( $"facebuffer with {triangleCount} vertices" );
                 for ( int i = 0; i < geometry.Triangles.Length; i++ )
                 {
                     geometry.Triangles[i].Indices = new int[3];
@@ -1087,21 +1056,26 @@ namespace AtlusGfdLib
 
             if ( geometry.Flags.HasFlag( GeometryFlags.HasMaterial ) ) 
             {
+                DebugLogPosition( "material name" );
                 geometry.MaterialName = ReadStringWithHash( version );
+                DebugLog( geometry.MaterialName );
             }
 
             if ( geometry.Flags.HasFlag( GeometryFlags.HasBoundingBox ) ) 
             {
+                DebugLogPosition( "bbox" );
                 geometry.BoundingBox = ReadBoundingBox();
             }
 
             if ( geometry.Flags.HasFlag( GeometryFlags.HasBoundingSphere ) )
             {
+                DebugLogPosition( "bsphere" );
                 geometry.BoundingSphere = ReadBoundingSphere();
             }
 
             if ( geometry.Flags.HasFlag( GeometryFlags.Flag1000 ))
             {
+                DebugLogPosition( "flag1000 data" );
                 geometry.FieldD4 = ReadFloat();
                 geometry.FieldD8 = ReadFloat();
             }
@@ -1109,10 +1083,307 @@ namespace AtlusGfdLib
             return geometry;
         }
 
+        private void AllocateVertexBuffers( Geometry geometry, int vertexCount )
+        {
+            if ( geometry.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Position ) )
+            {
+                geometry.Vertices = new Vector3[vertexCount];
+            }
+
+            if ( geometry.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Normal ) )
+            {
+                geometry.Normals = new Vector3[vertexCount];
+            }
+
+            if ( geometry.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Tangent ) )
+            {
+                geometry.Tangents = new Vector3[vertexCount];
+            }
+
+            if ( geometry.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Binormal ) )
+            {
+                geometry.Binormals = new Vector3[vertexCount];
+            }
+
+            if ( geometry.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color0 ) )
+            {
+                geometry.ColorChannel0 = new uint[vertexCount];
+            }
+
+            if ( geometry.VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord0 ) )
+            {
+                geometry.TexCoordsChannel0 = new Vector2[vertexCount];
+            }
+
+            if ( geometry.VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord1 ) )
+            {
+                geometry.TexCoordsChannel1 = new Vector2[vertexCount];
+            }
+
+            if ( geometry.VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord2 ) )
+            {
+                geometry.TexCoordsChannel2 = new Vector2[vertexCount];
+            }
+
+            if ( geometry.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color1 ) )
+            {
+                geometry.ColorChannel1 = new uint[vertexCount];
+            }
+
+            if ( geometry.Flags.HasFlag( GeometryFlags.HasVertexWeights ) )
+            {
+                geometry.VertexWeights = new VertexWeight[vertexCount];
+            }
+        }
+
+        private MorphTargetList ReadMorphTargetList()
+        {
+            var morphTargetList = new MorphTargetList();
+
+            morphTargetList.Flags = ReadInt();
+            int morphCount = ReadInt();
+
+            DebugLogPosition( $"flags: {morphTargetList.Flags} {morphCount} morphs" );
+
+            for ( int i = 0; i < morphCount; i++ )
+            {
+                var morphTarget = ReadMorphTarget();
+                morphTargetList.Add( morphTarget );   
+            }
+
+            return morphTargetList;
+        }
+
+        private MorphTarget ReadMorphTarget()
+        {
+            var morphTarget = new MorphTarget();
+
+            morphTarget.Flags = ReadInt();
+            int vertexCount = ReadInt();
+
+            DebugLogPosition( $"flags: {morphTarget.Flags} {vertexCount} vertices" );
+
+            for ( int j = 0; j < vertexCount; j++ )
+            {
+                var vertex = ReadVector3();
+                morphTarget.Vertices.Add( vertex );
+            }
+
+            return morphTarget;
+        }
+
+        // Camera
+        private Camera ReadCamera( uint version )
+        {
+            var camera = new Camera();
+            camera.Transform = ReadMatrix4x4();
+            camera.Field180 = ReadFloat();
+            camera.Field184 = ReadFloat();
+            camera.Field188 = ReadFloat();
+            camera.Field18C = ReadFloat();
+
+            if ( version > 0x1104060 )
+            {
+                camera.Field190 = ReadFloat();
+            }
+
+            return camera;
+        }
+
+        // Light
+        private Light ReadLight( uint version )
+        {
+            var light = new Light();
+            
+            if ( version > 0x1104190 )
+            {
+                light.Flags = ( LightFlags )ReadInt();
+            }
+
+            light.Type = ( LightType )ReadInt();
+            light.Field30 = ReadVector4();
+            light.Field40 = ReadVector4();
+            light.Field50 = ReadVector4();
+
+            switch ( light.Type )
+            {
+                case LightType.Type1:
+                    light.Field20 = ReadFloat();
+                    light.Field04 = ReadFloat();
+                    light.Field08 = ReadFloat();
+                    break;
+
+                case LightType.Sky:
+                    light.Field10 = ReadFloat();
+                    light.Field04 = ReadFloat();
+                    light.Field08 = ReadFloat();
+
+                    if ( light.Flags.HasFlag( LightFlags.Flag2 ) ) 
+                    {
+                        light.Field6C = ReadFloat();
+                        light.Field70 = ReadFloat();
+                    }
+                    else
+                    {
+                        light.Field60 = ReadFloat();
+                        light.Field64 = ReadFloat();
+                        light.Field68 = ReadFloat();
+                    }
+                    break;
+
+                case LightType.Type3:
+                    light.Field20 = ReadFloat();
+                    light.Field08 = ReadFloat();
+                    light.Field04 = ReadFloat();
+                    light.Field74 = ReadFloat();
+                    light.Field78 = ReadFloat();
+                    goto case LightType.Sky;
+            }
+
+            return light;
+        }
+
+        private ChunkType000100F9 ReadChunkType000100F9( uint version )
+        {
+            var chunk = new ChunkType000100F9( version );
+            chunk.Field140 = ReadInt();
+            chunk.Field13C = ReadFloat();
+            chunk.Field138 = ReadFloat();
+            chunk.Field134 = ReadFloat();
+            chunk.Field130 = ReadFloat();
+
+            int r28 = ReadInt();
+            int r21 = ReadInt();
+            int r20 = ReadInt();
+
+            for ( int i = 0; i < r28; i++ )
+            {
+                var entry1 = new ChunkType000100F9Entry1();
+                entry1.Field34 = ReadFloat();
+                entry1.Field38 = ReadFloat();
+
+                if ( version > 0x1104120 )
+                {
+                    entry1.Field3C = ReadFloat();
+                    entry1.Field40 = ReadFloat();
+                }
+                else
+                {
+                    entry1.Field38 += 2.0f;
+                    entry1.Field3C = 0;
+                    entry1.Field40 = 1.0f;                  
+                }
+
+                if ( ReadBool() )
+                {
+                    entry1.NodeName = ReadStringWithHash( version );
+                }
+
+                entry1.Field10 = ReadFloat();
+                entry1.Field08 = ReadFloat();
+                entry1.Field04 = ReadFloat();
+
+                chunk.Entry1List.Add( entry1 );
+            }
+
+            for ( int i = 0; i < r21; i++ )
+            {
+                var r3 = ReadShort();
+                if ( r3 != 0 )
+                {
+                    if ( r3 == 1 )
+                    {
+                        ReadFloat();
+                        ReadFloat();
+                    }
+                    else
+                    {
+                        ReadMatrix4x4();
+                        if ( ReadBool() )
+                        {
+                            ReadStringWithHash( version );
+                        }
+                    }
+                }
+                else
+                {
+                    ReadFloat();
+
+                }
+            }
+
+            return chunk;
+        }
+
         // Animation read methods
         private AnimationPackage ReadAnimationPackage( uint version )
         {
             throw new NotImplementedException();
+        }
+
+        // Shader read methods
+        private ShaderCachePS3 ReadShaderCachePS3( uint version )
+        {
+            if ( !ReadFileHeader( out FileHeader header ) || header.Magic != FileHeader.CMAGIC_SHADERCACHE )
+                return null;
+
+            // Read shaders into the shader cache
+            ShaderCachePS3 cache = new ShaderCachePS3( header.Version );
+            while ( mReader.Position != mReader.BaseStreamLength )
+            {
+                var shader = ReadShaderPS3( version );
+                cache.Add( shader );
+            }
+
+            return cache;
+        }
+
+        private ShaderPS3 ReadShaderPS3( uint version )
+        {
+            var shader = new ShaderPS3();
+            shader.Type = ReadUShort();
+            int size = ReadInt();
+            shader.Field06 = ReadUShort();
+            shader.Field08 = ReadUInt();
+            shader.Field0C = ReadUInt();
+            shader.Field10 = ReadUInt();
+            shader.Field14 = ReadUInt();
+            shader.Field18 = ReadUInt();
+            shader.Data = ReadBytes( size );
+
+            return shader;
+        }
+
+        private ShaderCachePSP2 ReadShaderCachePSP2( uint version )
+        {
+            if ( !ReadFileHeader( out FileHeader header ) || header.Magic != FileHeader.CMAGIC_SHADERCACHE )
+                return null;
+
+            // Read shaders into the shader cache
+            ShaderCachePSP2 cache = new ShaderCachePSP2( header.Version );
+            while ( mReader.Position != mReader.BaseStreamLength )
+            {
+                var shader = ReadShaderPSP2( version );
+                cache.Add( shader );
+            }
+
+            return cache;
+        }
+
+        private ShaderPSP2 ReadShaderPSP2( uint version )
+        {
+            var shader = new ShaderPSP2();
+            shader.Type = ReadUShort();
+            int size = ReadInt();
+            shader.Field06 = ReadUShort();
+            shader.Field08 = ReadUInt();
+            shader.Field0C = ReadUInt();
+            shader.Field10 = ReadUInt();
+            shader.Field14 = ReadUInt();
+            shader.Field18 = ReadUInt();
+            shader.Data = ReadBytes( size );
+
+            return shader;
         }
     }
 }

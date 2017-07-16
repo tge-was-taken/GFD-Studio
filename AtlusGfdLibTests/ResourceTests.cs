@@ -9,111 +9,218 @@ namespace AtlusGfdLib.Tests
     [TestClass()]
     public class ResourceTests
     {
-        public const string ModelPath = @"D:\Modding\Persona 5 EU\Main game\Extracted\data\model\character\0001\c0001_051_00.GMD";
-        public const string ModelNewPath = @"D:\Modding\Persona 5 EU\Main game\Extracted\data\model\character\0001\c0001_051_00_new.GMD";
-        public const string ShaderCachePS3Path = @"D:\Modding\Persona 5 EU\Main game\Extracted\ps3\GFDPS3PRESET.GSC";
-        public const string ShaderCachePS3NewPath = @"D:\Modding\Persona 5 EU\Main game\Extracted\ps3\GFDPS3PRESET_new.GSC";
-        public const string ShaderCache2PS3Path = @"D:\Modding\Persona 5 EU\Main game\Extracted\ps3\GFDPS3.GSC";
-        public const string ShaderCache2PS3NewPath = @"D:\Modding\Persona 5 EU\Main game\Extracted\ps3\GFDPS3_new.GSC";
-        public const string ShaderCachePSP2Path = @"D:\Modding\Persona 4 Dancing CPK RIP\data\GFDPSP2PRESET.GSC";
-        public const string ShaderCachePSP2NewPath = @"D:\Modding\Persona 4 Dancing CPK RIP\data\GFDPSP2PRESET.GSC";
-        public const string ShaderCache2PSP2Path = @"D:\Modding\Persona 4 Dancing CPK RIP\data\GFDPSP2.GSC";
-        public const string ShaderCache2PSP2NewPath = @"D:\Modding\Persona 4 Dancing CPK RIP\data\GFDPSP2.GSC";
+        public const string Model_P5PlayerModel_Path          = @"D:\Modding\Persona 5 EU\Main game\Extracted\data\model\character\0001\c0001_051_00.GMD";
+        public const string Model_P4DFaceModel_Path           = @"D:\Modding\Persona 4 Dancing CPK RIP\data\dance\player\pc001_f1.GMD";
+        public const string Model_P5FieldLevelModel_Path      = @"D:\Modding\Persona 5 EU\Main game\Extracted\data\model\field_tex\f013_014_0.GFS";
+        public const string ShaderCache_GFDPS3PRESET_Path     = @"D:\Modding\Persona 5 EU\Main game\Extracted\ps3\GFDPS3PRESET.GSC";
+        public const string ShaderCache_GFDPS3_Path           = @"D:\Modding\Persona 5 EU\Main game\Extracted\ps3\GFDPS3.GSC";
+        public const string ShaderCache_GFDPSP2PRESET_Path    = @"D:\Modding\Persona 4 Dancing CPK RIP\data\GFDPSP2PRESET.GSC";
+        public const string ShaderCache_GFDPSP2_Path          = @"D:\Modding\Persona 4 Dancing CPK RIP\data\GFDPSP2.GSC";
 
-        [TestMethod()]
-        public void LoadFromFile_Model_ShouldNotThrow()
+        private string GetNewPath( string path )
         {
-            var res = Resource.Load<Model>( ModelPath );
+            return Path.Combine( Path.GetDirectoryName( path ), Path.GetFileNameWithoutExtension( path ) + "_new" + Path.GetExtension( path ) );
         }
 
+        // Model tests ( Persona 5 protagonist battle model )
+
         [TestMethod()]
-        public void LoadFromStream_Model_ShouldNotThrow()
+        public void LoadFromStream_Model_P5PlayerModel_ShouldNotThrow()
         {
-            using ( var fileStream = File.OpenRead( ModelPath ) )
+            using ( var fileStream = File.OpenRead( Model_P5PlayerModel_Path ) )
             {
                 var res = Resource.Load<Model>( fileStream );
             }
         }
 
         [TestMethod()]
-        public void LoadFromFile_ShaderCache_PS3_ShouldNotThrow()
+        public void LoadFromFile_Model_P5PlayerModel_ShouldNotThrow()
         {
-            var res = Resource.Load<ShaderCachePS3>( ShaderCachePS3Path );
+            var res = Resource.Load<Model>( Model_P5PlayerModel_Path );
         }
 
         [TestMethod()]
-        public void LoadFromStream_ShaderCache_PS3_ShouldNotThrow()
+        public void LoadAndSaveToFile_Model_P5PlayerModel_OutputSizeShouldBeEqualToInputSize()
         {
-            using ( var fileStream = File.OpenRead( ShaderCachePS3Path ) )
+            var originalSize = new FileInfo( Model_P5PlayerModel_Path ).Length;
+            var model = Resource.Load<Model>( Model_P5PlayerModel_Path );
+            Resource.Save( model, GetNewPath( Model_P5PlayerModel_Path ) );
+            var newSize = new FileInfo( GetNewPath( Model_P5PlayerModel_Path ) ).Length;
+
+            Assert.AreEqual( originalSize, newSize );
+        }
+
+        [TestMethod()]
+        public void LoadAndSaveToFile_Model_P5PlayerModel_OutputShouldBeEqualToInput()
+        {
+            var originalModel = Resource.Load<Model>( Model_P5PlayerModel_Path );
+            Resource.Save( originalModel, GetNewPath( Model_P5PlayerModel_Path ) );
+            var newModel = Resource.Load<Model>( GetNewPath( Model_P5PlayerModel_Path ) );
+
+            CompareModels( originalModel, newModel );
+        }
+
+        // Model tests ( Persona 4 DAN Face model w/ morphers )
+
+        [TestMethod()]
+        public void LoadFromStream_Model_P4DMorphFaceModel_ShouldNotThrow()
+        {
+            using ( var fileStream = File.OpenRead( Model_P4DFaceModel_Path ) )
+            {
+                var res = Resource.Load<Model>( fileStream );
+            }
+        }
+
+        [TestMethod()]
+        public void LoadFromFile_Model_P4DMorphFaceModel_ShouldNotThrow()
+        {
+            var res = Resource.Load<Model>( Model_P4DFaceModel_Path );
+        }
+
+        [TestMethod()]
+        public void LoadAndSaveToFile_Model_P4DMorphFaceModel_OutputSizeShouldBeEqualToInputSize()
+        {
+            var originalSize = new FileInfo( Model_P4DFaceModel_Path ).Length;
+            var model = Resource.Load<Model>( Model_P4DFaceModel_Path );
+            Resource.Save( model, GetNewPath( Model_P4DFaceModel_Path ) );
+            var newSize = new FileInfo( GetNewPath( Model_P4DFaceModel_Path ) ).Length;
+
+            Assert.AreEqual( originalSize, newSize );
+        }
+
+        [TestMethod()]
+        public void LoadAndSaveToFile_Model_P4DMorphFaceModel_OutputShouldBeEqualToInput()
+        {
+            var originalModel = Resource.Load<Model>( Model_P4DFaceModel_Path );
+            Resource.Save( originalModel, GetNewPath( Model_P4DFaceModel_Path ) );
+            var newModel = Resource.Load<Model>( GetNewPath( Model_P4DFaceModel_Path ) );
+
+            CompareModels( originalModel, newModel );
+        }
+
+        // Model tests ( Persona 5 field level model )
+
+        [TestMethod()]
+        public void LoadFromStream_Model_P5FieldLevelModel_ShouldNotThrow()
+        {
+            using ( var fileStream = File.OpenRead( Model_P5FieldLevelModel_Path ) )
+            {
+                var res = Resource.Load<Model>( fileStream );
+            }
+        }
+
+        [TestMethod()]
+        public void LoadFromFile_Model_P5FieldLevelModel_ShouldNotThrow()
+        {
+            var res = Resource.Load<Model>( Model_P5FieldLevelModel_Path );
+        }
+
+        [TestMethod()]
+        public void LoadAndSaveToFile_Model_P5FieldLevelModel_OutputSizeShouldBeEqualToInputSize()
+        {
+            var originalSize = new FileInfo( Model_P5FieldLevelModel_Path ).Length;
+            var model = Resource.Load<Model>( Model_P5FieldLevelModel_Path );
+            Resource.Save( model, GetNewPath( Model_P5FieldLevelModel_Path ) );
+            var newSize = new FileInfo( GetNewPath( Model_P5FieldLevelModel_Path ) ).Length;
+
+            Assert.AreEqual( originalSize, newSize );
+        }
+
+        [TestMethod()]
+        public void LoadAndSaveToFile_Model_P5FieldLevelModel_OutputShouldBeEqualToInput()
+        {
+            var originalModel = Resource.Load<Model>( Model_P5FieldLevelModel_Path );
+            Resource.Save( originalModel, GetNewPath( Model_P5FieldLevelModel_Path ) );
+            var newModel = Resource.Load<Model>( GetNewPath( Model_P5FieldLevelModel_Path ) );
+
+            CompareModels( originalModel, newModel );
+        }
+
+
+        // Shader cache tests ( Persona 5 PS3 )
+
+        [TestMethod()]
+        public void LoadFromStream_ShaderCache_GFDPS3PRESET_ShouldNotThrow()
+        {
+            using ( var fileStream = File.OpenRead( ShaderCache_GFDPS3PRESET_Path ) )
             {
                 var res = Resource.Load<ShaderCachePS3>( fileStream );
             }
         }
 
         [TestMethod()]
-        public void LoadAndSaveToFile_Model_OutputSizeShouldBeEqualToInputSize()
+        public void LoadFromFile_ShaderCache_GFDPS3PRESET_ShouldNotThrow()
         {
-            var originalSize = new FileInfo( ModelPath ).Length;
-            var model = Resource.Load<Model>( ModelPath );
-            Resource.Save( model, ModelNewPath );
-            var newSize = new FileInfo( ModelNewPath ).Length;
+            var res = Resource.Load<ShaderCachePS3>( ShaderCache_GFDPS3PRESET_Path );
+        }
+
+        [TestMethod()]
+        public void LoadAndSaveToFile_ShaderCache_GFDPS3PRESET_OutputSizeShouldBeEqualToInputSize()
+        {
+            var originalSize = new FileInfo( ShaderCache_GFDPS3PRESET_Path ).Length;
+            var shaderCache = Resource.Load<ShaderCachePS3>( ShaderCache_GFDPS3PRESET_Path );
+            Resource.Save( shaderCache, GetNewPath( ShaderCache_GFDPS3PRESET_Path ) );
+            var newSize = new FileInfo( GetNewPath( ShaderCache_GFDPS3PRESET_Path ) ).Length;
 
             Assert.AreEqual( originalSize, newSize );
         }
 
+        // Shader cache ( empty ) tests ( Persona 5 PS3 )
+
         [TestMethod()]
-        public void LoadAndSaveToFile_ShaderCache_PS3_OutputSizeShouldBeEqualToInputSize()
+        public void LoadAndSaveToFile_ShaderCache_GFDPS3_OutputSizeShouldBeEqualToInputSize()
         {
-            var originalSize = new FileInfo( ShaderCachePS3Path ).Length;
-            var shaderCache = Resource.Load<ShaderCachePS3>( ShaderCachePS3Path );
-            Resource.Save( shaderCache, ShaderCachePS3NewPath );
-            var newSize = new FileInfo( ShaderCachePS3NewPath ).Length;
+            var originalSize = new FileInfo( ShaderCache_GFDPS3_Path ).Length;
+            var shaderCache = Resource.Load<ShaderCachePS3>( ShaderCache_GFDPS3_Path );
+            Resource.Save( shaderCache, GetNewPath( ShaderCache_GFDPS3_Path ) );
+            var newSize = new FileInfo( GetNewPath( ShaderCache_GFDPS3_Path ) ).Length;
 
             Assert.AreEqual( originalSize, newSize );
         }
 
+        // Shader cache test ( Persona 4 DAN )
+
+
         [TestMethod()]
-        public void LoadAndSaveToFile_ShaderCache2_PS3_OutputSizeShouldBeEqualToInputSize()
+        public void LoadFromStream_ShaderCache_GFDPSP2PRESET_ShouldNotThrow()
         {
-            var originalSize = new FileInfo( ShaderCache2PS3Path ).Length;
-            var shaderCache = Resource.Load<ShaderCachePS3>( ShaderCache2PS3Path );
-            Resource.Save( shaderCache, ShaderCache2PS3NewPath );
-            var newSize = new FileInfo( ShaderCache2PS3NewPath ).Length;
+            using ( var fileStream = File.OpenRead( ShaderCache_GFDPSP2PRESET_Path ) )
+            {
+                var res = Resource.Load<ShaderCachePSP2>( fileStream );
+            }
+        }
+
+        [TestMethod()]
+        public void LoadFromFile_ShaderCache_GFDPSP2PRESET_ShouldNotThrow()
+        {
+            var res = Resource.Load<ShaderCachePSP2>( ShaderCache_GFDPSP2PRESET_Path );
+        }
+
+        [TestMethod()]
+        public void LoadAndSaveToFile_ShaderCache_GFDPSP2PRESET_OutputSizeShouldBeEqualToInputSize()
+        {
+            var originalSize = new FileInfo( ShaderCache_GFDPSP2PRESET_Path ).Length;
+            var shaderCache = Resource.Load<ShaderCachePSP2>( ShaderCache_GFDPSP2PRESET_Path );
+            Resource.Save( shaderCache, GetNewPath( ShaderCache_GFDPSP2PRESET_Path ) );
+            var newSize = new FileInfo( GetNewPath( ShaderCache_GFDPSP2PRESET_Path ) ).Length;
 
             Assert.AreEqual( originalSize, newSize );
         }
 
+        // Shader cache ( empty ) tests ( Persona 4 DAN ) 
+
         [TestMethod()]
-        public void LoadAndSaveToFile_ShaderCache_PSP2_OutputSizeShouldBeEqualToInputSize()
+        public void LoadAndSaveToFile_ShaderCache_GFDPSP2_OutputSizeShouldBeEqualToInputSize()
         {
-            var originalSize = new FileInfo( ShaderCache2PSP2Path ).Length;
-            var shaderCache = Resource.Load<ShaderCachePSP2>( ShaderCache2PSP2Path );
-            Resource.Save( shaderCache, ShaderCache2PSP2NewPath );
-            var newSize = new FileInfo( ShaderCache2PSP2NewPath ).Length;
+            var originalSize = new FileInfo( ShaderCache_GFDPSP2_Path ).Length;
+            var shaderCache = Resource.Load<ShaderCachePSP2>( ShaderCache_GFDPSP2_Path );
+            Resource.Save( shaderCache, GetNewPath( ShaderCache_GFDPSP2_Path ) );
+            var newSize = new FileInfo( GetNewPath( ShaderCache_GFDPSP2_Path ) ).Length;
 
             Assert.AreEqual( originalSize, newSize );
         }
 
-        [TestMethod()]
-        public void LoadAndSaveToFile_ShaderCache2_PSP2_OutputSizeShouldBeEqualToInputSize()
-        {
-            var originalSize = new FileInfo( ShaderCache2PSP2Path ).Length;
-            var shaderCache = Resource.Load<ShaderCachePSP2>( ShaderCache2PSP2Path );
-            Resource.Save( shaderCache, ShaderCache2PSP2NewPath );
-            var newSize = new FileInfo( ShaderCache2PSP2NewPath ).Length;
-
-            Assert.AreEqual( originalSize, newSize );
-        }
-
-        [TestMethod()]
-        public void LoadAndSaveToFile_Model_OutputShouldBeEqualToInput()
-        {
-            var originalModel = Resource.Load<Model>( ModelPath );
-            Resource.Save( originalModel, ModelNewPath );
-            var newModel = Resource.Load<Model>( ModelNewPath );
-
-            CompareModels( originalModel, newModel );
-        }
+        // Comparison methods
 
         private void CompareModels(Model a, Model b)
         {
@@ -553,7 +660,9 @@ namespace AtlusGfdLib.Tests
                 return;
             }
 
-            throw new NotImplementedException();
+            Assert.AreEqual( a.TargetCount, b.TargetCount );
+            CollectionAssert.AreEqual( a.TargetInts, b.TargetInts );
+            Assert.AreEqual( a.MaterialName, b.MaterialName );
         }
 
         private void CompareEplLeafs( EplLeaf a, EplLeaf b )
@@ -586,7 +695,43 @@ namespace AtlusGfdLib.Tests
                 return;
             }
 
-            throw new NotImplementedException();
+            Assert.AreEqual( a.Type, b.Type );
+            Assert.AreEqual( a.Field30, b.Field30 );
+            Assert.AreEqual( a.Field40, b.Field40 );
+            Assert.AreEqual( a.Field50, b.Field50 );
+
+            switch ( a.Type )
+            {
+                case LightType.Type1:
+                    Assert.AreEqual( a.Field20, b.Field20 );
+                    Assert.AreEqual( a.Field04, b.Field04 );
+                    Assert.AreEqual( a.Field08, b.Field08 );
+                    break;
+                case LightType.Sky:
+                    Assert.AreEqual( a.Field10, b.Field10 );
+                    Assert.AreEqual( a.Field04, b.Field04 );
+                    Assert.AreEqual( a.Field08, b.Field08 );
+
+                    if ( a.Flags.HasFlag( LightFlags.Flag2 ) )
+                    {
+                        Assert.AreEqual( a.Field6C, b.Field6C );
+                        Assert.AreEqual( a.Field70, b.Field70 );
+                    }
+                    else
+                    {
+                        Assert.AreEqual( a.Field60, b.Field60 );
+                        Assert.AreEqual( a.Field64, b.Field64 );
+                        Assert.AreEqual( a.Field68, b.Field68 );
+                    }
+                    break;
+                case LightType.Type3:
+                    Assert.AreEqual( a.Field20, b.Field20 );
+                    Assert.AreEqual( a.Field08, b.Field08 );
+                    Assert.AreEqual( a.Field04, b.Field04 );
+                    Assert.AreEqual( a.Field74, b.Field74 );
+                    Assert.AreEqual( a.Field78, b.Field78 );
+                    goto case LightType.Sky;
+            }
         }
 
         private void CompareCameras( Camera a, Camera b )
@@ -597,7 +742,12 @@ namespace AtlusGfdLib.Tests
                 return;
             }
 
-            throw new NotImplementedException();
+            Assert.AreEqual( a.Transform, b.Transform );
+            Assert.AreEqual( a.Field180, b.Field180 );
+            Assert.AreEqual( a.Field184, b.Field184 );
+            Assert.AreEqual( a.Field188, b.Field188 );
+            Assert.AreEqual( a.Field18C, b.Field18C );
+            Assert.AreEqual( a.Field190, b.Field190 );
         }
 
         private void CompareGeometries( Geometry a, Geometry b )
@@ -627,11 +777,31 @@ namespace AtlusGfdLib.Tests
             CollectionAssert.AreEqual( a.ColorChannel1, b.ColorChannel1 );
             CollectionAssert.AreEqual( a.VertexWeights, b.VertexWeights );
 
+            CompareMorphTargetLists( a.MorphTargets, b.MorphTargets );
+
             Assert.AreEqual( a.MaterialName, b.MaterialName );
             Assert.AreEqual( a.BoundingBox, b.BoundingBox );
             Assert.AreEqual( a.BoundingSphere, b.BoundingSphere );
             Assert.AreEqual( a.FieldD4, b.FieldD4 );
             Assert.AreEqual( a.FieldD8, b.FieldD8 );
+        }
+
+        private void CompareMorphTargetLists( MorphTargetList a, MorphTargetList b )
+        {
+            if ( a == null || b == null )
+            {
+                Assert.IsTrue( a == null ? ( b == null ) : ( b != null ) );
+                return;
+            }
+
+            Assert.AreEqual( a.Flags, b.Flags );
+
+            for ( int i = 0; i < a.Count; i++ )
+            {
+                Assert.AreEqual( a[i].Flags, b[i].Flags );
+                Assert.AreEqual( a[i].VertexCount, b[i].VertexCount );
+                CollectionAssert.AreEqual( a[i].Vertices, b[i].Vertices );
+            }
         }
 
         private void CompareAnimationPackage( AnimationPackage a, AnimationPackage b )

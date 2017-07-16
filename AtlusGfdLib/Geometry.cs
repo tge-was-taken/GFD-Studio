@@ -13,21 +13,6 @@ namespace AtlusGfdLib
 
         public TriangleIndexType TriangleIndexType { get; set; }
 
-        private Triangle[] mTriangles;
-        public Triangle[] Triangles
-        {
-            get => mTriangles;
-            set
-            {
-                if ( value != null )
-                    Flags |= GeometryFlags.HasTriangles;
-                else
-                    Flags &= ~GeometryFlags.HasTriangles;
-
-                mTriangles = value;
-            }
-        }
-
         public int VertexCount => Vertices.Length;
 
         public int Field14 { get; set; }
@@ -183,6 +168,36 @@ namespace AtlusGfdLib
             }
         }
 
+        private Triangle[] mTriangles;
+        public Triangle[] Triangles
+        {
+            get => mTriangles;
+            set
+            {
+                if ( value != null )
+                    Flags |= GeometryFlags.HasTriangles;
+                else
+                    Flags &= ~GeometryFlags.HasTriangles;
+
+                mTriangles = value;
+            }
+        }
+
+        private MorphTargetList mMorphTargets;
+        public MorphTargetList MorphTargets
+        {
+            get => mMorphTargets;
+            set
+            {
+                if ( value != null )
+                    Flags |= GeometryFlags.HasMorphTargets;
+                else
+                    Flags &= ~GeometryFlags.HasMorphTargets;
+
+                mMorphTargets = value;
+            }
+        }
+
         private string mMaterialName;
         public string MaterialName
         {
@@ -249,7 +264,7 @@ namespace AtlusGfdLib
         HasBoundingBox    = 1 << 3,
         HasBoundingSphere = 1 << 4,
         Flag20            = 1 << 5, // render flag
-        Flag40            = 1 << 6,
+        HasMorphTargets   = 1 << 6,
         Flag80            = 1 << 7, // render flag
         Flag100           = 1 << 8,
         Flag200           = 1 << 9,

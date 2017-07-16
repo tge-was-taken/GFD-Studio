@@ -11,7 +11,8 @@ namespace AtlusGfdLib
 
         public Scene Scene { get; set; }
 
-        public AnimationPackage AnimationPackage { get; set; } 
+        public AnimationPackage AnimationPackage { get; set; }
+        internal ChunkType000100F9 ChunkType000100F9 { get; set; }
 
         public Model(uint version)
             : base(ResourceType.Model, version)

@@ -15,7 +15,8 @@ namespace AtlusGfdLibTesting
     {
         static void Main( string[] args )
         {
-            RMDToGMD();
+            //RMDToGMD();
+            ExportDAE( Resource.Load<Model>( @"D:\Modding\Persona 5 EU\Main game\Extracted\data\model\field_tex\f013_014_0.GFS" ) );
 
             /*
             var model = Resource.Load<Model>( @"D:\Modding\Persona 5 EU\Main game\Extracted\data\model\character\0001\c0001_051_00.GMD" );
@@ -314,6 +315,11 @@ namespace AtlusGfdLibTesting
 
             Resource.Save( model, @"D:\Modding\Persona 5 EU\Main game\Extracted\data\model\character\0001\c0001_051_00_new.GMD" );
 
+        }
+
+        static void ExportDAE( Model model )
+        {
+            AssimpExporter.ExportToFile( model, "model.dae" );
         }
     }
 }
