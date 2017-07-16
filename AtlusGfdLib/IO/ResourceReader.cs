@@ -473,6 +473,8 @@ namespace AtlusGfdLib
             }
 
             material.Flags = flags;
+            if ( material.Flags != flags )
+                throw new Exception( "Flags mismatch" );
 
             return material;
         }
@@ -942,10 +944,11 @@ namespace AtlusGfdLib
         {
             var geometry = new Geometry();
 
-            geometry.Flags = ( GeometryFlags )ReadInt();
+            var flags = ( GeometryFlags )ReadInt();
+            geometry.Flags = flags;
             geometry.VertexAttributeFlags = ( VertexAttributeFlags )ReadInt();
 
-            DebugLog( $"{nameof( geometry.Flags )}: {geometry.Flags}" );
+            DebugLog( $"{nameof( geometry.Flags )}: {flags}" );
             DebugLog( $"{nameof( geometry.VertexAttributeFlags )}: {geometry.VertexAttributeFlags.ToString()}" );
 
             int triangleCount = 0;
@@ -1079,6 +1082,9 @@ namespace AtlusGfdLib
                 geometry.FieldD4 = ReadFloat();
                 geometry.FieldD8 = ReadFloat();
             }
+
+            if ( geometry.Flags != flags )
+                throw new Exception( "Flags mismatch" );
 
             return geometry;
         }

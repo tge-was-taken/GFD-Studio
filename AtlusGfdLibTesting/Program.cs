@@ -15,8 +15,18 @@ namespace AtlusGfdLibTesting
     {
         static void Main( string[] args )
         {
-            //RMDToGMD();
-            ExportDAE( Resource.Load<Model>( @"D:\Modding\Persona 5 EU\Main game\Extracted\data\model\field_tex\f013_014_0.GFS" ) );
+            /*
+            var rmdPacFile = new PakToolArchiveFile( @"D:\Modding\Persona 3 & 4\Persona3\CVM_BTL\MODEL\PACK\BC001_WP0.PAC" );
+            var rmdPacEntry = rmdPacFile.Entries.Single( x => x.Name.EndsWith( "rmd", System.StringComparison.InvariantCultureIgnoreCase ) );
+            var rmdScene = new RmdScene( rmdPacEntry.Data );
+
+            RMDToGMD( rmdScene );
+            */
+            var model = Resource.Load<Model>( @"D:\Modding\Persona 5 EU\Main game\Extracted\data\model\character\0001\c0001_158_00.GMD" );
+            Resource.Save( model, @"D:\Modding\Persona 5 EU\Main game\Extracted\data\model\character\0001\c0001_158_00_new.GMD" );
+
+
+            //ExportDAE( Resource.Load<Model>( @"D:\Modding\Persona 5 EU\Main game\Extracted\data\model\field_tex\f013_014_0.GFS" ) );
 
             /*
             var model = Resource.Load<Model>( @"D:\Modding\Persona 5 EU\Main game\Extracted\data\model\character\0001\c0001_051_00.GMD" );
@@ -188,14 +198,11 @@ namespace AtlusGfdLibTesting
             //scene.MatrixMap = map;
         }
 
-        static void RMDToGMD()
+        static void RMDToGMD( RmdScene rmdScene )
         {
-            var rmdPacFile = new PakToolArchiveFile( @"D:\Modding\Persona 3 & 4\Persona3\CVM_BTL\MODEL\PACK\BC001_WP0.PAC" );
-            var rmdPacEntry = rmdPacFile.Entries.Single( x => x.Name.EndsWith( "rmd", System.StringComparison.InvariantCultureIgnoreCase ) );
-            var rmdScene = new RmdScene( rmdPacEntry.Data );
             var rmdClump = rmdScene.Clumps[0];
 
-            var model = Resource.Load<Model>( @"D:\Modding\Persona 5 EU\Main game\Extracted\data\model\character\0001\c0001_051_00.GMD" );
+            var model = Resource.Load<Model>( @"D:\Modding\Persona 5 EU\Main game\Extracted\data\model\character\0001\c0001_158_00.GMD" );
 
             model.TextureDictionary.Clear();
             foreach ( var rwTexture in rmdScene.TextureDictionary.Textures )
@@ -223,10 +230,34 @@ namespace AtlusGfdLibTesting
 
                     if ( rwMaterial.IsTextured )
                     {
+                        // flag 1 = no apparent effect
+                        // flag 2 = no apparent effect
+                        // flag 4 = no apparent effect
+                        // flag 8 = no apparent effect
+                        // flag 10 = crash
+                        // flag 20 = no apparent effect 
+                        // flag 40 = no apparent effect 
+                        // flag 80 = Affected by light
+                        // flag 100 = no apparent effect 
+                        // flag 200 = no apparent effect 
+                        // flag 400 = no apparent effect
+                        // flag 800 = Affected by light
+                        // flag 1000 = turns mesh purple with a wireframe effect
+                        // flag 2000 = no apparent effect
+                        // flag 4000 = Affected by shadows
+                        // flag 8000 = cast shadow
+                        // flag 20000 = crash
+                        // flag 40000 = crash
+                        // flag 80000 = disable bloom
+                        // flag 20000000 = crash
+                        // flag 40000000 = no apparent effect
+                        // flag 80000000 = no apparent effect
+                        // enabling cast shadow + receive shadow = crash
+
                         material = new Material( materialName );
-                        material.Flags = MaterialFlags.Flag1 | MaterialFlags.Flag2 | MaterialFlags.Flag20 | MaterialFlags.Flag40 | MaterialFlags.Flag80 | MaterialFlags.Flag800 | MaterialFlags.Flag4000 | MaterialFlags.HasDiffuseMap;
-                        material.Ambient = new Vector4( 0.3921569f, 0.3921569f, 0.3921569f, 1f );
-                        material.Diffuse = new Vector4( 0.3921569f, 0.3921569f, 0.3921569f, 1f );
+                        material.Flags = MaterialFlags.EnableLight | MaterialFlags.EnableLight2 | MaterialFlags.CastShadow | MaterialFlags.DisableBloom | MaterialFlags.HasDiffuseMap;
+                        material.Ambient = new Vector4( 1, 1, 1, 1f );
+                        material.Diffuse = new Vector4( 1, 1, 1, 1f );
                         material.DiffuseMap = new TextureMap( rwMaterial.TextureReferenceNode.ReferencedTextureName + ".dds" );
                         material.Emissive = new Vector4( 0, 0, 0, 0 );
                         material.Field40 = 1;
@@ -313,7 +344,7 @@ namespace AtlusGfdLibTesting
             }
 
 
-            Resource.Save( model, @"D:\Modding\Persona 5 EU\Main game\Extracted\data\model\character\0001\c0001_051_00_new.GMD" );
+            Resource.Save( model, @"D:\Modding\Persona 5 EU\Main game\Extracted\data\model\character\0001\c0001_158_00_new.GMD" );
 
         }
 
