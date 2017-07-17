@@ -4,17 +4,37 @@ using System.Numerics;
 
 namespace AtlusGfdLib
 {
+    /// <summary>
+    /// Represents a box consisting of a minimum and maximum bounds vector used for calculation.
+    /// </summary>
     public struct BoundingBox : IEquatable<BoundingBox>
     {
+        /// <summary>
+        /// The smallest vector in the bounding box.
+        /// </summary>
         public Vector3 Min;
+
+        /// <summary>
+        /// The largest vector in the bounding box.
+        /// </summary>
         public Vector3 Max;
 
+        /// <summary>
+        /// Creates a new <see cref="BoundingBox"/> whose values are set to the specified values.
+        /// </summary>
+        /// <param name="min">The value to set the minimum bounds vector to.</param>
+        /// <param name="max">The value to set the maximum bounds vector to.</param>
         public BoundingBox( Vector3 min, Vector3 max )
         {
             Min = min;
             Max = max;
         }
 
+        /// <summary>
+        /// Calculates and creates a new <see cref="BoundingBox"/> from vertices.
+        /// </summary>
+        /// <param name="vertices">The vertices used to calculate the components.</param>
+        /// <returns>A new <see cref="BoundingBox"/> calculated form the specified vertices.</returns>
         public static BoundingBox Calculate( IEnumerable<Vector3> vertices )
         {
             Vector3 minExtent = new Vector3( float.MaxValue, float.MaxValue, float.MaxValue );

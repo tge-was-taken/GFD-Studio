@@ -6,12 +6,32 @@ using System.Threading.Tasks;
 
 namespace AtlusGfdLib
 {
+    /// <summary>
+    /// Represents a vector consisting out of 3 byte components.
+    /// </summary>
     public struct ByteVector3 : IEquatable<ByteVector3>
     {
+        /// <summary>
+        /// The X component of the vector.
+        /// </summary>
         public byte X;
+
+        /// <summary>
+        /// The Y component of the vector.
+        /// </summary>
         public byte Y;
+
+        /// <summary>
+        /// The Z component of the vector.
+        /// </summary>
         public byte Z;
 
+        /// <summary>
+        /// Creates a new <see cref="ByteVector3"/> with the specified component values.
+        /// </summary>
+        /// <param name="x">The value of the X component.</param>
+        /// <param name="y">The value of the Y component.</param>
+        /// <param name="z">The value of the Z component.</param>
         public ByteVector3( byte x, byte y, byte z )
         {
             X = x;
@@ -19,6 +39,10 @@ namespace AtlusGfdLib
             Z = z;
         }
 
+        /// <summary>
+        /// Creates a new <see cref="ByteVector3"/> with the specified component values taken from a <see cref="ByteVector4"/>.
+        /// </summary>
+        /// <param name="vec4">The <see cref="ByteVector4"/> whose component values to use.</param>
         public ByteVector3( ByteVector4 vec4 )
         {
             X = vec4.X;
