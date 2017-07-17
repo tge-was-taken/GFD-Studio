@@ -5,17 +5,13 @@ using System.IO;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Text;
-using AtlusGfdLib.IO;
 
-namespace AtlusGfdLib
+namespace AtlusGfdLib.IO
 {
     internal class ResourceReader : IDisposable
     {
         private static Encoding sSJISEncoding = Encoding.GetEncoding( 932 );
         private EndianBinaryReader mReader;
-
-        public float Field34 { get; private set; }
-        public float Field38 { get; private set; }
 
         public ResourceReader( Stream stream, Endianness endianness )
         {

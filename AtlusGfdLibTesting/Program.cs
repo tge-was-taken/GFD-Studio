@@ -22,11 +22,22 @@ namespace AtlusGfdLibTesting
 
             RMDToGMD( rmdScene );
             */
-            var model = Resource.Load<Model>( @"D:\Modding\Persona 5 EU\Main game\Extracted\data\model\character\0001\c0001_158_00.GMD" );
-            Resource.Save( model, @"D:\Modding\Persona 5 EU\Main game\Extracted\data\model\character\0001\c0001_158_00_new.GMD" );
+
+            //var model = Resource.Load<Model>( @"D:\Modding\Persona 5 EU\Main game\Extracted\data\model\field_tex\f051_010_0.GFS" );
+            //Resource.Save( model, @"D:\Modding\Persona 5 EU\Main game\Extracted\data\model\field_tex\f051_010_0.GFS" );
 
 
-            //ExportDAE( Resource.Load<Model>( @"D:\Modding\Persona 5 EU\Main game\Extracted\data\model\field_tex\f013_014_0.GFS" ) );
+            //ExportDAE( model );
+
+            var archive = new Archive( @"D:\Modding\Persona 5\Dump\model\field_tex\textures\tex051_010_00_00.bin" );
+            var archiveBuilder = new ArchiveBuilder();
+            foreach ( var file in archive )
+            {
+                archiveBuilder.AddFile( file, archive.OpenFile( file ) );
+            }
+            var newArchive = archiveBuilder.Build();
+
+            newArchive.SaveToFile( @"D:\Modding\Persona 5\Dump\model\field_tex\textures\tex051_010_00_00_new.bin" );
 
             /*
             var model = Resource.Load<Model>( @"D:\Modding\Persona 5 EU\Main game\Extracted\data\model\character\0001\c0001_051_00.GMD" );

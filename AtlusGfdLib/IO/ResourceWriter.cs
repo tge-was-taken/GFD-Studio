@@ -33,6 +33,7 @@ namespace AtlusGfdLib.IO
             }
         }
 
+        // Write primitive methods
         private void WriteByte( byte value ) => mCurWriter.Write( value );
 
         private void WriteBool( bool value ) => mCurWriter.Write( ( byte )( value ? 1 : 0 ) );
@@ -151,6 +152,7 @@ namespace AtlusGfdLib.IO
             WriteFloat( boundingSphere.Radius );
         }
 
+        // Writer stack methods
         private void InitWriterStack( Stream stream, Endianness endianness )
         {
             mWriterStack = new Stack<EndianBinaryWriter>();
@@ -178,6 +180,7 @@ namespace AtlusGfdLib.IO
             return writer;
         }
 
+        // Chunk write methods
         private void StartWritingChunk( uint version, ChunkType type )
         {
             // push new writer
@@ -205,6 +208,7 @@ namespace AtlusGfdLib.IO
             }
         }
 
+        // Header write methods
         private void WriteFileHeader( string magic, uint version, FileType type )
         {
             WriteString( magic, 4 );
@@ -218,6 +222,7 @@ namespace AtlusGfdLib.IO
             WriteFileHeader( FileHeader.CMAGIC_FS, version, type );
         }
 
+        // Write resource methods
         private void WriteResourceFile( Resource resource )
         {
             FileType fileType;
@@ -285,6 +290,7 @@ namespace AtlusGfdLib.IO
                 WriteEndChunk( model.Version );
         }
 
+        // Write texture dictionary methods
         private void WriteTextureDictionary( TextureDictionary textureDictionary )
         {
             StartWritingChunk( textureDictionary.Version, ChunkType.TextureDictionary );
@@ -310,6 +316,7 @@ namespace AtlusGfdLib.IO
             WriteByte( texture.Field1F );
         }
 
+        // Write material methods
         private void WriteMaterialDictionary( MaterialDictionary materialDictionary )
         {
             StartWritingChunk( materialDictionary.Version, ChunkType.MaterialDictionary );
@@ -639,6 +646,7 @@ namespace AtlusGfdLib.IO
         {
         }
 
+        // Write scene methods
         private void WriteScene( Scene scene )
         {
             StartWritingChunk( scene.Version, ChunkType.Scene );
@@ -1029,7 +1037,7 @@ namespace AtlusGfdLib.IO
             WriteUInt( 0 ); 
         }
 
-        // shader cache
+        // Write shader cache methods
         private void WriteShaderCacheFileHeader( uint version, FileType type )
         {
             WriteFileHeader( FileHeader.CMAGIC_SHADERCACHE, version, type );

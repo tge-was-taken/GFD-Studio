@@ -49,6 +49,7 @@
   <ItemGroup>
     <Compile Include="Animation.cs" />
     <Compile Include="AnimationList.cs" />
+    <Compile Include="Archive.cs" />
     <Compile Include="BoundingBox.cs" />
     <Compile Include="BoundingSphere.cs" />
     <Compile Include="ByteVector3.cs" />
@@ -62,8 +63,11 @@
     <Compile Include="Geometry.cs" />
     <Compile Include="ChunkType000100F9.cs" />
     <Compile Include="ChunkType000100F9Entry1.cs" />
-    <Compile Include="IO\MorphSet.cs" />
-    <Compile Include="IO\MorphTarget.cs" />
+    <Compile Include="IO\AlignmentHelper.cs" />
+    <Compile Include="IO\StreamExtensions.cs" />
+    <Compile Include="IO\Substream.cs" />
+    <Compile Include="MorphTargetList.cs" />
+    <Compile Include="MorphTarget.cs" />
     <Compile Include="IO\ResourceBuilder.cs" />
     <Compile Include="IO\AssimpExporter.cs" />
     <Compile Include="MatrixMap.cs" />

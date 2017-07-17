@@ -1,4 +1,4 @@
-﻿namespace AtlusGfdLib
+﻿namespace AtlusGfdLib.IO
 {
     internal struct ChunkHeader
     {
