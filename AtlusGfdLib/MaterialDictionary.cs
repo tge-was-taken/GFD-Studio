@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace AtlusGfdLib
 {
-    public sealed class MaterialDictionary : Resource
+    public sealed class MaterialDictionary : Resource, IDictionary<string, Material>
     {
         private Dictionary<string, Material> mDictionary;
 
@@ -33,6 +33,12 @@ namespace AtlusGfdLib
 
         public int Count => mDictionary.Count;
 
+        public ICollection<string> Keys => ( ( IDictionary<string, Material> )mDictionary ).Keys;
+
+        public ICollection<Material> Values => ( ( IDictionary<string, Material> )mDictionary ).Values;
+
+        public bool IsReadOnly => ( ( IDictionary<string, Material> )mDictionary ).IsReadOnly;
+
         public void Clear() => mDictionary.Clear();
 
         public bool ContainsMaterial( string name ) => mDictionary.ContainsKey( name );
@@ -46,6 +52,51 @@ namespace AtlusGfdLib
         public bool TryGetMaterial( string name, out Material material)
         {
             return mDictionary.TryGetValue( name, out material);
+        }
+
+        public bool ContainsKey( string key )
+        {
+            return ( ( IDictionary<string, Material> )mDictionary ).ContainsKey( key );
+        }
+
+        public void Add( string key, Material value )
+        {
+            ( ( IDictionary<string, Material> )mDictionary ).Add( key, value );
+        }
+
+        public bool TryGetValue( string key, out Material value )
+        {
+            return ( ( IDictionary<string, Material> )mDictionary ).TryGetValue( key, out value );
+        }
+
+        public void Add( KeyValuePair<string, Material> item )
+        {
+            ( ( IDictionary<string, Material> )mDictionary ).Add( item );
+        }
+
+        public bool Contains( KeyValuePair<string, Material> item )
+        {
+            return ( ( IDictionary<string, Material> )mDictionary ).Contains( item );
+        }
+
+        public void CopyTo( KeyValuePair<string, Material>[] array, int arrayIndex )
+        {
+            ( ( IDictionary<string, Material> )mDictionary ).CopyTo( array, arrayIndex );
+        }
+
+        public bool Remove( KeyValuePair<string, Material> item )
+        {
+            return ( ( IDictionary<string, Material> )mDictionary ).Remove( item );
+        }
+
+        public IEnumerator<KeyValuePair<string, Material>> GetEnumerator()
+        {
+            return ( ( IDictionary<string, Material> )mDictionary ).GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ( ( IDictionary<string, Material> )mDictionary ).GetEnumerator();
         }
     }
 }
