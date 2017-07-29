@@ -107,7 +107,7 @@ namespace AtlusGfdLib
 
     public sealed class ShaderCachePS3 : ShaderCacheBase<ShaderPS3>
     {
-        public ShaderCachePS3(uint version ) : base( ResourceType.ShaderCachePS3, version )
+        public ShaderCachePS3( uint version ) : base( ResourceType.ShaderCachePS3, version )
         {
         }
     }

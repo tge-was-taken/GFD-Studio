@@ -6,7 +6,7 @@ namespace AtlusGfdLib.IO
     public class SubStream : Stream
     {
         private readonly Stream mStream;
-        private long mSourcePositionSave;
+        private long mSourcePositionCopy;
         private readonly long mStreamPosition;
         private long mPosition;
         private long mLength;
@@ -56,11 +56,14 @@ namespace AtlusGfdLib.IO
                     break;
                 case SeekOrigin.End:
                     {
+                        if ( offset < mLength || offset > 0 )
+                            throw new ArgumentOutOfRangeException( nameof( offset ) );
+
                         mPosition = (mStreamPosition + mLength) - offset;
                     }
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(origin), origin, null);
+                    throw new ArgumentOutOfRangeException(nameof(origin));
             }
 
             return mPosition;
@@ -234,7 +237,7 @@ namespace AtlusGfdLib.IO
         */
         protected void PushPosition()
         {
-            mSourcePositionSave = mStream.Position;
+            mSourcePositionCopy = mStream.Position;
         }
 
         protected void SetUnderlyingStreamPosition()
@@ -244,7 +247,7 @@ namespace AtlusGfdLib.IO
 
         protected void PopPosition()
         {
-            mStream.Position = mSourcePositionSave;
+            mStream.Position = mSourcePositionCopy;
         }
     }
 }

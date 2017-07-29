@@ -26,6 +26,7 @@ namespace AtlusGfdLib
             mStreamStartPosition = stream.Position;
             mStream = stream;
             mOwnsStream = ownsStream;
+            mEntryMap = new Dictionary<string, ArchiveEntry>();
 
             ReadEntryHeaders();
         }
@@ -33,6 +34,7 @@ namespace AtlusGfdLib
         public Archive(byte[] data)
         {
             mStream = new MemoryStream( data );
+            mEntryMap = new Dictionary<string, ArchiveEntry>();
             ReadEntryHeaders();
         }
 
@@ -68,7 +70,6 @@ namespace AtlusGfdLib
 
         private void ReadEntryHeaders()
         {
-            mEntryMap = new Dictionary<string, ArchiveEntry>();
             var reader = new ArchiveReader( mStream, true );
 
             while ( reader.ReadEntryHeader( out var entry ) ) 

@@ -65,7 +65,7 @@
     <Compile Include="ChunkType000100F9Entry1.cs" />
     <Compile Include="IO\AlignmentHelper.cs" />
     <Compile Include="IO\StreamExtensions.cs" />
-    <Compile Include="IO\Substream.cs" />
+    <Compile Include="IO\SubStream.cs" />
     <Compile Include="MorphTargetList.cs" />
     <Compile Include="MorphTarget.cs" />
     <Compile Include="IO\ResourceBuilder.cs" />
