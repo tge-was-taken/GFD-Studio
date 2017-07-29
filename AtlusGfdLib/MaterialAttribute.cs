@@ -3,7 +3,7 @@ using System.Numerics;
 
 namespace AtlusGfdLib
 {
-    public abstract class MaterialProperty
+    public abstract class MaterialAttribute
     {
         private const uint FLAG_MASK = 0xFFFF0000;
         private const int FLAG_SHIFT = 16;
@@ -11,9 +11,9 @@ namespace AtlusGfdLib
 
         public uint RawFlags { get; private set; } 
 
-        public MaterialPropertyFlags Flags
+        public MaterialAttributeFlags Flags
         {
-            get { return ( MaterialPropertyFlags )( (RawFlags & FLAG_MASK) >> FLAG_SHIFT ); }
+            get { return ( MaterialAttributeFlags )( (RawFlags & FLAG_MASK) >> FLAG_SHIFT ); }
             set
             {
                 RawFlags &= ~FLAG_MASK;
@@ -21,9 +21,9 @@ namespace AtlusGfdLib
             }
         }
 
-        public MaterialPropertyType Type
+        public MaterialAttributeType Type
         {
-            get { return ( MaterialPropertyType )( RawFlags & TYPE_MASK ); }
+            get { return ( MaterialAttributeType )( RawFlags & TYPE_MASK ); }
             set
             {
                 RawFlags &= ~TYPE_MASK;
@@ -31,21 +31,21 @@ namespace AtlusGfdLib
             }
         }
 
-        protected MaterialProperty( uint privateFlags ) => RawFlags = privateFlags;
+        protected MaterialAttribute( uint privateFlags ) => RawFlags = privateFlags;
 
-        protected MaterialProperty( MaterialPropertyFlags flags, MaterialPropertyType type )
+        protected MaterialAttribute( MaterialAttributeFlags flags, MaterialAttributeType type )
         {
             Flags = flags;
             Type = type;
         }
     }
 
-    public enum MaterialPropertyFlags : ushort
+    public enum MaterialAttributeFlags : ushort
     {
         Flag1 = 1,
     }
 
-    public enum MaterialPropertyType : ushort
+    public enum MaterialAttributeType : ushort
     {
         Type0 = 0,
         Type1 = 1,
@@ -57,7 +57,7 @@ namespace AtlusGfdLib
         Type7 = 7,
     }
 
-    public sealed class MaterialPropertyType0 : MaterialProperty
+    public sealed class MaterialAttributeType0 : MaterialAttribute
     {
         // 0C
         public Vector4 Field0C { get; set; }
@@ -78,18 +78,18 @@ namespace AtlusGfdLib
         public float Field2C { get; set; }
 
         // 30
-        public MaterialPropertyType0Flags Type0Flags { get; set; }
+        public MaterialAttributeType0Flags Type0Flags { get; set; }
 
-        public MaterialPropertyType0() : base( MaterialPropertyFlags.Flag1, MaterialPropertyType.Type0 ) { }
+        public MaterialAttributeType0() : base( MaterialAttributeFlags.Flag1, MaterialAttributeType.Type0 ) { }
 
-        internal MaterialPropertyType0( uint privateFlags ) : base( privateFlags ) { }
+        internal MaterialAttributeType0( uint privateFlags ) : base( privateFlags ) { }
 
-        public MaterialPropertyType0( MaterialPropertyFlags flags ) : base( flags, MaterialPropertyType.Type0 )
+        public MaterialAttributeType0( MaterialAttributeFlags flags ) : base( flags, MaterialAttributeType.Type0 )
         {
         }
     }
 
-    public enum MaterialPropertyType0Flags
+    public enum MaterialAttributeType0Flags
     {
         Flag1 = 0b0001,
         Flag2 = 0b0010,
@@ -97,7 +97,7 @@ namespace AtlusGfdLib
         Flag8 = 0b1000,
     }
 
-    public sealed class MaterialPropertyType1 : MaterialProperty
+    public sealed class MaterialAttributeType1 : MaterialAttribute
     {
         // 10
         public Vector4 Field0C { get; set; }
@@ -118,18 +118,18 @@ namespace AtlusGfdLib
         public float Field38 { get; set; }
 
         // 3C
-        public MaterialPropertyType1Flags Type1Flags { get; set; }
+        public MaterialAttributeType1Flags Type1Flags { get; set; }
 
-        public MaterialPropertyType1() : base( MaterialPropertyFlags.Flag1, MaterialPropertyType.Type1 ) { }
+        public MaterialAttributeType1() : base( MaterialAttributeFlags.Flag1, MaterialAttributeType.Type1 ) { }
 
-        internal MaterialPropertyType1( uint privateFlags ) : base( privateFlags ) { }
+        internal MaterialAttributeType1( uint privateFlags ) : base( privateFlags ) { }
 
-        public MaterialPropertyType1( MaterialPropertyFlags flags ) : base( flags, MaterialPropertyType.Type1 )
+        public MaterialAttributeType1( MaterialAttributeFlags flags ) : base( flags, MaterialAttributeType.Type1 )
         {
         }
     }
 
-    public enum MaterialPropertyType1Flags
+    public enum MaterialAttributeType1Flags
     {
         Flag1 = 0b0001,
         Flag2 = 0b0010,
@@ -137,7 +137,7 @@ namespace AtlusGfdLib
         Flag8 = 0b1000,
     }
 
-    public sealed class MaterialPropertyType2 : MaterialProperty
+    public sealed class MaterialAttributeType2 : MaterialAttribute
     {
         // 0C
         public int Field0C { get; set; }
@@ -145,16 +145,16 @@ namespace AtlusGfdLib
         // 10
         public int Field10 { get; set; }
 
-        public MaterialPropertyType2() : base( MaterialPropertyFlags.Flag1, MaterialPropertyType.Type2 ) { }
+        public MaterialAttributeType2() : base( MaterialAttributeFlags.Flag1, MaterialAttributeType.Type2 ) { }
 
-        internal MaterialPropertyType2( uint privateFlags ) : base( privateFlags ) { }
+        internal MaterialAttributeType2( uint privateFlags ) : base( privateFlags ) { }
 
-        public MaterialPropertyType2( MaterialPropertyFlags flags ) : base( flags, MaterialPropertyType.Type2 )
+        public MaterialAttributeType2( MaterialAttributeFlags flags ) : base( flags, MaterialAttributeType.Type2 )
         {
         }
     }
 
-    public sealed class MaterialPropertyType3 : MaterialProperty
+    public sealed class MaterialAttributeType3 : MaterialAttribute
     {
         // 0C
         public float Field0C { get; set; }
@@ -195,16 +195,16 @@ namespace AtlusGfdLib
         // 3C
         public int Field3C { get; set; }
 
-        public MaterialPropertyType3() : base( MaterialPropertyFlags.Flag1, MaterialPropertyType.Type3 ) { }
+        public MaterialAttributeType3() : base( MaterialAttributeFlags.Flag1, MaterialAttributeType.Type3 ) { }
 
-        internal MaterialPropertyType3( uint privateFlags ) : base( privateFlags ) { }
+        internal MaterialAttributeType3( uint privateFlags ) : base( privateFlags ) { }
 
-        public MaterialPropertyType3( MaterialPropertyFlags flags ) : base( flags, MaterialPropertyType.Type3 )
+        public MaterialAttributeType3( MaterialAttributeFlags flags ) : base( flags, MaterialAttributeType.Type3 )
         {
         }
     }
 
-    public sealed class MaterialPropertyType4 : MaterialProperty
+    public sealed class MaterialAttributeType4 : MaterialAttribute
     {
         // 0C
         public Vector4 Field0C { get; set; }
@@ -251,16 +251,16 @@ namespace AtlusGfdLib
         // 5C
         public int Field5C { get; set; }
 
-        public MaterialPropertyType4() : base( MaterialPropertyFlags.Flag1, MaterialPropertyType.Type4 ) { }
+        public MaterialAttributeType4() : base( MaterialAttributeFlags.Flag1, MaterialAttributeType.Type4 ) { }
 
-        internal MaterialPropertyType4( uint privateFlags ) : base( privateFlags ) { }
+        internal MaterialAttributeType4( uint privateFlags ) : base( privateFlags ) { }
 
-        public MaterialPropertyType4( MaterialPropertyFlags flags ) : base( flags, MaterialPropertyType.Type4 )
+        public MaterialAttributeType4( MaterialAttributeFlags flags ) : base( flags, MaterialAttributeType.Type4 )
         {
         }
     }
 
-    public sealed class MaterialPropertyType5 : MaterialProperty
+    public sealed class MaterialAttributeType5 : MaterialAttribute
     {
         public int Field0C { get; set; }
 
@@ -286,16 +286,16 @@ namespace AtlusGfdLib
 
         public Vector4 Field48 { get; set; }
 
-        public MaterialPropertyType5() : base( MaterialPropertyFlags.Flag1, MaterialPropertyType.Type5 ) { }
+        public MaterialAttributeType5() : base( MaterialAttributeFlags.Flag1, MaterialAttributeType.Type5 ) { }
 
-        internal MaterialPropertyType5( uint privateFlags ) : base( privateFlags ) { }
+        internal MaterialAttributeType5( uint privateFlags ) : base( privateFlags ) { }
 
-        public MaterialPropertyType5( MaterialPropertyFlags flags ) : base( flags, MaterialPropertyType.Type5 )
+        public MaterialAttributeType5( MaterialAttributeFlags flags ) : base( flags, MaterialAttributeType.Type5 )
         {
         }
     }
 
-    public sealed class MaterialPropertyType6 : MaterialProperty
+    public sealed class MaterialAttributeType6 : MaterialAttribute
     {
         public int Field0C { get; set; }
 
@@ -303,22 +303,22 @@ namespace AtlusGfdLib
 
         public int Field14 { get; set; }
 
-        public MaterialPropertyType6() : base( MaterialPropertyFlags.Flag1, MaterialPropertyType.Type6 ) { }
+        public MaterialAttributeType6() : base( MaterialAttributeFlags.Flag1, MaterialAttributeType.Type6 ) { }
 
-        internal MaterialPropertyType6( uint privateFlags ) : base( privateFlags ) { }
+        internal MaterialAttributeType6( uint privateFlags ) : base( privateFlags ) { }
 
-        public MaterialPropertyType6( MaterialPropertyFlags flags ) : base( flags, MaterialPropertyType.Type6 )
+        public MaterialAttributeType6( MaterialAttributeFlags flags ) : base( flags, MaterialAttributeType.Type6 )
         {
         }
     }
 
-    public sealed class MaterialPropertyType7 : MaterialProperty
+    public sealed class MaterialAttributeType7 : MaterialAttribute
     {
-        public MaterialPropertyType7() : base( MaterialPropertyFlags.Flag1, MaterialPropertyType.Type7 ) { }
+        public MaterialAttributeType7() : base( MaterialAttributeFlags.Flag1, MaterialAttributeType.Type7 ) { }
 
-        internal MaterialPropertyType7( uint privateFlags ) : base( privateFlags ) { }
+        internal MaterialAttributeType7( uint privateFlags ) : base( privateFlags ) { }
 
-        public MaterialPropertyType7( MaterialPropertyFlags flags ) : base( flags, MaterialPropertyType.Type7 )
+        public MaterialAttributeType7( MaterialAttributeFlags flags ) : base( flags, MaterialAttributeType.Type7 )
         {
         }
     }

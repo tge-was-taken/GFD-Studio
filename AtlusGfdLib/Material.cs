@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Numerics;
 
 namespace AtlusGfdLib
@@ -189,13 +187,13 @@ namespace AtlusGfdLib
             }
         }
 
-        private List<MaterialProperty> mProperties;
-        public List<MaterialProperty> Properties
+        private List<MaterialAttribute> mAttributes;
+        public List<MaterialAttribute> Attributes
         {
-            get => mProperties;
+            get => mAttributes;
             set
             {
-                mProperties = value;
+                mAttributes = value;
                 ValidateFlags();
             }
         }
@@ -251,13 +249,13 @@ namespace AtlusGfdLib
             ValidateMapFlags( DetailMap,     MaterialFlags.HasDetailMap );
             ValidateMapFlags( ShadowMap,     MaterialFlags.HasShadowMap );
 
-            if ( Properties == null )
+            if ( Attributes == null )
             {
-                mFlags &= ~MaterialFlags.HasProperties;
+                mFlags &= ~MaterialFlags.HasAttributes;
             }
             else
             {
-                mFlags |= MaterialFlags.HasProperties;
+                mFlags |= MaterialFlags.HasAttributes;
             }
         }
 
@@ -293,7 +291,7 @@ namespace AtlusGfdLib
         Flag2000         = 1 << 13,
         ReceiveShadow    = 1 << 14,
         CastShadow       = 1 << 15,
-        HasProperties    = 1 << 16,
+        HasAttributes    = 1 << 16,
         Flag20000Crash   = 1 << 17,
         Flag40000Crash   = 1 << 18,
         DisableBloom     = 1 << 19,

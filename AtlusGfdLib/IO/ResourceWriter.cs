@@ -280,10 +280,11 @@ namespace AtlusGfdLib.IO
                 WriteAnimationPackage( model.AnimationPackage );
             }
 
-            bool animationOnly = model.AnimationPackage != null &
+            bool animationOnly = model.AnimationPackage != null &&
                 model.TextureDictionary == null &&
                 model.MaterialDictionary == null &&
-                model.Scene == null;
+                model.Scene == null &&
+                model.ChunkType000100F9 == null;
 
             // end chunk is not present in gap files
             if ( !animationOnly )
@@ -432,9 +433,9 @@ namespace AtlusGfdLib.IO
                 WriteTextureMap( version, material.ShadowMap );
             }
 
-            if ( material.Flags.HasFlag( MaterialFlags.HasProperties ) && material.Properties.Count != 0 )
+            if ( material.Flags.HasFlag( MaterialFlags.HasAttributes ) && material.Attributes.Count != 0 )
             {
-                WriteMaterialProperties( version, material.Properties );
+                WriteMaterialAttributes( version, material.Attributes );
             }
         }
 
@@ -464,185 +465,185 @@ namespace AtlusGfdLib.IO
             WriteFloat( map.Field88 );
         }
 
-        private void WriteMaterialProperties( uint version, List<MaterialProperty> properties )
+        private void WriteMaterialAttributes( uint version, List<MaterialAttribute> attributes )
         {
-            WriteInt( properties.Count );
+            WriteInt( attributes.Count );
 
-            foreach ( var property in properties )
+            foreach ( var attribute in attributes )
             {
-                WriteUInt( property.RawFlags );
+                WriteUInt( attribute.RawFlags );
 
-                switch ( property.Type )
+                switch ( attribute.Type )
                 {
-                    case MaterialPropertyType.Type0:
-                        WriteMaterialPropertyType0( version, ( MaterialPropertyType0 )property );
+                    case MaterialAttributeType.Type0:
+                        WriteMaterialAttributeType0( version, ( MaterialAttributeType0 )attribute );
                         break;
-                    case MaterialPropertyType.Type1:
-                        WriteMaterialPropertyType1( version, ( MaterialPropertyType1 )property );
+                    case MaterialAttributeType.Type1:
+                        WriteMaterialAttributeType1( version, ( MaterialAttributeType1 )attribute );
                         break;
-                    case MaterialPropertyType.Type2:
-                        WriteMaterialPropertyType2( version, ( MaterialPropertyType2 )property );
+                    case MaterialAttributeType.Type2:
+                        WriteMaterialAttributeType2( version, ( MaterialAttributeType2 )attribute );
                         break;
-                    case MaterialPropertyType.Type3:
-                        WriteMaterialPropertyType3( version, ( MaterialPropertyType3 )property );
+                    case MaterialAttributeType.Type3:
+                        WriteMaterialAttributeType3( version, ( MaterialAttributeType3 )attribute );
                         break;
-                    case MaterialPropertyType.Type4:
-                        WriteMaterialPropertyType4( version, ( MaterialPropertyType4 )property );
+                    case MaterialAttributeType.Type4:
+                        WriteMaterialAttributeType4( version, ( MaterialAttributeType4 )attribute );
                         break;
-                    case MaterialPropertyType.Type5:
-                        WriteMaterialPropertyType5( version, ( MaterialPropertyType5 )property );
+                    case MaterialAttributeType.Type5:
+                        WriteMaterialAttributeType5( version, ( MaterialAttributeType5 )attribute );
                         break;
-                    case MaterialPropertyType.Type6:
-                        WriteMaterialPropertyType6( version, ( MaterialPropertyType6 )property );
+                    case MaterialAttributeType.Type6:
+                        WriteMaterialAttributeType6( version, ( MaterialAttributeType6 )attribute );
                         break;
-                    case MaterialPropertyType.Type7:
-                        WriteMaterialPropertyType7( version, ( MaterialPropertyType7 )property );
+                    case MaterialAttributeType.Type7:
+                        WriteMaterialAttributeType7( version, ( MaterialAttributeType7 )attribute );
                         break;
                     default:
-                        throw new Exception( $"Unknown material property type { property.Type } " );
+                        throw new Exception( $"Unknown material attribute type { attribute.Type } " );
                 }
             }
         }
 
-        private void WriteMaterialPropertyType0( uint version, MaterialPropertyType0 property )
+        private void WriteMaterialAttributeType0( uint version, MaterialAttributeType0 attribute )
         {
             if ( version > 0x1104500 )
             {
-                WriteVector4( property.Field0C );
-                WriteFloat( property.Field1C );
-                WriteFloat( property.Field20 );
-                WriteFloat( property.Field24 );
-                WriteFloat( property.Field28 );
-                WriteFloat( property.Field2C );
-                WriteInt( (int)property.Type0Flags );
+                WriteVector4( attribute.Field0C );
+                WriteFloat( attribute.Field1C );
+                WriteFloat( attribute.Field20 );
+                WriteFloat( attribute.Field24 );
+                WriteFloat( attribute.Field28 );
+                WriteFloat( attribute.Field2C );
+                WriteInt( (int)attribute.Type0Flags );
             }
             else if ( version > 0x1104220 )
             {
-                WriteVector4( property.Field0C );
-                WriteFloat( property.Field1C );
-                WriteFloat( property.Field20 );
-                WriteFloat( property.Field24 );
-                WriteFloat( property.Field28 );
-                WriteFloat( property.Field2C );
+                WriteVector4( attribute.Field0C );
+                WriteFloat( attribute.Field1C );
+                WriteFloat( attribute.Field20 );
+                WriteFloat( attribute.Field24 );
+                WriteFloat( attribute.Field28 );
+                WriteFloat( attribute.Field2C );
 
-                WriteBool( property.Type0Flags.HasFlag( MaterialPropertyType0Flags.Flag1 ) );
-                WriteBool( property.Type0Flags.HasFlag( MaterialPropertyType0Flags.Flag2 ) );
-                WriteBool( property.Type0Flags.HasFlag( MaterialPropertyType0Flags.Flag4 ) );
+                WriteBool( attribute.Type0Flags.HasFlag( MaterialAttributeType0Flags.Flag1 ) );
+                WriteBool( attribute.Type0Flags.HasFlag( MaterialAttributeType0Flags.Flag2 ) );
+                WriteBool( attribute.Type0Flags.HasFlag( MaterialAttributeType0Flags.Flag4 ) );
 
                 if ( version > 0x1104260 )
                 {
-                    WriteBool( property.Type0Flags.HasFlag( MaterialPropertyType0Flags.Flag8 ) );
+                    WriteBool( attribute.Type0Flags.HasFlag( MaterialAttributeType0Flags.Flag8 ) );
                 }
             }
             else
             {
-                WriteVector4( property.Field0C );
-                WriteFloat( property.Field1C );
-                WriteFloat( property.Field20 );
-                WriteFloat( property.Field28 );
-                WriteFloat( property.Field2C );
+                WriteVector4( attribute.Field0C );
+                WriteFloat( attribute.Field1C );
+                WriteFloat( attribute.Field20 );
+                WriteFloat( attribute.Field28 );
+                WriteFloat( attribute.Field2C );
             }
         }
 
-        private void WriteMaterialPropertyType1( uint version, MaterialPropertyType1 property )
+        private void WriteMaterialAttributeType1( uint version, MaterialAttributeType1 attribute )
         {
-            WriteVector4( property.Field0C );
-            WriteFloat( property.Field1C );
-            WriteFloat( property.Field20 );
-            WriteVector4( property.Field24 );
-            WriteFloat( property.Field34 );
-            WriteFloat( property.Field38 );
+            WriteVector4( attribute.Field0C );
+            WriteFloat( attribute.Field1C );
+            WriteFloat( attribute.Field20 );
+            WriteVector4( attribute.Field24 );
+            WriteFloat( attribute.Field34 );
+            WriteFloat( attribute.Field38 );
 
             if ( version <= 0x1104500 )
             {
-                WriteBool( property.Type1Flags.HasFlag( MaterialPropertyType1Flags.Flag1 ) );
+                WriteBool( attribute.Type1Flags.HasFlag( MaterialAttributeType1Flags.Flag1 ) );
 
                 if ( version > 0x1104180 )
                 {
-                    WriteBool( property.Type1Flags.HasFlag( MaterialPropertyType1Flags.Flag2 ) );
+                    WriteBool( attribute.Type1Flags.HasFlag( MaterialAttributeType1Flags.Flag2 ) );
                 }
 
                 if ( version > 0x1104210 )
                 {
-                    WriteBool( property.Type1Flags.HasFlag( MaterialPropertyType1Flags.Flag4 ) );
+                    WriteBool( attribute.Type1Flags.HasFlag( MaterialAttributeType1Flags.Flag4 ) );
                 }
 
                 if ( version > 0x1104400 )
                 {
-                    WriteBool( property.Type1Flags.HasFlag( MaterialPropertyType1Flags.Flag8 ) );
+                    WriteBool( attribute.Type1Flags.HasFlag( MaterialAttributeType1Flags.Flag8 ) );
                 }
             }
             else
             {
-                WriteInt( (int)property.Type1Flags );
+                WriteInt( (int)attribute.Type1Flags );
             }
         }
 
-        private void WriteMaterialPropertyType2( uint version, MaterialPropertyType2 property )
+        private void WriteMaterialAttributeType2( uint version, MaterialAttributeType2 attribute )
         {
-            WriteInt( property.Field0C );
-            WriteInt( property.Field10 );
+            WriteInt( attribute.Field0C );
+            WriteInt( attribute.Field10 );
         }
 
-        private void WriteMaterialPropertyType3( uint version, MaterialPropertyType3 property )
+        private void WriteMaterialAttributeType3( uint version, MaterialAttributeType3 attribute )
         {
-            WriteFloat( property.Field0C );
-            WriteFloat( property.Field10 );
-            WriteFloat( property.Field14 );
-            WriteFloat( property.Field18 );
-            WriteFloat( property.Field1C );
-            WriteFloat( property.Field20 );
-            WriteFloat( property.Field24 );
-            WriteFloat( property.Field28 );
-            WriteFloat( property.Field2C );
-            WriteFloat( property.Field30 );
-            WriteFloat( property.Field34 );
-            WriteFloat( property.Field38 );
-            WriteInt( property.Field3C );
+            WriteFloat( attribute.Field0C );
+            WriteFloat( attribute.Field10 );
+            WriteFloat( attribute.Field14 );
+            WriteFloat( attribute.Field18 );
+            WriteFloat( attribute.Field1C );
+            WriteFloat( attribute.Field20 );
+            WriteFloat( attribute.Field24 );
+            WriteFloat( attribute.Field28 );
+            WriteFloat( attribute.Field2C );
+            WriteFloat( attribute.Field30 );
+            WriteFloat( attribute.Field34 );
+            WriteFloat( attribute.Field38 );
+            WriteInt( attribute.Field3C );
         }
 
-        private void WriteMaterialPropertyType4( uint version, MaterialPropertyType4 property )
+        private void WriteMaterialAttributeType4( uint version, MaterialAttributeType4 attribute )
         {
-            WriteVector4( property.Field0C );
-            WriteFloat( property.Field1C );
-            WriteFloat( property.Field20 );
-            WriteVector4( property.Field24 );
-            WriteFloat( property.Field34 );
-            WriteFloat( property.Field38 );
-            WriteFloat( property.Field3C );
-            WriteFloat( property.Field40 );
-            WriteFloat( property.Field44 );
-            WriteFloat( property.Field48 );
-            WriteFloat( property.Field4C );
-            WriteByte( property.Field50 );
-            WriteFloat( property.Field54 );
-            WriteFloat( property.Field58 );
-            WriteInt( property.Field5C );
+            WriteVector4( attribute.Field0C );
+            WriteFloat( attribute.Field1C );
+            WriteFloat( attribute.Field20 );
+            WriteVector4( attribute.Field24 );
+            WriteFloat( attribute.Field34 );
+            WriteFloat( attribute.Field38 );
+            WriteFloat( attribute.Field3C );
+            WriteFloat( attribute.Field40 );
+            WriteFloat( attribute.Field44 );
+            WriteFloat( attribute.Field48 );
+            WriteFloat( attribute.Field4C );
+            WriteByte( attribute.Field50 );
+            WriteFloat( attribute.Field54 );
+            WriteFloat( attribute.Field58 );
+            WriteInt( attribute.Field5C );
         }
 
-        private void WriteMaterialPropertyType5( uint version, MaterialPropertyType5 property )
+        private void WriteMaterialAttributeType5( uint version, MaterialAttributeType5 attribute )
         {
-            WriteInt( property.Field0C );
-            WriteInt( property.Field10 );
-            WriteFloat( property.Field14 );
-            WriteFloat( property.Field18 );
-            WriteVector4( property.Field1C );
-            WriteFloat( property.Field2C );
-            WriteFloat( property.Field30 );
-            WriteFloat( property.Field34 );
-            WriteFloat( property.Field38 );
-            WriteFloat( property.Field3C );
-            WriteVector4( property.Field48 );
+            WriteInt( attribute.Field0C );
+            WriteInt( attribute.Field10 );
+            WriteFloat( attribute.Field14 );
+            WriteFloat( attribute.Field18 );
+            WriteVector4( attribute.Field1C );
+            WriteFloat( attribute.Field2C );
+            WriteFloat( attribute.Field30 );
+            WriteFloat( attribute.Field34 );
+            WriteFloat( attribute.Field38 );
+            WriteFloat( attribute.Field3C );
+            WriteVector4( attribute.Field48 );
         }
 
-        private void WriteMaterialPropertyType6( uint version, MaterialPropertyType6 property )
+        private void WriteMaterialAttributeType6( uint version, MaterialAttributeType6 attribute )
         {
-            WriteInt( property.Field0C );
-            WriteInt( property.Field10 );
-            WriteInt( property.Field14 );
+            WriteInt( attribute.Field0C );
+            WriteInt( attribute.Field10 );
+            WriteInt( attribute.Field14 );
         }
 
-        private void WriteMaterialPropertyType7( uint version, MaterialPropertyType7 property )
+        private void WriteMaterialAttributeType7( uint version, MaterialAttributeType7 attribute )
         {
         }
 

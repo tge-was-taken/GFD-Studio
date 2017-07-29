@@ -463,9 +463,9 @@ namespace AtlusGfdLib.IO
                 material.ShadowMap = ReadTextureMap( version );
             }
 
-            if ( flags.HasFlag( MaterialFlags.HasProperties ) ) 
+            if ( flags.HasFlag( MaterialFlags.HasAttributes ) ) 
             {
-                material.Properties = ReadMaterialProperties( version );
+                material.Attributes = ReadMaterialAttributes( version );
             }
 
             material.Flags = flags;
@@ -504,242 +504,242 @@ namespace AtlusGfdLib.IO
             };
         }
 
-        private List<MaterialProperty> ReadMaterialProperties( uint version )
+        private List<MaterialAttribute> ReadMaterialAttributes( uint version )
         {
-            var properties = new List<MaterialProperty>();
-            int propertyCount = ReadInt();
+            var attributes = new List<MaterialAttribute>();
+            int attributeCount = ReadInt();
 
-            for ( int i = 0; i < propertyCount; i++ )
+            for ( int i = 0; i < attributeCount; i++ )
             {
-                MaterialProperty property;             
+                MaterialAttribute attribute;             
                 uint flags = ReadUInt();
 
-                switch ( (MaterialPropertyType)(flags & 0xFFFF) )
+                switch ( (MaterialAttributeType)(flags & 0xFFFF) )
                 {
-                    case MaterialPropertyType.Type0:
-                        property = ReadMaterialPropertyType0( flags, version );
+                    case MaterialAttributeType.Type0:
+                        attribute = ReadMaterialAttributeType0( flags, version );
                         break;
 
-                    case MaterialPropertyType.Type1:
-                        property = ReadMaterialPropertyType1( flags, version );
+                    case MaterialAttributeType.Type1:
+                        attribute = ReadMaterialAttributeType1( flags, version );
                         break;
 
-                    case MaterialPropertyType.Type2:
-                        property = ReadMaterialPropertyType2( flags, version );
+                    case MaterialAttributeType.Type2:
+                        attribute = ReadMaterialAttributeType2( flags, version );
                         break;
 
-                    case MaterialPropertyType.Type3:
-                        property = ReadMaterialPropertyType3( flags, version );
+                    case MaterialAttributeType.Type3:
+                        attribute = ReadMaterialAttributeType3( flags, version );
                         break;
 
-                    case MaterialPropertyType.Type4:
-                        property = ReadMaterialPropertyType4( flags, version );
+                    case MaterialAttributeType.Type4:
+                        attribute = ReadMaterialAttributeType4( flags, version );
                         break;
 
-                    case MaterialPropertyType.Type5:
-                        property = ReadMaterialPropertyType5( flags, version );
+                    case MaterialAttributeType.Type5:
+                        attribute = ReadMaterialAttributeType5( flags, version );
                         break;
 
-                    case MaterialPropertyType.Type6:
-                        property = ReadMaterialPropertyType6( flags, version );
+                    case MaterialAttributeType.Type6:
+                        attribute = ReadMaterialAttributeType6( flags, version );
                         break;
 
-                    case MaterialPropertyType.Type7:
-                        property = ReadMaterialPropertyType7( flags, version );
+                    case MaterialAttributeType.Type7:
+                        attribute = ReadMaterialAttributeType7( flags, version );
                         break;
 
                     default:
                         throw new Exception();
                 }
 
-                properties.Add( property );
+                attributes.Add( attribute );
             }
 
-            return properties;
+            return attributes;
         }
 
-        private MaterialPropertyType0 ReadMaterialPropertyType0( uint flags, uint version )
+        private MaterialAttributeType0 ReadMaterialAttributeType0( uint flags, uint version )
         {
-            var property = new MaterialPropertyType0( flags );
+            var attribute = new MaterialAttributeType0( flags );
 
             if ( version > 0x1104500 )
             {
-                property.Field0C = ReadVector4();
-                property.Field1C = ReadFloat();
-                property.Field20 = ReadFloat();
-                property.Field24 = ReadFloat();
-                property.Field28 = ReadFloat();
-                property.Field2C = ReadFloat();
-                property.Type0Flags = ( MaterialPropertyType0Flags )ReadInt();
+                attribute.Field0C = ReadVector4();
+                attribute.Field1C = ReadFloat();
+                attribute.Field20 = ReadFloat();
+                attribute.Field24 = ReadFloat();
+                attribute.Field28 = ReadFloat();
+                attribute.Field2C = ReadFloat();
+                attribute.Type0Flags = ( MaterialAttributeType0Flags )ReadInt();
             }
             else if ( version > 0x1104220 )
             {
-                property.Field0C = ReadVector4();
-                property.Field1C = ReadFloat();
-                property.Field20 = ReadFloat();
-                property.Field24 = ReadFloat();
-                property.Field28 = ReadFloat();
-                property.Field2C = ReadFloat();
+                attribute.Field0C = ReadVector4();
+                attribute.Field1C = ReadFloat();
+                attribute.Field20 = ReadFloat();
+                attribute.Field24 = ReadFloat();
+                attribute.Field28 = ReadFloat();
+                attribute.Field2C = ReadFloat();
 
                 if ( ReadBool() )
-                    property.Type0Flags |= MaterialPropertyType0Flags.Flag1;
+                    attribute.Type0Flags |= MaterialAttributeType0Flags.Flag1;
 
                 if ( ReadBool() )
-                    property.Type0Flags |= MaterialPropertyType0Flags.Flag2;
+                    attribute.Type0Flags |= MaterialAttributeType0Flags.Flag2;
 
                 if ( ReadBool() )
-                    property.Type0Flags |= MaterialPropertyType0Flags.Flag4;
+                    attribute.Type0Flags |= MaterialAttributeType0Flags.Flag4;
 
                 if ( version > 0x1104260 )
                 {
                     if ( ReadBool() )
-                        property.Type0Flags |= MaterialPropertyType0Flags.Flag8;
+                        attribute.Type0Flags |= MaterialAttributeType0Flags.Flag8;
                 }
             }
             else
             {
-                property.Field0C = ReadVector4();
-                property.Field1C = ReadFloat();
-                property.Field20 = ReadFloat();
-                property.Field24 = 1.0f;
-                property.Field28 = ReadFloat();
-                property.Field2C = ReadFloat();
+                attribute.Field0C = ReadVector4();
+                attribute.Field1C = ReadFloat();
+                attribute.Field20 = ReadFloat();
+                attribute.Field24 = 1.0f;
+                attribute.Field28 = ReadFloat();
+                attribute.Field2C = ReadFloat();
             }
 
-            return property;
+            return attribute;
         }
 
-        private MaterialPropertyType1 ReadMaterialPropertyType1( uint flags, uint version )
+        private MaterialAttributeType1 ReadMaterialAttributeType1( uint flags, uint version )
         {
-            var property = new MaterialPropertyType1( flags );
+            var attribute = new MaterialAttributeType1( flags );
 
-            property.Field0C = ReadVector4();
-            property.Field1C = ReadFloat();
-            property.Field20 = ReadFloat();
-            property.Field24 = ReadVector4();
-            property.Field34 = ReadFloat();
-            property.Field38 = ReadFloat();
+            attribute.Field0C = ReadVector4();
+            attribute.Field1C = ReadFloat();
+            attribute.Field20 = ReadFloat();
+            attribute.Field24 = ReadVector4();
+            attribute.Field34 = ReadFloat();
+            attribute.Field38 = ReadFloat();
 
             if ( version <= 0x1104500 )
             {
                 if ( ReadBool() )
-                    property.Type1Flags |= MaterialPropertyType1Flags.Flag1;
+                    attribute.Type1Flags |= MaterialAttributeType1Flags.Flag1;
 
                 if ( version > 0x1104180 )
                 {
                     if ( ReadBool() )
-                        property.Type1Flags |= MaterialPropertyType1Flags.Flag2;
+                        attribute.Type1Flags |= MaterialAttributeType1Flags.Flag2;
                 }
 
                 if ( version > 0x1104210 )
                 {
                     if ( ReadBool() )
-                        property.Type1Flags |= MaterialPropertyType1Flags.Flag4;
+                        attribute.Type1Flags |= MaterialAttributeType1Flags.Flag4;
                 }
 
                 if ( version > 0x1104400 )
                 {
                     if ( ReadBool() )
-                        property.Type1Flags |= MaterialPropertyType1Flags.Flag8;
+                        attribute.Type1Flags |= MaterialAttributeType1Flags.Flag8;
                 }
             }
             else
             {
-                property.Type1Flags = ( MaterialPropertyType1Flags )ReadInt();
+                attribute.Type1Flags = ( MaterialAttributeType1Flags )ReadInt();
             }
 
-            return property;
+            return attribute;
         }
 
-        private MaterialPropertyType2 ReadMaterialPropertyType2( uint flags, uint version )
+        private MaterialAttributeType2 ReadMaterialAttributeType2( uint flags, uint version )
         {
-            var property = new MaterialPropertyType2( flags );
+            var attribute = new MaterialAttributeType2( flags );
 
-            property.Field0C = ReadInt();
-            property.Field10 = ReadInt();
+            attribute.Field0C = ReadInt();
+            attribute.Field10 = ReadInt();
 
-            return property;
+            return attribute;
         }
 
-        private MaterialPropertyType3 ReadMaterialPropertyType3( uint flags, uint version )
+        private MaterialAttributeType3 ReadMaterialAttributeType3( uint flags, uint version )
         {
-            var property = new MaterialPropertyType3( flags );
+            var attribute = new MaterialAttributeType3( flags );
 
-            property.Field0C = ReadFloat();
-            property.Field10 = ReadFloat();
-            property.Field14 = ReadFloat();
-            property.Field18 = ReadFloat();
-            property.Field1C = ReadFloat();
-            property.Field20 = ReadFloat();
-            property.Field24 = ReadFloat();
-            property.Field28 = ReadFloat();
-            property.Field2C = ReadFloat();
-            property.Field30 = ReadFloat();
-            property.Field34 = ReadFloat();
-            property.Field38 = ReadFloat();
-            property.Field3C = ReadInt();
+            attribute.Field0C = ReadFloat();
+            attribute.Field10 = ReadFloat();
+            attribute.Field14 = ReadFloat();
+            attribute.Field18 = ReadFloat();
+            attribute.Field1C = ReadFloat();
+            attribute.Field20 = ReadFloat();
+            attribute.Field24 = ReadFloat();
+            attribute.Field28 = ReadFloat();
+            attribute.Field2C = ReadFloat();
+            attribute.Field30 = ReadFloat();
+            attribute.Field34 = ReadFloat();
+            attribute.Field38 = ReadFloat();
+            attribute.Field3C = ReadInt();
 
-            return property;
+            return attribute;
         }
 
-        private MaterialPropertyType4 ReadMaterialPropertyType4( uint flags, uint version )
+        private MaterialAttributeType4 ReadMaterialAttributeType4( uint flags, uint version )
         {
-            var property = new MaterialPropertyType4( flags );
+            var attribute = new MaterialAttributeType4( flags );
 
-            property.Field0C = ReadVector4();
-            property.Field1C = ReadFloat();
-            property.Field20 = ReadFloat();
-            property.Field24 = ReadVector4();
-            property.Field34 = ReadFloat();
-            property.Field38 = ReadFloat();
-            property.Field3C = ReadFloat();
-            property.Field40 = ReadFloat();
-            property.Field44 = ReadFloat();
-            property.Field48 = ReadFloat();
-            property.Field4C = ReadFloat();
-            property.Field50 = ReadByte();
-            property.Field54 = ReadFloat();
-            property.Field58 = ReadFloat();
-            property.Field5C = ReadInt();
+            attribute.Field0C = ReadVector4();
+            attribute.Field1C = ReadFloat();
+            attribute.Field20 = ReadFloat();
+            attribute.Field24 = ReadVector4();
+            attribute.Field34 = ReadFloat();
+            attribute.Field38 = ReadFloat();
+            attribute.Field3C = ReadFloat();
+            attribute.Field40 = ReadFloat();
+            attribute.Field44 = ReadFloat();
+            attribute.Field48 = ReadFloat();
+            attribute.Field4C = ReadFloat();
+            attribute.Field50 = ReadByte();
+            attribute.Field54 = ReadFloat();
+            attribute.Field58 = ReadFloat();
+            attribute.Field5C = ReadInt();
 
-            return property;
+            return attribute;
         }
 
-        private MaterialPropertyType5 ReadMaterialPropertyType5( uint flags, uint version )
+        private MaterialAttributeType5 ReadMaterialAttributeType5( uint flags, uint version )
         {
-            var property = new MaterialPropertyType5( flags );
+            var attribute = new MaterialAttributeType5( flags );
 
-            property.Field0C = ReadInt();
-            property.Field10 = ReadInt();
-            property.Field14 = ReadFloat();
-            property.Field18 = ReadFloat();
-            property.Field1C = ReadVector4();
-            property.Field2C = ReadFloat();
-            property.Field30 = ReadFloat();
-            property.Field34 = ReadFloat();
-            property.Field38 = ReadFloat();
-            property.Field3C = ReadFloat();
-            property.Field48 = ReadVector4();
+            attribute.Field0C = ReadInt();
+            attribute.Field10 = ReadInt();
+            attribute.Field14 = ReadFloat();
+            attribute.Field18 = ReadFloat();
+            attribute.Field1C = ReadVector4();
+            attribute.Field2C = ReadFloat();
+            attribute.Field30 = ReadFloat();
+            attribute.Field34 = ReadFloat();
+            attribute.Field38 = ReadFloat();
+            attribute.Field3C = ReadFloat();
+            attribute.Field48 = ReadVector4();
 
-            return property;
+            return attribute;
         }
 
-        private MaterialPropertyType6 ReadMaterialPropertyType6( uint flags, uint version )
+        private MaterialAttributeType6 ReadMaterialAttributeType6( uint flags, uint version )
         {
-            var property = new MaterialPropertyType6( flags );
+            var attribute = new MaterialAttributeType6( flags );
 
-            property.Field0C = ReadInt();
-            property.Field10 = ReadInt();
-            property.Field14 = ReadInt();
+            attribute.Field0C = ReadInt();
+            attribute.Field10 = ReadInt();
+            attribute.Field14 = ReadInt();
 
-            return property;
+            return attribute;
         }
 
-        private MaterialPropertyType7 ReadMaterialPropertyType7( uint flags, uint version )
+        private MaterialAttributeType7 ReadMaterialAttributeType7( uint flags, uint version )
         {
-            var property = new MaterialPropertyType7( flags );
+            var attribute = new MaterialAttributeType7( flags );
 
-            return property;
+            return attribute;
         }
 
         // Scene read methods

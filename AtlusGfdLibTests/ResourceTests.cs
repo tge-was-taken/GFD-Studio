@@ -333,7 +333,7 @@ namespace AtlusGfdLib.Tests
             CompareTextureMap( a.NightMap, b.NightMap );
             CompareTextureMap( a.DetailMap, b.DetailMap );
             CompareTextureMap( a.ShadowMap, b.ShadowMap );
-            CompareMaterialProperties( a.Properties, b.Properties );
+            CompareMaterialProperties( a.Attributes, b.Attributes );
         }
 
         private void CompareTextureMap( TextureMap a, TextureMap b )
@@ -369,7 +369,7 @@ namespace AtlusGfdLib.Tests
 
         }
 
-        private void CompareMaterialProperties( List<MaterialProperty> a, List<MaterialProperty> b )
+        private void CompareMaterialProperties( List<MaterialAttribute> a, List<MaterialAttribute> b )
         {
             if ( a == null || b == null )
             {
@@ -384,10 +384,10 @@ namespace AtlusGfdLib.Tests
 
                 switch ( a[i].Type )
                 {
-                    case MaterialPropertyType.Type0:
+                    case MaterialAttributeType.Type0:
                         {
-                            var a2 = ( MaterialPropertyType0 )a[i];
-                            var b2 = ( MaterialPropertyType0 )b[i];
+                            var a2 = ( MaterialAttributeType0 )a[i];
+                            var b2 = ( MaterialAttributeType0 )b[i];
 
                             Assert.AreEqual( a2.Field0C, b2.Field0C );
                             Assert.AreEqual( a2.Field1C, b2.Field1C );
@@ -398,10 +398,10 @@ namespace AtlusGfdLib.Tests
                             Assert.AreEqual( a2.Type0Flags, b2.Type0Flags );
                         }
                         break;
-                    case MaterialPropertyType.Type1:
+                    case MaterialAttributeType.Type1:
                         {
-                            var a2 = ( MaterialPropertyType1 )a[i];
-                            var b2 = ( MaterialPropertyType1 )b[i];
+                            var a2 = ( MaterialAttributeType1 )a[i];
+                            var b2 = ( MaterialAttributeType1 )b[i];
 
                             Assert.AreEqual( a2.Field0C, b2.Field0C );
                             Assert.AreEqual( a2.Field1C, b2.Field1C );
@@ -412,19 +412,19 @@ namespace AtlusGfdLib.Tests
                             Assert.AreEqual( a2.Type1Flags, b2.Type1Flags );
                         }
                         break;
-                    case MaterialPropertyType.Type2:
+                    case MaterialAttributeType.Type2:
                         {
-                            var a2 = ( MaterialPropertyType2 )a[i];
-                            var b2 = ( MaterialPropertyType2 )b[i];
+                            var a2 = ( MaterialAttributeType2 )a[i];
+                            var b2 = ( MaterialAttributeType2 )b[i];
 
                             Assert.AreEqual( a2.Field0C, b2.Field0C );
                             Assert.AreEqual( a2.Field10, b2.Field10 );
                         }
                         break;
-                    case MaterialPropertyType.Type3:
+                    case MaterialAttributeType.Type3:
                         {
-                            var a2 = ( MaterialPropertyType3 )a[i];
-                            var b2 = ( MaterialPropertyType3 )b[i];
+                            var a2 = ( MaterialAttributeType3 )a[i];
+                            var b2 = ( MaterialAttributeType3 )b[i];
 
                             Assert.AreEqual( a2.Field0C, b2.Field0C );
                             Assert.AreEqual( a2.Field10, b2.Field10 );
@@ -441,10 +441,10 @@ namespace AtlusGfdLib.Tests
                             Assert.AreEqual( a2.Field3C, b2.Field3C );
                         }
                         break;
-                    case MaterialPropertyType.Type4:
+                    case MaterialAttributeType.Type4:
                         {
-                            var a2 = ( MaterialPropertyType4 )a[i];
-                            var b2 = ( MaterialPropertyType4 )b[i];
+                            var a2 = ( MaterialAttributeType4 )a[i];
+                            var b2 = ( MaterialAttributeType4 )b[i];
 
                             Assert.AreEqual( a2.Field0C, b2.Field0C );
                             Assert.AreEqual( a2.Field1C, b2.Field1C );
@@ -463,10 +463,10 @@ namespace AtlusGfdLib.Tests
                             Assert.AreEqual( a2.Field5C, b2.Field5C );
                         }
                         break;
-                    case MaterialPropertyType.Type5:
+                    case MaterialAttributeType.Type5:
                         {
-                            var a2 = ( MaterialPropertyType5 )a[i];
-                            var b2 = ( MaterialPropertyType5 )b[i];
+                            var a2 = ( MaterialAttributeType5 )a[i];
+                            var b2 = ( MaterialAttributeType5 )b[i];
 
                             Assert.AreEqual( a2.Field0C, b2.Field0C );
                             Assert.AreEqual( a2.Field10, b2.Field10 );
@@ -482,17 +482,17 @@ namespace AtlusGfdLib.Tests
                             Assert.AreEqual( a2.Field48, b2.Field48 );
                         }
                         break;
-                    case MaterialPropertyType.Type6:
+                    case MaterialAttributeType.Type6:
                         {
-                            var a2 = ( MaterialPropertyType6 )a[i];
-                            var b2 = ( MaterialPropertyType6 )b[i];
+                            var a2 = ( MaterialAttributeType6 )a[i];
+                            var b2 = ( MaterialAttributeType6 )b[i];
 
                             Assert.AreEqual( a2.Field0C, b2.Field0C );
                             Assert.AreEqual( a2.Field10, b2.Field10 );
                             Assert.AreEqual( a2.Field14, b2.Field14 );
                         }
                         break;
-                    case MaterialPropertyType.Type7:
+                    case MaterialAttributeType.Type7:
                         // no fields
                         break;
                     default:
