@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>AtlusGfdEditor</RootNamespace>
     <AssemblyName>AtlusGfdEditor</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
@@ -108,39 +108,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Framework\Gui\PropertyGrid\UInt32HexTypeConverter.cs" />
-    <Compile Include="Framework\SingletonException.cs" />
+    <Compile Include="Gui\UInt32HexTypeConverter.cs" />
+    <Compile Include="Gui\SingletonException.cs" />
     <Compile Include="Gui\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Gui\MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Framework\Gui\TreeView\BaseWrapperTreeNode.cs" />
-    <Compile Include="Framework\Gui\TreeView\ChildNodeChangedEvent.cs" />
-    <Compile Include="Framework\Gui\TreeView\ContextMenuStripFlags.cs" />
-    <Compile Include="Gui\ApplicationSettings.cs" />
-    <Compile Include="Gui\MainFormSettingsForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Gui\MainFormSettingsForm.Designer.cs">
-      <DependentUpon>MainFormSettingsForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Gui\WrapperTreeNodes\GfdAnimationListWrapperTreeNode.cs" />
-    <Compile Include="Gui\WrapperTreeNodes\GfdMaterialDictionaryWrapperTreeNode.cs" />
-    <Compile Include="Gui\WrapperTreeNodes\GfdResourceBundleWrapperTreeNode.cs" />
-    <Compile Include="Gui\WrapperTreeNodes\GfdResourceWrapperTreeNode.cs" />
-    <Compile Include="Gui\WrapperTreeNodes\GfdSceneWrapperTreeNode.cs" />
-    <Compile Include="Gui\WrapperTreeNodes\GfdTextureDictionaryWrapperTreeNode.cs" />
-    <Compile Include="Gui\WrapperTreeNodes\GfdTextureWrapperTreeNode.cs" />
-    <Compile Include="Gui\WrapperTreeNodes\WrapperTreeNodeFactory.cs" />
+    <Compile Include="FormatIOModules\ArchiveFormatIOModule.cs" />
+    <Compile Include="FormatIOModules\FormatIOModule.cs" />
+    <Compile Include="FormatIOModules\IFormatIOModule.cs" />
+    <Compile Include="FormatIOModules\ModelFormatIOModule.cs" />
+    <Compile Include="FormatIOModules\FormatIOModuleManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utilities.cs" />
     <EmbeddedResource Include="Gui\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Gui\MainFormSettingsForm.resx">
-      <DependentUpon>MainFormSettingsForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -178,7 +163,7 @@
   <ItemGroup>
     <ProjectReference Include="..\AtlusGfdLib\AtlusGfdLib.csproj">
       <Project>{a41ac644-a107-4788-8e4f-e10cca64f3b6}</Project>
-      <Name>AtlusGfdFramework</Name>
+      <Name>AtlusGfdLib</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

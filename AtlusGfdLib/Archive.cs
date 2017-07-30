@@ -10,6 +10,31 @@ namespace AtlusGfdLib
 {
     public class Archive : IDisposable, IEnumerable<string>
     {
+        public static bool IsValidArchive( string filepath )
+        {
+            using ( var stream = File.OpenRead( filepath ) )
+                return IsValidArchive( stream );
+        }
+
+        public static bool IsValidArchive( byte[] data )
+        {
+            using ( var stream = new MemoryStream( data ) )
+                return IsValidArchive( stream );
+        }
+
+        public static bool IsValidArchive( Stream stream )
+        {
+            // Check if the stream is smaller than the size of an entry
+            if ( stream.Length < 255 )
+                return false;
+
+            using ( var reader = new ArchiveReader( stream, true ))
+            {
+                // Read first entry, if this succeeds it's probably a valid archive
+                return reader.ReadEntryHeader( out var dummy );
+            }
+        }
+
         private long mStreamStartPosition;
         private Stream mStream;
         private Dictionary<string, ArchiveEntry> mEntryMap;
@@ -38,14 +63,14 @@ namespace AtlusGfdLib
             ReadEntryHeaders();
         }
 
-        public SubStream this[string fileName] => OpenFile( fileName );
+        public StreamView this[string fileName] => OpenFile( fileName );
 
         public IEnumerable<string> EnumerateFiles() => mEntryMap.Select(x => x.Key);
 
-        public SubStream OpenFile( string fileName )
+        public StreamView OpenFile( string fileName )
         {
             var entry = mEntryMap[fileName];
-            return new SubStream( mStream, entry.DataPosition, entry.Length );
+            return new StreamView( mStream, entry.DataPosition, entry.Length );
         }
 
         public void Dispose()
@@ -103,7 +128,7 @@ namespace AtlusGfdLib
 
         public ArchiveReader( Stream stream, bool leaveOpen = false )
         {
-            mReader = new EndianBinaryReader( stream, Encoding.Default, leaveOpen, Endianness.LittleEndian );
+            mReader = new EndianBinaryReader( stream, Encoding.ASCII, leaveOpen, Endianness.LittleEndian );
             mStringBuilder = new StringBuilder();
         }
 
@@ -138,7 +163,7 @@ namespace AtlusGfdLib
             // read entry length
             int length = mReader.ReadInt32();
 
-            if ( fileName.Length == 0 && length == 0 )
+            if ( fileName.Length == 0 || length <= 0 || length > 1024 * 1024 * 100 )
             {
                 entry = new ArchiveEntry();
                 return false;

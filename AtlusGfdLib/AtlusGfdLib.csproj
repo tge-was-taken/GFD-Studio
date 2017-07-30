@@ -65,7 +65,7 @@
     <Compile Include="ChunkType000100F9Entry1.cs" />
     <Compile Include="IO\AlignmentHelper.cs" />
     <Compile Include="IO\StreamExtensions.cs" />
-    <Compile Include="IO\SubStream.cs" />
+    <Compile Include="IO\StreamView.cs" />
     <Compile Include="MorphTargetList.cs" />
     <Compile Include="MorphTarget.cs" />
     <Compile Include="IO\ResourceBuilder.cs" />
@@ -78,7 +78,7 @@
     <Compile Include="IO\FileHeader.cs" />
     <Compile Include="Light.cs" />
     <Compile Include="Material.cs" />
-    <Compile Include="MaterialProperty.cs" />
+    <Compile Include="MaterialAttribute.cs" />
     <Compile Include="MaterialDictionary.cs" />
     <Compile Include="Mesh.cs" />
     <Compile Include="Morph.cs" />

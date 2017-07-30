@@ -16,6 +16,19 @@ namespace AtlusGfdLib
             Version = version;
         }
 
+        public static bool IsValidResource( string filepath )
+        {
+            using ( var stream = File.OpenRead( filepath ) )
+            {
+                return IsValidResource( stream );
+            }
+        }
+
+        public static bool IsValidResource( Stream stream )
+        {
+            return ResourceReader.IsValidResource( stream );
+        }
+
         public static Resource Load(string filepath)
         {
             using ( var stream = File.OpenRead( filepath ) )

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AtlusGfdEditor.Framework
+namespace AtlusGfdEditor.Gui
 {
     [Serializable]
     class SingletonException : Exception

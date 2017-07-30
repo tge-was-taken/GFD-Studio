@@ -3,7 +3,7 @@ using System.IO;
 
 namespace AtlusGfdLib.IO
 {
-    public class SubStream : Stream
+    public class StreamView : Stream
     {
         private readonly Stream mStream;
         private long mSourcePositionCopy;
@@ -12,7 +12,7 @@ namespace AtlusGfdLib.IO
         private long mLength;
         private readonly long mMaxLength;
 
-        public SubStream(Stream source, long position, long length)
+        public StreamView(Stream source, long position, long length)
         {
             if (source == null)
                 throw new ArgumentNullException(nameof(source));

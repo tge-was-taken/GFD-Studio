@@ -30,6 +30,17 @@ namespace AtlusGfdLib.IO
             return ( TResource )ReadFromStream( stream, endianness );
         }
 
+        public static bool IsValidResource( Stream stream )
+        {
+            using ( var reader = new ResourceReader( stream, Endianness.BigEndian ) )
+            {
+                if ( !reader.ReadFileHeader( out FileHeader header ) || header.Magic != FileHeader.CMAGIC_FS )
+                    return false;
+
+                return true;
+            }
+        }
+
         // IDispose implementation
         public void Dispose()
         {
