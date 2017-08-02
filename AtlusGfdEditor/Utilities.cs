@@ -10,13 +10,22 @@ namespace AtlusGfdEditor
 {
     public static class Utilities
     {
-        public static bool MatchExtension( string filename, params string[] extensions )
+        public static bool MatchesAnyExtension( string filename, params string[] extensions )
         {
-            var extension = Path.GetExtension( filename );
-            if ( extension == null || !extensions.Contains( extension, StringComparer.InvariantCultureIgnoreCase ) )
+            var fileExtension = Path.GetExtension( filename );
+            if ( fileExtension == null )
                 return false;
 
-            return true;
+            var fileExtensionWithoutPeriod = fileExtension.TrimStart( '.' );
+
+            foreach ( var extension in extensions )
+            {
+                var extensionWithoutPeriod = extension.TrimStart( '.' );
+                if ( fileExtensionWithoutPeriod.Equals( extensionWithoutPeriod, StringComparison.InvariantCultureIgnoreCase ) )
+                    return true;
+            }
+
+            return false;
         }
     }
 }

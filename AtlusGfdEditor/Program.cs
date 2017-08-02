@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Reflection;
 using System.Windows.Forms;
-using AtlusGfdEditor.Gui;
+using AtlusGfdEditor.GUI;
 
 namespace AtlusGfdEditor
 {

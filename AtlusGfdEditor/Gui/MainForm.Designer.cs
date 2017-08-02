@@ -1,4 +1,4 @@
-﻿namespace AtlusGfdEditor.Gui
+﻿namespace AtlusGfdEditor.GUI
 {
     partial class MainForm
     {

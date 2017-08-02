@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
 
-namespace AtlusGfdEditor.FormatIOModules
+namespace AtlusGfdEditor.Modules
 {
-    public interface IFormatIOModule
+    public interface IModule
     {
 
         /// <summary>
@@ -97,7 +97,8 @@ namespace AtlusGfdEditor.FormatIOModules
     [Flags]
     public enum FormatModuleUsageFlags
     {
-        Import = 0b0001,
-        Export = 0b0010
+        Import           = 0b0001,
+        Export           = 0b0010,
+        ImportForEditing = 0b0100, 
     }
 }

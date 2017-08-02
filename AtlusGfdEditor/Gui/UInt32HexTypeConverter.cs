@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 
-namespace AtlusGfdEditor.Gui
+namespace AtlusGfdEditor.GUI
 {
     public class UInt32HexTypeConverter : TypeConverter
     {

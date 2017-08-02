@@ -2,9 +2,9 @@
 using System.IO;
 using AtlusGfdLib;
 
-namespace AtlusGfdEditor.FormatIOModules
+namespace AtlusGfdEditor.Modules
 {
-    public class ModelFormatIOModule : FormatIOModule<Model>
+    public class ModelModule : Module<Model>
     {
         public override string Name =>
             "Atlus Gfd Model Format";
@@ -18,17 +18,17 @@ namespace AtlusGfdEditor.FormatIOModules
         public override FormatModuleUsageFlags UsageFlags =>
              FormatModuleUsageFlags.Import | FormatModuleUsageFlags.Export;
 
-        protected override bool CanImportInternal( Stream stream, string filename = null )
+        protected override bool CanImportCore( Stream stream, string filename = null )
         {
             return Resource.IsValidResource( stream );
         }
 
-        protected override void ExportInternal( Model obj, Stream stream, string filename = null )
+        protected override void ExportCore( Model obj, Stream stream, string filename = null )
         {
             Resource.Save( obj, stream );
         }
 
-        protected override Model ImportInternal( Stream stream, string filename = null )
+        protected override Model ImportCore( Stream stream, string filename = null )
         {
             return Resource.Load<Model>( stream );
         }

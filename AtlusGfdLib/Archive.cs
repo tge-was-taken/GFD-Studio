@@ -78,7 +78,7 @@ namespace AtlusGfdLib
             mStream.Dispose();
         }
 
-        public void SaveToFile( string filePath )
+        public void Save( string filePath )
         {
             using ( var fileStream = File.Create( filePath ) )
             {
@@ -87,7 +87,7 @@ namespace AtlusGfdLib
             }
         }
 
-        public void SaveToStream( Stream stream )
+        public void Save( Stream stream )
         {
             mStream.Position = 0;
             mStream.CopyTo( stream );
@@ -238,8 +238,10 @@ namespace AtlusGfdLib
 
         private void WriteTerminatorEntry()
         {
-            mWriter.Position += 255;
-            mWriter.Write( ( byte )0 );
+            for ( int i = 0; i < 0x100; i++ )
+            {
+                mWriter.Write( ( byte )0 );
+            }
         }
 
         public void Dispose()

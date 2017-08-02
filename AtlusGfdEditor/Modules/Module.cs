@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AtlusGfdEditor.FormatIOModules
+namespace AtlusGfdEditor.Modules
 {
-    public abstract class FormatIOModule<T> : IFormatIOModule
+    public abstract class Module<T> : IModule
     {
         /// <summary>
         /// Gets the name of the file format.
@@ -46,10 +46,10 @@ namespace AtlusGfdEditor.FormatIOModules
                 return false;
 
             // if a filename was given, match the extension of it with the known extensions first
-            if ( filename != null && !Utilities.MatchExtension( filename, Extensions ) )
+            if ( filename != null && !Utilities.MatchesAnyExtension( filename, Extensions ) )
                 return false;
 
-            return CanImportInternal( stream, filename );
+            return CanImportCore( stream, filename );
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace AtlusGfdEditor.FormatIOModules
             if ( !UsageFlags.HasFlag( FormatModuleUsageFlags.Import ) )
                 throw new NotSupportedException( "Module does not provide import capabilities" );
 
-            return ImportInternal( stream, filename );
+            return ImportCore( stream, filename );
         }
 
         /// <summary>
@@ -130,7 +130,7 @@ namespace AtlusGfdEditor.FormatIOModules
             if ( !UsageFlags.HasFlag( FormatModuleUsageFlags.Export ) )
                 throw new NotSupportedException( "Module does not provide export capabilities" );
 
-            ExportInternal( obj, stream, filename );
+            ExportCore( obj, stream, filename );
         }
 
         /// <summary>
@@ -160,32 +160,35 @@ namespace AtlusGfdEditor.FormatIOModules
             }
         }
 
-        protected abstract bool CanImportInternal( Stream stream, string filename = null );
+        //
+        // Internal import & export methods
+        //
+        protected abstract bool CanImportCore( Stream stream, string filename = null );
 
-        protected abstract T ImportInternal( Stream stream, string filename = null );
+        protected abstract T ImportCore( Stream stream, string filename = null );
 
-        protected abstract void ExportInternal( T obj, Stream stream, string filename = null );
+        protected abstract void ExportCore( T obj, Stream stream, string filename = null );
 
         //
-        // IFormatModule implementation
+        // IModule implementation
         //
 
-        object IFormatIOModule.Import( Stream stream, string filename = null ) 
+        object IModule.Import( Stream stream, string filename = null ) 
             => Import( stream, filename );
 
-        object IFormatIOModule.Import( string filepath ) 
+        object IModule.Import( string filepath ) 
             => Import( filepath );
 
-        object IFormatIOModule.Import( byte[] bytes, string filename = null ) 
+        object IModule.Import( byte[] bytes, string filename = null ) 
             => Import( bytes, filename );
 
-        void IFormatIOModule.Export( object obj, Stream stream, string filename = null ) 
+        void IModule.Export( object obj, Stream stream, string filename = null ) 
             => Export( ( T )obj, stream, filename );
 
-        void IFormatIOModule.Export( object obj, string filepath ) 
+        void IModule.Export( object obj, string filepath ) 
             => Export( ( T )obj, filepath );
 
-        void IFormatIOModule.Export( object obj, out byte[] data, string filename = null ) 
+        void IModule.Export( object obj, out byte[] data, string filename = null ) 
             => Export( ( T )obj, out data, filename );
     }
 }

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Windows.Forms;
 using AtlusGfdLib;
-using AtlusGfdEditor.FormatIOModules;
+using AtlusGfdEditor.Modules;
+using AtlusGfdEditor.GUI.Adapters;
+using System.IO;
 
-namespace AtlusGfdEditor.Gui
+namespace AtlusGfdEditor.GUI
 {
     public partial class MainForm : Form
     {
@@ -48,18 +50,19 @@ namespace AtlusGfdEditor.Gui
         {
             using ( var dialog = new OpenFileDialog() )
             {
-                dialog.Filter = FormatIOModuleManager.GenerateFileFilter( FormatModuleUsageFlags.Import );
+                dialog.Filter = ModuleFilterGenerator.GenerateFilter( FormatModuleUsageFlags.Import );
                 if ( dialog.ShowDialog() != DialogResult.OK )
                     return;
 
-                if ( !FormatIOModuleManager.TryGetModuleForImport( dialog.FileName, out var module ) )
+                if ( !TreeNodeAdapterFactory.TryCreate( dialog.FileName, out var adapter ) )
                 {
                     MessageBox.Show( "File could not be loaded.", "Error", MessageBoxButtons.OK );
                     return;
-                }
+                }             
 
                 // Clear nodes before loading anything
                 mTreeView.Nodes.Clear();
+                mTreeView.Nodes.Add( adapter );
             }
         }
     }
