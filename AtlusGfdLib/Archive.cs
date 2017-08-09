@@ -38,39 +38,47 @@ namespace AtlusGfdLib
         private long mStreamStartPosition;
         private Stream mStream;
         private Dictionary<string, ArchiveEntry> mEntryMap;
-        private bool mOwnsStream = true;
+        private bool mOwnsStream;
 
         public Archive(string filepath)
         {
-            mStream = File.OpenRead( filepath );
-            ReadEntryHeaders();
+            Initialize( File.OpenRead( filepath ), true );
         }
 
         public Archive(Stream stream, bool ownsStream = true)
         {
-            mStreamStartPosition = stream.Position;
-            mStream = stream;
-            mOwnsStream = ownsStream;
-            mEntryMap = new Dictionary<string, ArchiveEntry>();
-
-            ReadEntryHeaders();
+            Initialize( stream, ownsStream );
         }
 
         public Archive(byte[] data)
         {
-            mStream = new MemoryStream( data );
-            mEntryMap = new Dictionary<string, ArchiveEntry>();
-            ReadEntryHeaders();
+            Initialize( new MemoryStream( data ), true );
         }
 
         public StreamView this[string fileName] => OpenFile( fileName );
 
         public IEnumerable<string> EnumerateFiles() => mEntryMap.Select(x => x.Key);
 
-        public StreamView OpenFile( string fileName )
+        public bool TryOpenFile( string filename, out StreamView stream )
         {
-            var entry = mEntryMap[fileName];
-            return new StreamView( mStream, entry.DataPosition, entry.Length );
+            if ( !mEntryMap.TryGetValue( filename, out var entry ) )
+            {
+                stream = null;
+                return false;
+            }
+
+            stream = new StreamView( mStream, entry.DataPosition, entry.Length );
+            return true;
+        }
+
+        public StreamView OpenFile( string filename )
+        {
+            if ( !TryOpenFile( filename, out var stream))
+            {
+                throw new Exception( "File does not exist" );
+            }
+
+            return stream;
         }
 
         public void Dispose()
@@ -91,6 +99,16 @@ namespace AtlusGfdLib
         {
             mStream.Position = 0;
             mStream.CopyTo( stream );
+        }
+
+        private void Initialize( Stream stream, bool ownsStream )
+        {
+            mStreamStartPosition = stream.Position;
+            mStream = stream;
+            mOwnsStream = ownsStream;
+            mEntryMap = new Dictionary<string, ArchiveEntry>();
+
+            ReadEntryHeaders();
         }
 
         private void ReadEntryHeaders()

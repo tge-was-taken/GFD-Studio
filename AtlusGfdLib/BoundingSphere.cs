@@ -58,6 +58,28 @@ namespace AtlusGfdLib
             return new BoundingSphere( sphereCentre, sphereRadius );
         }
 
+        public static BoundingSphere Calculate( BoundingBox boundingBox )
+        {
+            Vector3 sphereCentre = new Vector3
+            {
+                X = ( float )0.5 * ( boundingBox.Min.X + boundingBox.Max.X ),
+                Y = ( float )0.5 * ( boundingBox.Min.Y + boundingBox.Max.Y ),
+                Z = ( float )0.5 * ( boundingBox.Min.Z + boundingBox.Max.Z )
+            };
+
+            float maxDistSq = 0.0f;
+            var vertices = new List<Vector3>() { boundingBox.Min, boundingBox.Max };
+            foreach ( Vector3 vertex in vertices )
+            {
+                Vector3 fromCentre = vertex - sphereCentre;
+                maxDistSq = Math.Max( maxDistSq, fromCentre.LengthSquared() );
+            }
+
+            float sphereRadius = ( float )Math.Sqrt( maxDistSq );
+
+            return new BoundingSphere( sphereCentre, sphereRadius );
+        }
+
         public override bool Equals( object obj )
         {
             if ( obj == null || obj.GetType() != typeof( BoundingSphere ) )

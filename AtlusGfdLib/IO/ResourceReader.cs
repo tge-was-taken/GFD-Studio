@@ -296,12 +296,12 @@ namespace AtlusGfdLib.IO
                     case ChunkType.Scene:
                         model.Scene = ReadScene( header.Version );
                         break;
-                    case ChunkType.Type000100F9:
-                        //model.ChunkType000100F9 = ReadChunkType000100F9( header.Version );
-                        break;
-                    case ChunkType.AnimationPackage:
-                        model.AnimationPackage = ReadAnimationPackage( header.Version );
-                        break;
+                    //case ChunkType.Type000100F9:
+                    //    model.ChunkType000100F9 = ReadChunkType000100F9( header.Version );
+                    //    break;
+                    //case ChunkType.AnimationPackage:
+                    //    model.AnimationPackage = ReadAnimationPackage( header.Version );
+                    //    break;
 
                     default:
                         Debug.WriteLine( $"{GetMethodName()}: Unknown chunk type '{header.Type}' at offset 0x{mReader.Position.ToString( "X" )}" );
@@ -918,7 +918,7 @@ namespace AtlusGfdLib.IO
                         property = new NodeBoolProperty( name, ReadBool() );
                         break;
                     case PropertyValueType.String:
-                        property = new NodeStringProperty( name, ReadString( size ) );
+                        property = new NodeStringProperty( name, ReadString( size - 1 ) );
                         break;
                     case PropertyValueType.ByteVector3:
                         property = new NodeByteVector3Property( name, ReadByteVector3() );
@@ -1042,24 +1042,20 @@ namespace AtlusGfdLib.IO
                 DebugLogPosition( $"facebuffer with {triangleCount} vertices" );
                 for ( int i = 0; i < geometry.Triangles.Length; i++ )
                 {
-                    geometry.Triangles[i].Indices = new int[3];
-
-                    for ( int j = 0; j < geometry.Triangles[i].Indices.Length; j++ )
+                    switch ( geometry.TriangleIndexType )
                     {
-                        int index;
-                        switch ( geometry.TriangleIndexType )
-                        {
-                            case TriangleIndexType.UInt16:
-                                index = ReadUShort();
-                                break;
-                            case TriangleIndexType.UInt32:
-                                index = ReadInt();
-                                break;
-                            default:
-                                throw new Exception( $"Unsupported triangle index type: {geometry.TriangleIndexType}" );
-                        }
-
-                        geometry.Triangles[i].Indices[j] = index;
+                        case TriangleIndexType.UInt16:
+                            geometry.Triangles[i].A = ReadUShort();
+                            geometry.Triangles[i].B = ReadUShort();
+                            geometry.Triangles[i].C = ReadUShort();
+                            break;
+                        case TriangleIndexType.UInt32:
+                            geometry.Triangles[i].A = ReadUInt();
+                            geometry.Triangles[i].B = ReadUInt();
+                            geometry.Triangles[i].C = ReadUInt();
+                            break;
+                        default:
+                            throw new Exception( $"Unsupported triangle index type: {geometry.TriangleIndexType}" );
                     }
                 }
             }

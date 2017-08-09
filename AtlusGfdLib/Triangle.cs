@@ -6,39 +6,39 @@ namespace AtlusGfdLib
 {
     public struct Triangle : IEquatable<Triangle>
     {
-        public int[] Indices;
+        public uint A;
+        public uint B;
+        public uint C;
 
-        public Triangle( int[] indices )
+        public Triangle( uint[] indices )
         {
             CheckIndices( indices );
-            Indices = indices;
+            A = indices[0];
+            B = indices[1];
+            C = indices[2];
         }
 
-        public Triangle( int a, int b, int c )
+        public Triangle( uint a, uint b, uint c )
         {
-            Indices = new int[3];
-            Indices[0] = a;
-            Indices[1] = b;
-            Indices[2] = c;
+            A = a;
+            B = b;
+            C = c;
         }
 
         public Triangle( IConvertible[] indices )
         {
             CheckIndices( indices );
 
-            Indices = new int[indices.Length];
-            for ( int i = 0; i < Indices.Length; i++ )
-            {
-                Indices[i] = ( int )indices[i];
-            }
+            A = ( uint )indices[0];
+            B = ( uint )indices[1];
+            C = ( uint )indices[2];
         }
 
         public Triangle( IConvertible a, IConvertible b, IConvertible c )
         {
-            Indices = new int[3];
-            Indices[0] = ( int )a;
-            Indices[1] = ( int )b;
-            Indices[2] = ( int )c;
+            A = ( uint )a;
+            B = ( uint )b;
+            C = ( uint )c;
         }
 
         private static void CheckIndices( ICollection indices )
@@ -57,19 +57,7 @@ namespace AtlusGfdLib
 
         public bool Equals( Triangle other )
         {
-            if ( Indices != null && other.Indices == null || Indices == null && other.Indices != null )
-                return false;
-
-            if ( Indices.Length != other.Indices.Length )
-                return false;
-
-            for ( int i = 0; i < Indices.Length; i++ )
-            {
-                if ( Indices[i] != other.Indices[i] )
-                    return false;
-            }
-
-            return true;
+            return A == other.A && B == other.B && C == other.C;
         }
 
         public override int GetHashCode()
@@ -77,8 +65,9 @@ namespace AtlusGfdLib
             unchecked
             {
                 int hash = 11;
-                if ( Indices != null )
-                    hash = hash * 33 + Indices.GetHashCode();
+                hash = hash * 33 + A.GetHashCode();
+                hash = hash * 33 + B.GetHashCode();
+                hash = hash * 33 + C.GetHashCode();
 
                 return hash;
             }

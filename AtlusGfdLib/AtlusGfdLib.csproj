@@ -60,6 +60,7 @@
     <Compile Include="Enums.cs" />
     <Compile Include="Epl.cs" />
     <Compile Include="EplLeaf.cs" />
+    <Compile Include="FieldTexture.cs" />
     <Compile Include="Geometry.cs" />
     <Compile Include="ChunkType000100F9.cs" />
     <Compile Include="ChunkType000100F9Entry1.cs" />

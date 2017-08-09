@@ -202,7 +202,10 @@ namespace AtlusGfdLib.IO
             {
                 foreach ( var triangle in geometry.Triangles )
                 {
-                    var aiFace = new Assimp.Face( triangle.Indices );
+                    var aiFace = new Assimp.Face();
+                    aiFace.Indices.Add( (int)triangle.A );
+                    aiFace.Indices.Add( (int)triangle.B );
+                    aiFace.Indices.Add( (int)triangle.C );
                     aiMesh.Faces.Add( aiFace );
                 }
             }

@@ -859,7 +859,7 @@ namespace AtlusGfdLib.IO
                     case PropertyValueType.String:
                         {
                             var value = property.GetValue<string>();
-                            WriteInt( value.Length );
+                            WriteInt( value.Length + 1 );
                             WriteString( value, value.Length );
                         }
                         break;
@@ -961,19 +961,20 @@ namespace AtlusGfdLib.IO
             {
                 for ( int i = 0; i < geometry.Triangles.Length; i++ )
                 {
-                    for ( int j = 0; j < geometry.Triangles[i].Indices.Length; j++ )
+                    switch ( geometry.TriangleIndexType )
                     {
-                        switch ( geometry.TriangleIndexType )
-                        {
-                            case TriangleIndexType.UInt16:
-                                WriteUShort( (ushort)geometry.Triangles[i].Indices[j] );
-                                break;
-                            case TriangleIndexType.UInt32:
-                                WriteInt( geometry.Triangles[i].Indices[j] );
-                                break;
-                            default:
-                                throw new Exception( $"Unsupported triangle index type: {geometry.TriangleIndexType}" );
-                        }
+                        case TriangleIndexType.UInt16:
+                            WriteUShort( ( ushort )geometry.Triangles[i].A );
+                            WriteUShort( ( ushort )geometry.Triangles[i].B );
+                            WriteUShort( ( ushort )geometry.Triangles[i].C );
+                            break;
+                        case TriangleIndexType.UInt32:
+                            WriteUInt( geometry.Triangles[i].A );
+                            WriteUInt( geometry.Triangles[i].B );
+                            WriteUInt( geometry.Triangles[i].C );
+                            break;
+                        default:
+                            throw new Exception( $"Unsupported triangle index type: {geometry.TriangleIndexType}" );
                     }
                 }
             }
