@@ -13,14 +13,14 @@ namespace AtlusGfdLib.IO
         private static Encoding sSJISEncoding = Encoding.GetEncoding( 932 );
         private EndianBinaryReader mReader;
 
-        public ResourceReader( Stream stream, Endianness endianness )
+        public ResourceReader( Stream stream, Endianness endianness, bool leaveOpen = false )
         {
-            mReader = new EndianBinaryReader( stream, endianness );
+            mReader = new EndianBinaryReader( stream, Encoding.Default, leaveOpen, endianness );
         }
 
         public static Resource ReadFromStream( Stream stream, Endianness endianness )
         {
-            using ( var reader = new ResourceReader( stream, endianness ) )
+            using ( var reader = new ResourceReader( stream, endianness, true ) )
                 return reader.ReadResourceFile();
         }
 
@@ -32,12 +32,19 @@ namespace AtlusGfdLib.IO
 
         public static bool IsValidResource( Stream stream )
         {
-            using ( var reader = new ResourceReader( stream, Endianness.BigEndian ) )
+            try
             {
-                if ( !reader.ReadFileHeader( out FileHeader header ) || header.Magic != FileHeader.CMAGIC_FS )
-                    return false;
+                using ( var reader = new ResourceReader( stream, Endianness.BigEndian, true ) )
+                {
+                    if ( !reader.ReadFileHeader( out FileHeader header ) || header.Magic != FileHeader.CMAGIC_FS )
+                        return false;
 
-                return true;
+                    return true;
+                }
+            }
+            finally
+            {
+                stream.Position = 0;
             }
         }
 

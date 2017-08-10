@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Drawing;
 using System.Linq;
 
 namespace AtlusGfdLib
@@ -24,7 +25,7 @@ namespace AtlusGfdLib
         // 1F
         public byte Field1F { get; set; }
 
-        public Texture(string name, TextureFormat format, byte[] data)
+        public Texture( string name, TextureFormat format, byte[] data )
         {
             Name = name;
             Format = format;
@@ -33,6 +34,17 @@ namespace AtlusGfdLib
             Field1D = 1;
             Field1E = 0;
             Field1F = 0;
+        }
+
+        public Texture( string name, TextureFormat format, byte[] data, byte field1c, byte field1d, byte field1e, byte field1f )
+        {
+            Name = name;
+            Format = format;
+            Data = data;
+            Field1C = field1c;
+            Field1D = field1d;
+            Field1E = field1e;
+            Field1F = field1f;
         }
 
         internal Texture() { }
