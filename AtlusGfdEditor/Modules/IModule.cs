@@ -94,7 +94,7 @@ namespace AtlusGfdEditor.Modules
         /// </summary>
         /// <param name="obj">The format object.</param>
         /// <returns>Image data.</returns>
-        Image GetImage( object obj );
+        Bitmap GetBitmap( object obj );
     }
 
     [Flags]
@@ -103,6 +103,6 @@ namespace AtlusGfdEditor.Modules
         Import           = 0b0001,
         Export           = 0b0010,
         ImportForEditing = 0b0100, 
-        Image            = 0b1000,
+        Bitmap           = 0b1000,
     }
 }

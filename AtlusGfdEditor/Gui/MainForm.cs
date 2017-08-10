@@ -4,6 +4,7 @@ using AtlusGfdLib;
 using AtlusGfdEditor.Modules;
 using AtlusGfdEditor.GUI.Adapters;
 using System.IO;
+using AtlusGfdEditor.GUI.Controls;
 
 namespace AtlusGfdEditor.GUI
 {
@@ -73,10 +74,18 @@ namespace AtlusGfdEditor.GUI
 
             if ( ModuleRegistry.ModuleByType.TryGetValue( adapter.ResourceType, out var module ) )
             {
-                if ( module.UsageFlags.HasFlag( FormatModuleUsageFlags.Image ) )
+                if ( module.UsageFlags.HasFlag( FormatModuleUsageFlags.Bitmap ) )
                 {
-                    var control = new ImageViewControl( module.GetImage( adapter.Resource ) );
+                    var control = new BitmapViewControl( module.GetBitmap( adapter.Resource ) );
                     control.Visible = false;
+
+                    mContentPanel.Controls.Add( control );
+                }
+                else if ( module.ObjectType == typeof(Model) )
+                {
+                    var control = new ModelViewControl();
+                    control.Visible = false;
+                    control.LoadModel( ( Model )adapter.Resource );
 
                     mContentPanel.Controls.Add( control );
                 }

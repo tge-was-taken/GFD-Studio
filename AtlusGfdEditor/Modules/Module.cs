@@ -161,12 +161,12 @@ namespace AtlusGfdEditor.Modules
         /// </summary>
         /// <param name="obj">The format object.</param>
         /// <returns>Image data.</returns>
-        public Image GetImage( T obj )
+        public Bitmap GetBitmap( T obj )
         {
-            if ( !UsageFlags.HasFlag( FormatModuleUsageFlags.Image ) )
+            if ( !UsageFlags.HasFlag( FormatModuleUsageFlags.Bitmap ) )
                 throw new NotSupportedException( "Module does not provide image capabilities" );
 
-            return GetImageCore( obj );
+            return GetBitmapCore( obj );
         }
 
         //
@@ -178,7 +178,7 @@ namespace AtlusGfdEditor.Modules
 
         protected abstract void ExportCore( T obj, Stream stream, string filename = null );
 
-        protected virtual Image GetImageCore( T obj ) => throw new NotImplementedException();
+        protected virtual Bitmap GetBitmapCore( T obj ) => throw new NotImplementedException();
 
         //
         // IModule implementation
@@ -202,7 +202,7 @@ namespace AtlusGfdEditor.Modules
         void IModule.Export( object obj, out byte[] data, string filename = null ) 
             => Export( ( T )obj, out data, filename );
 
-        Image IModule.GetImage( object obj )
-            => GetImage( ( T )obj );
+        Bitmap IModule.GetBitmap( object obj )
+            => GetBitmap( ( T )obj );
     }
 }

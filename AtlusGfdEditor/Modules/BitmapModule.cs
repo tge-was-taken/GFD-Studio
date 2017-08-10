@@ -19,7 +19,7 @@ namespace AtlusGfdEditor.Modules
             new[] { "png", "bmp" };
 
         public override FormatModuleUsageFlags UsageFlags =>
-             FormatModuleUsageFlags.Import | FormatModuleUsageFlags.Export | FormatModuleUsageFlags.Image;
+             FormatModuleUsageFlags.Import | FormatModuleUsageFlags.Export | FormatModuleUsageFlags.Bitmap;
 
         protected override bool CanImportCore( Stream stream, string filename = null )
         {
@@ -37,7 +37,7 @@ namespace AtlusGfdEditor.Modules
             return new Bitmap( stream );
         }
 
-        protected override Image GetImageCore( Bitmap obj )
+        protected override Bitmap GetBitmapCore( Bitmap obj )
         {
             return obj;
         }

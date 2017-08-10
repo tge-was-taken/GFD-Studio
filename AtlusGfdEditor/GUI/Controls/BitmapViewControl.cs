@@ -8,20 +8,20 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace AtlusGfdEditor.GUI
+namespace AtlusGfdEditor.GUI.Controls
 {
-    public partial class ImageViewControl : UserControl
+    public partial class BitmapViewControl : UserControl
     {
-        public ImageViewControl()
+        public BitmapViewControl()
         {
             InitializeComponent();
         }
 
-        public ImageViewControl( Image image )
+        public BitmapViewControl( Bitmap bitmap )
         {
-            BackgroundImage = image;
-            Width = image.Width;
-            Height = image.Height;
+            BackgroundImage = bitmap;
+            Width = bitmap.Width;
+            Height = bitmap.Height;
         }
     }
 }

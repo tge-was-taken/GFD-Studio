@@ -1,24 +1,11 @@
-﻿namespace AtlusGfdEditor.GUI
+﻿namespace AtlusGfdEditor.GUI.Controls
 {
-    partial class ImageViewControl
+    partial class ModelViewControl
     {
         /// <summary> 
         /// Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
-
-        /// <summary> 
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose( bool disposing )
-        {
-            if ( disposing && ( components != null ) )
-            {
-                components.Dispose();
-            }
-            base.Dispose( disposing );
-        }
 
         #region Component Designer generated code
 
@@ -30,15 +17,15 @@
         {
             this.SuspendLayout();
             // 
-            // BitmapViewControl
+            // ModelViewControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.Name = "BitmapViewControl";
+            this.Name = "ModelViewControl";
             this.Size = new System.Drawing.Size(0, 0);
+            this.VSync = true;
             this.ResumeLayout(false);
 
         }

@@ -18,7 +18,7 @@ namespace AtlusGfdEditor.Modules
             => new[] { "gtx" };
 
         public override FormatModuleUsageFlags UsageFlags
-            => FormatModuleUsageFlags.Image;
+            => FormatModuleUsageFlags.Bitmap;
 
         protected override bool CanImportCore( Stream stream, string filename = null )
         {
@@ -35,7 +35,7 @@ namespace AtlusGfdEditor.Modules
             throw new NotImplementedException();
         }
 
-        protected override Image GetImageCore( Texture obj )
+        protected override Bitmap GetBitmapCore( Texture obj )
         {
             return TextureDecoder.Decode( obj );
         }
