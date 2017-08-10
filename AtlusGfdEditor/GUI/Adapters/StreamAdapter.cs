@@ -9,15 +9,18 @@ namespace AtlusGfdEditor.GUI.Adapters
 {
     public class StreamAdapter : TreeNodeAdapter<Stream>
     {
+        public override MenuFlags ContextMenuFlags => 
+            MenuFlags.Export | MenuFlags.Replace | MenuFlags.Move | 
+            MenuFlags.Rename | MenuFlags.Delete;
+
+        public override Flags NodeFlags => Flags.Leaf;
+
         protected internal StreamAdapter( string text, Stream resource ) : base( text, resource )
         {
         }
 
         protected override void InitializeCore()
         {
-            ContextMenuOptions = ContextMenuOptions.Export | ContextMenuOptions.Replace |
-                                 ContextMenuOptions.Move | ContextMenuOptions.Rename | ContextMenuOptions.Delete;
-
             RegisterExportAction<Stream>( ( path ) =>
             {
                 using ( var fileStream = File.Create( path ) )
@@ -27,19 +30,7 @@ namespace AtlusGfdEditor.GUI.Adapters
                 }
             } );
 
-            RegisterReplaceAction<Stream>( ( path ) =>
-            {
-                Resource = File.OpenRead( path );
-            } );
-        }
-
-        protected override void InitializeViewCore()
-        {
-        }
-
-        protected override Stream RebuildCore()
-        {
-            return Resource;
+            RegisterReplaceAction<Stream>( ( path ) => File.OpenRead( path ) );
         }
     }
 }

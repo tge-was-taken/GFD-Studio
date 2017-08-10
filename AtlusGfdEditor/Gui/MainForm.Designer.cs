@@ -1,4 +1,6 @@
-﻿namespace AtlusGfdEditor.GUI
+﻿using AtlusGfdEditor.GUI.Adapters;
+
+namespace AtlusGfdEditor.GUI
 {
     partial class MainForm
     {
@@ -28,62 +30,62 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.m_MainMenuStrip = new System.Windows.Forms.MenuStrip();
-            this.m_FileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.m_OpenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.m_EditToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.m_OptionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.mTreeView = new System.Windows.Forms.TreeView();
+            this.mMainMenuStrip = new System.Windows.Forms.MenuStrip();
+            this.mFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mOpenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mEditToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mOptionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mTreeView = new TreeNodeAdapterView();
             this.mPropertyGrid = new System.Windows.Forms.PropertyGrid();
-            this.m_Panel = new System.Windows.Forms.Panel();
-            this.m_MainMenuStrip.SuspendLayout();
+            this.mContentPanel = new System.Windows.Forms.Panel();
+            this.mMainMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // m_MainMenuStrip
             // 
-            this.m_MainMenuStrip.Items.AddRange( new System.Windows.Forms.ToolStripItem[] {
-            this.m_FileToolStripMenuItem,
-            this.m_EditToolStripMenuItem} );
-            this.m_MainMenuStrip.Location = new System.Drawing.Point( 0, 0 );
-            this.m_MainMenuStrip.Name = "m_MainMenuStrip";
-            this.m_MainMenuStrip.Size = new System.Drawing.Size( 1222, 24 );
-            this.m_MainMenuStrip.TabIndex = 0;
-            this.m_MainMenuStrip.Text = "menuStrip1";
+            this.mMainMenuStrip.Items.AddRange( new System.Windows.Forms.ToolStripItem[] {
+            this.mFileToolStripMenuItem,
+            this.mEditToolStripMenuItem} );
+            this.mMainMenuStrip.Location = new System.Drawing.Point( 0, 0 );
+            this.mMainMenuStrip.Name = "mMainMenuStrip";
+            this.mMainMenuStrip.Size = new System.Drawing.Size( 1222, 24 );
+            this.mMainMenuStrip.TabIndex = 0;
+            this.mMainMenuStrip.Text = "menuStrip1";
             // 
             // m_FileToolStripMenuItem
             // 
-            this.m_FileToolStripMenuItem.DropDownItems.AddRange( new System.Windows.Forms.ToolStripItem[] {
-            this.m_OpenToolStripMenuItem} );
-            this.m_FileToolStripMenuItem.Name = "m_FileToolStripMenuItem";
-            this.m_FileToolStripMenuItem.Size = new System.Drawing.Size( 37, 20 );
-            this.m_FileToolStripMenuItem.Text = "File";
+            this.mFileToolStripMenuItem.DropDownItems.AddRange( new System.Windows.Forms.ToolStripItem[] {
+            this.mOpenToolStripMenuItem} );
+            this.mFileToolStripMenuItem.Name = "mFileToolStripMenuItem";
+            this.mFileToolStripMenuItem.Size = new System.Drawing.Size( 37, 20 );
+            this.mFileToolStripMenuItem.Text = "File";
             // 
             // m_OpenToolStripMenuItem
             // 
-            this.m_OpenToolStripMenuItem.Name = "m_OpenToolStripMenuItem";
-            this.m_OpenToolStripMenuItem.Size = new System.Drawing.Size( 103, 22 );
-            this.m_OpenToolStripMenuItem.Text = "Open";
-            this.m_OpenToolStripMenuItem.Click += new System.EventHandler( this.OpenToolStripMenuItemClickEventHandler );
+            this.mOpenToolStripMenuItem.Name = "mOpenToolStripMenuItem";
+            this.mOpenToolStripMenuItem.Size = new System.Drawing.Size( 103, 22 );
+            this.mOpenToolStripMenuItem.Text = "Open";
+            this.mOpenToolStripMenuItem.Click += new System.EventHandler( this.OpenToolStripMenuItemClickEventHandler );
             // 
             // m_EditToolStripMenuItem
             // 
-            this.m_EditToolStripMenuItem.DropDownItems.AddRange( new System.Windows.Forms.ToolStripItem[] {
-            this.m_OptionsToolStripMenuItem} );
-            this.m_EditToolStripMenuItem.Name = "m_EditToolStripMenuItem";
-            this.m_EditToolStripMenuItem.Size = new System.Drawing.Size( 39, 20 );
-            this.m_EditToolStripMenuItem.Text = "Edit";
+            this.mEditToolStripMenuItem.DropDownItems.AddRange( new System.Windows.Forms.ToolStripItem[] {
+            this.mOptionsToolStripMenuItem} );
+            this.mEditToolStripMenuItem.Name = "mEditToolStripMenuItem";
+            this.mEditToolStripMenuItem.Size = new System.Drawing.Size( 39, 20 );
+            this.mEditToolStripMenuItem.Text = "Edit";
             // 
             // m_OptionsToolStripMenuItem
             // 
-            this.m_OptionsToolStripMenuItem.Name = "m_OptionsToolStripMenuItem";
-            this.m_OptionsToolStripMenuItem.Size = new System.Drawing.Size( 116, 22 );
-            this.m_OptionsToolStripMenuItem.Text = "Options";
+            this.mOptionsToolStripMenuItem.Name = "mOptionsToolStripMenuItem";
+            this.mOptionsToolStripMenuItem.Size = new System.Drawing.Size( 116, 22 );
+            this.mOptionsToolStripMenuItem.Text = "Options";
             // 
             // m_TreeView
             // 
             this.mTreeView.Anchor = ( ( System.Windows.Forms.AnchorStyles )( ( System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right ) ) );
             this.mTreeView.Location = new System.Drawing.Point( 898, 27 );
-            this.mTreeView.Name = "m_TreeView";
+            this.mTreeView.Name = "mTreeView";
             this.mTreeView.Size = new System.Drawing.Size( 312, 380 );
             this.mTreeView.TabIndex = 1;
             // 
@@ -92,20 +94,20 @@
             this.mPropertyGrid.Anchor = ( ( System.Windows.Forms.AnchorStyles )( ( ( System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom )
             | System.Windows.Forms.AnchorStyles.Right ) ) );
             this.mPropertyGrid.Location = new System.Drawing.Point( 898, 413 );
-            this.mPropertyGrid.Name = "m_PropertyGrid";
+            this.mPropertyGrid.Name = "mPropertyGrid";
             this.mPropertyGrid.Size = new System.Drawing.Size( 312, 414 );
             this.mPropertyGrid.TabIndex = 2;
             // 
             // m_Panel
             // 
-            this.m_Panel.Anchor = ( ( System.Windows.Forms.AnchorStyles )( ( ( ( System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom )
+            this.mContentPanel.Anchor = ( ( System.Windows.Forms.AnchorStyles )( ( ( ( System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom )
             | System.Windows.Forms.AnchorStyles.Left )
             | System.Windows.Forms.AnchorStyles.Right ) ) );
-            this.m_Panel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.m_Panel.Location = new System.Drawing.Point( 12, 28 );
-            this.m_Panel.Name = "m_Panel";
-            this.m_Panel.Size = new System.Drawing.Size( 880, 800 );
-            this.m_Panel.TabIndex = 3;
+            this.mContentPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.mContentPanel.Location = new System.Drawing.Point( 12, 28 );
+            this.mContentPanel.Name = "mContentPanel";
+            this.mContentPanel.Size = new System.Drawing.Size( 880, 800 );
+            this.mContentPanel.TabIndex = 3;
             // 
             // MainForm
             // 
@@ -114,13 +116,13 @@
             this.ClientSize = new System.Drawing.Size( 1222, 839 );
             this.Controls.Add( this.mPropertyGrid );
             this.Controls.Add( this.mTreeView );
-            this.Controls.Add( this.m_MainMenuStrip );
-            this.Controls.Add( this.m_Panel );
-            this.MainMenuStrip = this.m_MainMenuStrip;
-            this.Name = "MainForm";
-            this.Text = "Atlus GFD Editor";
-            this.m_MainMenuStrip.ResumeLayout( false );
-            this.m_MainMenuStrip.PerformLayout();
+            this.Controls.Add( this.mMainMenuStrip );
+            this.Controls.Add( this.mContentPanel );
+            this.MainMenuStrip = this.mMainMenuStrip;
+            this.Name = "Atlus Gfd Editor";
+            this.Text = "Atlus Gfd Editor";
+            this.mMainMenuStrip.ResumeLayout( false );
+            this.mMainMenuStrip.PerformLayout();
             this.ResumeLayout( false );
             this.PerformLayout();
 
@@ -128,13 +130,13 @@
 
         #endregion
 
-        private System.Windows.Forms.MenuStrip m_MainMenuStrip;
-        private System.Windows.Forms.ToolStripMenuItem m_FileToolStripMenuItem;
-        private System.Windows.Forms.TreeView mTreeView;
+        private System.Windows.Forms.MenuStrip mMainMenuStrip;
+        private System.Windows.Forms.ToolStripMenuItem mFileToolStripMenuItem;
+        private TreeNodeAdapterView mTreeView;
         private System.Windows.Forms.PropertyGrid mPropertyGrid;
-        private System.Windows.Forms.ToolStripMenuItem m_OpenToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem m_EditToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem m_OptionsToolStripMenuItem;
-        private System.Windows.Forms.Panel m_Panel;
+        private System.Windows.Forms.ToolStripMenuItem mOpenToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem mEditToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem mOptionsToolStripMenuItem;
+        private System.Windows.Forms.Panel mContentPanel;
     }
 }

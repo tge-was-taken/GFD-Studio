@@ -9,9 +9,6 @@ namespace AtlusGfdEditor.Modules
         public override string Name =>
             "Atlus Gfd Model Format";
 
-        public override string Description =>
-            "Format containing texture, material, scene and animation data";
-
         public override string[] Extensions =>
             new[] { "gfs", "gmd", "gap" };
 

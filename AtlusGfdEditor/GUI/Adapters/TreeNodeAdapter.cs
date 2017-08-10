@@ -1,41 +1,151 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 using AtlusGfdEditor.Modules;
 
 namespace AtlusGfdEditor.GUI.Adapters
 {
-    public enum ContextMenuOptions
-    {
-        Export  = 0b00000001,
-        Replace = 0b00000010,
-        Add     = 0b00000100,
-        Move    = 0b00001000,
-        Rename  = 0b00010000,
-        Delete  = 0b00100000,
-    }
 
+    /// <summary>
+    /// Exports the resource held by an adapter to the specified file.
+    /// </summary>
+    /// <param name="filepath">Path to the file to export to.</param>
     public delegate void TreeNodeAdapterExportAction( string filepath );
 
-    public delegate void TreeNodeAdapterReplaceAction( string filepath );
+    /// <summary>
+    /// Replaces the resource in the adapter with a resource loaded from a file.
+    /// </summary>
+    /// <param name="filepath">Path to the resource file to load.</param>
+    public delegate object TreeNodeAdapterReplaceAction( string filepath );
 
+    /// <summary>
+    /// Loads a resource and adds the corresponding adapter to the tree node.
+    /// </summary>
+    /// <param name="filepath">Path to the resource file to load.</param>
     public delegate void TreeNodeAdapterAddAction( string filepath );
 
-    public abstract class TreeNodeAdapter : TreeNode
+    /// <summary>
+    /// Represents an adapter for a node of a TreeView with extra additions.
+    /// </summary>
+    public abstract partial class TreeNodeAdapter : TreeNode, INotifyPropertyChanged
     {
+        [Flags]
+        public enum MenuFlags
+        {
+            Export = 0b00000001,
+            Replace = 0b00000010,
+            Add = 0b00000100,
+            Move = 0b00001000,
+            Rename = 0b00010000,
+            Delete = 0b00100000,
+        }
+
+        [Flags]
+        public enum Flags
+        {
+            Leaf = 0b0001,
+            Branch = 0b0010,
+        }
+
         private Dictionary<Type, TreeNodeAdapterExportAction> mExportActions;
         private Dictionary<Type, TreeNodeAdapterReplaceAction> mReplaceActions;
         private Dictionary<Type, TreeNodeAdapterAddAction> mAddActions;
 
+        /// <summary>
+        /// Gets or sets the resource held by the adapter.
+        /// </summary>
+        [Browsable( false )]
         public object Resource { get; protected set; }
 
-        public ContextMenuOptions ContextMenuOptions { get; protected set; }
+        /// <summary>
+        /// Gets the resource type.
+        /// </summary>
+        [Browsable( false )]
+        public abstract Type ResourceType { get; }
 
+        /// <summary>
+        /// Gets the context menu flags.
+        /// </summary>
+        [Browsable( false )]
+        public abstract MenuFlags ContextMenuFlags { get; }
+
+        /// <summary>
+        /// Gets the node flags.
+        /// </summary>
+        [Browsable( false )]
+        public abstract Flags NodeFlags { get; }
+
+        /// <summary>
+        /// Gets or sets the text displayed in the label of the tree node.
+        /// </summary>
+        [Browsable( false )]
+        public new string Text
+        {
+            get => base.Text;
+            set
+            {
+                if ( value != base.Text )
+                {
+                    base.Text = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets the parent of the tree node.
+        /// </summary>
+        [Browsable( false )]
+        public new TreeNodeAdapter Parent
+        {
+            get => ( TreeNodeAdapter )base.Parent;
+        }
+
+        /// <summary>
+        /// This event is fired whenever the tree node label text is changed.
+        /// </summary>
+        [Browsable( false )]
+        public event EventHandler<NodeLabelEditEventArgs> TextChanged;
+
+        /// <summary>
+        /// This event is fired whenever a property of the tree node is changed.
+        /// </summary>
+        [Browsable( false )]
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        /// <summary>
+        /// Gets if the node is initialized.
+        /// </summary>
         protected bool IsInitialized { get; private set; }
+
+        /// <summary>
+        /// Gets if the node's view is initialized.
+        /// </summary>
+        protected bool IsViewInitialized { get; private set; }
+
+        private bool mIsDirty;
+
+        /// <summary>
+        /// Gets or sets if the tree node is dirty and its resource needs to be rebuilt.
+        /// </summary>
+        protected bool IsDirty
+        {
+            get => mIsDirty;
+            set
+            {
+                mIsDirty = value;
+
+                if ( Parent != null )
+                {
+                    Parent.IsDirty = true;
+                }
+            }
+        }
 
         protected TreeNodeAdapter( string text ) : base( text )
         {
@@ -52,22 +162,23 @@ namespace AtlusGfdEditor.GUI.Adapters
             if ( mExportActions.Count == 0 )
                 return;
 
-            using ( var saveFileDlg = new SaveFileDialog() )
+            using ( var dialog = new SaveFileDialog() )
             {
-                saveFileDlg.AutoUpgradeEnabled = true;
-                saveFileDlg.CheckPathExists = true;
-                saveFileDlg.FileName = Text;
-                saveFileDlg.Filter = ModuleFilterGenerator.GenerateFilter( FormatModuleUsageFlags.Export, mExportActions.Keys.ToArray() );
-                saveFileDlg.OverwritePrompt = true;
-                saveFileDlg.Title = "Select a file to export to.";
-                saveFileDlg.ValidateNames = true;
+                dialog.AutoUpgradeEnabled = true;
+                dialog.CheckPathExists = true;
+                dialog.FileName = Path.GetFileNameWithoutExtension( Text );
+                dialog.Filter = ModuleFilterGenerator.GenerateFilter( FormatModuleUsageFlags.Export, mExportActions.Keys.ToArray() );
+                dialog.OverwritePrompt = true;
+                dialog.Title = "Select a file to export to.";
+                dialog.ValidateNames = true;
+                dialog.AddExtension = true;
 
-                if ( saveFileDlg.ShowDialog() != DialogResult.OK )
+                if ( dialog.ShowDialog() != DialogResult.OK )
                 {
                     return;
                 }
 
-                Export( saveFileDlg.FileName );
+                Export( dialog.FileName );
             }
         }
 
@@ -79,7 +190,9 @@ namespace AtlusGfdEditor.GUI.Adapters
             var type = GetTypeFromPath( filepath, mExportActions.Keys );
             var exportAction = mExportActions[type];
 
-            exportAction.Invoke( filepath );
+            Trace.WriteLine( $"{nameof( TreeNodeAdapter )} [{Text}]: {nameof( Export )} {type} to {filepath}" );
+
+            exportAction( filepath );
         }
 
         //
@@ -90,24 +203,26 @@ namespace AtlusGfdEditor.GUI.Adapters
             if ( mReplaceActions.Count == 0 )
                 return;
 
-            using ( var openFileDlg = new OpenFileDialog() )
+            using ( var dialog = new OpenFileDialog() )
             {
-                openFileDlg.AutoUpgradeEnabled = true;
-                openFileDlg.CheckPathExists = true;
-                openFileDlg.CheckFileExists = true;
-                openFileDlg.FileName = Text;
-                openFileDlg.Filter = ModuleFilterGenerator.GenerateFilter( FormatModuleUsageFlags.Import | FormatModuleUsageFlags.ImportForEditing, mReplaceActions.Keys.ToArray() );
-                openFileDlg.Multiselect = false;
-                openFileDlg.SupportMultiDottedExtensions = true;
-                openFileDlg.Title = "Select a replacement file.";
-                openFileDlg.ValidateNames = true;
+                dialog.AutoUpgradeEnabled = true;
+                dialog.CheckPathExists = true;
+                dialog.CheckFileExists = true;
+                dialog.FileName = Text;
+                dialog.Filter = ModuleFilterGenerator.GenerateFilter(
+                    new[] { FormatModuleUsageFlags.Import, FormatModuleUsageFlags.ImportForEditing },
+                    mReplaceActions.Keys.ToArray() );
+                dialog.Multiselect = false;
+                dialog.SupportMultiDottedExtensions = true;
+                dialog.Title = "Select a replacement file.";
+                dialog.ValidateNames = true;
 
-                if ( openFileDlg.ShowDialog() != DialogResult.OK )
+                if ( dialog.ShowDialog() != DialogResult.OK )
                 {
                     return;
                 }
 
-                Replace( openFileDlg.FileName );
+                Replace( dialog.FileName );
             }
         }
 
@@ -119,7 +234,10 @@ namespace AtlusGfdEditor.GUI.Adapters
             var type = GetTypeFromPath( filepath, mReplaceActions.Keys );
             var replaceAction = mReplaceActions[type];
 
-            replaceAction.Invoke( filepath );
+            Trace.WriteLine( $"{nameof( TreeNodeAdapter )} [{Text}]: {nameof( Replace )} {type} from {filepath}" );
+
+            Resource = replaceAction( filepath );
+            NotifyResourcePropertyChanged();
         }
 
         //
@@ -161,6 +279,8 @@ namespace AtlusGfdEditor.GUI.Adapters
 
             var type = GetTypeFromPath( filepath, mAddActions.Keys );
             var addAction = mAddActions[type];
+
+            Trace.WriteLine( $"{nameof( TreeNodeAdapter )} [{Text}]: {nameof( Add )} {type} from {filepath}" );
 
             addAction.Invoke( filepath );
         }
@@ -226,6 +346,82 @@ namespace AtlusGfdEditor.GUI.Adapters
         //
         public void Delete() => Remove();
 
+        // INotifyPropertyChanged
+        protected void SetProperty<T>( object instance, T value, [CallerMemberName] string propertyName = null )
+        {
+            if ( propertyName == null )
+                throw new ArgumentNullException( nameof( propertyName ) );
+
+            var instanceType = instance.GetType();
+            var propertyType = typeof( T );
+
+            var property = instanceType.GetProperty( propertyName, propertyType );
+            if ( property == null )
+                throw new ArgumentNullException( nameof( property ) );
+
+            if ( propertyType.IsValueType )
+            {
+                if ( Equals( property.GetValue( instance, null ), value ) )
+                    return;
+            }
+
+            property.SetValue( instance, value );
+
+            NotifyPropertyChanged( propertyName );
+        }
+
+        protected void SetResourceProperty<T>( T value, [CallerMemberName] string propertyName = null )
+        {
+            SetProperty( Resource, value, propertyName );
+        }
+
+        protected void SetProperty<T>( T value, [CallerMemberName] string propertyName = null )
+        {
+            SetProperty( this, value, propertyName );
+        }
+
+        protected T GetResourceProperty<T>( [CallerMemberName] string propertyName = null )
+        {
+            if ( propertyName == null )
+                throw new ArgumentNullException( nameof( propertyName ) );
+
+            var prop = ResourceType.GetProperty( propertyName );
+            if ( prop == null )
+                throw new ArgumentNullException( nameof( prop ) );
+
+            return ( T )prop.GetValue( Resource );
+        }
+
+        protected void NotifyPropertyChanged( [CallerMemberName]string propertyName = null )
+        {
+            // dont bother if instance is not initialized
+            if ( !IsInitialized )
+                return;
+
+            Trace.WriteLine( $"{nameof( TreeNodeAdapter )} [{Text}]: {nameof( NotifyPropertyChanged )} {propertyName}" );
+
+            // set dirty flag as a property was changed
+            IsDirty = true;
+
+            // invoke property changed event
+            PropertyChanged?.Invoke( this, new PropertyChangedEventArgs( propertyName ) );
+        }
+
+        protected void NotifyResourcePropertyChanged()
+        {
+            // dont bother if instance is not initialized
+            if ( !IsInitialized )
+                return;
+
+            Trace.WriteLine( $"{nameof( TreeNodeAdapter )} [{Text}]: {nameof( NotifyResourcePropertyChanged )}" );
+
+            // set dirty flag to false because the resource is already in sync with the view model
+            IsDirty = false;
+
+            // invoke property changed event
+            PropertyChanged?.Invoke( this, new PropertyChangedEventArgs( nameof( Resource ) ) );
+        }
+
         // 
         // Action register actions
         //
@@ -249,7 +445,7 @@ namespace AtlusGfdEditor.GUI.Adapters
         //
         protected abstract void InitializeCore();
 
-        protected abstract void InitializeViewCore();
+        protected virtual void InitializeViewCore() { }
 
         // Rename methods
         private void BeginRename()
@@ -271,44 +467,75 @@ namespace AtlusGfdEditor.GUI.Adapters
             // stop editing the name
             EndEdit( false );
 
+            Text = e.Label;
+
             // unsubscribe from the event
             if ( TreeView != null )
                 TreeView.AfterLabelEdit -= EndRename;
+
+            TextChanged.Invoke( this, e );
         }
 
         //
         // Private initialize methods
         //
 
-        // will be used by factory to initialize adapters
+        /// <summary>
+        /// Called by <see cref="TreeNodeAdapterFactory"/>.
+        /// </summary>
         protected internal void Initialize()
         {
+            // check for double initialization
             if ( IsInitialized )
-                throw new Exception( $"{nameof(Initialize)} was called twice" );
+                throw new Exception( $"{nameof( Initialize )} was called twice" );
 
             // initialize the derived adapter
             InitializeCore();
 
-            // initialize the adapter view
-            InitializeView();
-
+            // set initialization flag
             IsInitialized = true;
+
+            // subscribe to the PropertyChanged event /after/ init
+            PropertyChanged += OnPropertyChanged;
         }
 
-        protected void InitializeView()
+        protected virtual void OnPropertyChanged( object sender, PropertyChangedEventArgs e )
         {
-            // clean up any nodes if this isn't the first initialization
-            if ( IsInitialized )
+            IsViewInitialized = false;
+        }
+
+        protected abstract void Rebuild();
+
+        /// <summary>
+        /// Populates the view -- which is the current node's child nodes and/or any other properties
+        /// </summary>
+        protected internal void InitializeView()
+        {
+            if ( !IsDirty && IsViewInitialized )
+                return;
+
+            Trace.WriteLine( $"{nameof( TreeNodeAdapter )} [{Text}]: {nameof( InitializeView )}" );
+
+            // rebuild for initializing view, if necessary
+            if ( IsDirty )
+                Rebuild();
+
+            if ( NodeFlags.HasFlag( Flags.Branch ) )
+            {
+                // clear nodes, will get rid of the dummy node added by the hack required for late view initialization
                 Nodes.Clear();
 
-            // let the derived adapter populate the view
-            InitializeViewCore();
+                // let the derived adapter populate the view
+                InitializeViewCore();
+            }
 
-            if ( !IsInitialized )
+            if ( !IsViewInitialized )
             {
-                // initialize the context menu strip
+                // initialize the context menu strip if the adapter isn't initialized yet
                 InitializeContextMenuStrip();
             }
+
+            IsViewInitialized = true;
         }
 
         /// <summary>
@@ -318,37 +545,37 @@ namespace AtlusGfdEditor.GUI.Adapters
         {
             ContextMenuStrip = new ContextMenuStrip();
 
-            if ( ContextMenuOptions.HasFlag( ContextMenuOptions.Export ) )
+            if ( ContextMenuFlags.HasFlag( MenuFlags.Export ) )
             {
                 ContextMenuStrip.Items.Add( new ToolStripMenuItem( "&Export", null, CreateEventHandler( Export ), Keys.Control | Keys.E ) );
             }
 
-            if ( ContextMenuOptions.HasFlag( ContextMenuOptions.Replace ) )
+            if ( ContextMenuFlags.HasFlag( MenuFlags.Replace ) )
             {
                 ContextMenuStrip.Items.Add( new ToolStripMenuItem( "&Replace", null, CreateEventHandler( Replace ), Keys.Control | Keys.R ) );
-                if ( !ContextMenuOptions.HasFlag( ContextMenuOptions.Add ) )
+                if ( !ContextMenuFlags.HasFlag( MenuFlags.Add ) )
                     ContextMenuStrip.Items.Add( new ToolStripSeparator() );
             }
 
-            if ( ContextMenuOptions.HasFlag( ContextMenuOptions.Add ) )
+            if ( ContextMenuFlags.HasFlag( MenuFlags.Add ) )
             {
                 ContextMenuStrip.Items.Add( new ToolStripMenuItem( "&Add", null, CreateEventHandler( Add ), Keys.Control | Keys.A ) );
-                if ( ContextMenuOptions.HasFlag( ContextMenuOptions.Move ) )
+                if ( ContextMenuFlags.HasFlag( MenuFlags.Move ) )
                     ContextMenuStrip.Items.Add( new ToolStripSeparator() );
             }
 
-            if ( ContextMenuOptions.HasFlag( ContextMenuOptions.Move ) )
+            if ( ContextMenuFlags.HasFlag( MenuFlags.Move ) )
             {
                 ContextMenuStrip.Items.Add( new ToolStripMenuItem( "Move &Up", null, CreateEventHandler( MoveUp ), Keys.Control | Keys.Up ) );
                 ContextMenuStrip.Items.Add( new ToolStripMenuItem( "Move &Down", null, CreateEventHandler( MoveDown ), Keys.Control | Keys.Down ) );
             }
 
-            if ( ContextMenuOptions.HasFlag( ContextMenuOptions.Rename ) )
+            if ( ContextMenuFlags.HasFlag( MenuFlags.Rename ) )
             {
                 ContextMenuStrip.Items.Add( new ToolStripMenuItem( "Re&name", null, CreateEventHandler( BeginRename ), Keys.Control | Keys.N ) );
             }
 
-            if ( ContextMenuOptions.HasFlag( ContextMenuOptions.Delete ) )
+            if ( ContextMenuFlags.HasFlag( MenuFlags.Delete ) )
             {
                 ContextMenuStrip.Items.Add( new ToolStripMenuItem( "&Delete", null, CreateEventHandler( Delete ), Keys.Control | Keys.Delete ) );
             }
@@ -359,26 +586,32 @@ namespace AtlusGfdEditor.GUI.Adapters
         //
         private Type GetTypeFromPath( string filepath, IEnumerable<Type> types )
         {
-            var extension = Path.GetExtension( filepath );
+            var extension = Path.GetExtension( filepath ).Substring( 1 );
             var modules = ModuleRegistry.Modules.Where(
+                // module object type is one of the types AND
                 x => types.Contains( x.ObjectType ) &&
-                x.Extensions.Contains( extension, StringComparer.InvariantCultureIgnoreCase ) )
+                // module extensions contains a wild card OR contains the extension of the path
+                ( x.Extensions.Any( ext => ext == "*" ) || x.Extensions.Contains( extension, StringComparer.InvariantCultureIgnoreCase ) ) )
                 .ToList();
+
+            // remove wild card modules if we have more than 1 module
+            if ( modules.Count > 1 )
+            {
+                modules.RemoveAll( x => x.Extensions.Contains( "*" ) );
+
+                if ( modules.Count == 0 )
+                    throw new Exception( "Only suitable modules are multiple modules with wild cards?" );
+            }
 
             if ( modules.Count == 0 )
             {
-                modules = ModuleRegistry.Modules.Where(x => types.Contains( x.ObjectType ) ).ToList();
-                if ( modules.Count == 0 )
-                {
-                    throw new Exception( "Can't find module for export" );
-                }
-                else if ( modules.Count != 1 )
-                {
-                    throw new Exception( "Ambigious format" );
-                }
+                throw new Exception( "No suitable modules found" );
             }
-            else if ( modules.Count != 1 )
-                throw new Exception( "Ambigious format" );
+
+            if ( modules.Count != 1 )
+            {
+                throw new Exception( "Ambigious module match. Multiple suitable modules format found." );
+            }
 
             return modules[0].ObjectType;
         }

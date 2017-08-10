@@ -13,9 +13,6 @@ namespace AtlusGfdEditor.Modules
         public override string Name
             => "Archive file";
 
-        public override string Description
-            => "Generic archive file used for storing data";
-
         public override string[] Extensions
             => new[] { "bin" };
 

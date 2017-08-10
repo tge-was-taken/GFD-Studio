@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.IO;
 
 namespace AtlusGfdEditor.Modules
@@ -10,11 +11,6 @@ namespace AtlusGfdEditor.Modules
         /// Gets the name of the file format.
         /// </summary>
         string Name { get; }
-
-        /// <summary>
-        /// Gets the description of the file format.
-        /// </summary>
-        string Description { get; }
 
         /// <summary>
         /// Gets the extensions of the file format.
@@ -92,6 +88,13 @@ namespace AtlusGfdEditor.Modules
         /// </summary>
         /// <param name="obj">The format object.</param>
         void Export( object obj, out byte[] data, string filename = null );
+
+        /// <summary>
+        /// Gets image data for the format object.
+        /// </summary>
+        /// <param name="obj">The format object.</param>
+        /// <returns>Image data.</returns>
+        Image GetImage( object obj );
     }
 
     [Flags]
@@ -100,5 +103,6 @@ namespace AtlusGfdEditor.Modules
         Import           = 0b0001,
         Export           = 0b0010,
         ImportForEditing = 0b0100, 
+        Image            = 0b1000,
     }
 }

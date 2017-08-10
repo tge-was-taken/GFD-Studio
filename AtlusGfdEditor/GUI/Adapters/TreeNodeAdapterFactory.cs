@@ -22,7 +22,17 @@ namespace AtlusGfdEditor.GUI.Adapters
 
         static TreeNodeAdapterFactory()
         {
+            // generic adapters
+            Register<StreamAdapter>();
+            Register<BitmapAdapter>();
+
+            // archive adapters
             Register<ArchiveAdapter>();
+
+            // gfd resource adapters
+            Register<ModelAdapter>();
+            Register<TextureDictionaryAdapter>();
+            Register<TextureAdapter>();
         }
 
         /// <summary>

@@ -31,9 +31,19 @@ namespace AtlusGfdEditor.Modules
         {
             RegisterMany
             (
+                // generic modules
                 new StreamModule(),
+                new BitmapModule(),
+
+                // archive modules
+                new ArchiveModule(),
+
+                // gfd resource modules
                 new ModelModule(),
-                new ArchiveModule()
+
+                // gfd texture resource modules 
+                new TextureDictionaryModule(),
+                new TextureModule()
             );
         }
 

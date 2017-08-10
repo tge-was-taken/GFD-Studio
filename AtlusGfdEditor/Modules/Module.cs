@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -13,11 +14,6 @@ namespace AtlusGfdEditor.Modules
         /// Gets the name of the file format.
         /// </summary>
         public abstract string Name { get; }
-
-        /// <summary>
-        /// Gets the description of the file format.
-        /// </summary>
-        public abstract string Description { get; }
 
         /// <summary>
         /// Gets the extensions of the file format.
@@ -160,6 +156,19 @@ namespace AtlusGfdEditor.Modules
             }
         }
 
+        /// <summary>
+        /// Gets image data for the format object.
+        /// </summary>
+        /// <param name="obj">The format object.</param>
+        /// <returns>Image data.</returns>
+        public Image GetImage( T obj )
+        {
+            if ( !UsageFlags.HasFlag( FormatModuleUsageFlags.Image ) )
+                throw new NotSupportedException( "Module does not provide image capabilities" );
+
+            return GetImageCore( obj );
+        }
+
         //
         // Internal import & export methods
         //
@@ -168,6 +177,8 @@ namespace AtlusGfdEditor.Modules
         protected abstract T ImportCore( Stream stream, string filename = null );
 
         protected abstract void ExportCore( T obj, Stream stream, string filename = null );
+
+        protected virtual Image GetImageCore( T obj ) => throw new NotImplementedException();
 
         //
         // IModule implementation
@@ -190,5 +201,8 @@ namespace AtlusGfdEditor.Modules
 
         void IModule.Export( object obj, out byte[] data, string filename = null ) 
             => Export( ( T )obj, out data, filename );
+
+        Image IModule.GetImage( object obj )
+            => GetImage( ( T )obj );
     }
 }

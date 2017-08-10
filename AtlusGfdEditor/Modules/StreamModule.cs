@@ -12,9 +12,6 @@ namespace AtlusGfdEditor.Modules
         public override string Name 
             => "Generic stream";
 
-        public override string Description
-            => "Generic stream";
-
         public override string[] Extensions
             => new string[] { "*" };
 
