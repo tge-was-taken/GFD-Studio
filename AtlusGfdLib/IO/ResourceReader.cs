@@ -62,12 +62,12 @@ namespace AtlusGfdLib.IO
 
         private void DebugLog( string what, [CallerMemberName]string name = null )
         {
-            Debug.WriteLine( $"{name}: {what}" );
+            Trace.TraceInformation( $"{name}: {what}" );
         }
 
         private void DebugLogPosition( string what, [CallerMemberName]string name = null )
         {
-            Debug.WriteLine( $"{name}: {what} read @ 0x{mReader.Position:X4}" );
+            Trace.TraceInformation( $"{name}: {what} @ 0x{mReader.Position:X4}" );
         }
 
         // Primitive read methods
@@ -228,7 +228,7 @@ namespace AtlusGfdLib.IO
                 Unknown = mReader.ReadInt32(),
             };
 
-            Debug.WriteLine( $"{GetMethodName()}: {header.Magic} ver: {header.Version:X4} type: {header.Type} unk: {header.Unknown}" );
+            DebugLog( $"{header.Magic} ver: {header.Version:X4} type: {header.Type} unk: {header.Unknown}" );
 
             return true;
         }
@@ -250,7 +250,7 @@ namespace AtlusGfdLib.IO
                 Unknown = mReader.ReadInt32()
             };
 
-            Debug.WriteLine( $"{GetMethodName()}: {header.Type} ver: {header.Version:X4} size: {header.Size}" );
+            DebugLog( $"{header.Type} ver: {header.Version:X4} size: {header.Size} unk: {header.Unknown}" );
 
             return true;
         }
@@ -311,7 +311,7 @@ namespace AtlusGfdLib.IO
                     //    break;
 
                     default:
-                        Debug.WriteLine( $"{GetMethodName()}: Unknown chunk type '{header.Type}' at offset 0x{mReader.Position.ToString( "X" )}" );
+                        DebugLogPosition( $"Unknown chunk type '{header.Type}'" );
                         mReader.SeekCurrent( header.Size - 12 );
                         continue;
                 }
@@ -325,7 +325,7 @@ namespace AtlusGfdLib.IO
         {
             var textureDictionary = new TextureDictionary( version );
 
-            int textureCount = mReader.ReadInt32();
+            int textureCount = ReadInt();
             for (int i = 0; i < textureCount; i++)
             {
                 var texture = ReadTexture();
@@ -341,7 +341,7 @@ namespace AtlusGfdLib.IO
             texture.Name = ReadString();
             texture.Format = ( TextureFormat )ReadShort();
             if ( !Enum.IsDefined( typeof( TextureFormat ), texture.Format ) )
-                Debug.WriteLine( $"{GetMethodName()}: unknown texture format '{( int )texture.Format}'" );
+                DebugLogPosition( $"unknown texture format '{( int )texture.Format}'" );
 
             int size = ReadInt();
             texture.Data = ReadBytes( size );
@@ -488,7 +488,7 @@ namespace AtlusGfdLib.IO
 
             material.Flags = flags;
             if ( material.Flags != flags )
-                throw new Exception( "Flags mismatch" );
+                throw new Exception( "Material flags don't match flags from file" );
 
             return material;
         }
@@ -531,6 +531,8 @@ namespace AtlusGfdLib.IO
             {
                 MaterialAttribute attribute;             
                 uint flags = ReadUInt();
+
+                DebugLogPosition( $"Material attribute {( MaterialAttributeType )( flags & 0xFFFF )}" );
 
                 switch ( (MaterialAttributeType)(flags & 0xFFFF) )
                 {
@@ -802,7 +804,6 @@ namespace AtlusGfdLib.IO
             DebugLogPosition( "Node" );
             var node = ReadNode( version );
             
-
             int childCount = ReadInt();
 
             for ( int i = 0; i < childCount; i++ )
@@ -1094,7 +1095,7 @@ namespace AtlusGfdLib.IO
             }
 
             if ( geometry.Flags != flags )
-                throw new Exception( "Flags mismatch" );
+                throw new Exception( "Geometry flags don't match flags in file" );
 
             return geometry;
         }

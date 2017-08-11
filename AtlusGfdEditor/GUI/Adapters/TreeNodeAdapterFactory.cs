@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -173,6 +174,8 @@ namespace AtlusGfdEditor.GUI.Adapters
             var adapterType = typeof( T );
             var adapterBaseType = adapterType.BaseType;
             var resourceType = adapterBaseType.GenericTypeArguments[0];
+
+            Trace.TraceInformation( $"Registering adapter {adapterType} for {resourceType}" );
 
             sCreateAdapterByResourceType[resourceType] = CreateAdapterCreatorDelegate( adapterType );
         }

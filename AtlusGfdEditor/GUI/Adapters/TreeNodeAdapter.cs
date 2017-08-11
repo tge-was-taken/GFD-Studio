@@ -138,6 +138,8 @@ namespace AtlusGfdEditor.GUI.Adapters
             get => mIsDirty;
             set
             {
+                Trace.TraceInformation( $"{nameof( TreeNodeAdapter )} [{Text}]: {nameof( IsDirty )} => {value}" );
+
                 mIsDirty = value;
 
                 if ( Parent != null )
@@ -190,7 +192,7 @@ namespace AtlusGfdEditor.GUI.Adapters
             var type = GetTypeFromPath( filepath, mExportActions.Keys );
             var exportAction = mExportActions[type];
 
-            Trace.WriteLine( $"{nameof( TreeNodeAdapter )} [{Text}]: {nameof( Export )} {type} to {filepath}" );
+            Trace.TraceInformation( $"{nameof( TreeNodeAdapter )} [{Text}]: {nameof( Export )} {type} to {filepath}" );
 
             exportAction( filepath );
         }
@@ -234,7 +236,7 @@ namespace AtlusGfdEditor.GUI.Adapters
             var type = GetTypeFromPath( filepath, mReplaceActions.Keys );
             var replaceAction = mReplaceActions[type];
 
-            Trace.WriteLine( $"{nameof( TreeNodeAdapter )} [{Text}]: {nameof( Replace )} {type} from {filepath}" );
+            Trace.TraceInformation( $"{nameof( TreeNodeAdapter )} [{Text}]: {nameof( Replace )} {type} from {filepath}" );
 
             Resource = replaceAction( filepath );
             NotifyResourcePropertyChanged();
@@ -280,7 +282,7 @@ namespace AtlusGfdEditor.GUI.Adapters
             var type = GetTypeFromPath( filepath, mAddActions.Keys );
             var addAction = mAddActions[type];
 
-            Trace.WriteLine( $"{nameof( TreeNodeAdapter )} [{Text}]: {nameof( Add )} {type} from {filepath}" );
+            Trace.TraceInformation( $"{nameof( TreeNodeAdapter )} [{Text}]: {nameof( Add )} {type} from {filepath}" );
 
             addAction.Invoke( filepath );
         }
@@ -398,7 +400,7 @@ namespace AtlusGfdEditor.GUI.Adapters
             if ( !IsInitialized )
                 return;
 
-            Trace.WriteLine( $"{nameof( TreeNodeAdapter )} [{Text}]: {nameof( NotifyPropertyChanged )} {propertyName}" );
+            Trace.TraceInformation( $"{nameof( TreeNodeAdapter )} [{Text}]: {nameof( NotifyPropertyChanged )} {propertyName}" );
 
             // set dirty flag as a property was changed
             IsDirty = true;
@@ -413,7 +415,7 @@ namespace AtlusGfdEditor.GUI.Adapters
             if ( !IsInitialized )
                 return;
 
-            Trace.WriteLine( $"{nameof( TreeNodeAdapter )} [{Text}]: {nameof( NotifyResourcePropertyChanged )}" );
+            Trace.TraceInformation( $"{nameof( TreeNodeAdapter )} [{Text}]: {nameof( NotifyResourcePropertyChanged )}" );
 
             // set dirty flag to false because the resource is already in sync with the view model
             IsDirty = false;
@@ -514,7 +516,7 @@ namespace AtlusGfdEditor.GUI.Adapters
             if ( !IsDirty && IsViewInitialized )
                 return;
 
-            Trace.WriteLine( $"{nameof( TreeNodeAdapter )} [{Text}]: {nameof( InitializeView )}" );
+            Trace.TraceInformation( $"{nameof( TreeNodeAdapter )} [{Text}]: {nameof( InitializeView )}" );
 
             // rebuild for initializing view, if necessary
             if ( IsDirty )

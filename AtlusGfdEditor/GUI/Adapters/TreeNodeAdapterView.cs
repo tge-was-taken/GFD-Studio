@@ -40,7 +40,7 @@ namespace AtlusGfdEditor.GUI.Adapters
         protected override void OnAfterExpand( TreeViewEventArgs e )
         {
             // check if the first child node is a dummy node
-            if ( e.Node.Nodes.Count > 0 && e.Node.Nodes[0].Text == "dummy" )
+            if ( e.Node.Nodes.Count > 0 && e.Node.Nodes[0].Text == "" )
             {
                 // initialize the view so the user doesn't get to see the dummy node
                 ( ( TreeNodeAdapter )e.Node ).InitializeView();
@@ -52,7 +52,7 @@ namespace AtlusGfdEditor.GUI.Adapters
                 {
                     // HACK: add a dummy node for each branch
                     // so the expand icon shows up even when a node hasn't initialized yet
-                    childNode.Nodes.Add( "dummy" );
+                    childNode.Nodes.Add( "" );
                 }
             }
 

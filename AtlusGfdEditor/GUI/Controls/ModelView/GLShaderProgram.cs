@@ -9,6 +9,46 @@ namespace AtlusGfdEditor.GUI.Controls.ModelView
 {
     public class GLShaderProgram : IDisposable
     {
+        public static bool TryCreate( string vertexShaderFilepath, string fragmentShaderFilepath, out GLShaderProgram program )
+        {
+            var vertexShaderSource = File.ReadAllText( vertexShaderFilepath );
+            var fragmentShaderSource = File.ReadAllText( fragmentShaderFilepath );
+
+            using ( var builder = new GLShaderProgramBuilder() )
+            {
+                if ( !builder.TryAttachShader( ShaderType.VertexShader, vertexShaderSource ) )
+                {
+                    program = null;
+                    return false;
+                }
+
+                if ( !builder.TryAttachShader( ShaderType.FragmentShader, fragmentShaderSource ) )
+                {
+                    program = null;
+                    return false;
+                }
+
+                if ( !builder.TryBuild( out program ) )
+                {
+                    return false;
+                }
+
+                return true;
+            }
+        }
+
+        public static GLShaderProgram Create( string vertexShaderFilepath, string fragmentShaderFilepath )
+        {
+            if ( !TryCreate( vertexShaderFilepath, fragmentShaderFilepath, out var program ) )
+            {
+                throw new Exception( "Failed to create shader program" );
+            }
+            else
+            {
+                return program;
+            }
+        }
+
         class Uniform
         {
             public string Name;
@@ -20,57 +60,17 @@ namespace AtlusGfdEditor.GUI.Controls.ModelView
         private bool mDisposed;
         private Dictionary<string, Uniform> mUniforms;
 
-        public int ID { get; }
+        public int ShaderProgramId { get; }
 
-        public GLShaderProgram( int glShaderProgram )
+        public GLShaderProgram( int shaderProgramId )
         {
-            ID = glShaderProgram;
+            ShaderProgramId = shaderProgramId;
             mUniforms = new Dictionary<string, Uniform>();
         }
 
         ~GLShaderProgram()
         {
             Dispose( false );
-        }
-
-        public static bool TryCreate( string vertexShaderFilepath, string fragmentShaderFilepath, out GLShaderProgram program )
-        {
-            var vertexShaderSource = File.ReadAllText( vertexShaderFilepath );
-            var fragmentShaderSource = File.ReadAllText( fragmentShaderFilepath );
-
-            using ( var builder = new GLShaderProgramBuilder() )
-            {
-                if ( !builder.AttachShader( ShaderType.VertexShader, vertexShaderSource ) )
-                {
-                    program = null;
-                    return false;
-                }
-
-                if ( !builder.AttachShader( ShaderType.FragmentShader, fragmentShaderSource ))
-                {
-                    program = null;
-                    return false;
-                }
-
-                if ( !builder.Build( out program ))
-                {
-                    return false;
-                }
-
-                return true;
-            }
-        }
-
-        public static GLShaderProgram Create( string vertexShaderFilepath, string fragmentShaderFilepath )
-        {
-            if ( !TryCreate(vertexShaderFilepath, fragmentShaderFilepath, out var program))
-            {
-                throw new Exception( "Failed to create shader program" );
-            }
-            else
-            {
-                return program;
-            }
         }
 
         public void RegisterUniform<T>( string name )
@@ -82,10 +82,10 @@ namespace AtlusGfdEditor.GUI.Controls.ModelView
             }
 
             // get the location of the uniform isn't invalid
-            int location = GL.GetUniformLocation( ID, name );
+            int location = GL.GetUniformLocation( ShaderProgramId, name );
             if ( location == -1 )
             {
-                //throw new Exception( $"Uniform \"{name}\" does not exist in shader program" );
+                Trace.TraceWarning( $"Attempted to register uniform \"{name}\" which does not exist in the shader program" );
             }
 
             // register uniform in dict
@@ -125,7 +125,7 @@ namespace AtlusGfdEditor.GUI.Controls.ModelView
         {
             DebugCheckAllUniformsAssigned();
 
-            GL.UseProgram( ID );
+            GL.UseProgram( ShaderProgramId );
         }
 
         public void Dispose()
@@ -138,11 +138,7 @@ namespace AtlusGfdEditor.GUI.Controls.ModelView
         {
             if ( !mDisposed )
             {
-                if ( disposing )
-                {
-                    GL.DeleteProgram( ID );
-                }
-
+                GL.DeleteProgram( ShaderProgramId );
                 mDisposed = true;
             }
         }
@@ -153,7 +149,7 @@ namespace AtlusGfdEditor.GUI.Controls.ModelView
 
             if ( !mUniforms.ContainsKey(name) )
             {
-                throw new Exception( "Uniform \"{name}\" is not registered" );
+                throw new Exception( $"Uniform \"{name}\" is not registered" );
             }
             else
             {

@@ -40,12 +40,14 @@ namespace AtlusGfdEditor.GUI.Adapters
                 return model;
             });
 
-            TextureDictionary = ( TextureDictionaryAdapter )TreeNodeAdapterFactory.Create( "Textures", Resource.TextureDictionary );
+            if ( Resource.TextureDictionary != null )
+                TextureDictionary = ( TextureDictionaryAdapter )TreeNodeAdapterFactory.Create( "Textures", Resource.TextureDictionary );
         }
 
         protected override void InitializeViewCore()
         {
-            Nodes.Add( TextureDictionary );
+            if ( TextureDictionary != null )
+                Nodes.Add( TextureDictionary );
         }
     }
 }

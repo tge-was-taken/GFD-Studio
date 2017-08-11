@@ -1,18 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using OpenTK.Graphics.OpenGL;
 
 namespace AtlusGfdEditor.GUI.Controls.ModelView
 {
     public class GLShaderProgramBuilder : IDisposable
     {
-        private int mGLShaderProgram;
+        private int mShaderProgramId;
         private List<int> mAttachedShaders;
         private bool mDisposed;
+        private bool mHasBuilt;
 
         public GLShaderProgramBuilder()
         {
-            mGLShaderProgram = GL.CreateProgram();
+            mShaderProgramId = GL.CreateProgram();
             mAttachedShaders = new List<int>();
         }
 
@@ -21,7 +23,7 @@ namespace AtlusGfdEditor.GUI.Controls.ModelView
             Dispose( false );
         }
 
-        public bool AttachShader( ShaderType shaderType, string shaderSource )
+        public bool TryAttachShader( ShaderType shaderType, string shaderSource )
         {
             if ( shaderSource == null )
             {
@@ -37,7 +39,7 @@ namespace AtlusGfdEditor.GUI.Controls.ModelView
             GL.GetShader( shader, ShaderParameter.CompileStatus, out int compileStatus );
             if ( compileStatus == 0 )
             {
-                Console.WriteLine( $"{shaderType} compilation failed" );
+                Trace.TraceError( $"{shaderType} compilation failed" );
 
                 GL.GetShader( shader, ShaderParameter.InfoLogLength, out int infoLogLength );
 
@@ -45,8 +47,8 @@ namespace AtlusGfdEditor.GUI.Controls.ModelView
                 {
                     GL.GetShaderInfoLog( shader, infoLogLength + 1, out int length, out var shaderInfoLog );
 
-                    Console.WriteLine( shaderInfoLog );
-                    Console.WriteLine();
+                    Trace.TraceError( shaderInfoLog );
+                    Trace.TraceError( "" );
                 }
 
                 return false;
@@ -59,14 +61,14 @@ namespace AtlusGfdEditor.GUI.Controls.ModelView
                 {
                     GL.GetShaderInfoLog( shader, infoLogLength + 1, out int length, out var shaderInfoLog );
 
-                    Console.WriteLine( $"{shaderType} info log:" );
-                    Console.WriteLine( shaderInfoLog );
-                    Console.WriteLine();
+                    Trace.TraceInformation( $"{shaderType} info log:" );
+                    Trace.TraceInformation( shaderInfoLog );
+                    Trace.TraceInformation( "" );
                 }
             }
 
             // attach it to the program
-            GL.AttachShader( mGLShaderProgram, shader );
+            GL.AttachShader( mShaderProgramId, shader );
 
             // keep it here to delete it later
             mAttachedShaders.Add( shader );
@@ -74,24 +76,34 @@ namespace AtlusGfdEditor.GUI.Controls.ModelView
             return true;
         }
 
-        public bool Build( out GLShaderProgram program )
+        public bool TryBuild( out GLShaderProgram program )
         {
-            GL.LinkProgram( mGLShaderProgram );
+            if ( mHasBuilt )
+            {
+                Trace.TraceError( "Attempted to build shader program twice" );
+
+                program = null;
+                return false;
+            }
+
+            // link program
+            GL.LinkProgram( mShaderProgramId );
 
             // check for linking errors
-            GL.GetProgram( mGLShaderProgram, GetProgramParameterName.LinkStatus, out int linkStatus );
+            GL.GetProgram( mShaderProgramId, GetProgramParameterName.LinkStatus, out int linkStatus );
 
             if ( linkStatus == 0 )
             {
-                Console.WriteLine( "Shader program linking failed" );
+                Trace.TraceError( "Shader program linking failed" );
 
-                GL.GetProgram( mGLShaderProgram, GetProgramParameterName.InfoLogLength, out int infoLogLength );
+                // print info log
+                GL.GetProgram( mShaderProgramId, GetProgramParameterName.InfoLogLength, out int infoLogLength );
                 if ( infoLogLength > 0 )
                 {
-                    GL.GetShaderInfoLog( mGLShaderProgram, infoLogLength + 1, out int length, out var log );
+                    GL.GetProgramInfoLog( mShaderProgramId, infoLogLength + 1, out int length, out var log );
 
-                    Console.WriteLine( log );
-                    Console.WriteLine();
+                    Trace.TraceError( log );
+                    Trace.TraceError( "");
                 }
 
                 program = null;
@@ -99,21 +111,23 @@ namespace AtlusGfdEditor.GUI.Controls.ModelView
             }
             else
             {
-                GL.GetProgram( mGLShaderProgram, GetProgramParameterName.InfoLogLength, out int infoLogLength );
+                // print info log
+                GL.GetProgram( mShaderProgramId, GetProgramParameterName.InfoLogLength, out int infoLogLength );
                 if ( infoLogLength > 0 )
                 {
-                    GL.GetShaderInfoLog( mGLShaderProgram, infoLogLength + 1, out int length, out var log );
+                    GL.GetProgramInfoLog( mShaderProgramId, infoLogLength + 1, out int length, out var log );
 
-                    Console.WriteLine( $"Shader program info log:" );
-                    Console.WriteLine( log );
-                    Console.WriteLine();
+                    Trace.TraceInformation( $"Shader program info log:" );
+                    Trace.TraceInformation( log );
+                    Trace.TraceInformation( "");
                 }
             }
 
-            // dispose to delete shaders
-            Dispose();
+            DeleteAttachedShaders();
 
-            program = new GLShaderProgram( mGLShaderProgram );
+            program = new GLShaderProgram( mShaderProgramId );
+            mHasBuilt = true;
+
             return true;
         }
 
@@ -127,16 +141,32 @@ namespace AtlusGfdEditor.GUI.Controls.ModelView
         {
             if ( !mDisposed )
             {
-                if ( disposing )
+                if ( !mHasBuilt )
                 {
-                }
-
-                foreach ( var shader in mAttachedShaders )
-                {
-                    GL.DeleteShader( shader );
+                    DeleteAttachedShaders();
+                    DeleteProgram();
                 }
 
                 mDisposed = true;
+            }
+        }
+
+        private void DeleteAttachedShaders()
+        {
+            foreach ( var shader in mAttachedShaders )
+            {
+                GL.DeleteShader( shader );
+            }
+
+            mAttachedShaders.Clear();
+        }
+
+        private void DeleteProgram()
+        {
+            if ( mShaderProgramId != 0 )
+            {
+                GL.DeleteProgram( mShaderProgramId );
+                mShaderProgramId = 0;
             }
         }
     }

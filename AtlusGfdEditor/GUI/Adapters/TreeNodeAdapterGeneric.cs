@@ -48,7 +48,7 @@ namespace AtlusGfdEditor.GUI.Adapters
         {
             if ( mRebuildAction != null )
             {
-                Trace.WriteLine( $"{nameof( TreeNodeAdapter<T> )} [{Text}]: {nameof( Rebuild )}" );
+                Trace.TraceInformation( $"{nameof( TreeNodeAdapter<T> )} [{Text}]: {nameof( Rebuild )}" );
 
                 // enter rebuild state
                 mIsRebuilding = true;

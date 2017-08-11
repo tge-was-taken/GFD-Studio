@@ -25,8 +25,7 @@ namespace AtlusGfdEditor.GUI.Controls
         private bool mIsModelLoaded;
         private bool mIsFieldModel;
         private Archive mFieldTextures;
-        private int mLastMouseX;
-        private int mLastMouseY;
+        private Point mLastMouseLocation;
 
         public ModelViewControl() : base( 
             new GraphicsMode(32, 24, 0, 4),
@@ -35,6 +34,8 @@ namespace AtlusGfdEditor.GUI.Controls
             GraphicsContextFlags.Debug | GraphicsContextFlags.ForwardCompatible)
         {
             InitializeComponent();
+
+            // make the control fill up the space of the parent cotnrol
             Dock = DockStyle.Fill;
 
             // required to use GL in the context of this control
@@ -58,14 +59,16 @@ namespace AtlusGfdEditor.GUI.Controls
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose( bool disposing )
         {
-            if ( disposing && ( components != null ) )
+            if ( disposing )
             {
-                components.Dispose();
+                if ( components != null )
+                    components.Dispose();
 
                 if ( mShaderProgram != null )
                     mShaderProgram.Dispose();
 
-                DeleteModel();
+                if ( mIsModelLoaded )
+                    DeleteModel();
             }
 
             base.Dispose( disposing );
@@ -95,6 +98,9 @@ namespace AtlusGfdEditor.GUI.Controls
             {
                 foreach ( var geometry in mGeometries )
                 {
+                    if ( !geometry.IsVisible )
+                        continue;
+
                     // set up model view projection matrix uniforms
                     var modelViewProj = geometry.ModelMatrix * mCamera.CalculateViewProjectionMatrix();
 
@@ -146,13 +152,13 @@ namespace AtlusGfdEditor.GUI.Controls
         private void LogGLInfo()
         {
             // todo: log to file? would help with debugging crashes on clients
-            Trace.WriteLine( "NOTICE: GL Info" );
-            Trace.WriteLine( $"     Vendor         {GL.GetString( StringName.Vendor )}" );
-            Trace.WriteLine( $"     Renderer       {GL.GetString( StringName.Renderer )}" );
-            Trace.WriteLine( $"     Version        {GL.GetString( StringName.Version )}" );
-            Trace.WriteLine( $"     Extensions     {GL.GetString( StringName.Extensions )}" );
-            Trace.WriteLine( $"     GLSL version   {GL.GetString( StringName.ShadingLanguageVersion )}" );
-            Trace.WriteLine( "" );
+            Trace.TraceInformation( "GL Info" );
+            Trace.TraceInformation( $"     Vendor         {GL.GetString( StringName.Vendor )}" );
+            Trace.TraceInformation( $"     Renderer       {GL.GetString( StringName.Renderer )}" );
+            Trace.TraceInformation( $"     Version        {GL.GetString( StringName.Version )}" );
+            Trace.TraceInformation( $"     Extensions     {GL.GetString( StringName.Extensions )}" );
+            Trace.TraceInformation( $"     GLSL version   {GL.GetString( StringName.ShadingLanguageVersion )}" );
+            Trace.TraceInformation( "" );
         }
 
         /// <summary>
@@ -177,15 +183,14 @@ namespace AtlusGfdEditor.GUI.Controls
                 Path.Combine( AppDomain.CurrentDomain.BaseDirectory, "FragmentShader.glsl" ),
                 out mShaderProgram ) )
             {
-                Trace.WriteLine( "WARNING: Failed to compile shaders. Trying to use basic shaders.." );
+                Trace.TraceWarning( "WARNING: Failed to compile shaders. Trying to use basic shaders.." );
 
                 if ( !GLShaderProgram.TryCreate(
                     Path.Combine( AppDomain.CurrentDomain.BaseDirectory, "VertexShaderBasic.glsl" ),
                     Path.Combine( AppDomain.CurrentDomain.BaseDirectory, "FragmentShaderBasic.glsl" ),
                     out mShaderProgram ) )
                 {
-                    Trace.WriteLine( "ERROR: Failed to compile basic shaders." );
-                    throw new Exception( "Failed to compile basic shaders." );
+                    Trace.TraceError( "ERROR: Failed to compile basic shaders." );
                 }
             }
 
@@ -436,6 +441,8 @@ namespace AtlusGfdEditor.GUI.Controls
             // material
             glGeometry.Material = CreateGLMaterial( mModel.MaterialDictionary[geometry.MaterialName] );
 
+            glGeometry.IsVisible = true;
+
             return glGeometry;
         }
 
@@ -502,6 +509,14 @@ namespace AtlusGfdEditor.GUI.Controls
         // Mouse events
         //
 
+        private Point GetMouseLocationDelta( Point location )
+        {
+            location.X -= mLastMouseLocation.X;
+            location.Y -= mLastMouseLocation.Y;
+
+            return location;
+        }
+
         protected override void OnMouseMove( System.Windows.Forms.MouseEventArgs e )
         {
             if ( !mIsModelLoaded )
@@ -509,21 +524,28 @@ namespace AtlusGfdEditor.GUI.Controls
 
             if ( e.Button.HasFlag( MouseButtons.Middle ) )
             {
-                float multiplier = 1.0f;
-                if ( Keyboard.GetState().IsKeyDown( Key.ShiftLeft ) )
-                    multiplier = 8.0f;
+                float multiplier = 0.5f;
+                var keyboardState = Keyboard.GetState();
 
-                int xDelta = e.X - mLastMouseX;
-                int yDelta = e.Y - mLastMouseY;
+                if ( keyboardState.IsKeyDown( Key.ShiftLeft ) )
+                {
+                    multiplier *= 10f;
+                }
+                else if ( keyboardState.IsKeyDown( Key.ControlLeft) )
+                {
+                    multiplier /= 2f;
+                }
 
-                if ( Keyboard.GetState().IsKeyDown( Key.AltLeft ) )
+                var locationDelta = GetMouseLocationDelta( e.Location );
+
+                if ( keyboardState.IsKeyDown( Key.AltLeft ) )
                 {
                     // Orbit around model
                     var bSphere = mModel.Scene.BoundingSphere.Value;
                     mCamera = new GLPerspectiveTargetCamera( mCamera.Translation, mCamera.ZNear, mCamera.ZFar, mCamera.FieldOfView, mCamera.AspectRatio, new Vector3( bSphere.Center.X, bSphere.Center.Y, bSphere.Center.Z ) );
                     mCamera.Translation = new Vector3(
-                        mCamera.Translation.X - ( ( xDelta / 3f ) * multiplier ),
-                        mCamera.Translation.Y + ( ( yDelta / 3f ) * multiplier ),
+                        mCamera.Translation.X - ( ( locationDelta.X / 3f ) * multiplier ),
+                        mCamera.Translation.Y + ( ( locationDelta.Y / 3f ) * multiplier ),
                         mCamera.Translation.Z );
                 }
                 else
@@ -531,16 +553,15 @@ namespace AtlusGfdEditor.GUI.Controls
                     // Move camera
                     mCamera = new GLPerspectiveFreeCamera( mCamera.Translation, mCamera.ZNear, mCamera.ZFar, mCamera.FieldOfView, mCamera.AspectRatio, Quaternion.Identity );
                     mCamera.Translation = new Vector3(
-                        mCamera.Translation.X - ( ( xDelta / 3f ) * multiplier ),
-                        mCamera.Translation.Y + ( ( yDelta / 3f ) * multiplier ),
+                        mCamera.Translation.X - ( ( locationDelta.X / 3f ) * multiplier ),
+                        mCamera.Translation.Y + ( ( locationDelta.Y / 3f ) * multiplier ),
                         mCamera.Translation.Z );
                 }
+
+                Invalidate();
             }
 
-            mLastMouseX = e.X;
-            mLastMouseY = e.Y;
-
-            Invalidate();
+            mLastMouseLocation = e.Location;
         }
 
         protected override void OnMouseWheel( System.Windows.Forms.MouseEventArgs e )
@@ -548,11 +569,19 @@ namespace AtlusGfdEditor.GUI.Controls
             if ( !mIsModelLoaded )
                 return;
 
-            float multiplier = 1.0f;
-            if ( Keyboard.GetState().IsKeyDown( Key.ShiftLeft ) )
-                multiplier = 8.0f;
+            float multiplier = 0.25f;
+            var keyboardState = Keyboard.GetState();
 
-            mCamera.Translation = Vector3.Subtract( mCamera.Translation, ( Vector3.UnitZ * ( ( (float)e.Delta * 8 ) * multiplier ) ) );
+            if ( keyboardState.IsKeyDown( Key.ShiftLeft ) )
+            {
+                multiplier *= 10f;
+            }
+            else if ( keyboardState.IsKeyDown( Key.ControlLeft ) )
+            {
+                multiplier /= 2f;
+            }
+
+            mCamera.Translation = Vector3.Subtract( mCamera.Translation, ( Vector3.UnitZ * ( (float)e.Delta * multiplier ) ) );
 
             Invalidate();
         }
@@ -579,5 +608,6 @@ namespace AtlusGfdEditor.GUI.Controls
         public int ElementIndexCount;
         public GLMaterial Material;
         public Matrix4 ModelMatrix;
+        public bool IsVisible;
     }
 }

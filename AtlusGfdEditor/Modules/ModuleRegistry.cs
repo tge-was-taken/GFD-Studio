@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -61,6 +62,8 @@ namespace AtlusGfdEditor.Modules
             {
                 throw new ArgumentException( $"Duplicate module with object type {module.ObjectType}" );
             }
+
+            Trace.TraceInformation( $"Registering module {module.GetType()} for object type {module.ObjectType}" );
 
             sModules[module.ObjectType] = module;
         }
