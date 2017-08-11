@@ -1,21 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using AtlusGfdEditor.GUI.Controls.ModelView;
+using AtlusGfdLib;
+using CSharpImageLibrary;
+using CSharpImageLibrary.Headers;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
-using AtlusGfdLib;
-using System.IO;
-using CSharpImageLibrary;
-using CSharpImageLibrary.Headers;
 using OpenTK.Input;
-using AtlusGfdEditor.GUI.Controls.ModelView;
 
 namespace AtlusGfdEditor.GUI.Controls
 {
@@ -23,12 +20,7 @@ namespace AtlusGfdEditor.GUI.Controls
     {
         private Model mModel;
         private GLShaderProgram mShaderProgram;
-        private List<int> mVertexArrays = new List<int>();
-        private List<int> mBuffers = new List<int>();
-        private List<int> mElementCounts = new List<int>();
-        private List<Matrix4> mMatrices = new List<Matrix4>();
-        private List<int> mTextures = new List<int>();
-        private List<Material> mMaterials = new List<Material>();
+        private List<GLGeometry> mGeometries = new List<GLGeometry>();
         private GLPerspectiveCamera mCamera;
         private bool mIsModelLoaded;
         private bool mIsFieldModel;
@@ -43,10 +35,16 @@ namespace AtlusGfdEditor.GUI.Controls
             GraphicsContextFlags.Debug | GraphicsContextFlags.ForwardCompatible)
         {
             InitializeComponent();
-            MakeCurrent();
             Dock = DockStyle.Fill;
+
+            // required to use GL in the context of this control
+            MakeCurrent();
         }
 
+        /// <summary>
+        /// Load a model for displaying in the control.
+        /// </summary>
+        /// <param name="model"></param>
         public void LoadModel( Model model )
         {
             mModel = model;
@@ -73,14 +71,21 @@ namespace AtlusGfdEditor.GUI.Controls
             base.Dispose( disposing );
         }
 
+        /// <summary>
+        /// Executed during the initial load of the control.
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnLoad( EventArgs e )
         {
-            PrintGLInfo();
+            LogGLInfo();
             InitializeGL();
-            InitializeShaders();
-            InitializeEvents();
+            InitializeGLShaders();
         }
 
+        /// <summary>
+        /// Executed when a frame is rendered.
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnPaint( PaintEventArgs e )
         {
             // clear the buffers
@@ -88,42 +93,44 @@ namespace AtlusGfdEditor.GUI.Controls
 
             if ( mIsModelLoaded )
             {
-                for ( int i = 0; i < mVertexArrays.Count; i++ )
+                foreach ( var geometry in mGeometries )
                 {
-                    var model = mMatrices[i];
-                    var material = mMaterials[i];
-                    var modelViewProj = model * mCamera.CalculateViewProjectionMatrix();
+                    // set up model view projection matrix uniforms
+                    var modelViewProj = geometry.ModelMatrix * mCamera.CalculateViewProjectionMatrix();
 
                     mShaderProgram.SetUniform( "modelViewProj", modelViewProj );
 
-                    if ( mTextures[i] != 0 )
+                    // set material uniforms
+                    mShaderProgram.SetUniform( "hasDiffuse", geometry.Material.HasDiffuse );
+
+                    if ( geometry.Material.HasDiffuse )
                     {
                         mShaderProgram.SetUniform( "hasDiffuse", true );
-                        GL.BindTexture( TextureTarget.Texture2D, mTextures[i] );
-                    }
-                    else
-                    {
-                        mShaderProgram.SetUniform( "hasDiffuse", false );
+                        GL.BindTexture( TextureTarget.Texture2D, geometry.Material.DiffuseTextureId );
                     }
 
-                    mShaderProgram.SetUniform( "matAmbient", new Vector4( material.Ambient.X, material.Ambient.Y, material.Ambient.Z, material.Ambient.W ) );
-                    mShaderProgram.SetUniform( "matDiffuse", new Vector4( material.Diffuse.X, material.Diffuse.Y, material.Diffuse.Z, material.Diffuse.W ) );
-                    mShaderProgram.SetUniform( "matSpecular", new Vector4( material.Specular.X, material.Specular.Y, material.Specular.Z, material.Specular.W ) );
-                    mShaderProgram.SetUniform( "matEmissive", new Vector4( material.Emissive.X, material.Emissive.Y, material.Emissive.Z, material.Emissive.W ) );
+                    mShaderProgram.SetUniform( "matAmbient", geometry.Material.Ambient );
+                    mShaderProgram.SetUniform( "matDiffuse", geometry.Material.Diffuse );
+                    mShaderProgram.SetUniform( "matSpecular", geometry.Material.Specular );
+                    mShaderProgram.SetUniform( "matEmissive", geometry.Material.Emissive );
 
                     mShaderProgram.Use();
 
                     // use the vertex array
-                    GL.BindVertexArray( mVertexArrays[i] );
+                    GL.BindVertexArray( geometry.VertexArrayId );
 
                     // draw the polygon
-                    GL.DrawElements( PrimitiveType.Triangles, mElementCounts[i], DrawElementsType.UnsignedInt, 0 );
+                    GL.DrawElements( PrimitiveType.Triangles, geometry.ElementIndexCount, DrawElementsType.UnsignedInt, 0 );
                 }
             }
 
             SwapBuffers();
         }
 
+        /// <summary>
+        /// Executed when control is resized.
+        /// </summary>
+        /// <param name="e"></param>
         protected override void OnResize( EventArgs e )
         {
             if ( !mIsModelLoaded )
@@ -133,17 +140,24 @@ namespace AtlusGfdEditor.GUI.Controls
             GL.Viewport( ClientRectangle );
         }
 
-        private void PrintGLInfo()
+        /// <summary>
+        /// Log GL info for diagnostics.
+        /// </summary>
+        private void LogGLInfo()
         {
-            Console.WriteLine( $"GL info" );
-            Console.WriteLine( $"Vendor         {GL.GetString( StringName.Vendor )}" );
-            Console.WriteLine( $"Renderer       {GL.GetString( StringName.Renderer )}" );
-            Console.WriteLine( $"Version        {GL.GetString( StringName.Version )}" );
-            Console.WriteLine( $"Extensions     {GL.GetString( StringName.Extensions )}" );
-            Console.WriteLine( $"GLSL version   {GL.GetString( StringName.ShadingLanguageVersion )}" );
-            Console.WriteLine();
+            // todo: log to file? would help with debugging crashes on clients
+            Trace.WriteLine( "NOTICE: GL Info" );
+            Trace.WriteLine( $"     Vendor         {GL.GetString( StringName.Vendor )}" );
+            Trace.WriteLine( $"     Renderer       {GL.GetString( StringName.Renderer )}" );
+            Trace.WriteLine( $"     Version        {GL.GetString( StringName.Version )}" );
+            Trace.WriteLine( $"     Extensions     {GL.GetString( StringName.Extensions )}" );
+            Trace.WriteLine( $"     GLSL version   {GL.GetString( StringName.ShadingLanguageVersion )}" );
+            Trace.WriteLine( "" );
         }
 
+        /// <summary>
+        /// Initializes GL state before rendering starts.
+        /// </summary>
         private void InitializeGL()
         {
             GL.ClearColor( Color.LightGray );
@@ -153,20 +167,24 @@ namespace AtlusGfdEditor.GUI.Controls
             GL.Enable( EnableCap.DepthTest );
         }
 
-        private void InitializeShaders()
+        /// <summary>
+        /// Initializes shaders and links the shader program. Assumes only 1 shader program will be used.
+        /// </summary>
+        private void InitializeGLShaders()
         {
             if ( !GLShaderProgram.TryCreate(
                 Path.Combine( AppDomain.CurrentDomain.BaseDirectory, "VertexShader.glsl" ),
                 Path.Combine( AppDomain.CurrentDomain.BaseDirectory, "FragmentShader.glsl" ),
                 out mShaderProgram ) )
             {
-                Console.WriteLine( "Failed to compile shaders. Trying to use basic shaders.." );
+                Trace.WriteLine( "WARNING: Failed to compile shaders. Trying to use basic shaders.." );
 
                 if ( !GLShaderProgram.TryCreate(
                     Path.Combine( AppDomain.CurrentDomain.BaseDirectory, "VertexShaderBasic.glsl" ),
                     Path.Combine( AppDomain.CurrentDomain.BaseDirectory, "FragmentShaderBasic.glsl" ),
                     out mShaderProgram ) )
                 {
+                    Trace.WriteLine( "ERROR: Failed to compile basic shaders." );
                     throw new Exception( "Failed to compile basic shaders." );
                 }
             }
@@ -180,191 +198,66 @@ namespace AtlusGfdEditor.GUI.Controls
             mShaderProgram.RegisterUniform<Vector4>( "matEmissive" );
         }
 
-        private void InitializeEvents()
+        //
+        // Loading / saving model
+        //
+
+        private void LoadModel()
         {
+            if ( mModel.Scene == null )
+                return;
+
+            InitializeCamera();
+
+            foreach ( var node in mModel.Scene.Nodes )
+            {
+                if ( !node.HasAttachments )
+                    continue;
+
+                foreach ( var attachment in node.Attachments )
+                {
+                    if ( attachment.Type != NodeAttachmentType.Geometry )
+                        continue;
+
+                    var geometry = CreateGLGeometry( attachment.GetValue<Geometry>() );
+                    geometry.ModelMatrix = ToMatrix4( node.WorldTransform );
+
+                    mGeometries.Add( geometry );
+                }
+            }
+
+            mIsModelLoaded = true;
+
+            Invalidate();
         }
 
-        private int CreateGLTexture( Texture texture )
+        private void DeleteModel()
         {
-            int textureId = GL.GenTexture();
-            GL.BindTexture( TextureTarget.Texture2D, textureId );
+            if ( !mIsModelLoaded )
+                return;
 
-            // set up params
-            // todo: identify and retrieve values from texture
-            GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureWrapS, ( int )TextureWrapMode.Repeat );
-            GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureWrapT, ( int )TextureWrapMode.Repeat );
-            GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, ( int )TextureMagFilter.Linear );
-            GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, ( int )TextureMinFilter.LinearMipmapLinear );
+            mIsModelLoaded = false;
 
-            var ddsHeader = new DDS_Header( new MemoryStream( texture.Data ) );
-            GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, ddsHeader.dwMipMapCount - 1 );
+            GL.BindVertexArray( 0 );
+            GL.BindBuffer( BufferTarget.ArrayBuffer, 0 );
+            GL.BindBuffer( BufferTarget.ElementArrayBuffer, 0 );
+            GL.BindTexture( TextureTarget.Texture2D, 0 );
 
-            PixelInternalFormat format;
-
-            switch ( ddsHeader.Format )
+            foreach ( var geometry in mGeometries )
             {
-                case ImageEngineFormat.DDS_DXT1:
-                    format = PixelInternalFormat.CompressedRgbaS3tcDxt1Ext;
-                    break;
-                case ImageEngineFormat.DDS_DXT3:
-                    format = PixelInternalFormat.CompressedRgbaS3tcDxt3Ext;
-                    break;
-                case ImageEngineFormat.DDS_DXT5:
-                    format = PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
-                    break;
-                default:
-                    throw new System.Exception();
-            }
+                GL.DeleteVertexArray( geometry.VertexArrayId );
+                GL.DeleteBuffer( geometry.PositionBufferId );
+                GL.DeleteBuffer( geometry.NormalBufferId );
+                GL.DeleteBuffer( geometry.TextureCoordinateChannel0BufferId );
+                GL.DeleteBuffer( geometry.ElementBufferId );
 
-            int mipWidth = ddsHeader.Width;
-            int mipHeight = ddsHeader.Height;
-            int blockSize = ( format == PixelInternalFormat.CompressedRgbaS3tcDxt1Ext ) ? 8 : 16;
-            int mipOffset = 0;
-
-            unsafe
-            {
-                fixed ( byte* pBuffer = texture.Data )
+                if ( geometry.Material.HasDiffuse )
                 {
-                    for ( int mipLevel = 0; mipLevel < ddsHeader.dwMipMapCount; mipLevel++ )
-                    {
-                        int mipSize = ( ( mipWidth * mipHeight ) / 16 ) * blockSize;
-                        GL.CompressedTexImage2D( TextureTarget.Texture2D, mipLevel, format, mipWidth, mipHeight, 0, mipSize, ( IntPtr )( pBuffer + ( 0x80 + mipOffset ) ) );
-
-                        mipOffset += mipSize;
-                        mipWidth /= 2;
-                        mipHeight /= 2;
-                    }
+                    GL.DeleteTexture( geometry.Material.DiffuseTextureId );
                 }
             }
 
-            return textureId;
-        }
-
-        private int CreateGLTexture( FieldTexture texture )
-        {
-            int textureId = GL.GenTexture();
-            GL.BindTexture( TextureTarget.Texture2D, textureId );
-
-            // set up params
-            // todo: identify and retrieve values from texture
-            GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureWrapS, ( int )TextureWrapMode.Repeat );
-            GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureWrapT, ( int )TextureWrapMode.Repeat );
-            GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, ( int )TextureMagFilter.Linear );
-            GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, ( int )TextureMinFilter.LinearMipmapLinear );
-            GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, texture.MipMapCount - 1 );
-
-            PixelInternalFormat format = PixelInternalFormat.CompressedRgbaS3tcDxt1Ext;
-            if ( texture.Flags.HasFlag( FieldTextureFlags.DXT3 ) )
-            {
-                format = PixelInternalFormat.CompressedRgbaS3tcDxt3Ext;
-            }
-            else if ( texture.Flags.HasFlag( FieldTextureFlags.DXT5 ) )
-            {
-                format = PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
-            }
-
-            int mipWidth = texture.Width;
-            int mipHeight = texture.Height;
-            int blockSize = ( format == PixelInternalFormat.CompressedRgbaS3tcDxt1Ext ) ? 8 : 16;
-            int mipOffset = 0;
-
-            unsafe
-            {
-                fixed ( byte* pBuffer = texture.Data )
-                {
-                    for ( int mipLevel = 0; mipLevel < texture.MipMapCount; mipLevel++ )
-                    {
-                        int mipSize = ( ( mipWidth * mipHeight ) / 16 ) * blockSize;
-
-                        GL.CompressedTexImage2D( TextureTarget.Texture2D, mipLevel, format, mipWidth, mipHeight, 0, mipSize, ( IntPtr )( pBuffer + mipOffset ) );
-
-                        mipOffset += mipSize;
-                        mipWidth /= 2;
-                        mipHeight /= 2;
-                    }
-                }
-            }
-
-            return textureId;
-        }
-
-        private void CreateGLObjects( Node node, Geometry geometry )
-        {
-            var material = mModel.MaterialDictionary[geometry.MaterialName];
-            mMaterials.Add( material );
-
-            if ( material.DiffuseMap != null )
-            {
-                int textureId;
-                var diffuseMapName = mModel.MaterialDictionary[geometry.MaterialName].DiffuseMap.Name;
-
-                if ( mIsFieldModel && mFieldTextures.TryOpenFile( diffuseMapName, out var textureStream ) )
-                {
-                    using ( textureStream )
-                    {
-                        var texture = new FieldTexture( textureStream );
-                        textureId = CreateGLTexture( texture );
-                    }
-                }
-                else
-                {
-                    var texture = mModel.TextureDictionary[diffuseMapName];
-                    textureId = CreateGLTexture( texture );
-                }
-
-                mTextures.Add( textureId );
-            }
-            else
-            {
-                mTextures.Add( 0 );
-            }
-
-            // vao
-            int vao = GL.GenVertexArray();
-            GL.BindVertexArray( vao );
-            mVertexArrays.Add( vao );
-
-            // position
-            int vbo = GL.GenBuffer();
-            GL.BindBuffer( BufferTarget.ArrayBuffer, vbo );
-            GL.BufferData( BufferTarget.ArrayBuffer, geometry.Vertices.Length * 12, geometry.Vertices, BufferUsageHint.StaticDraw );
-            GL.VertexAttribPointer( 0, 3, VertexAttribPointerType.Float, false, 0, 0 );
-            GL.EnableVertexAttribArray( 0 );
-            mBuffers.Add( vbo );
-
-            // normal
-            int nbo = GL.GenBuffer();
-            GL.BindBuffer( BufferTarget.ArrayBuffer, nbo );
-            GL.BufferData( BufferTarget.ArrayBuffer, geometry.Normals.Length * 12, geometry.Normals, BufferUsageHint.StaticDraw );
-            GL.VertexAttribPointer( 1, 3, VertexAttribPointerType.Float, false, 0, 0 );
-            GL.EnableVertexAttribArray( 1 );
-            mBuffers.Add( nbo );
-
-            if ( geometry.TexCoordsChannel0 != null )
-            {
-                // texture coord
-                int tbo = GL.GenBuffer();
-                GL.BindBuffer( BufferTarget.ArrayBuffer, tbo );
-                GL.BufferData( BufferTarget.ArrayBuffer, geometry.TexCoordsChannel0.Length * 8, geometry.TexCoordsChannel0, BufferUsageHint.StaticDraw );
-                GL.VertexAttribPointer( 2, 2, VertexAttribPointerType.Float, false, 0, 0 );
-                GL.EnableVertexAttribArray( 2 );
-                mBuffers.Add( tbo );
-            }
-
-            // element 
-            int ebo = GL.GenBuffer();
-            GL.BindBuffer( BufferTarget.ElementArrayBuffer, ebo );
-            GL.BufferData( BufferTarget.ElementArrayBuffer, geometry.Triangles.Length * ( sizeof( int ) * 3 ), geometry.Triangles, BufferUsageHint.StaticDraw );
-            mBuffers.Add( ebo );
-            mElementCounts.Add( geometry.Triangles.Length * 3 );
-
-            var oldMatrix = node.WorldTransform;
-            var newMatrix = new Matrix4(
-                oldMatrix.M11, oldMatrix.M12, oldMatrix.M13, oldMatrix.M14,
-                oldMatrix.M21, oldMatrix.M22, oldMatrix.M23, oldMatrix.M24,
-                oldMatrix.M31, oldMatrix.M32, oldMatrix.M33, oldMatrix.M34,
-                oldMatrix.M41, oldMatrix.M42, oldMatrix.M43, oldMatrix.M44 );
-            mMatrices.Add( newMatrix );
+            mGeometries.Clear();
         }
 
         private void InitializeCamera()
@@ -395,73 +288,219 @@ namespace AtlusGfdEditor.GUI.Controls
             mCamera = new GLPerspectiveFreeCamera( cameraTranslation, 1f, 100000f, cameraFov, ( float )Width / ( float )Height, Quaternion.Identity );
         }
 
-        private void LoadModel()
+        private static Matrix4 ToMatrix4( System.Numerics.Matrix4x4 matrix )
         {
-            if ( mModel.Scene == null )
-                return;
+            return new Matrix4(
+                matrix.M11, matrix.M12, matrix.M13, matrix.M14,
+                matrix.M21, matrix.M22, matrix.M23, matrix.M24,
+                matrix.M31, matrix.M32, matrix.M33, matrix.M34,
+                matrix.M41, matrix.M42, matrix.M43, matrix.M44 );
+        }
 
-            InitializeCamera();
+        //
+        // Texture stuff
+        //
 
-            foreach ( var node in mModel.Scene.Nodes )
+        private static int CreateGLTexture( Texture texture )
+        {
+            int textureId = GL.GenTexture();
+            GL.BindTexture( TextureTarget.Texture2D, textureId );
+
+            var ddsHeader = new DDS_Header( new MemoryStream( texture.Data ) );
+
+            // todo: identify and retrieve values from texture
+            // todo: disable mipmaps for now, they often break and show up as black ( eg after replacing a texture )
+            SetGLTextureParameters( TextureWrapMode.Repeat, TextureWrapMode.Repeat, TextureMagFilter.Linear, TextureMinFilter.Linear, ddsHeader.dwMipMapCount - 1 );
+
+            var format = GetGLTexturePixelInternalFormat( ddsHeader.Format );
+
+            SetGLTextureDDSImageData( ddsHeader.Width, ddsHeader.Height, format, ddsHeader.dwMipMapCount, texture.Data, 0x80 );
+
+            return textureId;
+        }
+
+        private static int CreateGLTexture( FieldTexture texture )
+        {
+            int textureId = GL.GenTexture();
+            GL.BindTexture( TextureTarget.Texture2D, textureId );
+
+            // todo: identify and retrieve values from texture
+            // todo: disable mipmaps for now, they often break and show up as black ( eg after replacing a texture )
+            SetGLTextureParameters( TextureWrapMode.Repeat, TextureWrapMode.Repeat, TextureMagFilter.Linear, TextureMinFilter.Linear, texture.MipMapCount - 1 );
+
+            var format = GetGLTexturePixelInternalFormat( texture.Flags );
+
+            SetGLTextureDDSImageData( texture.Width, texture.Height, format, texture.MipMapCount, texture.Data );
+
+            return textureId;
+        }
+
+        private static PixelInternalFormat GetGLTexturePixelInternalFormat( ImageEngineFormat format )
+        {
+            switch ( format )
             {
-                if ( !node.HasAttachments )
-                    continue;
+                case ImageEngineFormat.DDS_DXT1:
+                    return PixelInternalFormat.CompressedRgbaS3tcDxt1Ext;
 
-                foreach ( var attachment in node.Attachments )
+                case ImageEngineFormat.DDS_DXT3:
+                    return PixelInternalFormat.CompressedRgbaS3tcDxt3Ext;
+
+                case ImageEngineFormat.DDS_DXT5:
+                    return PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
+
+                default:
+                    throw new NotImplementedException(format.ToString());
+            }
+        }
+
+        private static PixelInternalFormat GetGLTexturePixelInternalFormat( FieldTextureFlags flags )
+        {
+            PixelInternalFormat format = PixelInternalFormat.CompressedRgbaS3tcDxt1Ext;
+            if ( flags.HasFlag( FieldTextureFlags.DXT3 ) )
+            {
+                format = PixelInternalFormat.CompressedRgbaS3tcDxt3Ext;
+            }
+            else if ( flags.HasFlag( FieldTextureFlags.DXT5 ) )
+            {
+                format = PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
+            }
+
+            return format;
+        }
+
+        private static void SetGLTextureParameters( TextureWrapMode wrapS, TextureWrapMode wrapT, TextureMagFilter magFilter, TextureMinFilter minFilter, int maxMipLevel )
+        {
+            GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureWrapS, ( int )wrapS );
+            GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureWrapT, ( int )wrapT );
+            GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, ( int )magFilter );
+            GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, ( int )minFilter );
+            GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, maxMipLevel );
+        }
+
+        private static void SetGLTextureDDSImageData( int width, int height, PixelInternalFormat format, int mipMapCount, byte[] data, int dataOffset = 0 )
+        {
+            var dataHandle = GCHandle.Alloc( data, GCHandleType.Pinned );
+
+            SetGLTextureDDSImageData( width, height, format, mipMapCount, ( dataHandle.AddrOfPinnedObject() + dataOffset ) );
+
+            dataHandle.Free();
+        }
+
+        private static void SetGLTextureDDSImageData( int width, int height, PixelInternalFormat format, int mipMapCount, IntPtr data )
+        {
+            int mipWidth = width;
+            int mipHeight = height;
+            int blockSize = ( format == PixelInternalFormat.CompressedRgbaS3tcDxt1Ext ) ? 8 : 16;
+            int mipOffset = 0;
+
+            for ( int mipLevel = 0; mipLevel < mipMapCount; mipLevel++ )
+            {
+                int mipSize = ( ( mipWidth * mipHeight ) / 16 ) * blockSize;
+
+                GL.CompressedTexImage2D( TextureTarget.Texture2D, mipLevel, format, mipWidth, mipHeight, 0, mipSize, data + mipOffset );
+
+                mipOffset += mipSize;
+                mipWidth /= 2;
+                mipHeight /= 2;
+            }
+        }
+
+        //
+        // Model stuff
+        //
+
+        private GLGeometry CreateGLGeometry( Geometry geometry )
+        {
+            var glGeometry = new GLGeometry();
+
+            // vertex array
+            glGeometry.VertexArrayId = GL.GenVertexArray();
+            GL.BindVertexArray( glGeometry.VertexArrayId );
+
+            // positions
+            glGeometry.PositionBufferId = CreateGLVertexAttributeBuffer( geometry.Vertices.Length * Vector3.SizeInBytes, geometry.Vertices, 0, 3 );
+
+            // normals
+            glGeometry.NormalBufferId = CreateGLVertexAttributeBuffer( geometry.Normals.Length * Vector3.SizeInBytes, geometry.Normals, 1, 3 );
+
+            if ( geometry.TexCoordsChannel0 != null )
+            {
+                // texture coordinate channel 0
+                glGeometry.TextureCoordinateChannel0BufferId = CreateGLVertexAttributeBuffer( geometry.TexCoordsChannel0.Length * Vector2.SizeInBytes, geometry.TexCoordsChannel0, 2, 2 );
+            }
+
+            // element index buffer
+            glGeometry.ElementBufferId = CreateGLBuffer( BufferTarget.ElementArrayBuffer, geometry.Triangles.Length * Triangle.SizeInBytes, geometry.Triangles );
+            glGeometry.ElementIndexCount = geometry.Triangles.Length * 3;
+
+            // material
+            glGeometry.Material = CreateGLMaterial( mModel.MaterialDictionary[geometry.MaterialName] );
+
+            return glGeometry;
+        }
+
+        private static int CreateGLBuffer<T>( BufferTarget target, int size, T[] data ) where T : struct
+        {
+            // generate buffer id
+            int buffer = GL.GenBuffer();
+
+            // mark buffer as active
+            GL.BindBuffer( target, buffer );
+
+            // upload data to buffer store
+            GL.BufferData( target, size, data, BufferUsageHint.StaticDraw );
+
+            return buffer;
+        }
+
+        private static int CreateGLVertexAttributeBuffer<T>( int size, T[] vertexData, int attributeIndex, int attributeSize ) where T : struct
+        {
+            // create buffer for vertex data store
+            int buffer = CreateGLBuffer( BufferTarget.ArrayBuffer, size, vertexData );
+
+            // configure vertex attribute
+            GL.VertexAttribPointer( attributeIndex, attributeSize, VertexAttribPointerType.Float, false, 0, 0 );
+
+            // enable vertex attribute
+            GL.EnableVertexAttribArray( attributeIndex );
+
+            return buffer;
+        }
+
+        private GLMaterial CreateGLMaterial( Material material )
+        {
+            var glMaterial = new GLMaterial();
+
+            // color parameters
+            glMaterial.Ambient = new Vector4( material.Ambient.X, material.Ambient.Y, material.Ambient.Z, material.Ambient.W );
+            glMaterial.Diffuse = new Vector4( material.Diffuse.X, material.Diffuse.Y, material.Diffuse.Z, material.Diffuse.W );
+            glMaterial.Specular = new Vector4( material.Specular.X, material.Specular.Y, material.Specular.Z, material.Specular.W );
+            glMaterial.Emissive = new Vector4( material.Emissive.X, material.Emissive.Y, material.Emissive.Z, material.Emissive.W );
+
+            // texture
+            if ( material.DiffuseMap != null )
+            {
+                if ( mIsFieldModel && mFieldTextures.TryOpenFile( material.DiffuseMap.Name, out var textureStream ) )
                 {
-                    if ( attachment.Type != NodeAttachmentType.Geometry )
-                        continue;
-
-                    var geometry = attachment.GetValue<Geometry>();
-
-                    CreateGLObjects( node, geometry );
+                    using ( textureStream )
+                    {
+                        var texture = new FieldTexture( textureStream );
+                        glMaterial.DiffuseTextureId = CreateGLTexture( texture );
+                    }
+                }
+                else
+                {
+                    var texture = mModel.TextureDictionary[material.DiffuseMap.Name];
+                    glMaterial.DiffuseTextureId = CreateGLTexture( texture );
                 }
             }
 
-            mIsModelLoaded = true;
-
-            Invalidate();
+            return glMaterial;
         }
 
-        private void DeleteModel()
-        {
-            if ( !mIsModelLoaded )
-                return;
-
-            mIsModelLoaded = false;
-
-            foreach ( var vao in mVertexArrays )
-            {
-                GL.DeleteVertexArray( vao );
-            }
-
-            mVertexArrays.Clear();
-
-            GL.BindBuffer( BufferTarget.ArrayBuffer, 0 );
-            GL.BindBuffer( BufferTarget.ElementArrayBuffer, 0 );
-
-            foreach ( var buffer in mBuffers )
-            {
-                GL.DeleteBuffer( buffer );
-            }
-
-            mBuffers.Clear();
-            mElementCounts.Clear();
-            mMatrices.Clear();
-
-            GL.BindTexture( TextureTarget.Texture2D, 0 );
-
-            foreach ( var texture in mTextures )
-            {
-                if ( texture != 0 )
-                    GL.DeleteTexture( texture );
-            }
-
-            mMaterials.Clear();
-            mTextures.Clear();
-
-            GL.BindVertexArray( 0 );
-        }
+        //
+        // Mouse events
+        //
 
         protected override void OnMouseMove( System.Windows.Forms.MouseEventArgs e )
         {
@@ -517,5 +556,28 @@ namespace AtlusGfdEditor.GUI.Controls
 
             Invalidate();
         }
+    }
+
+    public struct GLMaterial
+    {
+        public Vector4 Ambient;
+        public Vector4 Diffuse;
+        public Vector4 Specular;
+        public Vector4 Emissive;
+        public int DiffuseTextureId;
+
+        public bool HasDiffuse => DiffuseTextureId != 0;
+    }
+
+    public struct GLGeometry
+    {
+        public int VertexArrayId;
+        public int PositionBufferId;
+        public int NormalBufferId;
+        public int TextureCoordinateChannel0BufferId;
+        public int ElementBufferId;
+        public int ElementIndexCount;
+        public GLMaterial Material;
+        public Matrix4 ModelMatrix;
     }
 }

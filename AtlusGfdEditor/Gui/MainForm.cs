@@ -25,9 +25,9 @@ namespace AtlusGfdEditor.GUI
         {
 
 #if DEBUG
-            Text = $"{Program.Name} {Program.Version.Major}.{Program.Version.Minor}.{Program.Version.Build} [DEBUG]";
+            Text = $"{Program.Name} {Program.Version.Major}.{Program.Version.Minor}.{Program.Version.Revision} [DEBUG]";
 #else
-            Text = $"{Program.Name} {Program.Version.Major}.{Program.Version.Minor}.{Program.Version.Build}";
+            Text = $"{Program.Name} {Program.Version.Major}.{Program.Version.Minor}.{Program.Version.Revision}";
 #endif
 
             mTreeView.LabelEdit = true;

@@ -6,6 +6,8 @@ namespace AtlusGfdLib
 {
     public struct Triangle : IEquatable<Triangle>
     {
+        public static int SizeInBytes = 3 * sizeof( uint );
+
         public uint A;
         public uint B;
         public uint C;

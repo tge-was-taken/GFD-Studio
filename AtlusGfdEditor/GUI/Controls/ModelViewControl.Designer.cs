@@ -25,7 +25,6 @@
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Name = "ModelViewControl";
             this.Size = new System.Drawing.Size(0, 0);
-            this.VSync = true;
             this.ResumeLayout(false);
 
         }
