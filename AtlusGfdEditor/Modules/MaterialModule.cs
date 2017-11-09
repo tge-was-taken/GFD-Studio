@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -9,35 +8,30 @@ using AtlusGfdLib;
 
 namespace AtlusGfdEditor.Modules
 {
-    public class TextureModule : Module<Texture>
+    public class MaterialModule : Module<Material>
     {
         public override string Name
-            => "Texture";
+            => "Material";
 
         public override string[] Extensions
-            => new[] { "gtx" };
+            => new[] { "gmt" };
 
         public override FormatModuleUsageFlags UsageFlags
-            => FormatModuleUsageFlags.Bitmap;
+            => 0;
 
         protected override bool CanImportCore( Stream stream, string filename = null )
         {
             return false;
         }
 
-        protected override void ExportCore( Texture obj, Stream stream, string filename = null )
+        protected override void ExportCore( Material obj, Stream stream, string filename = null )
         {
             throw new NotImplementedException();
         }
 
-        protected override Texture ImportCore( Stream stream, string filename = null )
+        protected override Material ImportCore( Stream stream, string filename = null )
         {
             throw new NotImplementedException();
-        }
-
-        protected override Bitmap GetBitmapCore( Texture obj )
-        {
-            return TextureDecoder.Decode( obj );
         }
     }
 }

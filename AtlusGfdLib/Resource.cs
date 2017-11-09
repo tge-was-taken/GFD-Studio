@@ -26,7 +26,7 @@ namespace AtlusGfdLib
 
         public static bool IsValidResource( Stream stream )
         {
-            return ResourceReader.IsValidResource( stream );
+            return ResourceReader.IsValidResourceStream( stream );
         }
 
         public static Resource Load(string filepath)
@@ -67,7 +67,7 @@ namespace AtlusGfdLib
     {
         Invalid = 0,
         Model,
-        AnimationList,
+        AnimationPackage,
         TextureDictionary,
         MaterialDictionary,
         Scene,

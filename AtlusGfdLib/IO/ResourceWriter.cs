@@ -230,7 +230,12 @@ namespace AtlusGfdLib.IO
             switch ( resource.Type )
             {
                 case ResourceType.Model:
-                    fileType = FileType.Model;
+                case ResourceType.AnimationPackage:
+                case ResourceType.ChunkType000100F9:
+                case ResourceType.MaterialDictionary:
+                case ResourceType.Scene:
+                case ResourceType.TextureDictionary:
+                    fileType = FileType.ModelResourceBundle;
                     break;
                 case ResourceType.ShaderCachePS3:
                     fileType = FileType.ShaderCachePS3;
@@ -244,41 +249,49 @@ namespace AtlusGfdLib.IO
 
             WriteResourceFileHeader( resource.Version, fileType );
 
-            switch ( fileType )
+            switch ( resource.Type )
             {
-                case FileType.Model:
+                case ResourceType.Model:
                     WriteModel( ( Model )resource );
                     break;
-                case FileType.ShaderCachePS3:
+                case ResourceType.AnimationPackage:
+                    WriteAnimationPackage( (AnimationPackage) resource );
+                    break;
+                case ResourceType.TextureDictionary:
+                    WriteTextureDictionary( ( TextureDictionary )resource );
+                    break;
+                case ResourceType.MaterialDictionary:
+                    WriteMaterialDictionary( ( MaterialDictionary )resource );
+                    break;
+                case ResourceType.Scene:
+                    WriteScene( ( Scene )resource );
+                    break;
+                case ResourceType.ChunkType000100F9:
+                    throw new NotImplementedException( resource.Type.ToString() );     
+                case ResourceType.ShaderCachePS3:
                     WriteShaderCache( ( ShaderCachePS3 )resource, fileType );
                     break;
-                case FileType.ShaderCachePSP2:
+                case ResourceType.ShaderCachePSP2:
                     WriteShaderCache( ( ShaderCachePSP2 )resource, fileType );
                     break;
+                default:
+                    throw new Exception( $"Resource type { resource.Type } can not be written to a file directly." );
             }
         }
 
         private void WriteModel( Model model )
         {
             if ( model.TextureDictionary != null )
-            {
                 WriteTextureDictionary( model.TextureDictionary );
-            }
 
             if ( model.MaterialDictionary != null )
-            {
                 WriteMaterialDictionary( model.MaterialDictionary );
-            }
 
             if ( model.Scene != null )
-            {
                 WriteScene( model.Scene );
-            }
 
             if ( model.AnimationPackage != null )
-            {
                 WriteAnimationPackage( model.AnimationPackage );
-            }
 
             bool animationOnly = model.AnimationPackage != null &&
                 model.TextureDictionary == null &&
@@ -379,13 +392,13 @@ namespace AtlusGfdLib.IO
             }
 
             WriteShort( material.Field5C );
-            WriteInt( material.Field6C );
-            WriteInt( material.Field70 );
+            WriteUInt( material.Field6C );
+            WriteUInt( material.Field70 );
             WriteShort( material.Field50 );
 
             if ( version <= 0x1105070 )
             {
-                WriteInt( material.Field98 );
+                WriteUInt( material.Field98 );
             }
 
             if ( material.Flags.HasFlag( MaterialFlags.HasDiffuseMap ) )
@@ -655,7 +668,7 @@ namespace AtlusGfdLib.IO
             WriteInt( (int)scene.Flags );
 
             if ( scene.Flags.HasFlag( SceneFlags.HasSkinning ) )
-                WriteMatrixMap( scene.MatrixMap );
+                WriteMatrixMap( scene.MatrixPalette );
 
             if ( scene.Flags.HasFlag( SceneFlags.HasBoundingBox ) )
                 WriteBoundingBox( scene.BoundingBox.Value );
@@ -668,12 +681,12 @@ namespace AtlusGfdLib.IO
             FinishWritingChunk();
         }
 
-        private void WriteMatrixMap( SkinnedBoneMap matrixMap )
+        private void WriteMatrixMap( MatrixPalette matrixMap )
         {
             WriteInt( matrixMap.MatrixCount );
 
-            for ( int i = 0; i < matrixMap.BoneInverseBindMatrices.Length; i++ )
-                WriteMatrix4x4( matrixMap.BoneInverseBindMatrices[i] );
+            for ( int i = 0; i < matrixMap.InverseBindMatrices.Length; i++ )
+                WriteMatrix4x4( matrixMap.InverseBindMatrices[i] );
 
             for ( int i = 0; i < matrixMap.BoneToNodeIndices.Length; i++ )
                 WriteUShort( matrixMap.BoneToNodeIndices[i] );
@@ -685,9 +698,9 @@ namespace AtlusGfdLib.IO
             WriteNode( version, node );
             WriteInt( node.ChildCount );
 
-            foreach ( var childNode in node.Children )
+            for ( int i = 0; i < node.ChildCount; i++ )
             {
-                WriteNodeRecursive( version, childNode );
+                WriteNodeRecursive( version, node.Children[ (node.ChildCount - 1) - i ] );
             }
         }
 

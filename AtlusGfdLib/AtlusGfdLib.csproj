@@ -89,7 +89,7 @@
     <Compile Include="MorphTarget.cs" />
     <Compile Include="IO\ResourceBuilder.cs" />
     <Compile Include="IO\AssimpExporter.cs" />
-    <Compile Include="MatrixMap.cs" />
+    <Compile Include="MatrixPalette.cs" />
     <Compile Include="IO\EndianBinaryWriter.cs" />
     <Compile Include="IO\ResourceWriter.cs" />
     <Compile Include="IO\StringBinaryFormat.cs" />

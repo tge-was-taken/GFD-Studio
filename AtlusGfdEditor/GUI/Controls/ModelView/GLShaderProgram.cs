@@ -123,9 +123,17 @@ namespace AtlusGfdEditor.GUI.Controls.ModelView
 
         public void Use()
         {
-            DebugCheckAllUniformsAssigned();
-
             GL.UseProgram( ShaderProgramId );
+        }
+
+        [Conditional( "DEBUG" )]
+        public void Check( )
+        {
+            foreach ( var uniform in mUniforms.Values )
+            {
+                if ( !uniform.IsAssigned )
+                    throw new Exception( $"Uniform \"{uniform.Name}\" has not been assigned before use." );
+            }
         }
 
         public void Dispose()
@@ -170,16 +178,6 @@ namespace AtlusGfdEditor.GUI.Controls.ModelView
             }
 
             uniform.IsAssigned = true;
-        }
-
-        [Conditional("DEBUG")]
-        private void DebugCheckAllUniformsAssigned()
-        {
-            foreach ( var uniform in mUniforms.Values )
-            {
-                if ( !uniform.IsAssigned )
-                    throw new Exception( $"Uniform \"{uniform.Name}\" has not been assigned before use." );
-            }
         }
     }
 }

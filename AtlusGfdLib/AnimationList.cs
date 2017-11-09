@@ -8,7 +8,7 @@ namespace AtlusGfdLib
         private List<Animation> mAnimations;
 
         internal AnimationPackage(uint version)
-            : base(ResourceType.AnimationList, version)
+            : base(ResourceType.AnimationPackage, version)
         {
             mAnimations = new List<Animation>();
         }

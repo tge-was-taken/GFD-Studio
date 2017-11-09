@@ -5,37 +5,58 @@ using System.Numerics;
 
 namespace AtlusGfdLib
 {
-    public sealed class SkinnedBoneMap
+    public sealed class MatrixPalette
     {
-        public int MatrixCount => BoneInverseBindMatrices.Length;
+        public int MatrixCount => InverseBindMatrices.Length;
 
-        public Matrix4x4[] BoneInverseBindMatrices { get; set; }
+        public Matrix4x4[] InverseBindMatrices { get; set; }
 
         public ushort[] BoneToNodeIndices { get; set; }
 
-        public SkinnedBoneMap( int matrixCount )
+        public MatrixPalette( int matrixCount )
         {
-            BoneInverseBindMatrices = new Matrix4x4[matrixCount];
+            InverseBindMatrices = new Matrix4x4[matrixCount];
             BoneToNodeIndices = new ushort[matrixCount];
         }
 
-        public static SkinnedBoneMap Create( List<int> skinnedNodeIndices, List<Matrix4x4> worldMatrices, out Dictionary<int, int> nodeToBoneMap )
+        public static Matrix4x4 YToZUpMatrix = new Matrix4x4( 1, 0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1 );
+
+        public static Matrix4x4 ZToYUpMatrix = new Matrix4x4( 1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1 );
+
+        public static MatrixPalette Create( List<int> skinnedNodeIndices, List<Matrix4x4> skinnedNodeWorldTransformMatrices, out Dictionary<int, int> nodeToBoneMap )
         {
-            var map = new SkinnedBoneMap( skinnedNodeIndices.Count );
+            var map = new MatrixPalette( skinnedNodeIndices.Count );
             nodeToBoneMap = new Dictionary<int, int>();
 
             for ( int i = 0; i < skinnedNodeIndices.Count; i++ )
             {
-                Matrix4x4 matrix;
-                if ( !Matrix4x4.Invert( worldMatrices[i], out matrix ) )
-                    matrix = Matrix4x4.Identity;
+                var worldTransformMatrix = skinnedNodeWorldTransformMatrices[i];
+                var inverseBindMatrix = CreateInverseBindMatrix( worldTransformMatrix );
 
-                map.BoneInverseBindMatrices[i] = matrix;
+                map.InverseBindMatrices[i] = inverseBindMatrix;
                 map.BoneToNodeIndices[i] = (ushort)skinnedNodeIndices[i];
                 nodeToBoneMap[skinnedNodeIndices[i]] = i;
             }
 
             return map;
+        }
+
+        private static Matrix4x4 CreateInverseBindMatrix( Matrix4x4 worldTransformMatrix )
+        {
+            var bindMatrixZUp = worldTransformMatrix * YToZUpMatrix;
+
+            Matrix4x4.Invert( bindMatrixZUp, out var inverseBindMatrix );
+
+            return inverseBindMatrix;
+        }
+
+        private static Matrix4x4 CreateWorldTransformMatrix( Matrix4x4 inverseBindMatrix )
+        {
+            Matrix4x4.Invert( inverseBindMatrix, out var bindMatrix );
+
+            var bindMatrixYUp = bindMatrix * ZToYUpMatrix;
+
+            return bindMatrixYUp;
         }
 
         private static IReadOnlyList<int> GetUniqueUsedBoneIndicesForAllGeometry( IReadOnlyList<Node> nodes )

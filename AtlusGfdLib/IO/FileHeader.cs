@@ -20,7 +20,7 @@ namespace AtlusGfdLib.IO
 
     internal enum FileType
     {
-        Model = 1,
+        ModelResourceBundle = 1,
         ShaderCachePS3 = 2,
         ShaderCachePSP2 = 4,
     }

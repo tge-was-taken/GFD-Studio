@@ -8,13 +8,13 @@ using AtlusGfdLib;
 
 namespace AtlusGfdEditor.Modules
 {
-    public class TextureDictionaryModule : Module<TextureDictionary>
+    public class MaterialDictionaryModule : Module<MaterialDictionary>
     {
         public override string Name
-            => "Texture dictionary";
+            => "Material dictionary";
 
         public override string[] Extensions
-            => new[] { "gtxd" };
+            => new[] { "gmtd" };
 
         public override FormatModuleUsageFlags UsageFlags
             => 0;
@@ -24,15 +24,15 @@ namespace AtlusGfdEditor.Modules
             return Resource.IsValidResource( stream );
         }
 
-        protected override void ExportCore( TextureDictionary obj, Stream stream, string filename = null )
+        protected override void ExportCore( MaterialDictionary obj, Stream stream, string filename = null )
         {
             Resource.Save( obj, stream );
         }
 
-        protected override TextureDictionary ImportCore( Stream stream, string filename = null )
+        protected override MaterialDictionary ImportCore( Stream stream, string filename = null )
         {
             var resource = Resource.Load<Model>( stream );
-            return resource.TextureDictionary;
+            return resource.MaterialDictionary;
         }
     }
 }

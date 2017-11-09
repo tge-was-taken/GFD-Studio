@@ -133,11 +133,15 @@
   <ItemGroup>
     <Compile Include="GUI\Adapters\ArchiveAdapter.cs" />
     <Compile Include="GUI\Adapters\BitmapAdapter.cs" />
+    <Compile Include="GUI\Adapters\ListAdapter.cs" />
+    <Compile Include="GUI\Adapters\MaterialAdapter.cs" />
+    <Compile Include="GUI\Adapters\MaterialDictionaryAdapter.cs" />
     <Compile Include="GUI\Adapters\ModelAdapter.cs" />
     <Compile Include="GUI\Adapters\ResourceAdapter.cs" />
     <Compile Include="GUI\Adapters\StreamAdapter.cs" />
     <Compile Include="GUI\Adapters\TextureAdapter.cs" />
     <Compile Include="GUI\Adapters\TextureDictionaryAdapter.cs" />
+    <Compile Include="GUI\Adapters\TextureMapAdapter.cs" />
     <Compile Include="GUI\Adapters\TreeNodeAdapter.cs" />
     <Compile Include="GUI\Adapters\TreeNodeAdapterFactory.cs" />
     <Compile Include="GUI\Adapters\TreeNodeAdapterGeneric.cs" />
@@ -172,6 +176,8 @@
     </Compile>
     <Compile Include="Modules\ArchiveModule.cs" />
     <Compile Include="Modules\BitmapModule.cs" />
+    <Compile Include="Modules\MaterialDictionaryModule.cs" />
+    <Compile Include="Modules\MaterialModule.cs" />
     <Compile Include="Modules\StreamModule.cs" />
     <Compile Include="Modules\Module.cs" />
     <Compile Include="Modules\IModule.cs" />

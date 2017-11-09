@@ -22,8 +22,15 @@ namespace AtlusGfdEditor.GUI.Adapters
 
         protected override void InitializeCore()
         {
-            RegisterExportAction<TextureDictionary>( ( path ) => { } );
-            RegisterReplaceAction<TextureDictionary>( ( path ) => null );
+            RegisterExportAction<TextureDictionary>( ( path ) =>
+            {
+                AtlusGfdLib.Resource.Save( Resource, path );
+            });
+            RegisterReplaceAction<TextureDictionary>( ( path ) =>
+            {
+                var res = AtlusGfdLib.Resource.Load<Model>( path );
+                return res.TextureDictionary ?? Resource;
+            });
             RegisterRebuildAction( () =>
             {
                 var textureDictionary = new TextureDictionary( Version );

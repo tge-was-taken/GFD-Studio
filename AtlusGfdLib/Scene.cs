@@ -16,8 +16,8 @@ namespace AtlusGfdLib
             }
         }
 
-        private SkinnedBoneMap mMatrixMap;
-        public SkinnedBoneMap MatrixMap
+        private MatrixPalette mMatrixMap;
+        public MatrixPalette MatrixPalette
         {
             get => mMatrixMap;
             set
@@ -67,6 +67,27 @@ namespace AtlusGfdLib
         {
         }
 
+        /// <summary>
+        /// Helper method that enumerates over all geometry attachments in the scene.
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<Geometry> EnumerateGeometries()
+        {
+            foreach ( var node in Nodes )
+            {
+                if ( !node.HasAttachments )
+                    continue;
+
+                foreach ( var attachment in node.Attachments )
+                {
+                    if ( attachment.Type != NodeAttachmentType.Geometry )
+                        continue;
+
+                    yield return attachment.GetValue<Geometry>();
+                }
+            }
+        }
+
         private void PopulateNodeList()
         {
             mNodeList = new List<Node>();
@@ -85,7 +106,7 @@ namespace AtlusGfdLib
 
         private void ValidateFlags()
         {
-            if ( MatrixMap == null )
+            if ( MatrixPalette == null )
                 mFlags &= ~SceneFlags.HasSkinning;
             else
                 mFlags |= SceneFlags.HasSkinning;

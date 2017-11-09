@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Numerics;
 using AtlusGfdLib;
 using AtlusGfdLib.IO;
+using AtlusLibSharp.FileSystems.PAKToolArchive;
 using AtlusLibSharp.Graphics.RenderWare;
 using AtlusLibSharp.Utilities;
 using CSharpImageLibrary;
@@ -18,6 +20,14 @@ namespace AtlusGfdLibTesting
     {
         static void Main( string[] args )
         {
+            var rmdPacFile = new PakToolArchiveFile( @"D:\Modding\Persona 3 & 4\Persona3\CVM_DATA\FIELD\PACK\F004_002.FPC" );
+            var rmdPacEntry = rmdPacFile.Entries.Single( x => x.Name.EndsWith( "rws", System.StringComparison.InvariantCultureIgnoreCase ) );
+            var rmdScene = new RmdScene( rmdPacEntry.Data );
+
+            RMDToGMDField( rmdScene );
+
+            //BonePaletteTests();
+
             /*
             var rmdPacFile = new PakToolArchiveFile( @"D:\Modding\Persona 3 & 4\Persona3\CVM_BTL\MODEL\PACK\BC001_WP0.PAC" );
             var rmdPacEntry = rmdPacFile.Entries.Single( x => x.Name.EndsWith( "rmd", System.StringComparison.InvariantCultureIgnoreCase ) );
@@ -28,8 +38,8 @@ namespace AtlusGfdLibTesting
 
             //ModelViewerTest( Resource.Load<Model>( @"D:\Modding\Persona 5 EU\Main game\Extracted\data\model\character\0001\c0001_051_00.GMD" ) );
 
-            var model = Resource.Load<Model>( @"D:\Modding\Persona 5 EU\Main game\Extracted\data\model\field_tex\f051_010_0.GFS" );
-            //ExportDAE( model );
+            //var model = Resource.Load<Model>( @"D:\Modding\Persona 5 EU\Main game\Extracted\data\model\field_tex\f051_010_0.GFS" );
+            //ExportDAE( Resource.Load<Model>( @"D:\Modding\Persona 5 EU\Main game\Extracted\data\model\character\0001\c0001_051_00.GMD" ) );
 
             /*
             var archive = new Archive( @"D:\Modding\Persona 5\Dump\model\field_tex\textures\tex051_010_00_00.bin" );
@@ -213,28 +223,239 @@ namespace AtlusGfdLibTesting
             //scene.MatrixMap = map;
         }
 
+        static void BonePaletteTests()
+        {
+            var model = Resource.Load<Model>( @"D:\Modding\Persona 5 EU\Main game\Extracted\data\model\character\0001\c0001_051_00.GMD" );
+            //var model = Resource.Load<Model>( @"D:\Modding\Persona 5 EU\Main game\Extracted\data\model\character\9000\c9000_000_00.GMD" );
+            var scene = model.Scene;
+            var matrixPalette = scene.MatrixPalette;
+            var inverseBindMatrices = matrixPalette.InverseBindMatrices;
+            var boneToNodeIndices = matrixPalette.BoneToNodeIndices;
+
+            Console.WriteLine( "BonePaletteTests" );
+            Console.WriteLine();
+            Console.WriteLine();
+            Console.WriteLine( $"[bonePaletteCount: {matrixPalette.MatrixCount}]" );
+            Console.WriteLine();
+
+            // find and print duplicate bone to node indices
+            {
+                var duplicateBoneToNodeIndices = boneToNodeIndices
+                    .GroupBy( x => x ) // group same entries
+                    .Where( x => x.Count() > 1 ) // filter out non-duplicates
+                    .ToList();
+
+                foreach ( var duplicateGroup in duplicateBoneToNodeIndices )
+                {
+                    var duplicateList = duplicateGroup.ToList();
+                    var duplicateNodeIndex = duplicateList[0];
+
+                    // print number of duplicates and which node has duplicates
+                    var node = scene.Nodes[duplicateNodeIndex];
+                    Console.WriteLine( $"[duplicates: {duplicateList.Count:D2}] [nodeIndex: {duplicateNodeIndex:D3}] [name: {node.Name.PadRight(20)}] [matrix: {node.WorldTransform}]");
+
+                    // print which bones use the duplicate node index
+                    var boneIndex = -1;
+                    var accumulatedMatrix = Matrix4x4.Identity;
+                    for ( int i = 0; i < duplicateList.Count; i++ )
+                    {
+                        boneIndex = Array.IndexOf( boneToNodeIndices, duplicateNodeIndex, boneIndex + 1 );
+
+                        // also print the matrices used by each of the bones which use the duplicate node index
+                        // and the difference between them
+                        var inverseBindMatrix = inverseBindMatrices[boneIndex];
+
+                        //accumulatedMatrix += InverseBindMatrixToWorldTransformMatrix( inverseBindMatrix );
+
+                        Console.WriteLine( $"[duplicate: {i:D2}]  [boneIndex: {boneIndex:D3}]                              [matrix: {InverseBindMatrixToWorldTransformMatrix(inverseBindMatrix)}]" );
+                    }
+
+                    // it appears that the sum of these duplicated matrices is equal to the inverse of the world transform of the node
+                    Console.WriteLine( $"                                                                        {accumulatedMatrix}" );
+
+                    Console.WriteLine();
+                }
+            }
+
+            {
+                for ( int i = 0; i < boneToNodeIndices.Length; i++ )
+                {
+                    var inverseBindMatrix = inverseBindMatrices[i];
+                    var node = scene.Nodes[boneToNodeIndices[i]];
+
+                    Console.WriteLine( node.Name );
+
+                    PrintMatrix( InverseBindMatrixToWorldTransformMatrix( inverseBindMatrix ) );
+                    PrintMatrix( node.WorldTransform );
+                    Console.WriteLine();
+                }
+            }
+
+            {
+                List<int> skinnedNodeIndices = new List<int>();
+                List<Matrix4x4> skinnedNodeWorldTransformMatrices = new List<Matrix4x4>();
+
+                Console.WriteLine( "Nodes in matrix palette:" );
+                foreach ( var item in boneToNodeIndices )
+                {
+                    Console.WriteLine( scene.Nodes[item].Name );
+                }
+                Console.WriteLine();
+
+                // collect skinned nodes
+                foreach ( var node in scene.Nodes )
+                {
+                    if ( !node.HasAttachments )
+                        continue;
+
+                    foreach ( var attachment in node.Attachments )
+                    {
+                        if ( attachment.Type != NodeAttachmentType.Geometry )
+                            continue;
+
+                        var geometry = attachment.GetValue<Geometry>();
+
+                        if ( !geometry.Flags.HasFlag( GeometryFlags.HasVertexWeights ) )
+                        {
+                            // these nodes dont actually show up in the matrix palette?
+                            //Console.WriteLine( node.Name );
+                            //skinnedNodeIndices.Add( 0 );
+                            //skinnedNodeWorldTransformMatrices.Add( Matrix4x4.Identity );
+                            continue;
+                        }
+
+                        foreach ( var vertexWeight in geometry.VertexWeights )
+                        {
+                            for ( int i = 0; i < vertexWeight.Indices.Length; i++ )
+                            {
+                                if ( vertexWeight.Weights[i] == 0.0f )
+                                    continue;
+
+                                int nodeIndex = matrixPalette.BoneToNodeIndices[vertexWeight.Indices[i]];
+                                if ( !skinnedNodeIndices.Contains( nodeIndex ) )
+                                {
+                                    skinnedNodeIndices.Add( nodeIndex );
+                                    skinnedNodeWorldTransformMatrices.Add( scene.Nodes[nodeIndex].WorldTransform );
+                                }
+                            }
+                        }
+                    }
+                }
+
+                /*
+                Console.WriteLine( "Unique skinned nodes" );
+                foreach ( var item in skinnedNodeIndices )
+                {
+                    Console.WriteLine( scene.Nodes[item].Name );
+                }
+                Console.WriteLine();
+                */
+
+                Console.WriteLine( "Unique skinned nodes (reverse)" );
+                for ( int i = 0; i < skinnedNodeIndices.Count; i++ )
+                {
+                    Console.WriteLine( scene.Nodes[skinnedNodeIndices[skinnedNodeIndices.Count - ( i + 1 )] ].Name );
+                }
+                Console.WriteLine();
+
+                // create new matrix palette
+                var newMatrixPalette = MatrixPalette.Create( skinnedNodeIndices, skinnedNodeWorldTransformMatrices, out var nodeToBoneMap );
+
+                // remap bone indices
+                foreach ( var geometry in scene.EnumerateGeometries() )
+                {
+                    if ( !geometry.Flags.HasFlag( GeometryFlags.HasVertexWeights ) )
+                        continue;
+
+                    foreach ( var vertexWeight in geometry.VertexWeights )
+                    {
+                        for ( int i = 0; i < vertexWeight.Indices.Length; i++ )
+                        {
+                            if ( vertexWeight.Weights[i] == 0.0f )
+                                continue;
+
+                            int nodeIndex = matrixPalette.BoneToNodeIndices[vertexWeight.Indices[i]];
+                            vertexWeight.Indices[i] = (byte)nodeToBoneMap[nodeIndex];
+                        }
+                    }
+                }
+            }
+        }
+
+        static Matrix4x4 InverseBindMatrixToWorldTransformMatrix( Matrix4x4 inverseBindMatrix )
+        {
+            Matrix4x4.Invert( inverseBindMatrix, out var bindMatrix );
+
+            var zToYUpMatrix = new Matrix4x4( 1, 0, 0, 0,
+                                              0, 0, -1, 0,
+                                              0, 1, 0, 0,
+                                              0, 0, 0, 1 );
+
+            var bindMatrixYUp = bindMatrix * zToYUpMatrix;
+
+            return bindMatrixYUp;
+        }
+
+        static Matrix4x4 WorldTransformMatrixToInverseBindMatrix( Matrix4x4 worldTransformMatrix )
+        {
+            var yToZUpMatrix = new Matrix4x4( 1, 0, 0, 0,
+                                              0, 0, 1, 0,
+                                              0, -1, 0, 0,
+                                              0, 0, 0, 1 );
+
+            var bindMatrixZUp = worldTransformMatrix * yToZUpMatrix;
+
+            Matrix4x4.Invert( bindMatrixZUp, out var inverseBindMatrix );
+
+            return inverseBindMatrix;
+        }
+
+        static void PrintMatrix( Matrix4x4 matrix )
+        {
+            for ( int i = 0; i < 4; i++ )
+            {
+                for ( int j = 0; j < 4; j++ )
+                {
+                    PrintFloat( matrix.GetElementAt( i, j ) );
+                    Console.Write(" ");
+                }
+            }
+
+            Console.Write("\n");
+        }
+
+        static void PrintFloat( float @float )
+        {
+            if ( @float >= -0f )
+                Console.Write(" ");
+
+            Console.Write( @float.ToString("N6") );
+        }
+
         static void RMDToGMD( RmdScene rmdScene )
         {
             var rmdClump = rmdScene.Clumps[0];
 
-            //var model = Resource.Load<Model>( @"D:\Modding\Persona 5 EU\Main game\Extracted\data\model\character\0001\c0001_158_00.GMD" );
+            var model = Resource.Load<Model>( @"D:\Modding\Persona 5 EU\Main game\Extracted\data\model\character\0001\c0001_158_00.GMD" );
 
-            var model = new Model( 0x01105070 );
+            //var model = new Model( 0x01105070 );
 
-            model.TextureDictionary.Clear();
+            model.TextureDictionary = new TextureDictionary( 0x01105070 );
             foreach ( var rwTexture in rmdScene.TextureDictionary.Textures )
             {
                 var bitmap = rwTexture.GetBitmap();
-                bitmap.Save( rwTexture.Name + ".png" );
 
-                var pngImage = new ImageEngineImage( rwTexture.Name + ".png" );
-                var ddsData = pngImage.Save( new ImageFormats.ImageEngineFormatDetails(ImageEngineFormat.DDS_DXT5), MipHandling.Default );
+                var bitmapStream = new MemoryStream();
+                bitmap.Save( bitmapStream, ImageFormat.Bmp );
+
+                var image = new ImageEngineImage( bitmapStream );
+                var ddsData = image.Save( new ImageFormats.ImageEngineFormatDetails( ImageEngineFormat.DDS_DXT5 ), MipHandling.Default );
 
                 var texture = new Texture( rwTexture.Name + ".dds", TextureFormat.DDS, ddsData );
                 model.TextureDictionary.Add( texture );
             }
 
-            model.MaterialDictionary.Clear();
+            model.MaterialDictionary = new MaterialDictionary( 0x01105070 );
             foreach ( var rwGeometry in rmdClump.GeometryList )
             {
                 foreach ( var rwMaterial in rwGeometry.Materials )
@@ -286,13 +507,13 @@ namespace AtlusGfdLibTesting
                         material.Field4C = 0;
                         material.Field50 = 0;
                         material.Field5C = 0;
-                        material.Field6C = unchecked(( int )0xfffffff8);
-                        material.Field70 = unchecked(( int )0xfffffff8);
+                        material.Field6C = 0xfffffff8;
+                        material.Field70 = 0xfffffff8;
                         material.Field90 = 0;
                         material.Field92 = 4;
                         material.Field94 = 1;
                         material.Field96 = 0;
-                        material.Field98 = -1;
+                        material.Field98 = 0xffffffff;
                         material.GlowMap = null;
                         material.HighlightMap = null;
                         material.NightMap = null;
@@ -311,7 +532,7 @@ namespace AtlusGfdLibTesting
                 }
             }
 
-            model.Scene.MatrixMap = null;
+            model.Scene.MatrixPalette = null;
 
             foreach ( var node in model.Scene.Nodes )
             {
@@ -330,11 +551,12 @@ namespace AtlusGfdLibTesting
                 foreach ( var rwMesh in rwMeshList.MaterialMeshes )
                 {
                     var rwIndices = MeshUtilities.ToTriangleList( rwMesh.Indices , false);
+
                     var geometry = new Geometry();
                     geometry.TriangleIndexType = TriangleIndexType.UInt16;
                     geometry.Triangles = new Triangle[rwIndices.Length / 3];
 
-                    int y = 0;
+                    uint y = 0;
                     for ( int i = 0; i < geometry.Triangles.Length; i++ )
                     {
                         geometry.Triangles[i] = new Triangle( y++, y++, y++ );
@@ -354,7 +576,7 @@ namespace AtlusGfdLibTesting
                     }
 
                     geometry.BoundingBox = BoundingBox.Calculate( geometry.Vertices );
-                    geometry.BoundingSphere = BoundingSphere.Calculate( geometry.Vertices );
+                    geometry.BoundingSphere = BoundingSphere.Calculate( geometry.BoundingBox.Value, geometry.Vertices );
 
                     model.Scene.RootNode.Attachments.Add( new NodeGeometryAttachment( geometry ) );
                 }
@@ -363,6 +585,251 @@ namespace AtlusGfdLibTesting
 
             Resource.Save( model, @"D:\Modding\Persona 5 EU\Main game\Extracted\data\model\character\0001\c0001_158_00_new.GMD" );
 
+        }
+
+        static TextureDictionary ConvertTextureDictionary( RwTextureDictionaryNode rwTextureDictionary )
+        {
+            TextureDictionary textureDictionary = new TextureDictionary( 0x01105070 );
+
+            foreach ( var rwTexture in rwTextureDictionary.Textures )
+            {
+                var texture = ConvertTexture( rwTexture );
+                textureDictionary.Add( texture );
+            }
+
+            return textureDictionary;
+        }
+
+        static Texture ConvertTexture( RwTextureNativeNode texture )
+        {
+            var ddsData = RwTextureToDDS( texture );
+            return new Texture( texture.Name + ".dds", TextureFormat.DDS, ddsData );
+        }
+
+        static byte[] RwTextureToDDS( RwTextureNativeNode texture )
+        {
+            var bitmap = texture.GetBitmap();
+
+            var bitmapStream = new MemoryStream();
+            bitmap.Save( bitmapStream, ImageFormat.Bmp );
+
+            var image = new ImageEngineImage( bitmapStream );
+            var ddsData = image.Save( new ImageFormats.ImageEngineFormatDetails( ImageEngineFormat.DDS_DXT1 ), MipHandling.KeepTopOnly );
+
+            return ddsData;
+        }
+
+        static MaterialDictionary ConvertMaterials( IEnumerable<RwMaterialListNode> rwMaterials )
+        {
+            var materials = new MaterialDictionary( 0x01105070 );
+
+            foreach ( var rwMatList in rwMaterials )
+            {
+                foreach ( var rwMat in rwMatList )
+                {
+                    string materialName = rwMat.TextureReferenceNode.ReferencedTextureName + "_mat";
+                    if ( materials.ContainsMaterial( materialName ) )
+                        continue;
+
+                    Material material;
+
+                    if ( rwMat.IsTextured )
+                    {
+                        material = new Material( materialName );
+                        material.Ambient = new Vector4( 0.3921569f, 0.3921569f, 0.3921569f, 1f );
+                        material.Diffuse = new Vector4( 0.3921569f, 0.3921569f, 0.3921569f, 1f );
+                        material.DiffuseMap = new TextureMap( rwMat.TextureReferenceNode.ReferencedTextureName + ".dds" );
+
+                        /*
+                        material.DiffuseMap.Field44 = 1;
+                        material.DiffuseMap.Field48 = 1;
+                        material.DiffuseMap.Field49 = 1;
+                        material.DiffuseMap.Field4A = 0;
+                        material.DiffuseMap.Field4B = 0;
+                        material.DiffuseMap.Field4C = 0.707106769f;
+                        material.DiffuseMap.Field50 = -0.707106769f;
+                        material.DiffuseMap.Field54 = 0;
+                        material.DiffuseMap.Field58 = 0;
+                        material.DiffuseMap.Field5C = 0.707106769f;
+                        material.DiffuseMap.Field60 = 0.707106769f;
+                        material.DiffuseMap.Field64 = 0;
+                        material.DiffuseMap.Field68 = 0;
+                        material.DiffuseMap.Field6C = 0;
+                        material.DiffuseMap.Field70 = 0;
+                        material.DiffuseMap.Field74 = 0;
+                        material.DiffuseMap.Field78 = 0;
+                        material.DiffuseMap.Field7C = -0.207106769f;
+                        material.DiffuseMap.Field80 = 0.5f;
+                        material.DiffuseMap.Field84 = 0;
+                        material.DiffuseMap.Field88 = 0;
+                        */
+
+                        material.Emissive = new Vector4( 0, 0, 0, 0 );
+                        material.Field40 = 1;
+                        material.Field44 = 0.1f;
+                        material.Field48 = 0;
+                        material.Field49 = 1;
+                        material.Field4A = 0;
+                        material.Field4B = 1;
+                        material.Field4C = 0;
+                        material.Field50 = 0;
+                        material.Field5C = 0;
+                        material.Field6C = 0xfffffff8;
+                        material.Field70 = 0xfffffff8;
+                        material.Field90 = 0;
+                        material.Field92 = 4;
+                        material.Field94 = 1;
+                        material.Field96 = 0;
+                        material.Field98 = 0xffffffff;
+                        material.Flags = MaterialFlags.Flag1 | MaterialFlags.Flag2 | MaterialFlags.Flag20 | MaterialFlags.Flag40 | MaterialFlags.EnableLight | MaterialFlags.EnableLight2 | MaterialFlags.ReceiveShadow | MaterialFlags.HasDiffuseMap;
+                        material.GlowMap = null;
+                        material.HighlightMap = null;
+                        material.NightMap = null;
+                        material.Attributes = null;
+                        material.ReflectionMap = null;
+                        material.ShadowMap = null;
+                        material.Specular = new Vector4( 0, 0, 0, 0 );
+                        material.SpecularMap = null;
+                    }
+                    else
+                    {
+                        material = new Material( materialName );
+                    }
+
+                    materials.Add( material );
+                }
+            }
+
+            return materials;
+        }
+
+        static Node RwFrameToNode( RwFrame frame, Dictionary<string, Node> nodeLookup )
+        {
+            Matrix4x4.Decompose( frame.Transform, out var scale, out var rotation, out var translation );
+
+            Node node = new Node(
+                GetNameForRwFrame( frame ),
+                translation,
+                rotation,
+                scale );
+
+            nodeLookup.Add( node.Name, node );
+
+            if ( frame.Parent != null )
+                node.Parent = nodeLookup[GetNameForRwFrame( frame )];
+
+            foreach ( var child in frame.Children )
+            {
+                node.Children.Add( RwFrameToNode( child, nodeLookup) );
+            }
+
+            return node;
+        }
+
+        static string GetNameForRwFrame( RwFrame frame )
+        {
+            return frame.HasHAnimExtension ? frame.HAnimFrameExtensionNode.NameId.ToString() : "RootNode";
+        }
+
+        static List<Geometry> RwAtomicToGeometryList( RwAtomicNode rwAtomic, RwGeometryListNode geometryList, RwFrameListNode frameList )
+        {
+            var rwGeometry = geometryList[rwAtomic.GeometryIndex];
+            var rwFrame = frameList[rwAtomic.FrameIndex];
+            var rwMeshList = ( RwMeshListNode )rwGeometry.ExtensionNodes.Find( x => x.Id == RwNodeId.RwMeshListNode );
+            var geometries = new List<Geometry>();
+
+            foreach ( var rwMesh in rwMeshList.MaterialMeshes )
+            {
+                var rwMaterial = rwGeometry.Materials[rwMesh.MaterialIndex];
+                var rwIndices = MeshUtilities.ToTriangleList( rwMesh.Indices, false );
+
+                var geometry = new Geometry();
+                geometry.TriangleIndexType = TriangleIndexType.UInt16;
+                geometry.Triangles = new Triangle[rwIndices.Length / 3];
+
+                uint y = 0;
+                for ( int i = 0; i < geometry.Triangles.Length; i++ )
+                {
+                    geometry.Triangles[i] = new Triangle( y++, y++, y++ );
+                }
+
+                geometry.MaterialName = rwMaterial.TextureReferenceNode.ReferencedTextureName + "_mat";
+                geometry.Vertices = new Vector3[rwIndices.Length];
+                geometry.Normals = new Vector3[rwIndices.Length];
+                geometry.TexCoordsChannel0 = new Vector2[rwIndices.Length];
+
+                for ( int i = 0; i < rwIndices.Length; i++ )
+                {
+                    geometry.Vertices[i] = Vector3.Transform( rwGeometry.Vertices[rwIndices[i]], rwFrame.WorldTransform );
+                    geometry.Normals[i] = Vector3.TransformNormal( rwGeometry.Normals[rwIndices[i]], rwFrame.WorldTransform );
+                    geometry.TexCoordsChannel0[i] = rwGeometry.TextureCoordinateChannels[0][rwIndices[i]];
+                }
+
+                geometry.BoundingBox = BoundingBox.Calculate( geometry.Vertices );
+                geometry.BoundingSphere = BoundingSphere.Calculate( geometry.BoundingBox.Value, geometry.Vertices );
+
+                geometries.Add( geometry );
+            }
+
+            return geometries;
+        }
+
+        static void RMDToGMDField( RmdScene rmdScene )
+        {
+            var rmdCollisionGeometry = rmdScene.Clumps[0];
+            var rmdLevelGeometry = rmdScene.Clumps[1];
+
+            var model = new Model( 0x01105070 );
+            model.TextureDictionary = ConvertTextureDictionary( rmdScene.TextureDictionary );
+            
+            model.Scene = new Scene( 0x01105070 );
+
+            var nodeLookup = new Dictionary<string, Node>();
+            model.Scene.RootNode = RwFrameToNode( rmdLevelGeometry.FrameList[0], nodeLookup );
+
+            //var model = Resource.Load<Model>( @"D:\Modding\Persona 5 EU\Main game\Extracted\data\model\field_tex\f000_100_0.GFS" );
+            model.MaterialDictionary = ConvertMaterials( rmdLevelGeometry.GeometryList.Select( x => x.Materials ) );
+            var allVertices = new List<Vector3>();
+
+            foreach ( var rwAtomic in rmdLevelGeometry.Atomics )
+            {
+                model.Scene.RootNode.Attachments.AddRange(RwAtomicToGeometryList( rwAtomic, rmdLevelGeometry.GeometryList, rmdLevelGeometry.FrameList )
+            }
+
+            model.Scene.BoundingBox = BoundingBox.Calculate( allVertices );
+            model.Scene.BoundingSphere = BoundingSphere.Calculate( model.Scene.BoundingBox.Value, allVertices );
+
+            // generate field texture pack
+
+            var archiveBuilder = new ArchiveBuilder();
+            var bgTexArcDataStream = new MemoryStream();
+
+            using ( var streamWriter = new StreamWriter( bgTexArcDataStream, System.Text.Encoding.Default, 4096, true ) )
+            {
+                streamWriter.WriteLine( "1," );
+                streamWriter.WriteLine( $"{rmdScene.TextureDictionary.Textures.Count}," );           
+            }
+
+            archiveBuilder.AddFile( "bgTexArcData00.txt", bgTexArcDataStream );
+            //var archive = new Archive( @"D:\Modding\Persona 5 EU\Main game\Extracted\ps3\model\field_tex\textures\tex000_100_00_00.bin" );
+            //var dummyFieldTexture = archive.OpenFile( "dummy_field.dds" );
+
+            foreach ( var rwTexture in rmdScene.TextureDictionary.Textures )
+            {
+                var ddsData = RwTextureToDDS( rwTexture );
+                var ddsRawData = new byte[ddsData.Length - 0x80];
+                Array.Copy( ddsData, 0x80, ddsRawData, 0, ddsRawData.Length );
+
+                var texture = new FieldTexture( false, 1, ( short )rwTexture.Width, ( short )rwTexture.Height, ddsRawData );
+                var textureStream = new MemoryStream();
+                texture.Save( textureStream );
+
+                archiveBuilder.AddFile( rwTexture.Name + ".dds", textureStream );
+            }
+
+            archiveBuilder.BuildFile( @"D:\Modding\Persona 5 EU\Game mods\TestLevel\mod\model\field_tex\textures\tex000_100_00_00.bin" );
+
+            Resource.Save( model, @"D:\Modding\Persona 5 EU\Game mods\TestLevel\mod\model\field_tex\f000_100_0.GFS" );
         }
 
         static void ExportDAE( Model model )

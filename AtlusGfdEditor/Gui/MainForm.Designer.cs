@@ -35,95 +35,96 @@ namespace AtlusGfdEditor.GUI
             this.mOpenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mEditToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mOptionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.mTreeView = new TreeNodeAdapterView();
+            this.mTreeView = new AtlusGfdEditor.GUI.Adapters.TreeNodeAdapterView();
             this.mPropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.mContentPanel = new System.Windows.Forms.Panel();
             this.mMainMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
-            // m_MainMenuStrip
+            // mMainMenuStrip
             // 
-            this.mMainMenuStrip.Items.AddRange( new System.Windows.Forms.ToolStripItem[] {
+            this.mMainMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.mFileToolStripMenuItem,
-            this.mEditToolStripMenuItem} );
-            this.mMainMenuStrip.Location = new System.Drawing.Point( 0, 0 );
+            this.mEditToolStripMenuItem});
+            this.mMainMenuStrip.Location = new System.Drawing.Point(0, 0);
             this.mMainMenuStrip.Name = "mMainMenuStrip";
-            this.mMainMenuStrip.Size = new System.Drawing.Size( 1222, 24 );
+            this.mMainMenuStrip.Size = new System.Drawing.Size(1222, 24);
             this.mMainMenuStrip.TabIndex = 0;
             this.mMainMenuStrip.Text = "menuStrip1";
             // 
-            // m_FileToolStripMenuItem
+            // mFileToolStripMenuItem
             // 
-            this.mFileToolStripMenuItem.DropDownItems.AddRange( new System.Windows.Forms.ToolStripItem[] {
-            this.mOpenToolStripMenuItem} );
+            this.mFileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mOpenToolStripMenuItem});
             this.mFileToolStripMenuItem.Name = "mFileToolStripMenuItem";
-            this.mFileToolStripMenuItem.Size = new System.Drawing.Size( 37, 20 );
+            this.mFileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.mFileToolStripMenuItem.Text = "File";
             // 
-            // m_OpenToolStripMenuItem
+            // mOpenToolStripMenuItem
             // 
             this.mOpenToolStripMenuItem.Name = "mOpenToolStripMenuItem";
-            this.mOpenToolStripMenuItem.Size = new System.Drawing.Size( 103, 22 );
+            this.mOpenToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
             this.mOpenToolStripMenuItem.Text = "Open";
-            this.mOpenToolStripMenuItem.Click += new System.EventHandler( this.OpenToolStripMenuItemClickEventHandler );
+            this.mOpenToolStripMenuItem.Click += new System.EventHandler(this.OpenToolStripMenuItemClickEventHandler);
             // 
-            // m_EditToolStripMenuItem
+            // mEditToolStripMenuItem
             // 
-            this.mEditToolStripMenuItem.DropDownItems.AddRange( new System.Windows.Forms.ToolStripItem[] {
-            this.mOptionsToolStripMenuItem} );
+            this.mEditToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mOptionsToolStripMenuItem});
             this.mEditToolStripMenuItem.Name = "mEditToolStripMenuItem";
-            this.mEditToolStripMenuItem.Size = new System.Drawing.Size( 39, 20 );
+            this.mEditToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
             this.mEditToolStripMenuItem.Text = "Edit";
             // 
-            // m_OptionsToolStripMenuItem
+            // mOptionsToolStripMenuItem
             // 
             this.mOptionsToolStripMenuItem.Name = "mOptionsToolStripMenuItem";
-            this.mOptionsToolStripMenuItem.Size = new System.Drawing.Size( 116, 22 );
+            this.mOptionsToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
             this.mOptionsToolStripMenuItem.Text = "Options";
             // 
-            // m_TreeView
+            // mTreeView
             // 
-            this.mTreeView.Anchor = ( ( System.Windows.Forms.AnchorStyles )( ( System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right ) ) );
-            this.mTreeView.Location = new System.Drawing.Point( 898, 27 );
+            this.mTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.mTreeView.Location = new System.Drawing.Point(713, 27);
             this.mTreeView.Name = "mTreeView";
-            this.mTreeView.Size = new System.Drawing.Size( 312, 380 );
+            this.mTreeView.Size = new System.Drawing.Size(497, 380);
             this.mTreeView.TabIndex = 1;
             // 
-            // m_PropertyGrid
+            // mPropertyGrid
             // 
-            this.mPropertyGrid.Anchor = ( ( System.Windows.Forms.AnchorStyles )( ( ( System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom )
-            | System.Windows.Forms.AnchorStyles.Right ) ) );
-            this.mPropertyGrid.Location = new System.Drawing.Point( 898, 413 );
+            this.mPropertyGrid.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.mPropertyGrid.LineColor = System.Drawing.SystemColors.ControlDark;
+            this.mPropertyGrid.Location = new System.Drawing.Point(713, 413);
             this.mPropertyGrid.Name = "mPropertyGrid";
-            this.mPropertyGrid.Size = new System.Drawing.Size( 312, 414 );
+            this.mPropertyGrid.Size = new System.Drawing.Size(497, 414);
             this.mPropertyGrid.TabIndex = 2;
             // 
-            // m_Panel
+            // mContentPanel
             // 
-            this.mContentPanel.Anchor = ( ( System.Windows.Forms.AnchorStyles )( ( ( ( System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom )
-            | System.Windows.Forms.AnchorStyles.Left )
-            | System.Windows.Forms.AnchorStyles.Right ) ) );
+            this.mContentPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.mContentPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.mContentPanel.Location = new System.Drawing.Point( 12, 28 );
+            this.mContentPanel.Location = new System.Drawing.Point(12, 28);
             this.mContentPanel.Name = "mContentPanel";
-            this.mContentPanel.Size = new System.Drawing.Size( 880, 800 );
+            this.mContentPanel.Size = new System.Drawing.Size(695, 800);
             this.mContentPanel.TabIndex = 3;
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF( 6F, 13F );
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size( 1222, 839 );
-            this.Controls.Add( this.mPropertyGrid );
-            this.Controls.Add( this.mTreeView );
-            this.Controls.Add( this.mMainMenuStrip );
-            this.Controls.Add( this.mContentPanel );
+            this.ClientSize = new System.Drawing.Size(1222, 839);
+            this.Controls.Add(this.mPropertyGrid);
+            this.Controls.Add(this.mTreeView);
+            this.Controls.Add(this.mMainMenuStrip);
+            this.Controls.Add(this.mContentPanel);
             this.MainMenuStrip = this.mMainMenuStrip;
-            this.Name = "Atlus Gfd Editor";
+            this.Name = "MainForm";
             this.Text = "Atlus Gfd Editor";
-            this.mMainMenuStrip.ResumeLayout( false );
+            this.mMainMenuStrip.ResumeLayout(false);
             this.mMainMenuStrip.PerformLayout();
-            this.ResumeLayout( false );
+            this.ResumeLayout(false);
             this.PerformLayout();
 
         }

@@ -10,10 +10,10 @@ namespace AtlusGfdEditor.Modules
     public class StreamModule : Module<Stream>
     {
         public override string Name 
-            => "Generic stream";
+            => "File";
 
         public override string[] Extensions
-            => new string[] { "*" };
+            => new[] { "*" };
 
         public override FormatModuleUsageFlags UsageFlags => FormatModuleUsageFlags.ImportForEditing | FormatModuleUsageFlags.Export;
 

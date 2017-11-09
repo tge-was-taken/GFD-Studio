@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AtlusGfdEditor
 {
@@ -12,10 +7,10 @@ namespace AtlusGfdEditor
     {
         public static bool MatchesAnyExtension( string filename, params string[] extensions )
         {
-            var fileExtension = Path.GetExtension( filename );
-            if ( fileExtension == null )
+            if ( filename == null )
                 return false;
 
+            var fileExtension = Path.GetExtension( filename );
             var fileExtensionWithoutPeriod = fileExtension.TrimStart( '.' );
 
             foreach ( var extension in extensions )

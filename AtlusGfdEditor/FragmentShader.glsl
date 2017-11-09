@@ -26,9 +26,7 @@ void main()
 	vec4 diffuseSample = vec4( 1f, 1f, 1f, 1f );
 
 	if ( hasDiffuse )
-	{
 		diffuseSample = texture2D( diffuse, fragVertTex0 );
-	}
 
 	// simple lambert diffuse lighting
 	vec3 lightDirection = vec3( 0f, 0f, -1f );

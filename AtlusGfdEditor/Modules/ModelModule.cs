@@ -7,7 +7,7 @@ namespace AtlusGfdEditor.Modules
     public class ModelModule : Module<Model>
     {
         public override string Name =>
-            "Atlus Gfd Model Format";
+            "Model";
 
         public override string[] Extensions =>
             new[] { "gfs", "gmd", "gap" };

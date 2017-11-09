@@ -238,6 +238,7 @@ namespace AtlusGfdLib
         private void WriteFileData( Stream stream )
         {
             mWriter.Write( ( int )stream.Length );
+            stream.Position = 0;
             stream.CopyTo( mWriter.BaseStream );
             WriteEntryAlignment();
         }
@@ -351,7 +352,8 @@ namespace AtlusGfdLib
                 }
             }
 
-            stream.Position = 0;
+            if ( leaveOpen )
+                stream.Position = 0;
         }
     }
 }

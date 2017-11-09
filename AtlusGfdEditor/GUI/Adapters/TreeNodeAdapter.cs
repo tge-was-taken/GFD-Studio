@@ -374,7 +374,13 @@ namespace AtlusGfdEditor.GUI.Adapters
 
         protected void SetResourceProperty<T>( T value, [CallerMemberName] string propertyName = null )
         {
+            // ReSharper disable once ExplicitCallerInfoArgument
             SetProperty( Resource, value, propertyName );
+        }
+
+        protected void SetResourceProperty<T>( ref T property )
+        {
+
         }
 
         protected void SetProperty<T>( T value, [CallerMemberName] string propertyName = null )
@@ -588,13 +594,25 @@ namespace AtlusGfdEditor.GUI.Adapters
         //
         private Type GetTypeFromPath( string filepath, IEnumerable<Type> types )
         {
-            var extension = Path.GetExtension( filepath ).Substring( 1 );
-            var modules = ModuleRegistry.Modules.Where(
-                // module object type is one of the types AND
-                x => types.Contains( x.ObjectType ) &&
-                // module extensions contains a wild card OR contains the extension of the path
-                ( x.Extensions.Any( ext => ext == "*" ) || x.Extensions.Contains( extension, StringComparer.InvariantCultureIgnoreCase ) ) )
-                .ToList();
+            var extension = Path.GetExtension( filepath );
+            if ( string.IsNullOrEmpty( extension ) )
+                extension = string.Empty;
+            else
+                extension = extension.Substring( 1 );
+
+            var modulesWithType = ModuleRegistry.Modules.Where( x => types.Contains( x.ObjectType ) );
+            List<IModule> modules;
+            if ( extension.Length > 0 )
+            {
+                modules = modulesWithType.Where( x =>
+                        ( x.Extensions.Any( ext => ext == "*" ) ||
+                          x.Extensions.Contains( extension, StringComparer.InvariantCultureIgnoreCase ) ) )
+                    .ToList();
+            }
+            else
+            {
+                modules = modulesWithType.ToList();
+            }
 
             // remove wild card modules if we have more than 1 module
             if ( modules.Count > 1 )
@@ -606,14 +624,10 @@ namespace AtlusGfdEditor.GUI.Adapters
             }
 
             if ( modules.Count == 0 )
-            {
                 throw new Exception( "No suitable modules found" );
-            }
 
             if ( modules.Count != 1 )
-            {
                 throw new Exception( "Ambigious module match. Multiple suitable modules format found." );
-            }
 
             return modules[0].ObjectType;
         }

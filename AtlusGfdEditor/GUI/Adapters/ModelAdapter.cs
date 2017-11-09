@@ -19,6 +19,9 @@ namespace AtlusGfdEditor.GUI.Adapters
         [Browsable( false )]
         public TextureDictionaryAdapter TextureDictionary { get; set; }
 
+        [Browsable( false )]
+        public MaterialDictionaryAdapter MaterialDictionary { get; set; }
+
         protected internal ModelAdapter( string text, Model resource ) : base( text, resource )
         {
         }
@@ -26,28 +29,36 @@ namespace AtlusGfdEditor.GUI.Adapters
         protected override void InitializeCore()
         {
             RegisterExportAction<Model>( ( path ) => AtlusGfdLib.Resource.Save(Resource, path) );
-            RegisterReplaceAction<Model>( ( path ) => AtlusGfdLib.Resource.Load<Model>( path ) );
+            RegisterReplaceAction<Model>( AtlusGfdLib.Resource.Load<Model> );
             RegisterRebuildAction( () =>
             {
-                var model = new Model( Version );
+                var model = new Model( Version )
+                {
+                    TextureDictionary = TextureDictionary.Resource,
+                    MaterialDictionary = Resource.MaterialDictionary,
+                    Scene = Resource.Scene,
+                    AnimationPackage = Resource.AnimationPackage,
+                    ChunkType000100F9 = Resource.ChunkType000100F9
+                };
 
-                model.TextureDictionary = TextureDictionary.Resource;
-                model.MaterialDictionary = Resource.MaterialDictionary;
-                model.Scene = Resource.Scene;
-                model.AnimationPackage = Resource.AnimationPackage;
-                model.ChunkType000100F9 = Resource.ChunkType000100F9;
 
                 return model;
             });
 
             if ( Resource.TextureDictionary != null )
                 TextureDictionary = ( TextureDictionaryAdapter )TreeNodeAdapterFactory.Create( "Textures", Resource.TextureDictionary );
+
+            if ( Resource.MaterialDictionary != null )
+                MaterialDictionary = ( MaterialDictionaryAdapter )TreeNodeAdapterFactory.Create( "Materials", Resource.MaterialDictionary );
         }
 
         protected override void InitializeViewCore()
         {
             if ( TextureDictionary != null )
                 Nodes.Add( TextureDictionary );
+
+            if ( MaterialDictionary != null )
+                Nodes.Add( MaterialDictionary );
         }
     }
 }

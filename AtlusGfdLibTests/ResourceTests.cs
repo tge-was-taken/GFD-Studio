@@ -512,13 +512,13 @@ namespace AtlusGfdLib.Tests
             Assert.AreEqual( a.Version, b.Version );
 
             Assert.AreEqual( a.Flags, b.Flags );
-            CompareBoneMap( a.MatrixMap, b.MatrixMap );
+            CompareBoneMap( a.MatrixPalette, b.MatrixPalette );
             Assert.AreEqual( a.BoundingBox, b.BoundingBox );
             Assert.AreEqual( a.BoundingSphere, b.BoundingSphere );
             CompareNodes( a.RootNode, b.RootNode );
         }
 
-        private void CompareBoneMap( SkinnedBoneMap a, SkinnedBoneMap b )
+        private void CompareBoneMap( MatrixPalette a, MatrixPalette b )
         {
             if ( a == null || b == null )
             {
@@ -528,9 +528,9 @@ namespace AtlusGfdLib.Tests
 
             Assert.AreEqual( a.MatrixCount, b.MatrixCount );
 
-            if ( a.BoneInverseBindMatrices == null || b.BoneInverseBindMatrices == null )
+            if ( a.InverseBindMatrices == null || b.InverseBindMatrices == null )
             {
-                Assert.IsTrue( a.BoneInverseBindMatrices == null ? ( b.BoneInverseBindMatrices == null ) : ( b.BoneInverseBindMatrices != null ) );
+                Assert.IsTrue( a.InverseBindMatrices == null ? ( b.InverseBindMatrices == null ) : ( b.InverseBindMatrices != null ) );
                 return;
             }
 
@@ -542,7 +542,7 @@ namespace AtlusGfdLib.Tests
 
             for ( int i = 0; i < a.MatrixCount; i++ )
             {
-                Assert.AreEqual( a.BoneInverseBindMatrices[i], b.BoneInverseBindMatrices[i] );
+                Assert.AreEqual( a.InverseBindMatrices[i], b.InverseBindMatrices[i] );
                 Assert.AreEqual( a.BoneToNodeIndices[i], b.BoneToNodeIndices[i] );
             }
         }

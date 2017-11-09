@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace AtlusGfdEditor.GUI.Adapters
 {
-    public delegate T TreeNodeAdapterRebuildAction<T>();
+    public delegate T TreeNodeAdapterRebuildAction< out T >();
 
     public abstract class TreeNodeAdapter<T> : TreeNodeAdapter
     {

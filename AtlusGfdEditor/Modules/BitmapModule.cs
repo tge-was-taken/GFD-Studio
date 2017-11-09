@@ -13,7 +13,7 @@ namespace AtlusGfdEditor.Modules
     public class BitmapModule : Module<Bitmap>
     {
         public override string Name =>
-            ".NET supported bitmap";
+            "Bitmap";
 
         public override string[] Extensions =>
             new[] { "png", "bmp" };
@@ -23,8 +23,7 @@ namespace AtlusGfdEditor.Modules
 
         protected override bool CanImportCore( Stream stream, string filename = null )
         {
-            // trust the extension
-            return true;
+            return Utilities.MatchesAnyExtension( filename, Extensions );
         }
 
         protected override void ExportCore( Bitmap obj, Stream stream, string filename = null )

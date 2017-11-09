@@ -77,16 +77,16 @@ namespace AtlusGfdLib
         public short Field5C { get; set; }
 
         // 0x6C
-        public int Field6C { get; set; }
+        public uint Field6C { get; set; }
 
         // 0x70
-        public int Field70 { get; set; }
+        public uint Field70 { get; set; }
 
         // 0x50
         public short Field50 { get; set; }
 
         // 0x98
-        public int Field98 { get; set; }
+        public uint Field98 { get; set; }
 
         private TextureMap mDiffuseMap;
         public TextureMap DiffuseMap
@@ -217,9 +217,9 @@ namespace AtlusGfdLib
             Field5C = 0;
             Flags = MaterialFlags.Flag1 | MaterialFlags.Flag2;
             Field92 = 4;
-            Field70 = -1;
-            Field98 = -1;
-            Field6C = -1;
+            Field70 = 0xFFFFFFFF;
+            Field98 = 0xFFFFFFFF;
+            Field6C = 0xFFFFFFFF;
         }
 
         public override string ToString()

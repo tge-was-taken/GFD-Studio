@@ -22,7 +22,7 @@ namespace AtlusGfdEditor.GUI.Controls.ModelView
         {
             var eye = Translation;
             var target = Target;
-            var up = Target * Vector3.UnitY;
+            var up = Translation * Vector3.UnitY;
 
             var view = Matrix4.LookAt(
                 eye,

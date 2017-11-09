@@ -227,5 +227,10 @@ namespace AtlusGfdLib
                 return Parent.FindParentNode( name, out node );
             }
         }
+
+        public override string ToString()
+        {
+            return $"{Name}";
+        }
     }
 }

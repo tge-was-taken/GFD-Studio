@@ -44,7 +44,11 @@ namespace AtlusGfdEditor.Modules
 
                 // gfd texture resource modules 
                 new TextureDictionaryModule(),
-                new TextureModule()
+                new TextureModule(),
+
+                // gfd material resource modules
+                new MaterialDictionaryModule(),
+                new MaterialModule()
             );
         }
 

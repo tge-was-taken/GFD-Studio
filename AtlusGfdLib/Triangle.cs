@@ -27,22 +27,6 @@ namespace AtlusGfdLib
             C = c;
         }
 
-        public Triangle( IConvertible[] indices )
-        {
-            CheckIndices( indices );
-
-            A = ( uint )indices[0];
-            B = ( uint )indices[1];
-            C = ( uint )indices[2];
-        }
-
-        public Triangle( IConvertible a, IConvertible b, IConvertible c )
-        {
-            A = ( uint )a;
-            B = ( uint )b;
-            C = ( uint )c;
-        }
-
         private static void CheckIndices( ICollection indices )
         {
             if ( indices.Count != 3 )

@@ -28,10 +28,10 @@ namespace AtlusGfdEditor.GUI.Controls
         private Point mLastMouseLocation;
 
         public ModelViewControl() : base( 
-            new GraphicsMode(32, 24, 0, 4),
+            new GraphicsMode( 32, 24, 0, 4 ),
             3,
             3,
-            GraphicsContextFlags.Debug | GraphicsContextFlags.ForwardCompatible)
+            GraphicsContextFlags.Debug | GraphicsContextFlags.ForwardCompatible )
         {
             InitializeComponent();
 
@@ -83,6 +83,8 @@ namespace AtlusGfdEditor.GUI.Controls
             LogGLInfo();
             InitializeGL();
             InitializeGLShaders();
+
+            
         }
 
         /// <summary>
@@ -100,6 +102,8 @@ namespace AtlusGfdEditor.GUI.Controls
                 {
                     if ( !geometry.IsVisible )
                         continue;
+
+                    mShaderProgram.Use();
 
                     // set up model view projection matrix uniforms
                     var modelViewProj = geometry.ModelMatrix * mCamera.CalculateViewProjectionMatrix();
@@ -120,7 +124,8 @@ namespace AtlusGfdEditor.GUI.Controls
                     mShaderProgram.SetUniform( "matSpecular", geometry.Material.Specular );
                     mShaderProgram.SetUniform( "matEmissive", geometry.Material.Emissive );
 
-                    mShaderProgram.Use();
+                    // checks if all uniforms were assigned
+                    mShaderProgram.Check();
 
                     // use the vertex array
                     GL.BindVertexArray( geometry.VertexArrayId );
@@ -171,6 +176,19 @@ namespace AtlusGfdEditor.GUI.Controls
             GL.CullFace( CullFaceMode.Back );
             GL.Enable( EnableCap.CullFace );
             GL.Enable( EnableCap.DepthTest );
+            GL.Enable( EnableCap.DebugOutputSynchronous );
+            GL.DebugMessageCallback( GLDebugMessageCallback, IntPtr.Zero );
+            GL.Enable( EnableCap.Multisample );
+        }
+
+        private void GLDebugMessageCallback( DebugSource source, DebugType type, int id, DebugSeverity severity, int length, IntPtr message, IntPtr userParam )
+        {
+            // notication for buffer using VIDEO memory
+            if ( id == 0x00020071 )
+                return;
+
+            var msg = Marshal.PtrToStringAnsi( message, length );
+            Trace.TraceInformation( $"{severity} {type} {msg}" );
         }
 
         /// <summary>
@@ -183,14 +201,14 @@ namespace AtlusGfdEditor.GUI.Controls
                 Path.Combine( AppDomain.CurrentDomain.BaseDirectory, "FragmentShader.glsl" ),
                 out mShaderProgram ) )
             {
-                Trace.TraceWarning( "WARNING: Failed to compile shaders. Trying to use basic shaders.." );
+                Trace.TraceWarning( "Failed to compile shaders. Trying to use basic shaders.." );
 
                 if ( !GLShaderProgram.TryCreate(
                     Path.Combine( AppDomain.CurrentDomain.BaseDirectory, "VertexShaderBasic.glsl" ),
                     Path.Combine( AppDomain.CurrentDomain.BaseDirectory, "FragmentShaderBasic.glsl" ),
                     out mShaderProgram ) )
                 {
-                    Trace.TraceError( "ERROR: Failed to compile basic shaders." );
+                    Trace.TraceError( "Failed to compile basic shaders." );
                 }
             }
 
@@ -286,11 +304,16 @@ namespace AtlusGfdEditor.GUI.Controls
                 bSphere = mModel.Scene.BoundingSphere.Value;
             }
 
+            mCamera = new GLPerspectiveFreeCamera( CalculateCameraTranslation( cameraFov, bSphere), 1f, 100000f, cameraFov, ( float )Width / ( float )Height, Quaternion.Identity );
+        }
+
+        private static Vector3 CalculateCameraTranslation( float cameraFov, BoundingSphere bSphere )
+        {
             var cameraFovInRad = MathHelper.DegreesToRadians( cameraFov );
             var distance = ( float )( ( bSphere.Radius * 2.0f ) / Math.Tan( cameraFovInRad / 2.0f ) );
             var cameraTranslation = new Vector3( bSphere.Center.X, bSphere.Center.Y, bSphere.Center.Z ) + new Vector3( 0, -50, 300 );
 
-            mCamera = new GLPerspectiveFreeCamera( cameraTranslation, 1f, 100000f, cameraFov, ( float )Width / ( float )Height, Quaternion.Identity );
+            return cameraTranslation;
         }
 
         private static Matrix4 ToMatrix4( System.Numerics.Matrix4x4 matrix )
@@ -402,7 +425,8 @@ namespace AtlusGfdEditor.GUI.Controls
             {
                 int mipSize = ( ( mipWidth * mipHeight ) / 16 ) * blockSize;
 
-                GL.CompressedTexImage2D( TextureTarget.Texture2D, mipLevel, format, mipWidth, mipHeight, 0, mipSize, data + mipOffset );
+                if ( mipSize != 0 )
+                    GL.CompressedTexImage2D( TextureTarget.Texture2D, mipLevel, format, mipWidth, mipHeight, 0, mipSize, data + mipOffset );
 
                 mipOffset += mipSize;
                 mipWidth /= 2;
@@ -495,10 +519,13 @@ namespace AtlusGfdEditor.GUI.Controls
                         glMaterial.DiffuseTextureId = CreateGLTexture( texture );
                     }
                 }
+                else if ( mModel.TextureDictionary.TryGetTexture( material.DiffuseMap.Name, out var texture ) )
+                {
+                    glMaterial.DiffuseTextureId = CreateGLTexture( texture );
+                }
                 else
                 {
-                    var texture = mModel.TextureDictionary[material.DiffuseMap.Name];
-                    glMaterial.DiffuseTextureId = CreateGLTexture( texture );
+                    Trace.TraceWarning( $"Diffuse map texture '{ material.DiffuseMap.Name }' used by material '{ material.Name }' is missing" );
                 }
             }
 
@@ -543,6 +570,7 @@ namespace AtlusGfdEditor.GUI.Controls
                     // Orbit around model
                     var bSphere = mModel.Scene.BoundingSphere.Value;
                     mCamera = new GLPerspectiveTargetCamera( mCamera.Translation, mCamera.ZNear, mCamera.ZFar, mCamera.FieldOfView, mCamera.AspectRatio, new Vector3( bSphere.Center.X, bSphere.Center.Y, bSphere.Center.Z ) );
+
                     mCamera.Translation = new Vector3(
                         mCamera.Translation.X - ( ( locationDelta.X / 3f ) * multiplier ),
                         mCamera.Translation.Y + ( ( locationDelta.Y / 3f ) * multiplier ),
@@ -585,29 +613,29 @@ namespace AtlusGfdEditor.GUI.Controls
 
             Invalidate();
         }
-    }
 
-    public struct GLMaterial
-    {
-        public Vector4 Ambient;
-        public Vector4 Diffuse;
-        public Vector4 Specular;
-        public Vector4 Emissive;
-        public int DiffuseTextureId;
+        private struct GLGeometry
+        {
+            public int VertexArrayId;
+            public int PositionBufferId;
+            public int NormalBufferId;
+            public int TextureCoordinateChannel0BufferId;
+            public int ElementBufferId;
+            public int ElementIndexCount;
+            public GLMaterial Material;
+            public Matrix4 ModelMatrix;
+            public bool IsVisible;
+        }
 
-        public bool HasDiffuse => DiffuseTextureId != 0;
-    }
+        private struct GLMaterial
+        {
+            public Vector4 Ambient;
+            public Vector4 Diffuse;
+            public Vector4 Specular;
+            public Vector4 Emissive;
+            public int DiffuseTextureId;
 
-    public struct GLGeometry
-    {
-        public int VertexArrayId;
-        public int PositionBufferId;
-        public int NormalBufferId;
-        public int TextureCoordinateChannel0BufferId;
-        public int ElementBufferId;
-        public int ElementIndexCount;
-        public GLMaterial Material;
-        public Matrix4 ModelMatrix;
-        public bool IsVisible;
+            public bool HasDiffuse => DiffuseTextureId != 0;
+        }
     }
 }

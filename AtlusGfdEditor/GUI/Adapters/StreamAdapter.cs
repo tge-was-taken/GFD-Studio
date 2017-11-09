@@ -30,7 +30,7 @@ namespace AtlusGfdEditor.GUI.Adapters
                 }
             } );
 
-            RegisterReplaceAction<Stream>( ( path ) => File.OpenRead( path ) );
+            RegisterReplaceAction<Stream>( File.OpenRead );
         }
     }
 }

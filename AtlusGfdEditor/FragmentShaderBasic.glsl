@@ -16,9 +16,7 @@ void main()
 	vec4 diffuseSample = vec4( 1f, 1f, 1f, 1f );
 
 	if ( isTextured )
-	{
 		diffuseSample = texture2D( diffuse, fragVertTex0 );
-	}
 
 	fragColor = diffuseSample;
 } 

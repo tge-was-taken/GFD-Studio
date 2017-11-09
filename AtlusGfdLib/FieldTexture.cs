@@ -41,6 +41,24 @@ namespace AtlusGfdLib
 
         public byte[] Data { get; set; }
 
+        public FieldTexture( bool dxt5, byte mipMapCount, short width, short height, byte[] data )
+        {
+            Field00 = 0x020200FF;
+            Field08 = 0x00000001;
+            Field0C = 0x00000000;
+            Flags = FieldTextureFlags.Flag2 | FieldTextureFlags.Flag4 | FieldTextureFlags.Flag80;
+            if ( dxt5 )
+                Flags |= FieldTextureFlags.DXT5;
+            MipMapCount = mipMapCount;
+            Field1A = 2;
+            Field1B = 0;
+            Field1C = 0xAAE4;
+            Width = width;
+            Height = height;
+            Field24 = 1;
+            Data = data;
+        }
+
         public FieldTexture( Stream stream )
         {
             Read( stream, true );
@@ -126,13 +144,13 @@ namespace AtlusGfdLib
     [Flags]
     public enum FieldTextureFlags
     {
-        DXT3   = 0b00000001,
-        Flag2  = 0b00000010,
-        Flag4  = 0b00000100,
-        DXT5   = 0b00001000,
-        Flag10 = 0b00010000,
-        Flag20 = 0b00100000,
-        Flag40 = 0b01000000,
-        Flag80 = 0b10000000,
+        DXT3   = 0b0000_0001,
+        Flag2  = 0b0000_0010,
+        Flag4  = 0b0000_0100,
+        DXT5   = 0b0000_1000,
+        Flag10 = 0b0001_0000,
+        Flag20 = 0b0010_0000,
+        Flag40 = 0b0100_0000,
+        Flag80 = 0b1000_0000,
     }
 }

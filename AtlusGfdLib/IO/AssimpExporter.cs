@@ -276,48 +276,49 @@ namespace AtlusGfdLib.IO
             }
             */
 
-            //if ( geometry.Flags.HasFlag( GeometryFlags.HasVertexWeights ))
-            //{
-            //    var aiBoneMap = new Dictionary<int, Assimp.Bone>();
+            if ( geometry.Flags.HasFlag( GeometryFlags.HasVertexWeights ) )
+            {
+                var aiBoneMap = new Dictionary<int, Assimp.Bone>();
 
-            //    for ( int i = 0; i < geometry.VertexWeights.Length; i++ )
-            //    {
-            //        var vertexWeight = geometry.VertexWeights[i];
+                for ( int i = 0; i < geometry.VertexWeights.Length; i++ )
+                {
+                    var vertexWeight = geometry.VertexWeights[i];
 
-            //        for ( int j = 0; j < 4; j++ )
-            //        {
-            //            var boneWeight = vertexWeight.Weights[j];
+                    for ( int j = 0; j < 4; j++ )
+                    {
+                        var boneWeight = vertexWeight.Weights[j];
 
-            //            if ( boneWeight == 0.0f )
-            //                continue;
+                        if ( boneWeight == 0.0f )
+                            continue;
 
-            //            var nodeIndex = scene.MatrixMap.BoneToNodeIndices[vertexWeight.Indices[j]];
+                        //var offsetMatrix = scene.MatrixMap.BoneInverseBindMatrices[vertexWeight.Indices[j]];
+                        var nodeIndex = scene.MatrixPalette.BoneToNodeIndices[vertexWeight.Indices[j]];
 
-            //            if ( !aiBoneMap.ContainsKey( nodeIndex ) )
-            //            {
-            //                var aiBone = new Assimp.Bone();
-            //                var boneNode = scene.Nodes[nodeIndex];
+                        if ( !aiBoneMap.ContainsKey( nodeIndex ) )
+                        {
+                            var aiBone = new Assimp.Bone();
+                            var boneNode = scene.Nodes[nodeIndex];
 
-            //                aiBone.Name = boneNode.Name;
-            //                aiBone.VertexWeights.Add( new Assimp.VertexWeight( i, boneWeight ) );
+                            aiBone.Name = boneNode.Name;
+                            aiBone.VertexWeights.Add( new Assimp.VertexWeight( i, boneWeight ) );
 
-            //                Matrix4x4.Invert( geometryNode.WorldTransform, out Matrix4x4 invGeometryNodeWorldTransform );
-            //                Matrix4x4.Invert( boneNode.WorldTransform * invGeometryNodeWorldTransform, out Matrix4x4 offsetMatrix );
-            //                aiBone.OffsetMatrix = new Assimp.Matrix4x4( offsetMatrix.M11, offsetMatrix.M21, offsetMatrix.M31, offsetMatrix.M41,
-            //                                                            offsetMatrix.M12, offsetMatrix.M22, offsetMatrix.M32, offsetMatrix.M42,
-            //                                                            offsetMatrix.M13, offsetMatrix.M23, offsetMatrix.M33, offsetMatrix.M43,
-            //                                                            offsetMatrix.M14, offsetMatrix.M24, offsetMatrix.M34, offsetMatrix.M44 );
-            //                aiBoneMap[nodeIndex] = aiBone;
-            //            }
-            //            else
-            //            {
-            //                aiBoneMap[nodeIndex].VertexWeights.Add( new Assimp.VertexWeight( i, boneWeight ) );
-            //            }
-            //        }
-            //    }
+                            Matrix4x4.Invert( geometryNode.WorldTransform, out Matrix4x4 invGeometryNodeWorldTransform );
+                            Matrix4x4.Invert( boneNode.WorldTransform * invGeometryNodeWorldTransform, out Matrix4x4 offsetMatrix );
+                            aiBone.OffsetMatrix = new Assimp.Matrix4x4( offsetMatrix.M11, offsetMatrix.M21, offsetMatrix.M31, offsetMatrix.M41,
+                                                                        offsetMatrix.M12, offsetMatrix.M22, offsetMatrix.M32, offsetMatrix.M42,
+                                                                        offsetMatrix.M13, offsetMatrix.M23, offsetMatrix.M33, offsetMatrix.M43,
+                                                                        offsetMatrix.M14, offsetMatrix.M24, offsetMatrix.M34, offsetMatrix.M44 );
+                            aiBoneMap[nodeIndex] = aiBone;
+                        }
+                        else
+                        {
+                            aiBoneMap[nodeIndex].VertexWeights.Add( new Assimp.VertexWeight( i, boneWeight ) );
+                        }
+                    }
+                }
 
-            //    aiMesh.Bones.AddRange( aiBoneMap.Values );
-            //}
+                aiMesh.Bones.AddRange( aiBoneMap.Values );
+            }
 
             return aiMesh;
         }

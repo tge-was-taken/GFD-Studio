@@ -39,26 +39,15 @@ namespace AtlusGfdLib
         {
             var boundingBox = BoundingBox.Calculate( vertices );
 
-            Vector3 sphereCentre = new Vector3
-            {
-                X = ( float )0.5 * ( boundingBox.Min.X + boundingBox.Max.X ),
-                Y = ( float )0.5 * ( boundingBox.Min.Y + boundingBox.Max.Y ),
-                Z = ( float )0.5 * ( boundingBox.Min.Z + boundingBox.Max.Z )
-            };
-
-            float maxDistSq = 0.0f;
-            foreach ( Vector3 vertex in vertices )
-            {
-                Vector3 fromCentre = vertex - sphereCentre;
-                maxDistSq = Math.Max( maxDistSq, fromCentre.LengthSquared() );
-            }
-
-            float sphereRadius = ( float )Math.Sqrt( maxDistSq );
-
-            return new BoundingSphere( sphereCentre, sphereRadius );
+            return Calculate( boundingBox, vertices );
         }
 
         public static BoundingSphere Calculate( BoundingBox boundingBox )
+        {
+            return Calculate( boundingBox, new[] { boundingBox.Min, boundingBox.Max } );
+        }
+
+        public static BoundingSphere Calculate( BoundingBox boundingBox, IEnumerable<Vector3> vertices )
         {
             Vector3 sphereCentre = new Vector3
             {
@@ -68,7 +57,6 @@ namespace AtlusGfdLib
             };
 
             float maxDistSq = 0.0f;
-            var vertices = new List<Vector3>() { boundingBox.Min, boundingBox.Max };
             foreach ( Vector3 vertex in vertices )
             {
                 Vector3 fromCentre = vertex - sphereCentre;

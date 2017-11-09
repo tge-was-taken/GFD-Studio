@@ -30,7 +30,7 @@ namespace AtlusGfdLib.IO
             return ( TResource )ReadFromStream( stream, endianness );
         }
 
-        public static bool IsValidResource( Stream stream )
+        public static bool IsValidResourceStream( Stream stream )
         {
             try
             {
@@ -266,7 +266,7 @@ namespace AtlusGfdLib.IO
 
             switch ( header.Type )
             {
-                case FileType.Model:
+                case FileType.ModelResourceBundle:
                     resource = ReadModel( header.Version );
                     break;
 
@@ -427,13 +427,13 @@ namespace AtlusGfdLib.IO
             }
 
             material.Field5C = ReadShort();
-            material.Field6C = ReadInt();
-            material.Field70 = ReadInt();
+            material.Field6C = ReadUInt();
+            material.Field70 = ReadUInt();
             material.Field50 = ReadShort();
 
             if ( version <= 0x1105070 )
             {
-                material.Field98 = ReadInt();
+                material.Field98 = ReadUInt();
             }
 
             if ( flags.HasFlag( MaterialFlags.HasDiffuseMap ) )
@@ -771,7 +771,7 @@ namespace AtlusGfdLib.IO
             var flags = ( SceneFlags )ReadInt();
 
             if ( flags.HasFlag( SceneFlags.HasSkinning ) ) 
-                scene.MatrixMap = ReadMatrixMap();
+                scene.MatrixPalette = ReadMatrixMap();
 
             if ( flags.HasFlag( SceneFlags.HasBoundingBox ) )
                 scene.BoundingBox = ReadBoundingBox();
@@ -785,13 +785,13 @@ namespace AtlusGfdLib.IO
             return scene;
         }
 
-        private SkinnedBoneMap ReadMatrixMap()
+        private MatrixPalette ReadMatrixMap()
         {
             int matrixCount = ReadInt();
-            var map = new SkinnedBoneMap( matrixCount );
+            var map = new MatrixPalette( matrixCount );
 
-            for ( int i = 0; i < map.BoneInverseBindMatrices.Length; i++ )
-                map.BoneInverseBindMatrices[i] = ReadMatrix4x4();
+            for ( int i = 0; i < map.InverseBindMatrices.Length; i++ )
+                map.InverseBindMatrices[i] = ReadMatrix4x4();
 
             for ( int i = 0; i < map.BoneToNodeIndices.Length; i++ )
                 map.BoneToNodeIndices[i] = ReadUShort();
@@ -806,10 +806,16 @@ namespace AtlusGfdLib.IO
             
             int childCount = ReadInt();
 
+            var childStack = new Stack<Node>();
             for ( int i = 0; i < childCount; i++ )
             {
                 var childNode = ReadNodeRecursive( version );
-                node.AddChildNode( childNode );
+                childStack.Push( childNode );
+            }
+
+            while ( childStack.Count > 0 )
+            {
+                node.AddChildNode( childStack.Pop() );
             }
 
             return node;
