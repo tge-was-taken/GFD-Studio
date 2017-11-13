@@ -6,6 +6,8 @@ namespace AtlusGfdLib
 {
     public abstract class Resource
     {
+        public const int PERSONA5_RESOURCE_VERSION = 0x01105070;
+
         public ResourceType Type { get; }
 
         public uint Version { get; set; }

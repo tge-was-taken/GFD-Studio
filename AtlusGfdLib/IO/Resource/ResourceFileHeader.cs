@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace AtlusGfdLib.IO
 {
-    internal struct FileHeader
+    internal struct ResourceFileHeader
     {
         public string Magic;
         public uint Version;
-        public FileType Type;
+        public ResourceFileType Type;
         public int Unknown;
 
         public const int    CSIZE              = 16;
@@ -18,7 +18,7 @@ namespace AtlusGfdLib.IO
         public const string CMAGIC_SHADERCACHE = "GSC0";
     }
 
-    internal enum FileType
+    internal enum ResourceFileType
     {
         ModelResourceBundle = 1,
         ShaderCachePS3 = 2,

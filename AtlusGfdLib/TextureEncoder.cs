@@ -14,7 +14,7 @@ namespace AtlusGfdLib
             return Encode( name, format, 1, 1, 0, 0, bitmap );
         }
 
-        public static Texture Encode( string name, TextureFormat format, byte field1c, byte field1d, byte field1e, byte field1f, Bitmap bitmap )
+        public static Texture Encode( string name, TextureFormat format, byte field1C, byte field1D, byte field1E, byte field1F, Bitmap bitmap )
         {
             byte[] data = null;
 
@@ -29,7 +29,7 @@ namespace AtlusGfdLib
                 throw new NotImplementedException();
             }
 
-            return new Texture( name, format, data, field1c, field1d, field1e, field1f );
+            return new Texture( name, format, data, field1C, field1D, field1E, field1F );
         }
 
         private static ImageEngineImage GetImageEngineImageFromBitmap( Bitmap bitmap )

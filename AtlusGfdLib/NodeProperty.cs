@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Numerics;
+using System.Text;
 
 namespace AtlusGfdLib
 {
@@ -18,6 +19,13 @@ namespace AtlusGfdLib
         public abstract object GetValue();
 
         public T GetValue<T>() => ( T )GetValue();
+
+        public string ToUserPropertyString()
+        {
+            return $"{Name} = {ValueToUserPropertyString()}";
+        }
+
+        protected abstract string ValueToUserPropertyString();
     }
 
     public sealed class NodeIntProperty : NodeProperty
@@ -31,6 +39,11 @@ namespace AtlusGfdLib
         public override object GetValue()
         {
             return Value;
+        }
+
+        protected override string ValueToUserPropertyString()
+        {
+            return Value.ToString();
         }
     }
 
@@ -46,6 +59,11 @@ namespace AtlusGfdLib
         {
             return Value;
         }
+
+        protected override string ValueToUserPropertyString()
+        {
+            return Value.ToString();
+        }
     }
 
     public sealed class NodeBoolProperty : NodeProperty
@@ -60,6 +78,11 @@ namespace AtlusGfdLib
         {
             return Value;
         }
+
+        protected override string ValueToUserPropertyString()
+        {
+            return Value.ToString();
+        }
     }
 
     public sealed class NodeStringProperty : NodeProperty
@@ -71,6 +94,11 @@ namespace AtlusGfdLib
         public NodeStringProperty( string name, string value ) : base( PropertyValueType.String, name ) => Value = value;
 
         public override object GetValue()
+        {
+            return Value;
+        }
+
+        protected override string ValueToUserPropertyString()
         {
             return Value;
         }
@@ -88,6 +116,11 @@ namespace AtlusGfdLib
         {
             return Value;
         }
+
+        protected override string ValueToUserPropertyString()
+        {
+            return $"[{Value.X}, {Value.Y}, {Value.Z}]";
+        }
     }
 
     public sealed class NodeByteVector4Property : NodeProperty
@@ -101,6 +134,11 @@ namespace AtlusGfdLib
         public override object GetValue()
         {
             return Value;
+        }
+
+        protected override string ValueToUserPropertyString()
+        {
+            return $"[{Value.X}, {Value.Y}, {Value.Z}, {Value.W}]";
         }
     }
 
@@ -116,6 +154,11 @@ namespace AtlusGfdLib
         {
             return Value;
         }
+
+        protected override string ValueToUserPropertyString()
+        {
+            return $"[{Value.X}, {Value.Y}, {Value.Z}]";
+        }
     }
 
     public sealed class NodeVector4Property : NodeProperty
@@ -129,6 +172,11 @@ namespace AtlusGfdLib
         public override object GetValue()
         {
             return Value;
+        }
+
+        protected override string ValueToUserPropertyString()
+        {
+            return $"[{Value.X}, {Value.Y}, {Value.Z}, {Value.W}]";
         }
     }
 
@@ -144,6 +192,26 @@ namespace AtlusGfdLib
         {
             return Value;
         }
+
+        protected override string ValueToUserPropertyString()
+        {
+            var builder = new StringBuilder();
+            builder.Append( "[" );
+
+            if ( Value.Length > 0 )
+            {
+                builder.Append( Value[0].ToString() );
+            }
+
+            for ( int i = 1; i < Value.Length; i++ )
+            {
+                builder.Append( $" {Value[i]}" );
+            }
+
+            builder.Append( "]" );
+
+            return builder.ToString();
+        }
     }
 
     public enum PropertyValueType
@@ -157,6 +225,6 @@ namespace AtlusGfdLib
         ByteVector4  = 6,
         Vector3      = 7,
         Vector4      = 8,
-        ByteArray        = 9,
+        ByteArray    = 9,
     }
 }

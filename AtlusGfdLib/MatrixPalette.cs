@@ -13,15 +13,20 @@ namespace AtlusGfdLib
 
         public ushort[] BoneToNodeIndices { get; set; }
 
+        public MatrixPalette()
+        {
+            
+        }
+
         public MatrixPalette( int matrixCount )
         {
             InverseBindMatrices = new Matrix4x4[matrixCount];
             BoneToNodeIndices = new ushort[matrixCount];
         }
 
-        public static Matrix4x4 YToZUpMatrix = new Matrix4x4( 1, 0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1 );
+        public static readonly Matrix4x4 YToZUpMatrix = new Matrix4x4( 1, 0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1 );
 
-        public static Matrix4x4 ZToYUpMatrix = new Matrix4x4( 1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1 );
+        public static readonly Matrix4x4 ZToYUpMatrix = new Matrix4x4( 1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1 );
 
         public static MatrixPalette Create( List<int> skinnedNodeIndices, List<Matrix4x4> skinnedNodeWorldTransformMatrices, out Dictionary<int, int> nodeToBoneMap )
         {

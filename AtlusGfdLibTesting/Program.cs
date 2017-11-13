@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Numerics;
 using AtlusGfdLib;
+using AtlusGfdLib.Assimp;
 using AtlusGfdLib.IO;
 using AtlusLibSharp.FileSystems.PAKToolArchive;
 using AtlusLibSharp.Graphics.RenderWare;
@@ -13,20 +15,32 @@ using AtlusLibSharp.Utilities;
 using CSharpImageLibrary;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
+using Ai = Assimp;
 
 namespace AtlusGfdLibTesting
 {
+    // Notes:
+    // Geometry complexity limit is around 3k tris/1.5k verts, if exceeded the game crashes
+
     class Program
     {
         static void Main( string[] args )
         {
-            var rmdPacFile = new PakToolArchiveFile( @"D:\Modding\Persona 3 & 4\Persona3\CVM_DATA\FIELD\PACK\F004_002.FPC" );
-            var rmdPacEntry = rmdPacFile.Entries.Single( x => x.Name.EndsWith( "rws", System.StringComparison.InvariantCultureIgnoreCase ) );
-            var rmdScene = new RmdScene( rmdPacEntry.Data );
+            /*
+            var model = Resource.Load< Model >( @"D:\Modding\Persona 5 EU\Main game\Extracted\data\model\character\0001\c0001_002_00.GMD" );
+            ReplaceModel( model, @"D:\Modding\Persona 5 EU\Game mods\TeapotKun\Demifiend.FBX" );
+            */
 
-            RMDToGMDField( rmdScene );
+            var model = ModelFactory.CreateFromAssimpScene(
+                @"D:\Modding\Persona 5 EU\Game mods\TeapotKun\Demifiend.FBX",
+                0x01105070,
+                MaterialFactory.CreatePresetMaterial( MaterialPreset.CharacterSkin ) );
 
-            //BonePaletteTests();
+            AssimpExporter.ExportFile( model, "test.dae" );
+
+            Resource.Save( model, @"D:\Modding\Persona 5 EU\Game mods\TeapotKun\mod\model\character\0001\c0001_002_00.GMD" );
+
+            Process.Start( @"D:\Modding\Persona 5 EU\Game mods\TeapotKun\make_cpk_rpcs3.bat" );
 
             /*
             var rmdPacFile = new PakToolArchiveFile( @"D:\Modding\Persona 3 & 4\Persona3\CVM_BTL\MODEL\PACK\BC001_WP0.PAC" );
@@ -34,6 +48,17 @@ namespace AtlusGfdLibTesting
             var rmdScene = new RmdScene( rmdPacEntry.Data );
 
             RMDToGMD( rmdScene );
+            Process.Start( @"D:\Modding\Persona 5 EU\Game mods\TeapotKun\make_cpk_rpcs3.bat" );
+            */
+
+            /*
+            var rmdPacFile = new PakToolArchiveFile( @"D:\Modding\Persona 3 & 4\Persona3\CVM_DATA\FIELD\PACK\F004_002.FPC" );
+            var rmdPacEntry = rmdPacFile.Entries.Single( x => x.Name.EndsWith( "rws", System.StringComparison.InvariantCultureIgnoreCase ) );
+            var rmdScene = new RmdScene( rmdPacEntry.Data );
+
+            RMDToGMDField( rmdScene );
+
+            //BonePaletteTests();
             */
 
             //ModelViewerTest( Resource.Load<Model>( @"D:\Modding\Persona 5 EU\Main game\Extracted\data\model\character\0001\c0001_051_00.GMD" ) );
@@ -221,6 +246,396 @@ namespace AtlusGfdLibTesting
             //var mapNew = MatrixMap.Create( model.Scene.Nodes );
 
             //scene.MatrixMap = map;
+        }
+
+        private static void ReplaceModel( Model referenceModel, string path )
+        {
+            // Set up Assimp context
+            var aiContext = new Ai.AssimpContext();
+            aiContext.SetConfig( new Ai.Configs.MeshVertexLimitConfig( 1500 ) ); // estimate
+            aiContext.SetConfig( new Ai.Configs.MeshTriangleLimitConfig( 3000 ) ); // estimate
+            aiContext.SetConfig( new Ai.Configs.VertexCacheSizeConfig( 63 ) ); // PS3/RSX vertex cache size
+
+            // Apply ALL the optimizations
+            var aiScene = aiContext.ImportFile( path,
+                                                Ai.PostProcessSteps.ImproveCacheLocality | Ai.PostProcessSteps.FindInvalidData | Ai.PostProcessSteps.FlipUVs | Ai.PostProcessSteps.JoinIdenticalVertices |
+                                                Ai.PostProcessSteps.LimitBoneWeights | Ai.PostProcessSteps.Triangulate | Ai.PostProcessSteps.GenerateSmoothNormals | Ai.PostProcessSteps.OptimizeMeshes );
+
+            // Build textures & Materials
+            var baseMaterial = MaterialFactory.CreateCharacterSkinMaterial( "", "", "" );
+
+            referenceModel.TextureDictionary.Clear();                  
+            referenceModel.MaterialDictionary.Clear();
+
+            foreach ( var aiSceneMaterial in aiScene.Materials )
+            {
+                var material = baseMaterial.ShallowCopy();
+                material.Name = aiSceneMaterial.Name;
+                //var material = new Material( aiSceneMaterial.Name );
+
+                if ( aiSceneMaterial.HasTextureDiffuse )
+                {
+                    var relativeFilePath = aiSceneMaterial.TextureDiffuse.FilePath;
+                    var fullFilePath = Path.GetFullPath( Path.Combine( Path.GetDirectoryName( path ), relativeFilePath ) );
+                    Texture texture;
+
+                    if ( relativeFilePath.EndsWith( ".dds" ) )
+                    {
+                        var textureName = Path.GetFileName( relativeFilePath );
+                        texture = new Texture( textureName, TextureFormat.DDS, File.ReadAllBytes( fullFilePath ) );
+                    }
+                    else
+                    {                    
+                        var bitmap = new Bitmap( fullFilePath );
+                        var textureName = Path.GetFileNameWithoutExtension( relativeFilePath ) + ".dds";
+                        texture = TextureEncoder.Encode( textureName, TextureFormat.DDS, bitmap );
+                    }
+                    
+                    referenceModel.TextureDictionary.Add( texture );
+
+                    /*
+                    material.Flags = MaterialFlags.Flag1 | MaterialFlags.Flag2 | MaterialFlags.Flag20 | MaterialFlags.Flag40 | MaterialFlags.EnableLight | MaterialFlags.EnableLight2 | MaterialFlags.CastShadow;
+                    material.Ambient = new Vector4( 1f, 1f, 1f, 1f );
+                    material.Diffuse = new Vector4( 1f, 1f, 1f, 1f );
+                    material.Field40 = 1;
+                    material.Field44 = 0.1f;
+                    material.Field48 = 0;
+                    material.Field49 = 1;
+                    material.Field4A = 0;
+                    material.Field4B = 1;
+                    material.Field4C = 0;
+                    material.Field50 = 0;
+                    material.Field5C = 0;
+                    material.Field6C = 0xfffffff8; // any changes to these 2 values will either make the texture not appear
+                    material.Field70 = 0xfffffff8; // or cause a crash
+                    material.Field90 = 0;
+                    material.Field92 = 4; // doesn't seem to change anything
+                    material.Field94 = 1;
+                    material.Field96 = 0;
+                    material.Field98 = 0xffffffff;
+                    material.GlowMap = null;
+                    material.HighlightMap = null;
+                    material.NightMap = null;
+                    material.Attributes = null;
+                    material.ReflectionMap = null;
+                    material.ShadowMap = null;
+                    material.Specular = new Vector4( 0, 0, 0, 0 );
+                    material.SpecularMap = null;
+                    */
+                    material.DiffuseMap = new TextureMap( texture.Name );
+                    material.ShadowMap = new TextureMap( texture.Name );
+                    //material.ShadowMap = new TextureMap( Path.GetFileNameWithoutExtension( texture.Name ) + "_shadow" + ".dds" );
+                }
+
+                referenceModel.MaterialDictionary.Add( material );
+            }
+
+            var nodeLookup = new Dictionary< string, (Ai.Node aiNode, Node node, int index) >();
+            int nextNodeIndex = 0;
+            referenceModel.Scene.RootNode = ProcessAssimpNodeRecursively( aiScene.RootNode, nodeLookup, ref nextNodeIndex );
+
+            var nodeToBoneIndices = new Dictionary<int, List<int>>();
+            int nextBoneIndex = 0;
+            var boneInverseBindMatrices = new List<Matrix4x4>();
+            ProcessAssimpNodeMeshesRecursively( aiScene.RootNode, aiScene, nodeLookup, ref nextBoneIndex, nodeToBoneIndices, boneInverseBindMatrices );
+
+            // Build matrix palette
+            referenceModel.Scene.MatrixPalette = new MatrixPalette( boneInverseBindMatrices.Count );
+
+            for ( int i = 0; i < referenceModel.Scene.MatrixPalette.BoneToNodeIndices.Length; i++ )
+            {
+                // Reverse dictionary search
+                referenceModel.Scene.MatrixPalette.BoneToNodeIndices[ i ] = (ushort)nodeToBoneIndices
+                    .Where( x => x.Value.Contains( i ) )
+                    .Select( x => x.Key )
+                    .Single();
+            }
+
+            // Inverse bind matrices are already ordered correctly
+            referenceModel.Scene.MatrixPalette.InverseBindMatrices = boneInverseBindMatrices.ToArray();
+        }
+
+        private static Node ProcessAssimpNodeRecursively( Ai.Node aiNode, Dictionary<string, (Ai.Node aiNode, Node node, int index)> nodeLookup, ref int nextIndex )
+        {
+            aiNode.Transform.Decompose( out var scale, out var rotation, out var translation );
+
+            // Create node
+            var node = new Node( aiNode.Name,
+                                 new Vector3( translation.X, translation.Y, translation.Z ),
+                                 new Quaternion( rotation.X, rotation.Y, rotation.Z, rotation.W ),
+                                 new Vector3( scale.X, scale.Y, scale.Z ) );
+
+            // Convert properties
+            ConvertAssimpMetadataToProperties( aiNode.Metadata, node );
+
+            // Add to lookup
+            nodeLookup.Add( node.Name, (aiNode, node, nextIndex++) );
+
+            // Process children
+            foreach ( var aiNodeChild in aiNode.Children )
+            {
+                var childNode = ProcessAssimpNodeRecursively( aiNodeChild, nodeLookup, ref nextIndex );
+                node.AddChildNode( childNode );
+            }
+
+            return node;
+        }
+
+        private static void ConvertAssimpMetadataToProperties( Ai.Metadata metadata, Node node )
+        {
+            foreach ( var metadataEntry in metadata )
+            {
+                NodeProperty property = null;
+
+                // Skip some garbage entries
+                if ( metadataEntry.Key == "IsNull" ||
+                     metadataEntry.Key == "InheritType" ||
+                     metadataEntry.Key == "DefaultAttributeIndex" ||
+                     metadataEntry.Key == "UDP3DSMAX" || // dupe of UserProperties
+                     metadataEntry.Key == "MaxHandle" )
+                {
+                    continue;
+                }
+
+                if ( metadataEntry.Key == "UserProperties" )
+                {
+                    var properties = ( ( string )metadataEntry.Value.Data )
+                        .Split( new[] { "&cr;&lf;", "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries );
+
+                    if ( properties.Length == 0 )
+                        continue;
+
+                    foreach ( var propertyString in properties )
+                    {
+                        // Parse property string
+                        KeyValuePair<string, string> kvp;
+                        if ( propertyString.Contains( '=' ) )
+                        {
+                            var split = propertyString.Split( '=' );
+                            kvp = new KeyValuePair<string, string>( split[0].TrimEnd(), split[1].TrimStart() );
+                        }
+                        else
+                        {
+                            var split = propertyString.Split( ' ' );
+                            kvp = new KeyValuePair<string, string>( split[0], split.Length > 1 ? split[1] : null );
+                        }
+
+                        // Parse value
+                        if ( kvp.Value == null )
+                        {
+                            // Assume flag bool
+                            property = new NodeBoolProperty( kvp.Key, true );
+                        }
+                        else if ( kvp.Value.StartsWith( "[" ) && kvp.Value.EndsWith( "]" ) )
+                        {
+                            // Array/Vector
+                            var arrayContents = kvp.Value.Substring( 1, kvp.Value.Length - 2 );
+                            var arrayValues = arrayContents.Split( new[] { ',' }, StringSplitOptions.RemoveEmptyEntries );
+
+                            var arrayFloatValues = new List<float>();
+                            foreach ( var arrayValue in arrayValues )
+                            {
+                                if ( !float.TryParse( arrayValue, out var arrayFloatValue ) )
+                                {
+                                    throw new Exception( $"Failed to parse array user property value as float: {arrayValue}" );
+                                }
+
+                                arrayFloatValues.Add( arrayFloatValue );
+                            }
+
+                            if ( arrayFloatValues.Count == 3 )
+                            {
+                                property = new NodeVector3Property( kvp.Key, new Vector3( arrayFloatValues[0], arrayFloatValues[1], arrayFloatValues[2] ) );
+                            }
+                            else if ( arrayFloatValues.Count == 4 )
+                            {
+                                property = new NodeVector4Property( kvp.Key, new Vector4( arrayFloatValues[0], arrayFloatValues[1], arrayFloatValues[2], arrayFloatValues[3] ) );
+                            }
+                            else
+                            {
+                                var arrayByteValues = arrayFloatValues.Cast<byte>();
+                                property = new NodeByteArrayProperty( kvp.Key, arrayByteValues.ToArray() );
+                            }
+                        }
+                        else if ( int.TryParse( kvp.Value, out int intValue ) )
+                        {
+                            property = new NodeIntProperty( kvp.Key, intValue );
+                        }
+                        else if ( float.TryParse( kvp.Value, out float floatValue ) )
+                        {
+                            property = new NodeFloatProperty( kvp.Key, floatValue );
+                        }
+                        else if ( bool.TryParse( kvp.Value, out bool boolValue ) )
+                        {
+                            property = new NodeBoolProperty( kvp.Key, boolValue );
+                        }
+                        else
+                        {
+                            property = new NodeStringProperty( kvp.Key, kvp.Value );
+                        }
+                    }
+                }
+                else
+                {
+                    switch ( metadataEntry.Value.DataType )
+                    {
+                        case Ai.MetaDataType.Bool:
+                            property = new NodeBoolProperty( metadataEntry.Key, metadataEntry.Value.DataAs<bool>().Value );
+                            break;
+                        case Ai.MetaDataType.Int:
+                            property = new NodeIntProperty( metadataEntry.Key, metadataEntry.Value.DataAs<int>().Value );
+                            break;
+                        case Ai.MetaDataType.UInt64:
+                            property = new NodeByteArrayProperty( metadataEntry.Key, BitConverter.GetBytes( metadataEntry.Value.DataAs<ulong>().Value ) );
+                            break;
+                        case Ai.MetaDataType.Float:
+                            property = new NodeFloatProperty( metadataEntry.Key, metadataEntry.Value.DataAs<float>().Value );
+                            break;
+                        case Ai.MetaDataType.String:
+                            property = new NodeStringProperty( metadataEntry.Key, ( string )metadataEntry.Value.Data );
+                            break;
+                        case Ai.MetaDataType.Vector3D:
+                            var data = metadataEntry.Value.DataAs<Ai.Vector3D>().Value;
+                            property = new NodeVector3Property( metadataEntry.Key, new Vector3( data.X, data.Y, data.Z ) );
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                }
+
+                if ( property == null )
+                {
+                    throw new Exception( "Property shouldn't be null" );
+                }
+
+                node.Properties.Add( property.Name, property );
+            }
+        }
+
+        private static void ProcessAssimpNodeMeshesRecursively( Ai.Node aiNode, Ai.Scene aiScene, Dictionary<string, (Ai.Node aiNode, Node node, int index)> nodeLookup, ref int nextBoneIndex, Dictionary<int, List<int>> nodeToBoneIndices, List<Matrix4x4> boneInverseBindMatrices )
+        {
+            if ( aiNode.HasMeshes )
+            {
+                var nodeLookupData = nodeLookup[aiNode.Name];
+                var node = nodeLookupData.node;
+
+                Matrix4x4.Invert( node.WorldTransform, out var invertedNodeWorldTransform );
+
+                foreach ( var aiMeshIndex in aiNode.MeshIndices )
+                {
+                    var aiMesh = aiScene.Meshes[aiMeshIndex];
+                    var aiMaterial = aiScene.Materials[ aiMesh.MaterialIndex ];
+                    var geometry = ConvertAssimpMeshToGeometry( aiMesh, aiMaterial, nodeLookup, ref nextBoneIndex, nodeToBoneIndices, boneInverseBindMatrices, ref invertedNodeWorldTransform );
+                    node.Attachments.Add( new NodeGeometryAttachment( geometry ) );
+                }
+            }
+
+            foreach ( var aiNodeChild in aiNode.Children )
+            {
+                ProcessAssimpNodeMeshesRecursively( aiNodeChild, aiScene, nodeLookup, ref nextBoneIndex, nodeToBoneIndices, boneInverseBindMatrices );
+            }
+        }
+
+        private static Geometry ConvertAssimpMeshToGeometry( Ai.Mesh aiMesh, Ai.Material material, Dictionary<string, (Ai.Node aiNode, Node node, int index)> nodeLookup, ref int nextBoneIndex, Dictionary<int, List<int>> nodeToBoneIndices, List<Matrix4x4> boneInverseBindMatrices, ref Matrix4x4 invertedNodeWorldTransform )
+        {
+            var geometry = new Geometry();
+
+            if ( aiMesh.HasVertices )
+            {
+                geometry.Vertices = aiMesh.Vertices
+                                          .Select( x => new Vector3( x.X, x.Y, x.Z ) )
+                                          .ToArray();
+            }
+
+            if ( aiMesh.HasNormals )
+            {
+                geometry.Normals = aiMesh.Normals
+                                         .Select( x => new Vector3( x.X, x.Y, x.Z ) )
+                                         .ToArray();
+            }
+
+            if ( aiMesh.HasTextureCoords( 0 ) )
+            {
+                geometry.TexCoordsChannel0 = aiMesh.TextureCoordinateChannels[0]
+                                                   .Select( x => new Vector2( x.X, x.Y ) )
+                                                   .ToArray();
+            }
+
+            if ( aiMesh.HasFaces )
+            {
+                geometry.TriangleIndexType = TriangleIndexType.UInt16;
+                geometry.Triangles = aiMesh.Faces
+                                           .Select( x => new Triangle( ( uint )x.Indices[0], ( uint )x.Indices[1], ( uint )x.Indices[2] ) )
+                                           .ToArray();
+            }
+
+            if ( aiMesh.HasBones )
+            {
+                geometry.VertexWeights = new VertexWeight[geometry.VertexCount];
+                for ( int i = 0; i < geometry.VertexWeights.Length; i++ )
+                {
+                    geometry.VertexWeights[i].Indices = new byte[4];
+                    geometry.VertexWeights[i].Weights = new float[4];
+                }
+
+                var vertexWeightCounts = new int[geometry.VertexCount];
+
+                for ( var i = 0; i < aiMesh.Bones.Count; i++ )
+                {
+                    var aiMeshBone = aiMesh.Bones[i];
+
+                    // Find node index for the bone
+                    var boneLookupData = nodeLookup[aiMeshBone.Name];
+                    int nodeIndex = boneLookupData.index;
+
+                    // Calculate inverse bind matrix
+                    var boneNode = boneLookupData.node;
+                    Matrix4x4.Invert( boneNode.WorldTransform * invertedNodeWorldTransform, out var inverseBindMatrix );
+
+                    // Get bone index
+                    int boneIndex;
+                    if ( !nodeToBoneIndices.TryGetValue( nodeIndex, out var boneIndices ) )
+                    {
+                        // No entry for the node was found, so we add a new one
+                        boneIndex = nextBoneIndex++;
+                        nodeToBoneIndices.Add( nodeIndex, new List<int>() { boneIndex } );
+                        boneInverseBindMatrices.Add( inverseBindMatrix );
+                    }
+                    else
+                    {
+                        // Entry for the node was found
+                        // Try to find the bone index based on whether the inverse bind matrix matches
+                        boneIndex = -1;
+                        foreach ( int index in boneIndices )
+                        {
+                            if ( boneInverseBindMatrices[index].Equals( inverseBindMatrix ) )
+                                boneIndex = index;
+                        }
+
+                        if ( boneIndex == -1 )
+                        {
+                            // None matching inverse bind matrix was found, so we add a new entry
+                            boneIndex = nextBoneIndex++;
+                            nodeToBoneIndices[nodeIndex].Add( boneIndex );
+                            boneInverseBindMatrices.Add( inverseBindMatrix );
+                        }
+                    }
+
+                    foreach ( var aiVertexWeight in aiMeshBone.VertexWeights )
+                    {
+                        int vertexWeightCount = vertexWeightCounts[aiVertexWeight.VertexID]++;
+
+                        geometry.VertexWeights[aiVertexWeight.VertexID].Indices[vertexWeightCount] = ( byte )boneIndex;
+                        geometry.VertexWeights[aiVertexWeight.VertexID].Weights[vertexWeightCount] = aiVertexWeight.Weight;
+                    }
+                }
+            }
+
+            geometry.MaterialName = material.Name;
+            geometry.BoundingBox = BoundingBox.Calculate( geometry.Vertices );
+            geometry.BoundingSphere = BoundingSphere.Calculate( geometry.BoundingBox.Value, geometry.Vertices );
+
+            return geometry;
         }
 
         static void BonePaletteTests()
@@ -436,7 +851,7 @@ namespace AtlusGfdLibTesting
         {
             var rmdClump = rmdScene.Clumps[0];
 
-            var model = Resource.Load<Model>( @"D:\Modding\Persona 5 EU\Main game\Extracted\data\model\character\0001\c0001_158_00.GMD" );
+            var model = Resource.Load<Model>( @"D:\Modding\Persona 5 EU\Main game\Extracted\data\model\character\0001\c0001_002_00.GMD" );
 
             //var model = new Model( 0x01105070 );
 
@@ -583,7 +998,7 @@ namespace AtlusGfdLibTesting
             }
 
 
-            Resource.Save( model, @"D:\Modding\Persona 5 EU\Main game\Extracted\data\model\character\0001\c0001_158_00_new.GMD" );
+            Resource.Save( model, @"D:\Modding\Persona 5 EU\Game mods\TeapotKun\mod\model\character\0001\c0001_002_00.GMD" );
 
         }
 
@@ -793,7 +1208,7 @@ namespace AtlusGfdLibTesting
 
             foreach ( var rwAtomic in rmdLevelGeometry.Atomics )
             {
-                model.Scene.RootNode.Attachments.AddRange(RwAtomicToGeometryList( rwAtomic, rmdLevelGeometry.GeometryList, rmdLevelGeometry.FrameList )
+                //model.Scene.RootNode.Attachments.AddRange( RwAtomicToGeometryList( rwAtomic, rmdLevelGeometry.GeometryList, rmdLevelGeometry.FrameList ) );
             }
 
             model.Scene.BoundingBox = BoundingBox.Calculate( allVertices );
@@ -834,7 +1249,7 @@ namespace AtlusGfdLibTesting
 
         static void ExportDAE( Model model )
         {
-            AssimpExporter.ExportToFile( model, "model.dae" );
+            AssimpExporter.ExportFile( model, "model.dae" );
         }
     }
 }

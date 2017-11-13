@@ -1,9 +1,9 @@
 ﻿namespace AtlusGfdLib.IO
 {
-    internal struct ChunkHeader
+    internal struct ResourceChunkHeader
     {
         public uint Version;
-        public ChunkType Type;
+        public ResourceChunkType Type;
         public int Size;
         public int Unknown;
 
@@ -11,7 +11,7 @@
         public const int SIZE_OFFSET = 8;
     }
 
-    internal enum ChunkType : uint
+    internal enum ResourceChunkType : uint
     {
         Invalid            = 0,
         Scene              = 0x00010003,

@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace AtlusGfdLib
 {
     public sealed class TextureDictionary : Resource, IDictionary<string, Texture>
     {
-        private Dictionary<string, Texture> mDictionary;
+        private readonly Dictionary<string, Texture> mDictionary;
 
         public TextureDictionary( uint version )
             : base( ResourceType.TextureDictionary, version )
@@ -17,14 +15,8 @@ namespace AtlusGfdLib
 
         public Texture this[string name]
         {
-            get
-            {
-                return mDictionary[name];
-            }
-            set
-            {
-                mDictionary[name] = value;
-            }
+            get => mDictionary[name];
+            set => mDictionary[name] = value;
         }
 
         public ICollection<Texture> Textures => mDictionary.Values;
@@ -56,17 +48,17 @@ namespace AtlusGfdLib
 
         public bool ContainsKey( string key )
         {
-            return ( ( IDictionary<string, Texture> )mDictionary ).ContainsKey( key );
+            return mDictionary.ContainsKey( key );
         }
 
         public void Add( string key, Texture value )
         {
-            ( ( IDictionary<string, Texture> )mDictionary ).Add( key, value );
+            mDictionary.Add( key, value );
         }
 
         public bool TryGetValue( string key, out Texture value )
         {
-            return ( ( IDictionary<string, Texture> )mDictionary ).TryGetValue( key, out value );
+            return mDictionary.TryGetValue( key, out value );
         }
 
         public void Add( KeyValuePair<string, Texture> item )

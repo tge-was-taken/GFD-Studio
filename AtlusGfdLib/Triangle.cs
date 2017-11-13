@@ -14,7 +14,9 @@ namespace AtlusGfdLib
 
         public Triangle( uint[] indices )
         {
-            CheckIndices( indices );
+            if ( indices.Length != 3 )
+                throw new ArgumentException( "Invalid number of indices for a triangle" );
+
             A = indices[0];
             B = indices[1];
             C = indices[2];
@@ -25,12 +27,6 @@ namespace AtlusGfdLib
             A = a;
             B = b;
             C = c;
-        }
-
-        private static void CheckIndices( ICollection indices )
-        {
-            if ( indices.Count != 3 )
-                throw new ArgumentException( "Invalid number of indices for a triangle" );
         }
 
         public override bool Equals( object obj )

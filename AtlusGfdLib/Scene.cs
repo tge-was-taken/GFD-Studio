@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace AtlusGfdLib
 {
@@ -61,7 +62,7 @@ namespace AtlusGfdLib
         }
 
         private List<Node> mNodeList;
-        public IReadOnlyList<Node> Nodes => mNodeList;
+        public ReadOnlyCollection<Node> Nodes => mNodeList.AsReadOnly();
 
         public Scene(uint version) : base(ResourceType.Scene, version)
         {

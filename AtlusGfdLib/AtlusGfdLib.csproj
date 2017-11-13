@@ -32,8 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AssimpNet">
-      <HintPath>..\..\..\..\..\..\..\Programming\Amicitia\Dependencies\Managed\AssimpNet.dll</HintPath>
+    <Reference Include="AssimpNet, Version=3.3.1.0, Culture=neutral, PublicKeyToken=0d51b391f59f42a6, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Downloads\assimp-net-master\AssimpNet\bin\Net47-Release\AssimpNet.dll</HintPath>
     </Reference>
     <Reference Include="CSharpImageLibrary, Version=4.2.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\CSharpImageLibrary.4.2.0\lib\net462\CSharpImageLibrary.dll</HintPath>
@@ -67,6 +68,7 @@
     <Compile Include="Animation.cs" />
     <Compile Include="AnimationList.cs" />
     <Compile Include="Archive.cs" />
+    <Compile Include="Assimp\AssimpImporter.cs" />
     <Compile Include="BoundingBox.cs" />
     <Compile Include="BoundingSphere.cs" />
     <Compile Include="ByteVector3.cs" />
@@ -81,20 +83,20 @@
     <Compile Include="Geometry.cs" />
     <Compile Include="ChunkType000100F9.cs" />
     <Compile Include="ChunkType000100F9Entry1.cs" />
-    <Compile Include="IO\AlignmentHelper.cs" />
-    <Compile Include="IO\ImageFormatHelper.cs" />
-    <Compile Include="IO\StreamExtensions.cs" />
-    <Compile Include="IO\StreamView.cs" />
+    <Compile Include="IO\Common\AlignmentHelper.cs" />
+    <Compile Include="IO\Common\ImageFormatHelper.cs" />
+    <Compile Include="IO\Common\StreamExtensions.cs" />
+    <Compile Include="IO\Common\StreamView.cs" />
+    <Compile Include="MaterialFactory.cs" />
     <Compile Include="MorphTargetList.cs" />
     <Compile Include="MorphTarget.cs" />
-    <Compile Include="IO\ResourceBuilder.cs" />
-    <Compile Include="IO\AssimpExporter.cs" />
+    <Compile Include="Assimp\AssimpExporter.cs" />
     <Compile Include="MatrixPalette.cs" />
-    <Compile Include="IO\EndianBinaryWriter.cs" />
-    <Compile Include="IO\ResourceWriter.cs" />
-    <Compile Include="IO\StringBinaryFormat.cs" />
-    <Compile Include="IO\Unsafe.cs" />
-    <Compile Include="IO\FileHeader.cs" />
+    <Compile Include="IO\Common\EndianBinaryWriter.cs" />
+    <Compile Include="IO\Resource\ResourceWriter.cs" />
+    <Compile Include="IO\Common\StringBinaryFormat.cs" />
+    <Compile Include="IO\Common\Unsafe.cs" />
+    <Compile Include="IO\Resource\ResourceFileHeader.cs" />
     <Compile Include="Light.cs" />
     <Compile Include="Material.cs" />
     <Compile Include="MaterialAttribute.cs" />
@@ -104,6 +106,8 @@
     <Compile Include="Node.cs" />
     <Compile Include="NodeAttachment.cs" />
     <Compile Include="NodeProperty.cs" />
+    <Compile Include="ModelFactory.cs" />
+    <Compile Include="SceneFactory.cs" />
     <Compile Include="TextureDecoder.cs" />
     <Compile Include="TextureEncoder.cs" />
     <Compile Include="TextureReference.cs" />
@@ -115,17 +119,17 @@
     <Compile Include="StringHasher.cs" />
     <Compile Include="Texture.cs" />
     <Compile Include="TextureDictionary.cs" />
-    <Compile Include="IO\EndianBinaryReader.cs" />
-    <Compile Include="IO\Endianness.cs" />
-    <Compile Include="IO\ChunkHeader.cs" />
-    <Compile Include="IO\ResourceReader.cs" />
+    <Compile Include="IO\Common\EndianBinaryReader.cs" />
+    <Compile Include="IO\Common\Endianness.cs" />
+    <Compile Include="IO\Resource\ResourceChunkHeader.cs" />
+    <Compile Include="IO\Resource\ResourceReader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Triangle.cs" />
-    <Compile Include="Utilities.cs" />
     <Compile Include="VertexWeight.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -5,39 +5,39 @@ namespace AtlusGfdLib
 {
     public class MorphTargetList : IList<MorphTarget>
     {
-        private List<MorphTarget> mList;
+        private readonly List<MorphTarget> mList;
 
         public MorphTargetList()
         {
             mList = new List<MorphTarget>();
         }
 
-        public MorphTarget this[int index] { get => ( ( IList<MorphTarget> )mList )[index]; set => ( ( IList<MorphTarget> )mList )[index] = value; }
+        public MorphTarget this[int index] { get => mList[index]; set => mList[index] = value; }
 
         public int Flags { get; set; }
 
-        public int Count => ( ( IList<MorphTarget> )mList ).Count;
+        public int Count => mList.Count;
 
         public bool IsReadOnly => ( ( IList<MorphTarget> )mList ).IsReadOnly;
 
         public void Add( MorphTarget item )
         {
-            ( ( IList<MorphTarget> )mList ).Add( item );
+            mList.Add( item );
         }
 
         public void Clear()
         {
-            ( ( IList<MorphTarget> )mList ).Clear();
+            mList.Clear();
         }
 
         public bool Contains( MorphTarget item )
         {
-            return ( ( IList<MorphTarget> )mList ).Contains( item );
+            return mList.Contains( item );
         }
 
         public void CopyTo( MorphTarget[] array, int arrayIndex )
         {
-            ( ( IList<MorphTarget> )mList ).CopyTo( array, arrayIndex );
+            mList.CopyTo( array, arrayIndex );
         }
 
         public IEnumerator<MorphTarget> GetEnumerator()
@@ -47,22 +47,22 @@ namespace AtlusGfdLib
 
         public int IndexOf( MorphTarget item )
         {
-            return ( ( IList<MorphTarget> )mList ).IndexOf( item );
+            return mList.IndexOf( item );
         }
 
         public void Insert( int index, MorphTarget item )
         {
-            ( ( IList<MorphTarget> )mList ).Insert( index, item );
+            mList.Insert( index, item );
         }
 
         public bool Remove( MorphTarget item )
         {
-            return ( ( IList<MorphTarget> )mList ).Remove( item );
+            return mList.Remove( item );
         }
 
         public void RemoveAt( int index )
         {
-            ( ( IList<MorphTarget> )mList ).RemoveAt( index );
+            mList.RemoveAt( index );
         }
 
         IEnumerator IEnumerable.GetEnumerator()

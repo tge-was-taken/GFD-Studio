@@ -6,12 +6,7 @@ namespace AtlusGfdLib
 {
     public sealed class Material
     {
-        private string mName;
-        public string Name
-        {
-            get => mName;
-            set => mName = value ?? throw new ArgumentNullException( nameof( value ) );
-        }
+        public string Name { get; set; }
 
         // 0x54
         private MaterialFlags mFlags;
@@ -227,18 +222,13 @@ namespace AtlusGfdLib
             return Name;
         }
 
+        public Material ShallowCopy()
+        {
+            return (Material)MemberwiseClone();
+        }
+
         private void ValidateFlags()
         {
-            // would crash the game otherwise
-
-            /*
-            if ( mFlags.HasFlag(MaterialFlags.ReceiveShadow) && mFlags.HasFlag(MaterialFlags.CastShadow) )
-            {
-                mFlags &= ~MaterialFlags.ReceiveShadow;
-                mFlags &= ~MaterialFlags.CastShadow;
-            }
-            */
-
             ValidateMapFlags( DiffuseMap,    MaterialFlags.HasDiffuseMap );
             ValidateMapFlags( NormalMap,     MaterialFlags.HasNormalMap );
             ValidateMapFlags( SpecularMap,   MaterialFlags.HasSpecularMap );
