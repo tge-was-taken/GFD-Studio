@@ -1,5 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using CSharpImageLibrary;
+using CSharpImageLibrary.Headers;
 
 namespace AtlusGfdLib
 {
@@ -13,6 +18,50 @@ namespace AtlusGfdLib
             mDictionary = new Dictionary<string, Texture>();
         }
 
+        /// <summary>
+        /// Converts the given texture dictionary to a field texture archive, and returns a new texture dictionary filled with dummy textures for each texture in the given texture dictionary.
+        /// </summary>
+        /// <param name="textureDictionary"></param>
+        /// <param name="archiveFilePath"></param>
+        /// <returns></returns>
+        public static TextureDictionary ToFieldTextureArchive( TextureDictionary textureDictionary, string archiveFilePath )
+        {
+            var archiveBuilder = new ArchiveBuilder();
+
+            // Create bgTexArcData00.txt
+            var fieldTextureArchiveDataInfoStream = new MemoryStream();
+            using ( var streamWriter = new StreamWriter( fieldTextureArchiveDataInfoStream, Encoding.Default, 4096, true ) )
+            {
+                streamWriter.WriteLine( "1," );
+                streamWriter.WriteLine( $"{textureDictionary.Count}," );
+            }
+
+            archiveBuilder.AddFile( "bgTexArcData00.txt", fieldTextureArchiveDataInfoStream );
+
+            // Convert textures
+            foreach ( var texture in textureDictionary.Textures )
+            {
+                var textureInfo = TextureUtillities.GetTextureInfo( texture );
+                var texturePixelData = TextureUtillities.GetRawPixelData( texture );
+
+                // Create field texture & save it
+                var fieldTexture = new FieldTexture( textureInfo.PixelFormat, (byte)textureInfo.MipMapCount, ( short )textureInfo.Width, ( short )textureInfo.Height, texturePixelData );
+                var textureStream = new MemoryStream();
+                fieldTexture.Save( textureStream );
+                archiveBuilder.AddFile( texture.Name, textureStream );
+            }
+
+            // Finally build archive file
+            archiveBuilder.BuildFile( archiveFilePath );
+
+            // Dummy out textures in texture dictionary
+            var newTextureDictionary = new TextureDictionary( textureDictionary.Version );
+            foreach ( var texture in textureDictionary.Textures )
+                newTextureDictionary.Add( new Texture( texture.Name, TextureFormat.DDS, Texture.DummyTextureData ) );
+
+            return newTextureDictionary;
+        }
+
         public Texture this[string name]
         {
             get => mDictionary[name];
@@ -22,6 +71,19 @@ namespace AtlusGfdLib
         public ICollection<Texture> Textures => mDictionary.Values;
 
         public void Add( Texture texture ) => mDictionary[texture.Name] = texture;
+
+        public bool ContainsTexture( string name ) => mDictionary.ContainsKey( name );
+
+        public bool ContainsTexture( Texture material ) => mDictionary.ContainsValue( material );
+
+        public bool Remove( Texture texture ) => mDictionary.Remove( texture.Name );
+
+        public bool TryGetTexture( string name, out Texture texture )
+        {
+            return mDictionary.TryGetValue( name, out texture );
+        }
+
+        #region IDictionary implementation 
 
         public int Count => mDictionary.Count;
 
@@ -33,18 +95,7 @@ namespace AtlusGfdLib
 
         public void Clear() => mDictionary.Clear();
 
-        public bool ContainsTexture( string name ) => mDictionary.ContainsKey( name );
-
-        public bool ContainsTexture( Texture material ) => mDictionary.ContainsValue( material );
-
         public bool Remove( string name ) => mDictionary.Remove( name );
-
-        public bool Remove( Texture texture ) => mDictionary.Remove( texture.Name );
-
-        public bool TryGetTexture( string name, out Texture texture )
-        {
-            return mDictionary.TryGetValue( name, out texture );
-        }
 
         public bool ContainsKey( string key )
         {
@@ -90,5 +141,7 @@ namespace AtlusGfdLib
         {
             return ( ( IDictionary<string, Texture> )mDictionary ).GetEnumerator();
         }
+
+        #endregion
     }
 }

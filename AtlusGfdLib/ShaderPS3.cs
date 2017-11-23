@@ -1,6 +1,4 @@
-﻿using System.Collections.ObjectModel;
-
-namespace AtlusGfdLib
+﻿namespace AtlusGfdLib
 {
     public abstract class ShaderBase
     {

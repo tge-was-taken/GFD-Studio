@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System;
-
-namespace AtlusGfdLib
+﻿namespace AtlusGfdLib
 {
     public sealed class Model : Resource
     {
@@ -15,8 +12,7 @@ namespace AtlusGfdLib
 
         public ChunkType000100F9 ChunkType000100F9 { get; set; }
 
-        public Model(uint version)
-            : base(ResourceType.Model, version)
+        public Model(uint version) : base( ResourceType.Model, version )
         {
         }
     }

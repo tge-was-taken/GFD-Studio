@@ -4,7 +4,7 @@ using System.Numerics;
 
 namespace AtlusGfdLib
 {
-    public sealed class Material
+    public sealed class Material : Resource
     {
         public string Name { get; set; }
 
@@ -39,7 +39,7 @@ namespace AtlusGfdLib
         public float Field44 { get; set; }
 
         // 0x48
-        public byte Field48 { get; set; }
+        public MaterialDrawOrder DrawOrder { get; set; }
 
         // 0x49
         public byte Field49 { get; set; }
@@ -199,14 +199,14 @@ namespace AtlusGfdLib
             Name = name;
         }
 
-        internal Material()
+        internal Material() : base( ResourceType.Material, PERSONA5_RESOURCE_VERSION )
         {
             Field40 = 1.0f;
             Field44 = 0;
             Field49 = 1;
             Field4B = 1;
             Field4D = 1;
-            Field48 = 0;
+            DrawOrder = 0;
             Field4A = 0;
             Field4C = 0;
             Field5C = 0;
@@ -297,5 +297,11 @@ namespace AtlusGfdLib
         Flag20000000Crash= 1 << 29,
         Flag40000000     = 1 << 30,
         Flag80000000     = 1u << 31
+    }
+
+    public enum MaterialDrawOrder
+    {
+        Normal,
+        Behind,
     }
 }

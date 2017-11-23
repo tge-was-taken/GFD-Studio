@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace AtlusGfdLib.IO
+namespace AtlusGfdLib.IO.Common
 {
     public class StreamView : Stream
     {
@@ -88,11 +88,11 @@ namespace AtlusGfdLib.IO
             if ((mPosition + count) > mLength)
                 count = (int)(mLength - mPosition);
 
-            PushPosition();
+            SavePosition();
             SetUnderlyingStreamPosition();
             int result = mStream.Read(buffer, offset, count);
             mPosition += count;
-            PopPosition();
+            RestorePosition();
 
             return result;
         }
@@ -105,11 +105,11 @@ namespace AtlusGfdLib.IO
             if ( ( mPosition + count ) > mLength )
                 throw new IOException( "Attempted to write past end of stream" );
 
-            PushPosition();
+            SavePosition();
             SetUnderlyingStreamPosition();
             mStream.Write( buffer, offset, count );
             mPosition += count;
-            PopPosition();
+            RestorePosition();
         }
 
         public override bool CanRead
@@ -145,11 +145,11 @@ namespace AtlusGfdLib.IO
             if ( EndOfStream )
                 return -1;
 
-            PushPosition();
+            SavePosition();
             SetUnderlyingStreamPosition();
             int value = mStream.ReadByte();
             mPosition++;
-            PopPosition();
+            RestorePosition();
 
             return value;
         }
@@ -159,11 +159,11 @@ namespace AtlusGfdLib.IO
             if ( EndOfStream )
                 throw new IOException( "Attempted to write past end of stream" );
 
-            PushPosition();
+            SavePosition();
             SetUnderlyingStreamPosition();
             mStream.WriteByte( value );
             mPosition++;
-            PopPosition();
+            RestorePosition();
         }
 
         /*
@@ -235,7 +235,7 @@ namespace AtlusGfdLib.IO
             return value;
         }
         */
-        protected void PushPosition()
+        protected void SavePosition()
         {
             mSourcePositionCopy = mStream.Position;
         }
@@ -245,7 +245,7 @@ namespace AtlusGfdLib.IO
             mStream.Position = (mStreamPosition + mPosition);
         }
 
-        protected void PopPosition()
+        protected void RestorePosition()
         {
             mStream.Position = mSourcePositionCopy;
         }

@@ -4,6 +4,7 @@ using AtlusGfdLib;
 using AtlusGfdEditor.Modules;
 using AtlusGfdEditor.GUI.Adapters;
 using System.IO;
+using System.Linq;
 using AtlusGfdEditor.GUI.Controls;
 
 namespace AtlusGfdEditor.GUI
@@ -63,8 +64,6 @@ namespace AtlusGfdEditor.GUI
         private void TreeViewAfterSelectEventHandler(object sender, TreeViewEventArgs e)
         {
             var adapter = ( TreeNodeAdapter )e.Node;
-            if ( adapter == mLastSelectedNode )
-                return;
 
             // Set property grid to display properties of the currently selected node
             mPropertyGrid.SelectedObject = adapter;

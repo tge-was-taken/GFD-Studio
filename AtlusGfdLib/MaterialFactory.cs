@@ -1,43 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
+using Ai = Assimp;
 
 namespace AtlusGfdLib
 {
     public static class MaterialFactory
     {
-        public static Material CreatePresetMaterial( MaterialPreset preset )
+        public static Material CreateFieldDiffuseMaterial( string name, string diffuseMapName, bool hasTransparency = false )
         {
-            switch ( preset )
+            var material =  new Material( name )
             {
-                case MaterialPreset.FieldDiffuse:
-                    return CreateFieldDiffuseMaterial( null, null );
-                case MaterialPreset.CharacterSkin:
-                    return CreateCharacterSkinMaterial( null, null, null );
-                default:
-                    throw new ArgumentOutOfRangeException( nameof( preset ), preset, null );
-            }
-        }
-
-        public static Material CreateFieldDiffuseMaterial( string name, string diffuseMapName )
-        {
-            // based off ground_dummy2
-            return new Material( name )
-            {
-                Ambient = new Vector4( 0.3921569f, 0.3921569f, 0.3921569f, 1f ),
-                Diffuse = new Vector4( 0.3921569f, 0.3921569f, 0.3921569f, 1f ),
+                Ambient = new Vector4( 0.549019635f, 0.549019635f, 0.549019635f, 1f ),
+                Diffuse = new Vector4( 0.0980392247f, 0.0980392247f, 0.0980392247f, 1f ),
                 DiffuseMap = new TextureMap( diffuseMapName ),
                 Emissive = new Vector4( 0, 0, 0, 0 ),
                 Field40 = 1,
                 Field44 = 0.1f,
-                Field48 = 0,
+                DrawOrder = MaterialDrawOrder.Normal,
                 Field49 = 1,
                 Field4A = 0,
                 Field4B = 1,
                 Field4C = 0,
+                Field4D = 2,
                 Field50 = 0,
                 Field5C = 0,
                 Field6C = 0xfffffff8,
@@ -47,7 +32,7 @@ namespace AtlusGfdLib
                 Field94 = 1,
                 Field96 = 0,
                 Field98 = 0xffffffff,
-                Flags = MaterialFlags.Flag1 | MaterialFlags.Flag2 | MaterialFlags.Flag20 | MaterialFlags.Flag40 | MaterialFlags.EnableLight | MaterialFlags.EnableLight2 | MaterialFlags.ReceiveShadow | MaterialFlags.HasDiffuseMap,
+                Flags = MaterialFlags.Flag1 | MaterialFlags.Flag2 | MaterialFlags.Flag20 | MaterialFlags.Flag40 | MaterialFlags.EnableLight2 | MaterialFlags.ReceiveShadow | MaterialFlags.HasDiffuseMap,
                 GlowMap = null,
                 HighlightMap = null,
                 NightMap = null,
@@ -57,12 +42,29 @@ namespace AtlusGfdLib
                 Specular = new Vector4( 0, 0, 0, 0 ),
                 SpecularMap = null,
             };
+
+            if ( hasTransparency )
+            {
+                material.DrawOrder = MaterialDrawOrder.Behind;
+                material.Field4D = 1;
+                material.Field90 = 0x0080;
+            }
+
+            return material;
         }
 
-        public static Material CreateCharacterSkinMaterial( string name, string diffuseMapName, string shadowMapName )
+        public static Material CreateFieldDiffuseCastShadowMaterial( string name, string diffuseMapName, bool hasTransparency = false )
+        {
+            var material = CreateFieldDiffuseMaterial( name, diffuseMapName, hasTransparency );
+            material.Flags |= MaterialFlags.CastShadow;
+
+            return material;
+        }
+
+        public static Material CreateCharacterSkinMaterial( string name, string diffuseMapName, string shadowMapName, bool hasTransparency = false )
         {
             // based off c0001_body_1_skin_kubi_low
-            return new Material( name )
+            var material =  new Material( name )
             {
                 Ambient = new Vector4( 0.7254902f, 0.6f, 0.7843138f, 1f ),
                 Diffuse = new Vector4( 0.0784313753f, 0.0784313753f, 0.0784313753f, 1 ),
@@ -70,7 +72,7 @@ namespace AtlusGfdLib
                 Emissive = new Vector4( 0, 0, 0, 0 ),
                 Field40 = 1,
                 Field44 = 0,
-                Field48 = 0,
+                DrawOrder = MaterialDrawOrder.Normal,
                 Field49 = 1,
                 Field4A = 0,
                 Field4B = 1,
@@ -108,6 +110,77 @@ namespace AtlusGfdLib
                     }
                 }
             };
+
+            if ( hasTransparency )
+            {
+                material.DrawOrder = MaterialDrawOrder.Behind;
+                material.Field4D = 1;
+                material.Field90 = 0x0080;
+            }
+
+            return material;
+        }
+
+        public static Material CreateCharacterSkinP4DMaterial( string name, string diffuseMapName, bool hasTransparency = false )
+        {
+            var material = new Material( name )
+            {
+                Flags = MaterialFlags.Flag1 | MaterialFlags.Flag2 | MaterialFlags.Flag10Crash | MaterialFlags.Flag20 | MaterialFlags.Flag100 |
+                        MaterialFlags.EnableLight2 | MaterialFlags.CastShadow,
+                Ambient = new Vector4( 0.6f, 0.6f, 0.6f, 0 ),
+                Attributes = new List< MaterialAttribute >()
+                {
+                    new MaterialAttributeType0()
+                    {
+                        Field0C = new Vector4( 0.9799954f, 0.9799954f, 0.9799954f, 0.5882353f ),
+                        Field1C = 0.8f,
+                        Field20 = 30,
+                        Field24 = 1,
+                        Field28 = 0,
+                        Field2C = 0,
+                        Flags = MaterialAttributeFlags.Flag1,
+                        Type = MaterialAttributeType.Type0,
+                        Type0Flags = 0,
+                    }
+                },
+                Diffuse = new Vector4( 0.3000076f, 0.3000076f, 0.3000076f, 1f ),
+                DiffuseMap = new TextureMap( diffuseMapName ),
+                DrawOrder = MaterialDrawOrder.Normal,
+                Emissive = new Vector4( 0f, 0f, 0f, 0f ),
+                Field40 = 1,
+                Field44 = 0,
+                Field49 = 1,
+                Field4A = 0,
+                Field4B = 1,
+                Field4C = 0,
+                Field4D = 1,
+                Field50 = 0,
+                Field5C = 2,
+                Field6C = 0xfffffff8,
+                Field70 = 0xfffffff8,
+                Field90 = 0,
+                Field92 = 4,
+                Field94 = -32768,
+                Field96 = 0,
+                Field98 = 0xFFFFFFFF,
+                GlowMap = null,
+                HighlightMap = null,
+                NightMap = null,
+                NormalMap = null,
+                ReflectionMap = null,
+                ShadowMap = null,
+                Specular = new Vector4( 0f, 0f, 0f, 1f ),
+                SpecularMap = null
+            };
+
+            if ( hasTransparency )
+            {
+                material.DrawOrder = MaterialDrawOrder.Behind;
+                material.Field4D = 1;
+                material.Field90 = 0x0080;
+            }
+
+            return material;
         }
     }
 
@@ -115,6 +188,8 @@ namespace AtlusGfdLib
     {
         None,
         FieldDiffuse,
+        FieldDiffuseCastShadow,
         CharacterSkin,
+        CharacterSkinP4D,
     }
 }

@@ -34,7 +34,7 @@
   <ItemGroup>
     <Reference Include="AssimpNet, Version=3.3.1.0, Culture=neutral, PublicKeyToken=0d51b391f59f42a6, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\Downloads\assimp-net-master\AssimpNet\bin\Net47-Release\AssimpNet.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Programming\Amicitia\Dependencies\Managed\AssimpNet.dll</HintPath>
     </Reference>
     <Reference Include="CSharpImageLibrary, Version=4.2.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\CSharpImageLibrary.4.2.0\lib\net462\CSharpImageLibrary.dll</HintPath>
@@ -69,6 +69,11 @@
     <Compile Include="AnimationList.cs" />
     <Compile Include="Archive.cs" />
     <Compile Include="Assimp\AssimpImporter.cs" />
+    <Compile Include="Common\Utillities\BitmapUtillities.cs" />
+    <Compile Include="IO\Common\EndiannessSwapUtillity.cs" />
+    <Compile Include="TextureInfo.cs" />
+    <Compile Include="TexturePixelFormat.cs" />
+    <Compile Include="TextureUtillities.cs" />
     <Compile Include="BoundingBox.cs" />
     <Compile Include="BoundingSphere.cs" />
     <Compile Include="ByteVector3.cs" />
@@ -83,8 +88,8 @@
     <Compile Include="Geometry.cs" />
     <Compile Include="ChunkType000100F9.cs" />
     <Compile Include="ChunkType000100F9Entry1.cs" />
-    <Compile Include="IO\Common\AlignmentHelper.cs" />
-    <Compile Include="IO\Common\ImageFormatHelper.cs" />
+    <Compile Include="IO\Common\AlignmentUtillities.cs" />
+    <Compile Include="Common\Utillities\ImageFormatUtillities.cs" />
     <Compile Include="IO\Common\StreamExtensions.cs" />
     <Compile Include="IO\Common\StreamView.cs" />
     <Compile Include="MaterialFactory.cs" />
@@ -95,22 +100,22 @@
     <Compile Include="IO\Common\EndianBinaryWriter.cs" />
     <Compile Include="IO\Resource\ResourceWriter.cs" />
     <Compile Include="IO\Common\StringBinaryFormat.cs" />
-    <Compile Include="IO\Common\Unsafe.cs" />
+    <Compile Include="IO\Common\UnsafeUtillities.cs" />
     <Compile Include="IO\Resource\ResourceFileHeader.cs" />
     <Compile Include="Light.cs" />
     <Compile Include="Material.cs" />
     <Compile Include="MaterialAttribute.cs" />
     <Compile Include="MaterialDictionary.cs" />
-    <Compile Include="Mesh.cs" />
     <Compile Include="Morph.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="NodeAttachment.cs" />
     <Compile Include="NodeProperty.cs" />
     <Compile Include="ModelFactory.cs" />
-    <Compile Include="SceneFactory.cs" />
+    <Compile Include="ResourceBundle.cs" />
+    <Compile Include="SceneConverter.cs" />
     <Compile Include="TextureDecoder.cs" />
     <Compile Include="TextureEncoder.cs" />
-    <Compile Include="TextureReference.cs" />
+    <Compile Include="TextureMap.cs" />
     <Compile Include="Resource.cs" />
     <Compile Include="Model.cs" />
     <Compile Include="Scene.cs" />
@@ -130,6 +135,17 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Assimp32.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assimp64.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
 </Project>

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using AtlusGfdLib.IO;
+using AtlusGfdLib.IO.Common;
 
 namespace AtlusGfdLib
 {
@@ -197,7 +198,7 @@ namespace AtlusGfdLib
 
             if ( skipData )
             {
-                mReader.Position = AlignmentHelper.Align( mReader.Position + entry.Length, 64 );
+                mReader.Position = AlignmentUtillities.Align( mReader.Position + entry.Length, 64 );
             }
 
             return true;
@@ -252,7 +253,7 @@ namespace AtlusGfdLib
 
         private void WriteEntryAlignment()
         {
-            mWriter.Position = AlignmentHelper.Align( mWriter.Position, 64 );
+            mWriter.Position = AlignmentUtillities.Align( mWriter.Position, 64 );
         }
 
         private void WriteTerminatorEntry()

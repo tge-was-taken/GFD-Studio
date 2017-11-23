@@ -1,9 +1,8 @@
-﻿using System;
-using System.Numerics;
+﻿using System.Numerics;
 
 namespace AtlusGfdLib
 {
-    public abstract class MaterialAttribute
+    public abstract class MaterialAttribute : Resource
     {
         private const uint FLAG_MASK = 0xFFFF0000;
         private const int FLAG_SHIFT = 16;
@@ -31,9 +30,10 @@ namespace AtlusGfdLib
             }
         }
 
-        protected MaterialAttribute( uint privateFlags ) => RawFlags = privateFlags;
+        protected MaterialAttribute( uint privateFlags ) : base( ResourceType.MaterialAttribute, PERSONA5_RESOURCE_VERSION )
+            => RawFlags = privateFlags;
 
-        protected MaterialAttribute( MaterialAttributeFlags flags, MaterialAttributeType type )
+        protected MaterialAttribute( MaterialAttributeFlags flags, MaterialAttributeType type ) : base( ResourceType.MaterialAttribute, PERSONA5_RESOURCE_VERSION )
         {
             Flags = flags;
             Type = type;

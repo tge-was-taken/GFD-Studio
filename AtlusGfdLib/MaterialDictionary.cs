@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,66 +6,69 @@ namespace AtlusGfdLib
 {
     public sealed class MaterialDictionary : Resource, IDictionary<string, Material>
     {
-        private Dictionary<string, Material> mDictionary;
+        private readonly Dictionary<string, Material> mDictionary;
 
-        public MaterialDictionary(uint version)
-            : base(ResourceType.MaterialDictionary, version)
+        public MaterialDictionary( uint version )
+            : base( ResourceType.MaterialDictionary, version )
         {
             mDictionary = new Dictionary<string, Material>();
         }
 
         public Material this[string name]
         {
-            get
-            {
-                return mDictionary[name];
-            }
-            set
-            {
-                mDictionary[name] = value;
-            }
+            get => mDictionary[name];
+            set => mDictionary[name] = value;
         }
 
-        public IList<Material> Materials => mDictionary.Values.ToList();
+        public IList<Material> Materials
+            => mDictionary.Values.ToList();
 
-        public void Add( Material material ) => mDictionary[material.Name] = material;
+        public void Add( Material material )
+            => mDictionary[material.Name] = material;
 
         public int Count => mDictionary.Count;
 
-        public ICollection<string> Keys => ( ( IDictionary<string, Material> )mDictionary ).Keys;
+        public ICollection<string> Keys
+            => ( ( IDictionary<string, Material> )mDictionary ).Keys;
 
-        public ICollection<Material> Values => ( ( IDictionary<string, Material> )mDictionary ).Values;
+        public ICollection<Material> Values
+            => ( ( IDictionary<string, Material> )mDictionary ).Values;
 
-        public bool IsReadOnly => ( ( IDictionary<string, Material> )mDictionary ).IsReadOnly;
+        public bool IsReadOnly
+            => ( ( IDictionary<string, Material> )mDictionary ).IsReadOnly;
 
         public void Clear() => mDictionary.Clear();
 
-        public bool ContainsMaterial( string name ) => mDictionary.ContainsKey( name );
+        public bool ContainsMaterial( string name )
+            => mDictionary.ContainsKey( name );
 
-        public bool ContainsMaterial( Material material ) => mDictionary.ContainsValue( material );
+        public bool ContainsMaterial( Material material )
+            => mDictionary.ContainsValue( material );
 
-        public bool Remove( string name ) => mDictionary.Remove( name );
+        public bool Remove( string name )
+            => mDictionary.Remove( name );
 
-        public bool Remove( Material material ) => mDictionary.Remove( material.Name );
+        public bool Remove( Material material )
+            => mDictionary.Remove( material.Name );
 
-        public bool TryGetMaterial( string name, out Material material)
+        public bool TryGetMaterial( string name, out Material material )
         {
-            return mDictionary.TryGetValue( name, out material);
+            return mDictionary.TryGetValue( name, out material );
         }
 
         public bool ContainsKey( string key )
         {
-            return ( ( IDictionary<string, Material> )mDictionary ).ContainsKey( key );
+            return mDictionary.ContainsKey( key );
         }
 
         public void Add( string key, Material value )
         {
-            ( ( IDictionary<string, Material> )mDictionary ).Add( key, value );
+            mDictionary.Add( key, value );
         }
 
         public bool TryGetValue( string key, out Material value )
         {
-            return ( ( IDictionary<string, Material> )mDictionary ).TryGetValue( key, out value );
+            return mDictionary.TryGetValue( key, out value );
         }
 
         public void Add( KeyValuePair<string, Material> item )

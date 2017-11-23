@@ -28,6 +28,11 @@ namespace AtlusGfdEditor.GUI.Adapters
             Nodes.Add( node );
         }
 
+        public void RefreshSelection()
+        {
+            OnAfterSelect( new TreeViewEventArgs( SelectedNode ) );
+        }
+
         protected override void OnAfterSelect( TreeViewEventArgs e )
         {
             // initialize view for selected node

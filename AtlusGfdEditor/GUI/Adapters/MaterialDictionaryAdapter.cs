@@ -21,15 +21,9 @@ namespace AtlusGfdEditor.GUI.Adapters
 
         protected override void InitializeCore()
         {
-            RegisterExportAction<MaterialDictionary>( path =>
-            {
-                AtlusGfdLib.Resource.Save( Resource, path );
-            });
-            RegisterReplaceAction<MaterialDictionary>( path =>
-            {
-                var res = AtlusGfdLib.Resource.Load<Model>( path );
-                return res.MaterialDictionary ?? Resource;
-            });
+            RegisterExportAction<MaterialDictionary>( path => AtlusGfdLib.Resource.Save( Resource, path ) );
+            RegisterReplaceAction<MaterialDictionary>( AtlusGfdLib.Resource.Load<MaterialDictionary> );
+
             RegisterRebuildAction( () =>
             {
                 var materialDictionary = new MaterialDictionary( Version );

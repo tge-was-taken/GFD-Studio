@@ -35,7 +35,7 @@
   <ItemGroup>
     <Reference Include="AssimpNet, Version=3.3.1.0, Culture=neutral, PublicKeyToken=0d51b391f59f42a6, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\Downloads\assimp-net-master\AssimpNet\bin\Net47-Release\AssimpNet.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\..\Programming\Amicitia\Dependencies\Managed\AssimpNet.dll</HintPath>
     </Reference>
     <Reference Include="AtlusLibSharp">
       <HintPath>..\..\..\..\..\..\..\Programming\Amicitia\Build\Release\AtlusLibSharp.dll</HintPath>

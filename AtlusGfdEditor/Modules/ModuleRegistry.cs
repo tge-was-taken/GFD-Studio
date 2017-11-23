@@ -23,7 +23,7 @@ namespace AtlusGfdEditor.Modules
         /// <summary>
         /// Gets the registered modules.
         /// </summary>
-        public static IEnumerable<IModule> Modules => sModules.Values;
+        public static IEnumerable< IModule > Modules => sModules.Values;
 
         /// <summary>
         /// Initializes the module registry.
@@ -62,12 +62,12 @@ namespace AtlusGfdEditor.Modules
         /// <param name="module">The module to register.</param>
         public static void Register( IModule module )
         {
-            if ( sModules.ContainsKey(module.ObjectType) )
-            {
-                throw new ArgumentException( $"Duplicate module with object type {module.ObjectType}" );
-            }
-
             Trace.TraceInformation( $"Registering module {module.GetType()} for object type {module.ObjectType}" );
+
+            if ( sModules.ContainsKey( module.ObjectType ) )
+            {
+                throw new Exception( $"Module registry already contains module for type: {module.ObjectType}" );
+            }
 
             sModules[module.ObjectType] = module;
         }

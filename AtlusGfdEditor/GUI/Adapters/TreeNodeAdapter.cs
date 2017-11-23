@@ -107,6 +107,15 @@ namespace AtlusGfdEditor.GUI.Adapters
         }
 
         /// <summary>
+        /// Gets the parent tree view of the tree node.
+        /// </summary>
+        [Browsable( false )]
+        public new TreeNodeAdapterView TreeView
+        {
+            get => ( TreeNodeAdapterView )base.TreeView;
+        }
+
+        /// <summary>
         /// This event is fired whenever the tree node label text is changed.
         /// </summary>
         [Browsable( false )]
@@ -168,7 +177,7 @@ namespace AtlusGfdEditor.GUI.Adapters
             {
                 dialog.AutoUpgradeEnabled = true;
                 dialog.CheckPathExists = true;
-                dialog.FileName = Path.GetFileNameWithoutExtension( Text );
+                dialog.FileName = Text;
                 dialog.Filter = ModuleFilterGenerator.GenerateFilter( FormatModuleUsageFlags.Export, mExportActions.Keys.ToArray() );
                 dialog.OverwritePrompt = true;
                 dialog.Title = "Select a file to export to.";
@@ -240,6 +249,8 @@ namespace AtlusGfdEditor.GUI.Adapters
 
             Resource = replaceAction( filepath );
             NotifyResourcePropertyChanged();
+            InitializeView( true );
+            TreeView.RefreshSelection();
         }
 
         //
@@ -517,9 +528,9 @@ namespace AtlusGfdEditor.GUI.Adapters
         /// <summary>
         /// Populates the view -- which is the current node's child nodes and/or any other properties
         /// </summary>
-        protected internal void InitializeView()
+        protected internal void InitializeView( bool force = false )
         {
-            if ( !IsDirty && IsViewInitialized )
+            if ( !force && !IsDirty && IsViewInitialized )
                 return;
 
             Trace.TraceInformation( $"{nameof( TreeNodeAdapter )} [{Text}]: {nameof( InitializeView )}" );
@@ -605,13 +616,14 @@ namespace AtlusGfdEditor.GUI.Adapters
             if ( extension.Length > 0 )
             {
                 modules = modulesWithType.Where( x =>
-                        ( x.Extensions.Any( ext => ext == "*" ) ||
-                          x.Extensions.Contains( extension, StringComparer.InvariantCultureIgnoreCase ) ) )
-                    .ToList();
+                                                     ( x.Extensions.Any( ext => ext == "*" ) ||
+                                                       x.Extensions.Contains( extension, StringComparer.InvariantCultureIgnoreCase ) ) )
+                                         .ToList();
             }
             else
             {
-                modules = modulesWithType.ToList();
+                modules = modulesWithType.Where( x => x.Extensions.Any( ext => ext == "*" ) )
+                                         .ToList();
             }
 
             // remove wild card modules if we have more than 1 module

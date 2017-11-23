@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using AtlusGfdLib;
+using AtlusGfdLib.Common.Utillities;
 using AtlusGfdLib.IO;
 
 namespace AtlusGfdEditor.GUI.Adapters
@@ -76,6 +77,9 @@ namespace AtlusGfdEditor.GUI.Adapters
 
             RegisterReplaceAction<Bitmap>( ( path ) 
                 => TextureEncoder.Encode( Name, Format, Field1C, Field1D, Field1E, Field1F, new Bitmap( path ) ) );
+
+            RegisterReplaceAction< Stream >( path
+                                                 => new Texture( Name, Format, File.ReadAllBytes( path ), Field1C, Field1D, Field1E, Field1F ) );
 
             TextChanged += ( s, o ) => Name = Text;
         }

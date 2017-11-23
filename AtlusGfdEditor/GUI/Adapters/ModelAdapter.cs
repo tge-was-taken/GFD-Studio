@@ -22,6 +22,9 @@ namespace AtlusGfdEditor.GUI.Adapters
         [Browsable( false )]
         public MaterialDictionaryAdapter MaterialDictionary { get; set; }
 
+        [Browsable( false )]
+        public SceneAdapter Scene { get; set; }
+
         protected internal ModelAdapter( string text, Model resource ) : base( text, resource )
         {
         }
@@ -34,28 +37,27 @@ namespace AtlusGfdEditor.GUI.Adapters
             {
                 var model = new Model( Version )
                 {
-                    TextureDictionary = TextureDictionary.Resource,
-                    MaterialDictionary = Resource.MaterialDictionary,
-                    Scene = Resource.Scene,
-                    AnimationPackage = Resource.AnimationPackage,
-                    ChunkType000100F9 = Resource.ChunkType000100F9
+                    TextureDictionary  = TextureDictionary.Resource,
+                    MaterialDictionary = MaterialDictionary.Resource,
+                    Scene              = Resource.Scene,
+                    AnimationPackage   = Resource.AnimationPackage,
+                    ChunkType000100F9  = Resource.ChunkType000100F9
                 };
-
 
                 return model;
             });
-
-            if ( Resource.TextureDictionary != null )
-                TextureDictionary = ( TextureDictionaryAdapter )TreeNodeAdapterFactory.Create( "Textures", Resource.TextureDictionary );
-
-            if ( Resource.MaterialDictionary != null )
-                MaterialDictionary = ( MaterialDictionaryAdapter )TreeNodeAdapterFactory.Create( "Materials", Resource.MaterialDictionary );
         }
 
         protected override void InitializeViewCore()
         {
+            if ( Resource.TextureDictionary != null )
+                TextureDictionary = ( TextureDictionaryAdapter )TreeNodeAdapterFactory.Create( "Textures", Resource.TextureDictionary );
+
             if ( TextureDictionary != null )
                 Nodes.Add( TextureDictionary );
+
+            if ( Resource.MaterialDictionary != null )
+                MaterialDictionary = ( MaterialDictionaryAdapter )TreeNodeAdapterFactory.Create( "Materials", Resource.MaterialDictionary );
 
             if ( MaterialDictionary != null )
                 Nodes.Add( MaterialDictionary );

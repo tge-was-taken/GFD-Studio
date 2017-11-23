@@ -2,6 +2,7 @@
 #version 330 core
 
 // in
+in vec3 fragVertPos;
 in vec3 fragVertNrm;
 in vec2 fragVertTex0;
 in vec4 fragVertClr0;
@@ -23,17 +24,25 @@ uniform vec4 matEmissive;
 
 void main()
 {
-	vec4 diffuseSample = vec4( 1f, 1f, 1f, 1f );
-
-	if ( hasDiffuse )
-		diffuseSample = texture2D( diffuse, fragVertTex0 );
-
-	// simple lambert diffuse lighting
 	vec3 lightDirection = vec3( 0f, 0f, -1f );
-	float lightIntensity = 1.2f;
+	vec3 eyePos = normalize( -fragVertPos );
+	vec3 reflection = normalize( -reflect( lightDirection, fragVertNrm ) );
 
-	float lambertDiffuse = max( 0.0f, dot( lightDirection, fragVertNrm ) );
-	lambertDiffuse = clamp( lambertDiffuse * lightIntensity, 0.75f, 2.0f );
+	vec4 diffuseColor = vec4( 0f, 0f, 0f, 0f );
+	if ( hasDiffuse )
+		diffuseColor = texture2D( diffuse, fragVertTex0 );
 
-	fragColor = vec4( ( diffuseSample * fragVertClr0 * lambertDiffuse ).rgb, diffuseSample.a );
-} 
+	// Calculate ambient
+	vec4 ambient = clamp( matAmbient, 0f, 0.05f );
+
+	// Calculate diffuse
+	vec4 diffuse = matDiffuse * max( dot( fragVertNrm, lightDirection), 0f );
+	diffuse = clamp( diffuse, 0f, 0.05f );
+
+	// Calculate specular
+	vec4 specular = matSpecular * pow( max( dot( reflection, eyePos ), 0f ), 0.3 * 1.0f );
+	specular = clamp( specular, 0f, 0.05f );
+
+	// Calculate final fragment color
+	fragColor = diffuseColor + ambient + diffuse + specular;
+}

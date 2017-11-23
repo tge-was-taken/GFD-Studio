@@ -171,6 +171,8 @@ namespace AtlusGfdEditor.GUI.Adapters
 
         public TextureMapAdapter( string text, TextureMap resource ) : base( text, resource )
         {
+            RegisterExportAction<TextureMap>( path => AtlusGfdLib.Resource.Save( Resource, path ) );
+            RegisterReplaceAction<TextureMap>( AtlusGfdLib.Resource.Load<TextureMap> );
         }
 
         protected override void InitializeCore()

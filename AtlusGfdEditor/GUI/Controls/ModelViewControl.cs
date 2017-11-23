@@ -568,13 +568,17 @@ namespace AtlusGfdEditor.GUI.Controls
                 if ( keyboardState.IsKeyDown( Key.AltLeft ) )
                 {
                     // Orbit around model
-                    var bSphere = mModel.Scene.BoundingSphere.Value;
-                    mCamera = new GLPerspectiveTargetCamera( mCamera.Translation, mCamera.ZNear, mCamera.ZFar, mCamera.FieldOfView, mCamera.AspectRatio, new Vector3( bSphere.Center.X, bSphere.Center.Y, bSphere.Center.Z ) );
 
-                    mCamera.Translation = new Vector3(
-                        mCamera.Translation.X - ( ( locationDelta.X / 3f ) * multiplier ),
-                        mCamera.Translation.Y + ( ( locationDelta.Y / 3f ) * multiplier ),
-                        mCamera.Translation.Z );
+                    if ( mModel.Scene.BoundingSphere.HasValue )
+                    {
+                        var bSphere = mModel.Scene.BoundingSphere.Value;
+                        mCamera = new GLPerspectiveTargetCamera( mCamera.Translation, mCamera.ZNear, mCamera.ZFar, mCamera.FieldOfView, mCamera.AspectRatio, new Vector3( bSphere.Center.X, bSphere.Center.Y, bSphere.Center.Z ) );
+
+                        mCamera.Translation = new Vector3(
+                            mCamera.Translation.X - ( ( locationDelta.X / 3f ) * multiplier ),
+                            mCamera.Translation.Y + ( ( locationDelta.Y / 3f ) * multiplier ),
+                            mCamera.Translation.Z );
+                    }
                 }
                 else
                 {

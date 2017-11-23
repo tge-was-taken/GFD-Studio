@@ -124,7 +124,7 @@ namespace AtlusGfdLibTesting
                 material.Emissive = new Vector4( 0, 0, 0, 0 );
                 material.Field40 = 1;
                 material.Field44 = 0.1f;
-                material.Field48 = 0;
+                material.DrawOrder = 0;
                 material.Field49 = 1;
                 material.Field4A = 0;
                 material.Field4B = 1;

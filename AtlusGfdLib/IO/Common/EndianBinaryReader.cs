@@ -4,9 +4,9 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace AtlusGfdLib.IO
+namespace AtlusGfdLib.IO.Common
 {
-    internal class EndianBinaryReader : BinaryReader
+    public class EndianBinaryReader : BinaryReader
     {
         private StringBuilder mStringBuilder;
         private Endianness mEndianness;
@@ -19,7 +19,7 @@ namespace AtlusGfdLib.IO
             get { return mEndianness; }
             set
             {
-                if (value != EndiannessHelper.SystemEndianness)
+                if (value != EndiannessSwapUtillity.SystemEndianness)
                     mSwap = true;
                 else
                     mSwap = false;
@@ -137,7 +137,7 @@ namespace AtlusGfdLib.IO
         public override short ReadInt16()
         {
             if (mSwap)
-                return EndiannessHelper.Swap(base.ReadInt16());
+                return EndiannessSwapUtillity.Swap(base.ReadInt16());
             else
                 return base.ReadInt16();
         }
@@ -156,7 +156,7 @@ namespace AtlusGfdLib.IO
         public override ushort ReadUInt16()
         {
             if (mSwap)
-                return EndiannessHelper.Swap(base.ReadUInt16());
+                return EndiannessSwapUtillity.Swap(base.ReadUInt16());
             else
                 return base.ReadUInt16();
         }
@@ -175,7 +175,7 @@ namespace AtlusGfdLib.IO
         public override decimal ReadDecimal()
         {
             if (mSwap)
-                return EndiannessHelper.Swap(base.ReadDecimal());
+                return EndiannessSwapUtillity.Swap(base.ReadDecimal());
             else
                 return base.ReadDecimal();
         }
@@ -194,7 +194,7 @@ namespace AtlusGfdLib.IO
         public override double ReadDouble()
         {
             if (mSwap)
-                return EndiannessHelper.Swap(base.ReadDouble());
+                return EndiannessSwapUtillity.Swap(base.ReadDouble());
             else
                 return base.ReadDouble();
         }
@@ -213,7 +213,7 @@ namespace AtlusGfdLib.IO
         public override int ReadInt32()
         {
             if (mSwap)
-                return EndiannessHelper.Swap(base.ReadInt32());
+                return EndiannessSwapUtillity.Swap(base.ReadInt32());
             else
                 return base.ReadInt32();
         }
@@ -232,7 +232,7 @@ namespace AtlusGfdLib.IO
         public override long ReadInt64()
         {
             if (mSwap)
-                return EndiannessHelper.Swap(base.ReadInt64());
+                return EndiannessSwapUtillity.Swap(base.ReadInt64());
             else
                 return base.ReadInt64();
         }
@@ -251,7 +251,7 @@ namespace AtlusGfdLib.IO
         public override float ReadSingle()
         {
             if (mSwap)
-                return EndiannessHelper.Swap(base.ReadSingle());
+                return EndiannessSwapUtillity.Swap(base.ReadSingle());
             else
                 return base.ReadSingle();
         }
@@ -270,7 +270,7 @@ namespace AtlusGfdLib.IO
         public override uint ReadUInt32()
         {
             if (mSwap)
-                return EndiannessHelper.Swap(base.ReadUInt32());
+                return EndiannessSwapUtillity.Swap(base.ReadUInt32());
             else
                 return base.ReadUInt32();
         }
@@ -289,7 +289,7 @@ namespace AtlusGfdLib.IO
         public override ulong ReadUInt64()
         {
             if (mSwap)
-                return EndiannessHelper.Swap(base.ReadUInt64());
+                return EndiannessSwapUtillity.Swap(base.ReadUInt64());
             else
                 return base.ReadUInt64();
         }
@@ -390,7 +390,7 @@ namespace AtlusGfdLib.IO
             }
 
             if (mSwap)
-                obj = EndiannessHelper.Swap(obj);
+                obj = EndiannessSwapUtillity.Swap(obj);
 
             return obj;
         }
@@ -410,7 +410,7 @@ namespace AtlusGfdLib.IO
                     for (int i = 0; i < objects.Length; i++)
                     {
                         if (mSwap)
-                            objects[i] = EndiannessHelper.Swap(Marshal.PtrToStructure<T>((IntPtr)(ptr + (i * typeSize))));
+                            objects[i] = EndiannessSwapUtillity.Swap(Marshal.PtrToStructure<T>((IntPtr)(ptr + (i * typeSize))));
                         else
                             objects[i] = Marshal.PtrToStructure<T>((IntPtr)(ptr + (i * typeSize)));
                     }

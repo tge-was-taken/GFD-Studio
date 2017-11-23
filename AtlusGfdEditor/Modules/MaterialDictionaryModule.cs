@@ -17,7 +17,7 @@ namespace AtlusGfdEditor.Modules
             => new[] { "gmtd" };
 
         public override FormatModuleUsageFlags UsageFlags
-            => 0;
+            => FormatModuleUsageFlags.Export | FormatModuleUsageFlags.Import;
 
         protected override bool CanImportCore( Stream stream, string filename = null )
         {
@@ -31,8 +31,7 @@ namespace AtlusGfdEditor.Modules
 
         protected override MaterialDictionary ImportCore( Stream stream, string filename = null )
         {
-            var resource = Resource.Load<Model>( stream );
-            return resource.MaterialDictionary;
+            return Resource.Load<MaterialDictionary>( stream );
         }
     }
 }

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace AtlusGfdLib
+﻿namespace AtlusGfdLib
 {
     public abstract class NodeAttachment
     {
@@ -29,6 +27,8 @@ namespace AtlusGfdLib
             return Scene;
         }
     }
+
+    /*
     public sealed class NodeMeshAttachment : NodeAttachment
     {
         public Mesh Mesh { get; set; }
@@ -42,6 +42,7 @@ namespace AtlusGfdLib
             return Mesh;
         }
     }
+    */
 
     public sealed class NodeNodeAttachment : NodeAttachment
     {

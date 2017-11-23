@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Numerics;
 using System.Text;
+using AtlusGfdLib.IO.Common;
 
-namespace AtlusGfdLib.IO
+namespace AtlusGfdLib.IO.Resource
 {
     internal class ResourceWriter : IDisposable
     {
@@ -19,7 +19,7 @@ namespace AtlusGfdLib.IO
             InitWriterStack( stream, endianness );
         }
 
-        public static void WriteToStream( Resource resource, Stream stream, Endianness endianness )
+        public static void WriteToStream( AtlusGfdLib.Resource resource, Stream stream, Endianness endianness )
         {
             using ( var writer = new ResourceWriter( stream, endianness ) )
                 writer.WriteResourceFile( resource );
@@ -33,7 +33,8 @@ namespace AtlusGfdLib.IO
             }
         }
 
-        // Write primitive methods
+        #region Write primitive methods
+
         private void WriteByte( byte value ) => mCurWriter.Write( value );
 
         private void WriteBool( bool value ) => mCurWriter.Write( ( byte )( value ? 1 : 0 ) );
@@ -142,8 +143,8 @@ namespace AtlusGfdLib.IO
 
         private void WriteBoundingBox( BoundingBox boundingBox )
         {
-            WriteVector3( boundingBox.Min );
             WriteVector3( boundingBox.Max );
+            WriteVector3( boundingBox.Min );           
         }
 
         private void WriteBoundingSphere( BoundingSphere boundingSphere )
@@ -151,6 +152,8 @@ namespace AtlusGfdLib.IO
             WriteVector3( boundingSphere.Center );
             WriteFloat( boundingSphere.Radius );
         }
+
+        #endregion
 
         // Writer stack methods
         private void InitWriterStack( Stream stream, Endianness endianness )
@@ -219,63 +222,149 @@ namespace AtlusGfdLib.IO
 
         private void WriteResourceFileHeader( uint version, ResourceFileType type )
         {
-            WriteFileHeader( ResourceFileHeader.CMAGIC_FS, version, type );
+            WriteFileHeader( ResourceFileHeader.MAGIC_FS, version, type );
         }
 
         // Write resource methods
-        private void WriteResourceFile( Resource resource )
+        private void WriteResourceFile( AtlusGfdLib.Resource resource )
         {
-            ResourceFileType fileType;
+            WriteResourceFileHeader( resource.Version, GetFileType( resource.Type ) );
+            WriteResource( resource );
+        }
 
-            switch ( resource.Type )
+        private ResourceFileType GetFileType( ResourceType type )
+        {
+            switch ( type )
             {
+                // Normal resource types
                 case ResourceType.Model:
                 case ResourceType.AnimationPackage:
                 case ResourceType.ChunkType000100F9:
                 case ResourceType.MaterialDictionary:
                 case ResourceType.Scene:
                 case ResourceType.TextureDictionary:
-                    fileType = ResourceFileType.ModelResourceBundle;
-                    break;
+                    return ResourceFileType.ModelResourceBundle;
+
+                // Shader caches
                 case ResourceType.ShaderCachePS3:
-                    fileType = ResourceFileType.ShaderCachePS3;
-                    break;
+                    return ResourceFileType.ShaderCachePS3;
                 case ResourceType.ShaderCachePSP2:
-                    fileType = ResourceFileType.ShaderCachePSP2;
-                    break;
+                    return ResourceFileType.ShaderCachePSP2;
+
+                // Custom resource types
+                case ResourceType.Bundle:
+                    return ResourceFileType.CustomGenericResourceBundle;
+
+                case ResourceType.Material:
+                    return ResourceFileType.CustomMaterial;
+
+                case ResourceType.TextureMap:
+                    return ResourceFileType.CustomTextureMap;
+
+                case ResourceType.MaterialAttribute:
+                    return ResourceFileType.CustomMaterialAttribute;
+
+                case ResourceType.Invalid:
                 default:
-                    throw new Exception( $"Resource type { resource.Type } can not be written to a file directly." );
+                    throw new Exception( $"Resource type { type } can not be written to a file directly." );
             }
+        }
 
-            WriteResourceFileHeader( resource.Version, fileType );
+        private ResourceChunkType GetChunkType( ResourceType type )
+        {
+            switch ( type )
+            {
+                // Normal resource types
+                case ResourceType.AnimationPackage:
+                    return ResourceChunkType.AnimationPackage;
+                case ResourceType.TextureDictionary:
+                    return ResourceChunkType.TextureDictionary;
+                case ResourceType.MaterialDictionary:
+                    return ResourceChunkType.MaterialDictionary;
+                case ResourceType.Scene:
+                    return ResourceChunkType.Scene;
+                case ResourceType.ChunkType000100F9:
+                    return ResourceChunkType.ChunkType000100F9;
 
+                // Custom resource types
+                case ResourceType.Bundle:
+                    return ResourceChunkType.CustomGenericResourceBundle;
+
+                case ResourceType.Material:
+                    return ResourceChunkType.CustomMaterial;
+
+                case ResourceType.TextureMap:
+                    return ResourceChunkType.CustomTextureMap;
+
+                case ResourceType.MaterialAttribute:
+                    return ResourceChunkType.CustomMaterialAttribute;
+                default:
+                    throw new ArgumentOutOfRangeException( nameof( type ), type, null );
+            }
+        }
+
+        private void WriteResource( AtlusGfdLib.Resource resource )
+        {
             switch ( resource.Type )
             {
+                // Normal resource types
                 case ResourceType.Model:
                     WriteModel( ( Model )resource );
                     break;
+
                 case ResourceType.AnimationPackage:
-                    WriteAnimationPackage( (AnimationPackage) resource );
+                    WriteAnimationPackage( ( AnimationPackage )resource );
                     break;
+
                 case ResourceType.TextureDictionary:
                     WriteTextureDictionary( ( TextureDictionary )resource );
                     break;
+
                 case ResourceType.MaterialDictionary:
                     WriteMaterialDictionary( ( MaterialDictionary )resource );
                     break;
+
                 case ResourceType.Scene:
                     WriteScene( ( Scene )resource );
                     break;
+
                 case ResourceType.ChunkType000100F9:
-                    throw new NotImplementedException( resource.Type.ToString() );     
+                    WriteChunkType000100F9( ( ChunkType000100F9 ) resource );
+                    break;
+
                 case ResourceType.ShaderCachePS3:
-                    WriteShaderCache( ( ShaderCachePS3 )resource, fileType );
+                    WriteShaderCache( ( ShaderCachePS3 )resource );
                     break;
+
                 case ResourceType.ShaderCachePSP2:
-                    WriteShaderCache( ( ShaderCachePSP2 )resource, fileType );
+                    WriteShaderCache( ( ShaderCachePSP2 )resource );
                     break;
+
+                // Custom resource types
+                case ResourceType.Bundle:
+                    WriteResourceBundle( ( ResourceBundle )resource );
+                    break;
+
+                case ResourceType.Material:
+                    WriteMaterial( resource.Version, ( Material )resource );
+                    break;
+
+                case ResourceType.MaterialAttribute:
+                    WriteMaterialAttribute( resource.Version, ( MaterialAttribute )resource );
+                    break;
+
                 default:
                     throw new Exception( $"Resource type { resource.Type } can not be written to a file directly." );
+            }
+        }
+
+        private void WriteResourceBundle( ResourceBundle resource )
+        {
+            foreach ( var subResource in resource.GetResources() )
+            {
+                StartWritingChunk( subResource.Version, GetChunkType( subResource.Type ) );
+                WriteResource( subResource );
+                FinishWritingChunk();
             }
         }
 
@@ -357,7 +446,7 @@ namespace AtlusGfdLib.IO
 
             if ( version <= 0x1103040 )
             {
-                WriteShort( material.Field48 );
+                WriteShort( (short)material.DrawOrder );
                 WriteShort( material.Field49 );
                 WriteShort( material.Field4A );
                 WriteShort( material.Field4B );
@@ -370,7 +459,7 @@ namespace AtlusGfdLib.IO
             }
             else
             {
-                WriteByte( material.Field48 );
+                WriteByte( (byte)material.DrawOrder );
                 WriteByte( material.Field49 );
                 WriteByte( material.Field4A );
                 WriteByte( material.Field4B );
@@ -484,37 +573,42 @@ namespace AtlusGfdLib.IO
 
             foreach ( var attribute in attributes )
             {
-                WriteUInt( attribute.RawFlags );
+                WriteMaterialAttribute( version, attribute );
+            }
+        }
 
-                switch ( attribute.Type )
-                {
-                    case MaterialAttributeType.Type0:
-                        WriteMaterialAttributeType0( version, ( MaterialAttributeType0 )attribute );
-                        break;
-                    case MaterialAttributeType.Type1:
-                        WriteMaterialAttributeType1( version, ( MaterialAttributeType1 )attribute );
-                        break;
-                    case MaterialAttributeType.Type2:
-                        WriteMaterialAttributeType2( ( MaterialAttributeType2 )attribute );
-                        break;
-                    case MaterialAttributeType.Type3:
-                        WriteMaterialAttributeType3( ( MaterialAttributeType3 )attribute );
-                        break;
-                    case MaterialAttributeType.Type4:
-                        WriteMaterialAttributeType4( ( MaterialAttributeType4 )attribute );
-                        break;
-                    case MaterialAttributeType.Type5:
-                        WriteMaterialAttributeType5( ( MaterialAttributeType5 )attribute );
-                        break;
-                    case MaterialAttributeType.Type6:
-                        WriteMaterialAttributeType6( ( MaterialAttributeType6 )attribute );
-                        break;
-                    case MaterialAttributeType.Type7:
-                        // no data
-                        break;
-                    default:
-                        throw new Exception( $"Unknown material attribute type { attribute.Type } " );
-                }
+        private void WriteMaterialAttribute( uint version, MaterialAttribute attribute )
+        {
+            WriteUInt( attribute.RawFlags );
+
+            switch ( attribute.Type )
+            {
+                case MaterialAttributeType.Type0:
+                    WriteMaterialAttributeType0( version, ( MaterialAttributeType0 )attribute );
+                    break;
+                case MaterialAttributeType.Type1:
+                    WriteMaterialAttributeType1( version, ( MaterialAttributeType1 )attribute );
+                    break;
+                case MaterialAttributeType.Type2:
+                    WriteMaterialAttributeType2( ( MaterialAttributeType2 )attribute );
+                    break;
+                case MaterialAttributeType.Type3:
+                    WriteMaterialAttributeType3( ( MaterialAttributeType3 )attribute );
+                    break;
+                case MaterialAttributeType.Type4:
+                    WriteMaterialAttributeType4( ( MaterialAttributeType4 )attribute );
+                    break;
+                case MaterialAttributeType.Type5:
+                    WriteMaterialAttributeType5( ( MaterialAttributeType5 )attribute );
+                    break;
+                case MaterialAttributeType.Type6:
+                    WriteMaterialAttributeType6( ( MaterialAttributeType6 )attribute );
+                    break;
+                case MaterialAttributeType.Type7:
+                    // no data
+                    break;
+                default:
+                    throw new Exception( $"Unknown material attribute type { attribute.Type } " );
             }
         }
 
@@ -863,7 +957,6 @@ namespace AtlusGfdLib.IO
                             var value = property.GetValue<string>();
                             WriteInt( value.Length + 1 );
                             WriteString( value, value.Length );
-                            WriteByte( 0 );
                         }
                         break;
                     case PropertyValueType.ByteVector3:
@@ -1026,6 +1119,93 @@ namespace AtlusGfdLib.IO
             }
         }
 
+        private void WriteChunkType000100F9( ChunkType000100F9 resource )
+        {
+            StartWritingChunk( resource.Version, ResourceChunkType.ChunkType000100F9 );
+
+            WriteInt( resource.Field140 );
+            WriteFloat( resource.Field13C );
+            WriteFloat( resource.Field138 );
+            WriteFloat( resource.Field134 );
+            WriteFloat( resource.Field130 );
+
+            WriteInt( resource.Entry1List.Count );
+            WriteInt( resource.Entry2List.Count );
+            WriteInt( resource.Entry3List.Count );
+
+            foreach ( var entry in resource.Entry1List )
+            {
+                WriteFloat( entry.Field34 );
+                WriteFloat( entry.Field38 );
+
+                if ( resource.Version > 0x1104120 )
+                {
+                    WriteFloat( entry.Field3C );
+                    WriteFloat( entry.Field40 );
+                }
+
+                if ( entry.NodeName != null )
+                {
+                    WriteBool( true );
+                    WriteStringWithHash( resource.Version, entry.NodeName );
+                }
+                else
+                {
+                    WriteBool( false );
+                    WriteFloat( entry.Field10 );
+                    WriteFloat( entry.Field08 );
+                    WriteFloat( entry.Field04 );
+                }
+            }
+
+            foreach ( var entry in resource.Entry2List )
+            {
+                WriteShort( entry.Field94 );
+
+                if ( entry.Field94 == 0 )
+                {
+                    WriteFloat( entry.Field84 );
+                }
+                else if ( entry.Field94 == 1 )
+                {
+                    WriteFloat( entry.Field84 );
+                    WriteFloat( entry.Field88 );
+                }
+
+                WriteMatrix4x4( entry.Field8C );
+
+                if ( entry.NodeName != null )
+                {
+                    WriteBool( true );
+                    WriteStringWithHash( resource.Version, entry.NodeName );
+                }
+                else
+                {
+                    WriteBool( false );
+                }
+            }
+
+            foreach ( var entry in resource.Entry3List )
+            {
+                WriteFloat( entry.Field00 );
+                WriteFloat( entry.Field04 );
+
+                if ( resource.Version <= 0x1104120 )
+                {
+                    WriteShort( entry.Field0C );
+                    WriteShort( entry.Field0E );
+                }
+                else
+                {
+                    WriteFloat( entry.Field08 );
+                    WriteShort( entry.Field0C );
+                    WriteShort( entry.Field0E );
+                }
+            }
+
+            FinishWritingChunk();
+        }
+
         private void WriteAnimationPackage( AnimationPackage animationPackage )
         {
             throw new NotImplementedException();
@@ -1045,20 +1225,20 @@ namespace AtlusGfdLib.IO
         // Write shader cache methods
         private void WriteShaderCacheFileHeader( uint version, ResourceFileType type )
         {
-            WriteFileHeader( ResourceFileHeader.CMAGIC_SHADERCACHE, version, type );
+            WriteFileHeader( ResourceFileHeader.MAGIC_SHADERCACHE, version, type );
         }
 
-        private void WriteShaderCache<TShader>( ShaderCacheBase<TShader> shaderCache, ResourceFileType type ) where TShader : ShaderBase
+        private void WriteShaderCache<TShader>( ShaderCacheBase<TShader> shaderCache ) where TShader : ShaderBase
         {
-            WriteShaderCacheFileHeader( shaderCache.Version, type );
+            WriteShaderCacheFileHeader( shaderCache.Version, shaderCache.GetType() is ShaderCachePS3 ? ResourceFileType.ShaderCachePS3 : ResourceFileType.ShaderCachePSP2 );
 
             foreach ( var shader in shaderCache )
             {
-                WriteShader( shaderCache.Version, type, shader );
+                WriteShader( shader );
             }
         }
 
-        private void WriteShader( uint version, ResourceFileType type, ShaderBase shader )
+        private void WriteShader( ShaderBase shader )
         {
             WriteUShort( shader.Type );
             WriteInt( shader.DataLength );

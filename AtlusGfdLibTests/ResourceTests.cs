@@ -308,7 +308,7 @@ namespace AtlusGfdLib.Tests
             Assert.AreEqual( a.Emissive, b.Emissive );
             Assert.AreEqual( a.Field40, b.Field40 );
             Assert.AreEqual( a.Field44, b.Field44 );
-            Assert.AreEqual( a.Field48, b.Field48 );
+            Assert.AreEqual( a.DrawOrder, b.DrawOrder );
             Assert.AreEqual( a.Field49, b.Field49 );
             Assert.AreEqual( a.Field4A, b.Field4A );
             Assert.AreEqual( a.Field4B, b.Field4B );

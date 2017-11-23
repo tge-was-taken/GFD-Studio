@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using AtlusGfdLib.IO;
+using AtlusGfdLib.IO.Common;
 
 namespace AtlusGfdLib
 {
@@ -41,14 +39,22 @@ namespace AtlusGfdLib
 
         public byte[] Data { get; set; }
 
-        public FieldTexture( bool dxt5, byte mipMapCount, short width, short height, byte[] data )
+        public FieldTexture( TexturePixelFormat format, byte mipMapCount, short width, short height, byte[] data )
         {
             Field00 = 0x020200FF;
             Field08 = 0x00000001;
             Field0C = 0x00000000;
             Flags = FieldTextureFlags.Flag2 | FieldTextureFlags.Flag4 | FieldTextureFlags.Flag80;
-            if ( dxt5 )
+
+            if ( format == TexturePixelFormat.DXT3 )
+            {
+                Flags |= FieldTextureFlags.DXT3;
+            }
+            else if ( format == TexturePixelFormat.DXT5 )
+            {
                 Flags |= FieldTextureFlags.DXT5;
+            }
+
             MipMapCount = mipMapCount;
             Field1A = 2;
             Field1B = 0;
@@ -144,13 +150,13 @@ namespace AtlusGfdLib
     [Flags]
     public enum FieldTextureFlags
     {
-        DXT3   = 0b0000_0001,
-        Flag2  = 0b0000_0010,
-        Flag4  = 0b0000_0100,
-        DXT5   = 0b0000_1000,
-        Flag10 = 0b0001_0000,
-        Flag20 = 0b0010_0000,
-        Flag40 = 0b0100_0000,
-        Flag80 = 0b1000_0000,
+        DXT3   = 1 << 0,
+        Flag2  = 1 << 1,
+        Flag4  = 1 << 2,
+        DXT5   = 1 << 3,
+        Flag10 = 1 << 4,
+        Flag20 = 1 << 5,
+        Flag40 = 1 << 6,
+        Flag80 = 1 << 7,
     }
 }

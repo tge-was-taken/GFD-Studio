@@ -17,21 +17,21 @@ namespace AtlusGfdEditor.Modules
             => new[] { "gmt" };
 
         public override FormatModuleUsageFlags UsageFlags
-            => 0;
+            => FormatModuleUsageFlags.Export | FormatModuleUsageFlags.Import;
 
         protected override bool CanImportCore( Stream stream, string filename = null )
         {
-            return false;
+            return Resource.IsValidResource( stream );
         }
 
         protected override void ExportCore( Material obj, Stream stream, string filename = null )
         {
-            throw new NotImplementedException();
+            Resource.Save( obj, stream );
         }
 
         protected override Material ImportCore( Stream stream, string filename = null )
         {
-            throw new NotImplementedException();
+            return Resource.Load< Material >( stream );
         }
     }
 }

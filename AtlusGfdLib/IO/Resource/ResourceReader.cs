@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Text;
+using AtlusGfdLib.IO.Common;
 
-namespace AtlusGfdLib.IO
+namespace AtlusGfdLib.IO.Resource
 {
     internal class ResourceReader : IDisposable
     {
@@ -18,14 +18,14 @@ namespace AtlusGfdLib.IO
             mReader = new EndianBinaryReader( stream, Encoding.Default, leaveOpen, endianness );
         }
 
-        public static Resource ReadFromStream( Stream stream, Endianness endianness )
+        public static AtlusGfdLib.Resource ReadFromStream( Stream stream, Endianness endianness )
         {
             using ( var reader = new ResourceReader( stream, endianness, true ) )
-                return reader.ReadResourceFile();
+                return reader.ReadResourceBundleFile();
         }
 
         public static TResource ReadFromStream<TResource>( Stream stream, Endianness endianness )
-            where TResource : Resource
+            where TResource : AtlusGfdLib.Resource
         {
             return ( TResource )ReadFromStream( stream, endianness );
         }
@@ -36,7 +36,7 @@ namespace AtlusGfdLib.IO
             {
                 using ( var reader = new ResourceReader( stream, Endianness.BigEndian, true ) )
                 {
-                    if ( !reader.ReadFileHeader( out ResourceFileHeader header ) || header.Magic != ResourceFileHeader.CMAGIC_FS )
+                    if ( !reader.ReadFileHeader( out ResourceFileHeader header ) || header.Magic != ResourceFileHeader.MAGIC_FS )
                         return false;
 
                     return true;
@@ -55,9 +55,9 @@ namespace AtlusGfdLib.IO
         }
 
         // Debug methods
-        private string GetMethodName([CallerMemberName]string name = null)
+        private string GetMethodName( [CallerMemberName]string name = null )
         {
-            return $"{nameof(ResourceReader)}.{name}";
+            return $"{nameof( ResourceReader )}.{name}";
         }
 
         private void DebugLog( string what, [CallerMemberName]string name = null )
@@ -70,7 +70,8 @@ namespace AtlusGfdLib.IO
             //Trace.TraceInformation( $"{name}: {what} @ 0x{mReader.Position:X4}" );
         }
 
-        // Primitive read methods
+        #region Primitive read methods
+
         private byte ReadByte() => mReader.ReadByte();
 
         private bool ReadBool() => ReadByte() == 1;
@@ -168,8 +169,8 @@ namespace AtlusGfdLib.IO
         private BoundingBox ReadBoundingBox()
         {
             BoundingBox value;
-            value.Min = ReadVector3();
             value.Max = ReadVector3();
+            value.Min = ReadVector3();
             return value;
         }
 
@@ -210,11 +211,13 @@ namespace AtlusGfdLib.IO
             return str;
         }
 
+        #endregion
+
         // Header reading methods
         private bool ReadFileHeader( out ResourceFileHeader header )
         {
             if ( mReader.Position >= mReader.BaseStreamLength ||
-                mReader.Position + ResourceFileHeader.CSIZE > mReader.BaseStreamLength )
+                mReader.Position + ResourceFileHeader.SIZE > mReader.BaseStreamLength )
             {
                 header = new ResourceFileHeader();
                 return false;
@@ -224,7 +227,7 @@ namespace AtlusGfdLib.IO
             {
                 Magic = mReader.ReadString( StringBinaryFormat.FixedLength, 4 ),
                 Version = mReader.ReadUInt32(),
-                Type = (ResourceFileType)mReader.ReadInt32(),
+                Type = ( ResourceFileType )mReader.ReadInt32(),
                 Unknown = mReader.ReadInt32(),
             };
 
@@ -236,7 +239,7 @@ namespace AtlusGfdLib.IO
         private bool ReadChunkHeader( out ResourceChunkHeader header )
         {
             if ( mReader.Position >= mReader.BaseStreamLength ||
-                mReader.Position + ResourceChunkHeader.CSIZE > mReader.BaseStreamLength )
+                mReader.Position + ResourceChunkHeader.SIZE > mReader.BaseStreamLength )
             {
                 header = new ResourceChunkHeader();
                 return false;
@@ -256,13 +259,13 @@ namespace AtlusGfdLib.IO
         }
 
         // Resource read methods
-        private Resource ReadResourceFile()
+        private AtlusGfdLib.Resource ReadResourceBundleFile()
         {
-            if ( !ReadFileHeader( out ResourceFileHeader header ) || header.Magic != ResourceFileHeader.CMAGIC_FS )
+            if ( !ReadFileHeader( out ResourceFileHeader header ) || header.Magic != ResourceFileHeader.MAGIC_FS )
                 return null;
 
             // Read resource depending on type
-            Resource resource;
+            AtlusGfdLib.Resource resource;
 
             switch ( header.Type )
             {
@@ -276,6 +279,30 @@ namespace AtlusGfdLib.IO
 
                 case ResourceFileType.ShaderCachePSP2:
                     resource = ReadShaderCachePSP2( header.Version );
+                    break;
+
+                case ResourceFileType.CustomGenericResourceBundle:
+                    resource = ReadResourceBundle( header.Version );
+                    break;
+
+                // Custom resource types
+                case ResourceFileType.CustomTextureDictionary:
+                    resource = ReadTextureDictionary( header.Version );
+                    break;
+                case ResourceFileType.CustomTexture:
+                    resource = ReadTexture();
+                    break;
+                case ResourceFileType.CustomMaterialDictionary:
+                    resource = ReadMaterialDictionary( header.Version );
+                    break;
+                case ResourceFileType.CustomMaterial:
+                    resource = ReadMaterial( header.Version );
+                    break;
+                case ResourceFileType.CustomTextureMap:
+                    resource = ReadTextureMap( header.Version );
+                    break;
+                case ResourceFileType.CustomMaterialAttribute:
+                    resource = ReadMaterialAttribute( header.Version );
                     break;
 
                 default:
@@ -303,13 +330,12 @@ namespace AtlusGfdLib.IO
                     case ResourceChunkType.Scene:
                         model.Scene = ReadScene( header.Version );
                         break;
-                    //case ChunkType.Type000100F9:
-                    //    model.ChunkType000100F9 = ReadChunkType000100F9( header.Version );
-                    //    break;
+                    case ResourceChunkType.ChunkType000100F9:
+                        model.ChunkType000100F9 = ReadChunkType000100F9( header.Version );
+                        break;
                     //case ChunkType.AnimationPackage:
                     //    model.AnimationPackage = ReadAnimationPackage( header.Version );
                     //    break;
-
                     default:
                         DebugLogPosition( $"Unknown chunk type '{header.Type}'" );
                         mReader.SeekCurrent( header.Size - 12 );
@@ -326,7 +352,7 @@ namespace AtlusGfdLib.IO
             var textureDictionary = new TextureDictionary( version );
 
             int textureCount = ReadInt();
-            for (int i = 0; i < textureCount; i++)
+            for ( int i = 0; i < textureCount; i++ )
             {
                 var texture = ReadTexture();
                 textureDictionary.Add( texture );
@@ -359,7 +385,7 @@ namespace AtlusGfdLib.IO
             MaterialDictionary materialDictionary = new MaterialDictionary( version );
 
             int materialCount = ReadInt();
-            for (int i = 0; i < materialCount; i++)
+            for ( int i = 0; i < materialCount; i++ )
             {
                 var material = ReadMaterial( version );
 
@@ -371,7 +397,7 @@ namespace AtlusGfdLib.IO
 
         private Material ReadMaterial( uint version )
         {
-            var material = new Material( );
+            var material = new Material();
 
             // Read material header
             material.Name = ReadStringWithHash( version );
@@ -391,20 +417,20 @@ namespace AtlusGfdLib.IO
 
             if ( version <= 0x1103040 )
             {
-                material.Field48 = ( byte )ReadShort();
+                material.DrawOrder = ( MaterialDrawOrder )ReadShort();
                 material.Field49 = ( byte )ReadShort();
                 material.Field4A = ( byte )ReadShort();
                 material.Field4B = ( byte )ReadShort();
                 material.Field4C = ( byte )ReadShort();
 
-                if (version > 0x108011b )
+                if ( version > 0x108011b )
                 {
                     material.Field4D = ( byte )ReadShort();
                 }
             }
             else
             {
-                material.Field48 = ReadByte();
+                material.DrawOrder = ( MaterialDrawOrder )ReadByte();
                 material.Field49 = ReadByte();
                 material.Field4A = ReadByte();
                 material.Field4B = ReadByte();
@@ -415,7 +441,7 @@ namespace AtlusGfdLib.IO
             material.Field90 = ReadShort();
             material.Field92 = ReadShort();
 
-            if (version <= 0x1104800 )
+            if ( version <= 0x1104800 )
             {
                 material.Field94 = 1;
                 material.Field96 = ( short )ReadInt();
@@ -476,12 +502,12 @@ namespace AtlusGfdLib.IO
                 material.DetailMap = ReadTextureMap( version );
             }
 
-            if ( flags.HasFlag( MaterialFlags.HasShadowMap ) ) 
+            if ( flags.HasFlag( MaterialFlags.HasShadowMap ) )
             {
                 material.ShadowMap = ReadTextureMap( version );
             }
 
-            if ( flags.HasFlag( MaterialFlags.HasAttributes ) ) 
+            if ( flags.HasFlag( MaterialFlags.HasAttributes ) )
             {
                 material.Attributes = ReadMaterialAttributes( version );
             }
@@ -522,6 +548,7 @@ namespace AtlusGfdLib.IO
             };
         }
 
+        #region Material attribute read methods
         private List<MaterialAttribute> ReadMaterialAttributes( uint version )
         {
             var attributes = new List<MaterialAttribute>();
@@ -529,53 +556,59 @@ namespace AtlusGfdLib.IO
 
             for ( int i = 0; i < attributeCount; i++ )
             {
-                MaterialAttribute attribute;             
-                uint flags = ReadUInt();
-
-                DebugLogPosition( $"Material attribute {( MaterialAttributeType )( flags & 0xFFFF )}" );
-
-                switch ( (MaterialAttributeType)(flags & 0xFFFF) )
-                {
-                    case MaterialAttributeType.Type0:
-                        attribute = ReadMaterialAttributeType0( flags, version );
-                        break;
-
-                    case MaterialAttributeType.Type1:
-                        attribute = ReadMaterialAttributeType1( flags, version );
-                        break;
-
-                    case MaterialAttributeType.Type2:
-                        attribute = ReadMaterialAttributeType2( flags );
-                        break;
-
-                    case MaterialAttributeType.Type3:
-                        attribute = ReadMaterialAttributeType3( flags );
-                        break;
-
-                    case MaterialAttributeType.Type4:
-                        attribute = ReadMaterialAttributeType4( flags );
-                        break;
-
-                    case MaterialAttributeType.Type5:
-                        attribute = ReadMaterialAttributeType5( flags );
-                        break;
-
-                    case MaterialAttributeType.Type6:
-                        attribute = ReadMaterialAttributeType6( flags );
-                        break;
-
-                    case MaterialAttributeType.Type7:
-                        attribute = ReadMaterialAttributeType7( flags );
-                        break;
-
-                    default:
-                        throw new Exception();
-                }
-
+                var attribute = ReadMaterialAttribute( version );
                 attributes.Add( attribute );
             }
 
             return attributes;
+        }
+
+        private MaterialAttribute ReadMaterialAttribute( uint version )
+        {
+            MaterialAttribute attribute;
+            uint flags = ReadUInt();
+
+            DebugLogPosition( $"Material attribute {( MaterialAttributeType )( flags & 0xFFFF )}" );
+
+            switch ( ( MaterialAttributeType )( flags & 0xFFFF ) )
+            {
+                case MaterialAttributeType.Type0:
+                    attribute = ReadMaterialAttributeType0( flags, version );
+                    break;
+
+                case MaterialAttributeType.Type1:
+                    attribute = ReadMaterialAttributeType1( flags, version );
+                    break;
+
+                case MaterialAttributeType.Type2:
+                    attribute = ReadMaterialAttributeType2( flags );
+                    break;
+
+                case MaterialAttributeType.Type3:
+                    attribute = ReadMaterialAttributeType3( flags );
+                    break;
+
+                case MaterialAttributeType.Type4:
+                    attribute = ReadMaterialAttributeType4( flags );
+                    break;
+
+                case MaterialAttributeType.Type5:
+                    attribute = ReadMaterialAttributeType5( flags );
+                    break;
+
+                case MaterialAttributeType.Type6:
+                    attribute = ReadMaterialAttributeType6( flags );
+                    break;
+
+                case MaterialAttributeType.Type7:
+                    attribute = ReadMaterialAttributeType7( flags );
+                    break;
+
+                default:
+                    throw new Exception();
+            }
+
+            return attribute;
         }
 
         private MaterialAttributeType0 ReadMaterialAttributeType0( uint flags, uint version )
@@ -762,7 +795,9 @@ namespace AtlusGfdLib.IO
             return attribute;
         }
 
-        // Scene read methods
+        #endregion
+
+        #region Scene read methods
         private Scene ReadScene( uint version )
         {
             DebugLogPosition( $"Scene" );
@@ -770,7 +805,7 @@ namespace AtlusGfdLib.IO
             Scene scene = new Scene( version );
             var flags = ( SceneFlags )ReadInt();
 
-            if ( flags.HasFlag( SceneFlags.HasSkinning ) ) 
+            if ( flags.HasFlag( SceneFlags.HasSkinning ) )
                 scene.MatrixPalette = ReadMatrixPalette();
 
             if ( flags.HasFlag( SceneFlags.HasBoundingBox ) )
@@ -803,7 +838,7 @@ namespace AtlusGfdLib.IO
         {
             DebugLogPosition( "Node" );
             var node = ReadNode( version );
-            
+
             int childCount = ReadInt();
 
             var childStack = new Stack<Node>();
@@ -962,8 +997,10 @@ namespace AtlusGfdLib.IO
 
             return properties;
         }
+        #endregion
 
-        // Geometry read methods
+        #region Geometry read methods
+
         private Geometry ReadGeometry( uint version )
         {
             var geometry = new Geometry();
@@ -977,14 +1014,14 @@ namespace AtlusGfdLib.IO
 
             int triangleCount = 0;
 
-            if ( geometry.Flags.HasFlag( GeometryFlags.HasTriangles ) ) 
+            if ( geometry.Flags.HasFlag( GeometryFlags.HasTriangles ) )
             {
                 triangleCount = ReadInt();
                 geometry.TriangleIndexType = ( TriangleIndexType )ReadShort();
                 geometry.Triangles = new Triangle[triangleCount];
 
                 DebugLog( $"{nameof( triangleCount )}: {triangleCount.ToString()}" );
-                DebugLog( $"{nameof( geometry.TriangleIndexType )}: {geometry.TriangleIndexType}");              
+                DebugLog( $"{nameof( geometry.TriangleIndexType )}: {geometry.TriangleIndexType}" );
             }
 
             int vertexCount = ReadInt();
@@ -993,7 +1030,7 @@ namespace AtlusGfdLib.IO
             if ( version > 0x1103020 )
             {
                 geometry.Field14 = ReadInt();
-                DebugLog( $"{nameof(geometry.Field14)}: {geometry.Field14.ToString()}" );
+                DebugLog( $"{nameof( geometry.Field14 )}: {geometry.Field14.ToString()}" );
             }
 
             AllocateVertexBuffers( geometry, vertexCount );
@@ -1013,10 +1050,10 @@ namespace AtlusGfdLib.IO
                 if ( geometry.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Binormal ) )
                     geometry.Binormals[i] = ReadVector3();
 
-                if ( geometry.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color0 ))
+                if ( geometry.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color0 ) )
                     geometry.ColorChannel0[i] = ReadUInt();
 
-                if ( geometry.VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord0 ))
+                if ( geometry.VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord0 ) )
                     geometry.TexCoordsChannel0[i] = ReadVector2();
 
                 if ( geometry.VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord1 ) )
@@ -1049,7 +1086,7 @@ namespace AtlusGfdLib.IO
                 }
             }
 
-            if ( geometry.Flags.HasFlag( GeometryFlags.HasMorphTargets ) ) 
+            if ( geometry.Flags.HasFlag( GeometryFlags.HasMorphTargets ) )
             {
                 geometry.MorphTargets = ReadMorphTargetList();
             }
@@ -1077,14 +1114,14 @@ namespace AtlusGfdLib.IO
                 }
             }
 
-            if ( geometry.Flags.HasFlag( GeometryFlags.HasMaterial ) ) 
+            if ( geometry.Flags.HasFlag( GeometryFlags.HasMaterial ) )
             {
                 DebugLogPosition( "material name" );
                 geometry.MaterialName = ReadStringWithHash( version );
                 DebugLog( geometry.MaterialName );
             }
 
-            if ( geometry.Flags.HasFlag( GeometryFlags.HasBoundingBox ) ) 
+            if ( geometry.Flags.HasFlag( GeometryFlags.HasBoundingBox ) )
             {
                 DebugLogPosition( "bbox" );
                 geometry.BoundingBox = ReadBoundingBox();
@@ -1096,7 +1133,7 @@ namespace AtlusGfdLib.IO
                 geometry.BoundingSphere = ReadBoundingSphere();
             }
 
-            if ( geometry.Flags.HasFlag( GeometryFlags.Flag1000 ))
+            if ( geometry.Flags.HasFlag( GeometryFlags.Flag1000 ) )
             {
                 DebugLogPosition( "flag1000 data" );
                 geometry.FieldD4 = ReadFloat();
@@ -1174,7 +1211,7 @@ namespace AtlusGfdLib.IO
             for ( int i = 0; i < morphCount; i++ )
             {
                 var morphTarget = ReadMorphTarget();
-                morphTargetList.Add( morphTarget );   
+                morphTargetList.Add( morphTarget );
             }
 
             return morphTargetList;
@@ -1198,6 +1235,8 @@ namespace AtlusGfdLib.IO
             return morphTarget;
         }
 
+        #endregion
+
         // Camera
         private Camera ReadCamera( uint version )
         {
@@ -1220,7 +1259,7 @@ namespace AtlusGfdLib.IO
         private Light ReadLight( uint version )
         {
             var light = new Light();
-            
+
             if ( version > 0x1104190 )
             {
                 light.Flags = ( LightFlags )ReadInt();
@@ -1244,7 +1283,7 @@ namespace AtlusGfdLib.IO
                     light.Field04 = ReadFloat();
                     light.Field08 = ReadFloat();
 
-                    if ( light.Flags.HasFlag( LightFlags.Flag2 ) ) 
+                    if ( light.Flags.HasFlag( LightFlags.Flag2 ) )
                     {
                         light.Field6C = ReadFloat();
                         light.Field70 = ReadFloat();
@@ -1278,64 +1317,88 @@ namespace AtlusGfdLib.IO
             chunk.Field134 = ReadFloat();
             chunk.Field130 = ReadFloat();
 
-            int r28 = ReadInt();
-            int r21 = ReadInt();
-            int r20 = ReadInt();
+            int entry1Count = ReadInt(); // r28
+            int entry2Count = ReadInt(); // r21
+            int entry3Count = ReadInt(); // r20
 
-            for ( int i = 0; i < r28; i++ )
+            for ( int i = 0; i < entry1Count; i++ )
             {
-                var entry1 = new ChunkType000100F9Entry1();
-                entry1.Field34 = ReadFloat();
-                entry1.Field38 = ReadFloat();
+                var entry = new ChunkType000100F9Entry1();
+                entry.Field34 = ReadFloat();
+                entry.Field38 = ReadFloat();
 
                 if ( version > 0x1104120 )
                 {
-                    entry1.Field3C = ReadFloat();
-                    entry1.Field40 = ReadFloat();
+                    entry.Field3C = ReadFloat();
+                    entry.Field40 = ReadFloat();
                 }
                 else
                 {
-                    entry1.Field38 += 2.0f;
-                    entry1.Field3C = 0;
-                    entry1.Field40 = 1.0f;                  
+                    entry.Field38 += 20.0f;
+                    entry.Field3C = 0;
+                    entry.Field40 = 1.0f;
                 }
 
                 if ( ReadBool() )
                 {
-                    entry1.NodeName = ReadStringWithHash( version );
-                }
-
-                entry1.Field10 = ReadFloat();
-                entry1.Field08 = ReadFloat();
-                entry1.Field04 = ReadFloat();
-
-                chunk.Entry1List.Add( entry1 );
-            }
-
-            for ( int i = 0; i < r21; i++ )
-            {
-                var r3 = ReadShort();
-                if ( r3 != 0 )
-                {
-                    if ( r3 == 1 )
-                    {
-                        ReadFloat();
-                        ReadFloat();
-                    }
-                    else
-                    {
-                        ReadMatrix4x4();
-                        if ( ReadBool() )
-                        {
-                            ReadStringWithHash( version );
-                        }
-                    }
+                    entry.NodeName = ReadStringWithHash( version );
                 }
                 else
                 {
-                    ReadFloat();
-
+                    entry.Field10 = ReadFloat();
+                    entry.Field08 = ReadFloat();
+                    entry.Field04 = ReadFloat();
                 }
+
+                chunk.Entry1List.Add( entry );
+            }
+
+            for ( int i = 0; i < entry2Count; i++ )
+            {
+                var entry = new ChunkType000100F9Entry2();
+
+                entry.Field94 = ReadShort();
+
+                if ( entry.Field94 == 0 )
+                {
+                    entry.Field84 = ReadFloat();
+                }
+                else if ( entry.Field94 == 1 )
+                {
+                    entry.Field84 = ReadFloat();
+                    entry.Field88 = ReadFloat();
+                }
+
+                entry.Field8C = ReadMatrix4x4();
+                if ( ReadBool() )
+                {
+                    entry.NodeName = ReadStringWithHash( version );
+                }
+
+                chunk.Entry2List.Add( entry );
+            }
+
+            // r24 = 0x1104120
+
+            for ( int i = 0; i < entry3Count; i++ )
+            {
+                var entry = new ChunkType000100F9Entry3();
+                entry.Field00 = ReadFloat();
+                entry.Field04 = ReadFloat();
+
+                if ( version <= 0x1104120 )
+                {
+                    entry.Field0C = ReadShort();
+                    entry.Field0E = ReadShort();
+                }
+                else
+                {
+                    entry.Field08 = ReadFloat();
+                    entry.Field0C = ReadShort();
+                    entry.Field0E = ReadShort();
+                }
+
+                chunk.Entry3List.Add( entry );
             }
 
             return chunk;
@@ -1350,7 +1413,7 @@ namespace AtlusGfdLib.IO
         // Shader read methods
         private ShaderCachePS3 ReadShaderCachePS3( uint version )
         {
-            if ( !ReadFileHeader( out ResourceFileHeader header ) || header.Magic != ResourceFileHeader.CMAGIC_SHADERCACHE )
+            if ( !ReadFileHeader( out ResourceFileHeader header ) || header.Magic != ResourceFileHeader.MAGIC_SHADERCACHE )
                 return null;
 
             // Read shaders into the shader cache
@@ -1382,7 +1445,7 @@ namespace AtlusGfdLib.IO
 
         private ShaderCachePSP2 ReadShaderCachePSP2( uint version )
         {
-            if ( !ReadFileHeader( out ResourceFileHeader header ) || header.Magic != ResourceFileHeader.CMAGIC_SHADERCACHE )
+            if ( !ReadFileHeader( out ResourceFileHeader header ) || header.Magic != ResourceFileHeader.MAGIC_SHADERCACHE )
                 return null;
 
             // Read shaders into the shader cache
@@ -1410,6 +1473,58 @@ namespace AtlusGfdLib.IO
             shader.Data = ReadBytes( size );
 
             return shader;
+        }
+
+        private ResourceBundle ReadResourceBundle( uint version )
+        {
+            var bundle = new ResourceBundle( version );
+
+            while ( ReadChunkHeader( out ResourceChunkHeader header ) && header.Type != 0 )
+            {
+                switch ( header.Type )
+                {
+                    case ResourceChunkType.TextureDictionary:
+                        bundle.AddResource( ReadTextureDictionary( version ) );
+                        break;
+                    case ResourceChunkType.MaterialDictionary:
+                        bundle.AddResource( ReadMaterialDictionary( version ) );
+                        break;
+                    case ResourceChunkType.Scene:
+                        bundle.AddResource( ReadScene( version ) );
+                        break;
+
+                    case ResourceChunkType.AnimationPackage:
+                    case ResourceChunkType.ChunkType000100F9:
+                        goto default;
+
+                    case ResourceChunkType.CustomGenericResourceBundle:
+                        bundle.AddResource( ReadResourceBundle( version ) );
+                        break;
+
+                    case ResourceChunkType.CustomTexture:
+                        bundle.AddResource( ReadTexture() );
+                        break;
+
+                    case ResourceChunkType.CustomMaterial:
+                        bundle.AddResource( ReadMaterial( version ) );
+                        break;
+
+                    case ResourceChunkType.CustomTextureMap:
+                        bundle.AddResource( ReadTextureMap( version ) );
+                        break;
+
+                    case ResourceChunkType.CustomMaterialAttribute:
+                        bundle.AddResource( ReadMaterialAttribute( version ) );
+                        break;
+
+                    default:
+                        DebugLogPosition( $"Unknown chunk type '{header.Type}'" );
+                        mReader.SeekCurrent( header.Size - 12 );
+                        continue;
+                }
+            }
+
+            return bundle;
         }
     }
 }

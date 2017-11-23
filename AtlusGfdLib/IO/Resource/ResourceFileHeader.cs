@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace AtlusGfdLib.IO
+﻿namespace AtlusGfdLib.IO
 {
     internal struct ResourceFileHeader
     {
@@ -13,9 +7,9 @@ namespace AtlusGfdLib.IO
         public ResourceFileType Type;
         public int Unknown;
 
-        public const int    CSIZE              = 16;
-        public const string CMAGIC_FS          = "GFS0";
-        public const string CMAGIC_SHADERCACHE = "GSC0";
+        public const int    SIZE              = 16;
+        public const string MAGIC_FS          = "GFS0";
+        public const string MAGIC_SHADERCACHE = "GSC0";
     }
 
     internal enum ResourceFileType
@@ -23,5 +17,14 @@ namespace AtlusGfdLib.IO
         ModelResourceBundle = 1,
         ShaderCachePS3 = 2,
         ShaderCachePSP2 = 4,
+
+        // Custom ones
+        CustomGenericResourceBundle = 'R' << 24 | 'I' << 16 | 'G' << 8 | 0,
+        CustomTextureDictionary,
+        CustomTexture,
+        CustomMaterialDictionary,
+        CustomMaterial,
+        CustomTextureMap,
+        CustomMaterialAttribute,    
     }
 }

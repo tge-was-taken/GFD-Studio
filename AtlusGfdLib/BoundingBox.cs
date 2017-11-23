@@ -10,14 +10,14 @@ namespace AtlusGfdLib
     public struct BoundingBox : IEquatable<BoundingBox>
     {
         /// <summary>
-        /// The smallest vector in the bounding box.
-        /// </summary>
-        public Vector3 Min;
-
-        /// <summary>
         /// The largest vector in the bounding box.
         /// </summary>
         public Vector3 Max;
+
+        /// <summary>
+        /// The smallest vector in the bounding box.
+        /// </summary>
+        public Vector3 Min;
 
         /// <summary>
         /// Creates a new <see cref="BoundingBox"/> whose values are set to the specified values.

@@ -1,7 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Numerics;
 using AtlusGfdLib;
+using AtlusGfdLib.IO;
+using AtlusGfdLib.IO.Resource;
 
 namespace AtlusGfdEditor.GUI.Adapters
 {
@@ -70,9 +73,9 @@ namespace AtlusGfdEditor.GUI.Adapters
         }
 
         [Browsable( true )]
-        public byte Field48
+        public MaterialDrawOrder DrawOrder
         {
-            get => Resource.Field48;
+            get => Resource.DrawOrder;
             set => SetResourceProperty( value );
         }
 
@@ -195,55 +198,55 @@ namespace AtlusGfdEditor.GUI.Adapters
             if ( Resource.DiffuseMap != null )
             {
                 textureMapList.Add( Resource.DiffuseMap );
-                textureMapItemNames.Add( "DiffuseMap" );
+                textureMapItemNames.Add( nameof(Resource.DiffuseMap) );
             }
 
             if ( Resource.NormalMap != null )
             {
                 textureMapList.Add( Resource.NormalMap );
-                textureMapItemNames.Add( "NormalMap" );
+                textureMapItemNames.Add( nameof( Resource.NormalMap ) );
             }
 
             if ( Resource.SpecularMap != null )
             {
                 textureMapList.Add( Resource.SpecularMap );
-                textureMapItemNames.Add( "SpecularMap" );
+                textureMapItemNames.Add( nameof( Resource.SpecularMap ) );
             }
 
             if ( Resource.ReflectionMap != null )
             {
                 textureMapList.Add( Resource.ReflectionMap );
-                textureMapItemNames.Add( "ReflectionMap" );
+                textureMapItemNames.Add( nameof( Resource.ReflectionMap ) );
             }
 
             if ( Resource.HighlightMap != null )
             {
                 textureMapList.Add( Resource.HighlightMap );
-                textureMapItemNames.Add( "HighlightMap" );
+                textureMapItemNames.Add( nameof( Resource.HighlightMap ) );
             }
 
             if ( Resource.GlowMap != null )
             {
                 textureMapList.Add( Resource.GlowMap );
-                textureMapItemNames.Add( "GlowMap" );
+                textureMapItemNames.Add( nameof( Resource.GlowMap ) );
             }
 
             if ( Resource.NightMap != null )
             {
                 textureMapList.Add( Resource.NightMap );
-                textureMapItemNames.Add( "NightMap" );
+                textureMapItemNames.Add( nameof( Resource.NightMap ) );
             }
 
             if ( Resource.DetailMap != null )
             {
                 textureMapList.Add( Resource.DetailMap );
-                textureMapItemNames.Add( "DetailMap" );
+                textureMapItemNames.Add( nameof( Resource.DetailMap ) );
             }
 
             if ( Resource.ShadowMap != null )
             {
                 textureMapList.Add( Resource.ShadowMap );
-                textureMapItemNames.Add( "ShadowMap" );
+                textureMapItemNames.Add( nameof( Resource.ShadowMap ) );
             }
 
             return (textureMapList, textureMapItemNames);
@@ -251,14 +254,74 @@ namespace AtlusGfdEditor.GUI.Adapters
 
         protected override void InitializeCore()
         {
-            var textureMapInfo = CreateTextureMapInfo();
-            TextureMaps = ( ListAdapter<TextureMap> )TreeNodeAdapterFactory.Create( "TextureMaps", textureMapInfo.TextureMapList, new object[] { textureMapInfo.TextureMapItemNames } );
+            RegisterExportAction< Material >( path => AtlusGfdLib.Resource.Save( Resource, path ) );
+            RegisterReplaceAction< Material >( AtlusGfdLib.Resource.Load< Material >);
+            RegisterRebuildAction( () =>
+            {
+                var material = Resource;
+
+                material.DetailMap = null;
+                material.DiffuseMap = null;
+                material.GlowMap = null;
+                material.HighlightMap = null;
+                material.NightMap = null;
+                material.NormalMap = null;
+                material.ReflectionMap = null;
+                material.ShadowMap = null;
+                material.SpecularMap = null;
+
+                foreach ( TextureMapAdapter adapter in TextureMaps.Nodes )
+                {
+                    switch ( adapter.Name )
+                    {
+                        case nameof( Material.DiffuseMap ):
+                            material.DiffuseMap = adapter.Resource;
+                            break;
+                        case nameof( Material.DetailMap ):
+                            material.DetailMap = adapter.Resource;
+                            break;
+                        case nameof( Material.GlowMap ):
+                            material.GlowMap = adapter.Resource;
+                            break;
+                        case nameof( Material.HighlightMap ):
+                            material.HighlightMap = adapter.Resource;
+                            break;
+                        case nameof( Material.NightMap ):
+                            material.NightMap = adapter.Resource;
+                            break;
+                        case nameof( Material.NormalMap ):
+                            material.NormalMap = adapter.Resource;
+                            break;
+                        case nameof( Material.ReflectionMap ):
+                            material.ReflectionMap = adapter.Resource;
+                            break;
+                        case nameof( Material.ShadowMap ):
+                            material.ShadowMap = adapter.Resource;
+                            break;
+                        case nameof( Material.SpecularMap ):
+                            material.SpecularMap = adapter.Resource;
+                            break;
+                    }
+                }
+
+                /*
+                material.Attributes.Clear();
+                foreach ( MaterialAttributeAdapter materialAttributeAdapter in Attributes.Nodes )
+                {
+                    
+                }
+                */
+                return material;
+            } );
 
             TextChanged += ( s, o ) => Name = Text;
         }
 
         protected override void InitializeViewCore()
         {
+            var textureMapInfo = CreateTextureMapInfo();
+            TextureMaps = ( ListAdapter<TextureMap> )TreeNodeAdapterFactory.Create( "TextureMaps", textureMapInfo.TextureMapList, new object[] { textureMapInfo.TextureMapItemNames } );
+
             Nodes.Add( TextureMaps );
         }
     }

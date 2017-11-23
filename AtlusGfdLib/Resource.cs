@@ -1,22 +1,13 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using AtlusGfdLib.IO;
+using AtlusGfdLib.IO.Common;
+using AtlusGfdLib.IO.Resource;
 
 namespace AtlusGfdLib
 {
     public abstract class Resource
     {
         public const int PERSONA5_RESOURCE_VERSION = 0x01105070;
-
-        public ResourceType Type { get; }
-
-        public uint Version { get; set; }
-
-        protected Resource(ResourceType type, uint version)
-        {
-            Type = type;
-            Version = version;
-        }
 
         public static bool IsValidResource( string filepath )
         {
@@ -31,24 +22,24 @@ namespace AtlusGfdLib
             return ResourceReader.IsValidResourceStream( stream );
         }
 
-        public static Resource Load(string filepath)
+        public static Resource Load( string filepath )
         {
             using ( var stream = File.OpenRead( filepath ) )
                 return Load( stream );
         }
 
-        public static TResource Load<TResource>(string filepath) where TResource : Resource
+        public static TResource Load<TResource>( string filepath ) where TResource : Resource
         {
             using ( var stream = File.OpenRead( filepath ) )
                 return Load<TResource>( stream );
         }
 
-        public static Resource Load(Stream stream)
+        public static Resource Load( Stream stream )
         {
             return ResourceReader.ReadFromStream( stream, Endianness.BigEndian );
         }
 
-        public static TResource Load<TResource>(Stream stream) where TResource : Resource
+        public static TResource Load<TResource>( Stream stream ) where TResource : Resource
         {
             return ResourceReader.ReadFromStream<TResource>( stream, Endianness.BigEndian );
         }
@@ -63,11 +54,22 @@ namespace AtlusGfdLib
         {
             ResourceWriter.WriteToStream( resource, stream, Endianness.BigEndian );
         }
+
+        public ResourceType Type { get; }
+
+        public uint Version { get; set; }
+
+        protected Resource(ResourceType type, uint version)
+        {
+            Type = type;
+            Version = version;
+        }
     }
 
     public enum ResourceType
     {
         Invalid = 0,
+        Bundle,
         Model,
         AnimationPackage,
         TextureDictionary,
@@ -76,5 +78,9 @@ namespace AtlusGfdLib
         ShaderCachePS3,
         ShaderCachePSP2,
         ChunkType000100F9,
+        Material,
+        MaterialAttribute,
+        TextureMap,
+        Texture
     }
 }
