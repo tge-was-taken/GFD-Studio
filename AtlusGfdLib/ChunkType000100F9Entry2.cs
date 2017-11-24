@@ -6,9 +6,9 @@ namespace AtlusGfdLib
     {
         public short Field94 { get; set; }
 
-        public float Field88 { get; set; }
-
         public float Field84 { get; set; }
+
+        public float Field88 { get; set; }
 
         public Matrix4x4 Field8C { get; set; }
 

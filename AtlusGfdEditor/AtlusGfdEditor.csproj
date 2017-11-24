@@ -95,6 +95,10 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AssimpNet, Version=3.3.1.0, Culture=neutral, PublicKeyToken=0d51b391f59f42a6, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\Programming\Amicitia\Dependencies\Managed\AssimpNet.dll</HintPath>
+    </Reference>
     <Reference Include="CSharpImageLibrary, Version=4.2.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\CSharpImageLibrary.4.2.0\lib\net462\CSharpImageLibrary.dll</HintPath>
     </Reference>
@@ -110,6 +114,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Numerics.Vectors, Version=4.1.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Numerics.Vectors.4.4.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
@@ -118,13 +123,7 @@
       <HintPath>..\packages\Microsoft.Tpl.Dataflow.4.5.24\lib\portable-net45+win8+wpa81\System.Threading.Tasks.Dataflow.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Net.Http" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="UsefulThings, Version=1.7.3.0, Culture=neutral, processorArchitecture=MSIL">
@@ -132,22 +131,51 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GUI\Adapters\ArchiveAdapter.cs" />
-    <Compile Include="GUI\Adapters\BitmapAdapter.cs" />
-    <Compile Include="GUI\Adapters\ListAdapter.cs" />
-    <Compile Include="GUI\Adapters\MaterialAdapter.cs" />
-    <Compile Include="GUI\Adapters\MaterialDictionaryAdapter.cs" />
-    <Compile Include="GUI\Adapters\ModelAdapter.cs" />
-    <Compile Include="GUI\Adapters\ResourceAdapter.cs" />
-    <Compile Include="GUI\Adapters\SceneAdapter.cs" />
-    <Compile Include="GUI\Adapters\StreamAdapter.cs" />
-    <Compile Include="GUI\Adapters\TextureAdapter.cs" />
-    <Compile Include="GUI\Adapters\TextureDictionaryAdapter.cs" />
-    <Compile Include="GUI\Adapters\TextureMapAdapter.cs" />
-    <Compile Include="GUI\Adapters\TreeNodeAdapter.cs" />
-    <Compile Include="GUI\Adapters\TreeNodeAdapterFactory.cs" />
-    <Compile Include="GUI\Adapters\TreeNodeAdapterGeneric.cs" />
-    <Compile Include="GUI\Adapters\TreeNodeAdapterView.cs">
+    <Compile Include="FormatModules\AssimpSceneFormatModule.cs" />
+    <Compile Include="GUI\Forms\ModelConverterOptionsDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Forms\ModelConverterOptionsDialog.Designer.cs">
+      <DependentUpon>ModelConverterOptionsDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\TypeConverters\EnumTypeConverter.cs" />
+    <Compile Include="GUI\TypeConverters\Int16HexTypeConverter.cs" />
+    <Compile Include="GUI\TypeConverters\Int32HexTypeConverter.cs" />
+    <Compile Include="GUI\TypeConverters\DictionaryTypeConverter.cs" />
+    <Compile Include="GUI\TypeConverters\QuaternionTypeConverter.cs" />
+    <Compile Include="GUI\TypeConverters\Vector3TypeConverter.cs" />
+    <Compile Include="GUI\TypeConverters\Vector4TypeConverter.cs" />
+    <Compile Include="GUI\ViewModels\ArchiveViewModel.cs" />
+    <Compile Include="GUI\ViewModels\BitmapViewModel.cs" />
+    <Compile Include="GUI\ViewModels\ChunkType000100F9Entry1ViewModel.cs" />
+    <Compile Include="GUI\ViewModels\ChunkType000100F9Entry2ViewModel.cs" />
+    <Compile Include="GUI\ViewModels\ChunkType000100F9Entry3ViewModel.cs" />
+    <Compile Include="GUI\ViewModels\ChunkType000100F9ViewModel.cs" />
+    <Compile Include="GUI\ViewModels\ListViewModel.cs" />
+    <Compile Include="GUI\ViewModels\MaterialAttributeType0ViewModel.cs" />
+    <Compile Include="GUI\ViewModels\MaterialAttributeType1ViewModel.cs" />
+    <Compile Include="GUI\ViewModels\MaterialAttributeType2ViewModel.cs" />
+    <Compile Include="GUI\ViewModels\MaterialAttributeType3ViewModel.cs" />
+    <Compile Include="GUI\ViewModels\MaterialAttributeType4ViewModel.cs" />
+    <Compile Include="GUI\ViewModels\MaterialAttributeType5ViewModel.cs" />
+    <Compile Include="GUI\ViewModels\MaterialAttributeType6ViewModel.cs" />
+    <Compile Include="GUI\ViewModels\MaterialAttributeType7ViewModel.cs" />
+    <Compile Include="GUI\ViewModels\MaterialAttributeViewModel.cs" />
+    <Compile Include="GUI\ViewModels\MaterialViewModel.cs" />
+    <Compile Include="GUI\ViewModels\MaterialDictionaryViewModel.cs" />
+    <Compile Include="GUI\ViewModels\MatrixPaletteViewModel.cs" />
+    <Compile Include="GUI\ViewModels\ModelViewModel.cs" />
+    <Compile Include="GUI\ViewModels\NodeViewModel.cs" />
+    <Compile Include="GUI\ViewModels\ResourceViewModel.cs" />
+    <Compile Include="GUI\ViewModels\SceneViewModel.cs" />
+    <Compile Include="GUI\ViewModels\StreamViewModel.cs" />
+    <Compile Include="GUI\ViewModels\TextureViewModel.cs" />
+    <Compile Include="GUI\ViewModels\TextureDictionaryViewModel.cs" />
+    <Compile Include="GUI\ViewModels\TextureMapViewModel.cs" />
+    <Compile Include="GUI\ViewModels\TreeNodeViewModel.cs" />
+    <Compile Include="GUI\ViewModels\TreeNodeViewModelFactory.cs" />
+    <Compile Include="GUI\ViewModels\TreeNodeViewModelGeneric.cs" />
+    <Compile Include="GUI\ViewModels\TreeNodeViewModelView.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="GUI\Controls\BitmapViewControl.cs">
@@ -169,38 +197,41 @@
     <Compile Include="GUI\Controls\ModelView\GLPerspectiveTargetCamera.cs" />
     <Compile Include="GUI\Controls\ModelView\GLShaderProgram.cs" />
     <Compile Include="GUI\Controls\ModelView\GLShaderProgramBuilder.cs" />
-    <Compile Include="GUI\UInt32HexTypeConverter.cs" />
-    <Compile Include="GUI\MainForm.cs">
+    <Compile Include="GUI\TypeConverters\UInt32HexTypeConverter.cs" />
+    <Compile Include="GUI\Forms\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="GUI\MainForm.Designer.cs">
+    <Compile Include="GUI\Forms\MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="Modules\ArchiveModule.cs" />
-    <Compile Include="Modules\BitmapModule.cs" />
-    <Compile Include="Modules\MaterialDictionaryModule.cs" />
-    <Compile Include="Modules\MaterialModule.cs" />
-    <Compile Include="Modules\StreamModule.cs" />
-    <Compile Include="Modules\Module.cs" />
-    <Compile Include="Modules\IModule.cs" />
-    <Compile Include="Modules\ModelModule.cs" />
-    <Compile Include="Modules\ModuleExportUtillities.cs" />
-    <Compile Include="Modules\ModuleFilterGenerator.cs" />
-    <Compile Include="Modules\ModuleImportUtillities.cs" />
-    <Compile Include="Modules\ModuleRegistry.cs" />
-    <Compile Include="Modules\TextureDictionaryModule.cs" />
-    <Compile Include="Modules\TextureModule.cs" />
+    <Compile Include="FormatModules\ArchiveFormatModule.cs" />
+    <Compile Include="FormatModules\BitmapFormatModule.cs" />
+    <Compile Include="FormatModules\MaterialDictionaryFormatModule.cs" />
+    <Compile Include="FormatModules\MaterialFormatModule.cs" />
+    <Compile Include="FormatModules\StreamFormatModule.cs" />
+    <Compile Include="FormatModules\FormatModule.cs" />
+    <Compile Include="FormatModules\IFormatModule.cs" />
+    <Compile Include="FormatModules\ModelFormatModule.cs" />
+    <Compile Include="FormatModules\ModuleExportUtillities.cs" />
+    <Compile Include="FormatModules\ModuleFilterGenerator.cs" />
+    <Compile Include="FormatModules\ModuleImportUtillities.cs" />
+    <Compile Include="FormatModules\FormatModuleRegistry.cs" />
+    <Compile Include="FormatModules\TextureDictionaryFormatModule.cs" />
+    <Compile Include="FormatModules\TextureFormatModule.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utilities.cs" />
+    <Compile Include="IO\PathUtilities.cs" />
     <EmbeddedResource Include="GUI\Controls\BitmapViewControl.resx">
       <DependentUpon>BitmapViewControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Controls\ModelViewControl.resx">
       <DependentUpon>ModelViewControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="GUI\MainForm.resx">
+    <EmbeddedResource Include="GUI\Forms\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Forms\ModelConverterOptionsDialog.resx">
+      <DependentUpon>ModelConverterOptionsDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -212,11 +243,11 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="GUI\Adapters\TreeNodeAdapter.HideInheritedProperties.cs" />
-    <None Include="FragmentShader.glsl">
+    <Compile Include="GUI\ViewModels\TreeNodeViewModel.HideInheritedProperties.cs" />
+    <None Include="GUI\Controls\ModelView\Shaders\FragmentShader.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="FragmentShaderBasic.glsl">
+    <None Include="GUI\Controls\ModelView\Shaders\FragmentShaderBasic.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
@@ -229,10 +260,10 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <None Include="VertexShader.glsl">
+    <None Include="GUI\Controls\ModelView\Shaders\VertexShader.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="VertexShaderBasic.glsl">
+    <None Include="GUI\Controls\ModelView\Shaders\VertexShaderBasic.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

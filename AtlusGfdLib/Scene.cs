@@ -17,13 +17,13 @@ namespace AtlusGfdLib
             }
         }
 
-        private MatrixPalette mMatrixMap;
+        private MatrixPalette mMatrixPalette;
         public MatrixPalette MatrixPalette
         {
-            get => mMatrixMap;
+            get => mMatrixPalette;
             set
             {
-                mMatrixMap = value;
+                mMatrixPalette = value;
                 ValidateFlags();
             }
         }

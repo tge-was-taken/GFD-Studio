@@ -49,9 +49,9 @@ namespace AtlusGfdLib
             return scene;
         }
 
-        private static string UnescapeNodeName( string nodeName )
+        private static string UnescapeName( string name )
         {
-            return nodeName.Replace( "__", " " );
+            return name.Replace( "___", " " );
         }
 
         private static Node ConvertAssimpNodeRecursively( Ai.Node aiNode, Dictionary<string, NodeInfo> nodeLookup, ref int nextIndex )
@@ -59,7 +59,7 @@ namespace AtlusGfdLib
             aiNode.Transform.Decompose( out var scale, out var rotation, out var translation );
 
             // Create node
-            var node = new Node( UnescapeNodeName( aiNode.Name ),
+            var node = new Node( UnescapeName( aiNode.Name ),
                                  new Vector3( translation.X, translation.Y, translation.Z ),
                                  new Quaternion( rotation.X, rotation.Y, rotation.Z, rotation.W ),
                                  new Vector3( scale.X, scale.Y, scale.Z ) );
@@ -227,7 +227,7 @@ namespace AtlusGfdLib
         {
             if ( aiNode.HasMeshes )
             {
-                var nodeLookupData = nodeLookup[ UnescapeNodeName( aiNode.Name ) ];
+                var nodeLookupData = nodeLookup[ UnescapeName( aiNode.Name ) ];
                 var node = nodeLookupData.Node;
                 var nodeWorldTransform = node.WorldTransform;
                 Matrix4x4.Invert( nodeWorldTransform, out var nodeInverseWorldTransform );
@@ -336,7 +336,7 @@ namespace AtlusGfdLib
                     var aiMeshBone = aiMesh.Bones[i];
 
                     // Find node index for the bone
-                    var boneLookupData = nodeLookup[ UnescapeNodeName( aiMeshBone.Name ) ];
+                    var boneLookupData = nodeLookup[ UnescapeName( aiMeshBone.Name ) ];
                     int nodeIndex = boneLookupData.Index;
 
                     // Calculate inverse bind matrix
@@ -387,7 +387,7 @@ namespace AtlusGfdLib
                 }
             }
 
-            geometry.MaterialName = material.Name;
+            geometry.MaterialName = UnescapeName( material.Name );
             geometry.BoundingBox = BoundingBox.Calculate( geometry.Vertices );
             geometry.BoundingSphere = BoundingSphere.Calculate( geometry.BoundingBox.Value, geometry.Vertices );
             geometry.Flags |= GeometryFlags.Flag80000000;

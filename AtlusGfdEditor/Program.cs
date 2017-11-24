@@ -1,12 +1,12 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Reflection;
 using System.Windows.Forms;
 using AtlusGfdEditor.GUI;
+using AtlusGfdEditor.GUI.Forms;
 
 namespace AtlusGfdEditor
 {
-    static class Program
+    internal static class Program
     {
         public static Assembly     Assembly     = Assembly.GetExecutingAssembly();
         public static AssemblyName AssemblyName = Assembly.GetName();

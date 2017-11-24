@@ -76,5 +76,10 @@ namespace AtlusGfdLib
                 return hash;
             }
         }
+
+        public override string ToString()
+        {
+            return $"[{Min.X}, {Min.Y}, {Min.Z}] [{Max.X}, {Max.Y}, {Max.Z}]";
+        }
     }
 }

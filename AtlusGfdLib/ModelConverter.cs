@@ -8,7 +8,7 @@ namespace AtlusGfdLib
 {
     public static class ModelConverter
     {
-        public static Model CreateFromAssimpScene( string filePath, MaterialPreset preset, SceneConverterOptions options )
+        public static Model ConvertFromAssimpScene( string filePath, ModelConverterOptions options )
         {
             // For importing textures
             string baseDirectoryPath = Path.GetDirectoryName( filePath );
@@ -23,17 +23,29 @@ namespace AtlusGfdLib
 
             foreach ( var aiSceneMaterial in aiScene.Materials )
             {
-                var material = ConvertMaterialAndTextures( aiSceneMaterial, preset, baseDirectoryPath, model.TextureDictionary );
+                var material = ConvertMaterialAndTextures( aiSceneMaterial, options, baseDirectoryPath, model.TextureDictionary );
                 model.MaterialDictionary.Add( material );
             }
 
             // Create scene
-            model.Scene = SceneConverter.ConvertFromAssimpScene( aiScene, options );
+            var sceneConverterOptions = new SceneConverterOptions()
+            {
+                Version = options.Version,
+                ConvertSkinToZUp = options.ConvertSkinToZUp,
+                GenerateVertexColors = options.GenerateVertexColors,
+            };
+
+            model.Scene = SceneConverter.ConvertFromAssimpScene( aiScene, sceneConverterOptions );
 
             return model;
         }
 
-        private static Material ConvertMaterialAndTextures( Ai.Material aiMaterial, MaterialPreset preset, string baseDirectoryPath, TextureDictionary textureDictionary )
+        private static string UnescapeName( string name )
+        {
+            return name.Replace( "___", " " );
+        }
+
+        private static Material ConvertMaterialAndTextures( Ai.Material aiMaterial, ModelConverterOptions options, string baseDirectoryPath, TextureDictionary textureDictionary )
         {
             // Convert all textures
             TextureInfo diffuseTexture = null;
@@ -78,28 +90,29 @@ namespace AtlusGfdLib
 
             // Convert material
             Material material = null;
+            string materialName = UnescapeName( aiMaterial.Name );
 
-            switch ( preset )
+            switch ( options.MaterialPreset )
             {
-                case MaterialPreset.FieldDiffuse:
+                case MaterialPreset.FieldTerrain:
                     {
                         if ( diffuseTexture != null )
                         {
                             textureDictionary.Add( diffuseTexture.Texture );
-                            material = MaterialFactory.CreateFieldDiffuseMaterial( aiMaterial.Name, diffuseTexture.Name, HasAlpha( diffuseTexture.PixelFormat ) );
+                            material = MaterialFactory.CreateFieldTerrainMaterial( materialName, diffuseTexture.Name, HasAlpha( diffuseTexture.PixelFormat ) );
                         }
                     }
                     break;
-                case MaterialPreset.FieldDiffuseCastShadow:
+                case MaterialPreset.FieldTerrainCastShadow:
                     {
                         if ( diffuseTexture != null )
                         {
                             textureDictionary.Add( diffuseTexture.Texture );
-                            material = MaterialFactory.CreateFieldDiffuseCastShadowMaterial( aiMaterial.Name, diffuseTexture.Name, HasAlpha( diffuseTexture.PixelFormat ) );
+                            material = MaterialFactory.CreateFieldTerrainCastShadowMaterial( materialName, diffuseTexture.Name, HasAlpha( diffuseTexture.PixelFormat ) );
                         }
                     }
                     break;
-                case MaterialPreset.CharacterSkin:
+                case MaterialPreset.CharacterSkinP5:
                     {
                         if ( diffuseTexture != null )
                         {
@@ -113,17 +126,17 @@ namespace AtlusGfdLib
                             }
 
                             // TODO: transparency
-                            material = MaterialFactory.CreateCharacterSkinMaterial( aiMaterial.Name, diffuseTexture.Name, shadowTextureName, HasAlpha( diffuseTexture.PixelFormat ) );
+                            material = MaterialFactory.CreateCharacterSkinP5Material( materialName, diffuseTexture.Name, shadowTextureName, HasAlpha( diffuseTexture.PixelFormat ) );
                         }
                     }
                     break;
 
-                case MaterialPreset.CharacterSkinP4D:
+                case MaterialPreset.CharacterClothP4D:
                     {
                         if ( diffuseTexture != null )
                         {
                             textureDictionary.Add( diffuseTexture.Texture );
-                            material = MaterialFactory.CreateCharacterSkinP4DMaterial( aiMaterial.Name, diffuseTexture.Name,
+                            material = MaterialFactory.CreateCharacterClothP4DMaterial( materialName, diffuseTexture.Name,
                                                                                        HasAlpha( diffuseTexture.PixelFormat ) );
                         }
                     }
@@ -132,7 +145,7 @@ namespace AtlusGfdLib
 
             // Create dummy material if none was created
             if ( material == null )
-                material = new Material( aiMaterial.Name );
+                material = new Material( materialName );
 
             return material;
         }
@@ -141,7 +154,7 @@ namespace AtlusGfdLib
         {
             var relativeFilePath = aiTextureSlot.FilePath;
             var fullFilePath = Path.GetFullPath( Path.Combine( baseDirectoryPath, relativeFilePath ) );
-            var textureName = Path.GetFileNameWithoutExtension( relativeFilePath ) + ".dds";;
+            var textureName = UnescapeName( Path.GetFileNameWithoutExtension( relativeFilePath ) + ".dds" );
 
             Texture texture;
             if ( !File.Exists( fullFilePath ) )
@@ -165,6 +178,37 @@ namespace AtlusGfdLib
         private static bool HasAlpha( TexturePixelFormat pixelFormat )
         {
             return pixelFormat == TexturePixelFormat.DXT3 || pixelFormat == TexturePixelFormat.DXT5;
+        }
+    }
+
+    public class ModelConverterOptions
+    {
+        /// <summary>
+        /// Gets or sets the material preset that should be used while converting the materials.
+        /// </summary>
+        public MaterialPreset MaterialPreset { get; set; }
+
+        /// <summary>
+        /// Gets or sets the version to use for the converted resources.
+        /// </summary>
+        public uint Version { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether to convert the up axis of the inverse bind pose matrices to Z-up. This is used by Persona 5's battle models for example.
+        /// </summary>
+        public bool ConvertSkinToZUp { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether to generate dummy (white) vertex colors if they're not already present. Some material shaders rely on vertex colors being present, and the lack of them will cause graphics corruption.
+        /// </summary>
+        public bool GenerateVertexColors { get; set; }
+
+        public ModelConverterOptions()
+        {
+            MaterialPreset = MaterialPreset.CharacterSkinP5;
+            Version = Resource.PERSONA5_RESOURCE_VERSION;
+            ConvertSkinToZUp = false;
+            GenerateVertexColors = false;
         }
     }
 }

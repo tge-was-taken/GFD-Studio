@@ -18,16 +18,16 @@ namespace AtlusGfdLib.IO.Resource
             mReader = new EndianBinaryReader( stream, Encoding.Default, leaveOpen, endianness );
         }
 
-        public static AtlusGfdLib.Resource ReadFromStream( Stream stream, Endianness endianness )
+        public static AtlusGfdLib.Resource ReadFromStream( Stream stream, Endianness endianness, bool leaveOpen = false )
         {
-            using ( var reader = new ResourceReader( stream, endianness, true ) )
+            using ( var reader = new ResourceReader( stream, endianness, leaveOpen ) )
                 return reader.ReadResourceBundleFile();
         }
 
-        public static TResource ReadFromStream<TResource>( Stream stream, Endianness endianness )
+        public static TResource ReadFromStream<TResource>( Stream stream, Endianness endianness, bool leaveOpen = false )
             where TResource : AtlusGfdLib.Resource
         {
-            return ( TResource )ReadFromStream( stream, endianness );
+            return ( TResource )ReadFromStream( stream, endianness, leaveOpen );
         }
 
         public static bool IsValidResourceStream( Stream stream )
@@ -281,11 +281,11 @@ namespace AtlusGfdLib.IO.Resource
                     resource = ReadShaderCachePSP2( header.Version );
                     break;
 
+                // Custom resource types
                 case ResourceFileType.CustomGenericResourceBundle:
                     resource = ReadResourceBundle( header.Version );
                     break;
 
-                // Custom resource types
                 case ResourceFileType.CustomTextureDictionary:
                     resource = ReadTextureDictionary( header.Version );
                     break;
@@ -925,7 +925,7 @@ namespace AtlusGfdLib.IO.Resource
                 case NodeAttachmentType.Morph:
                     return new NodeMorphAttachment( ReadMorph( version ) );
                 default:
-                    throw new Exception( $"Unknown node attachment: {type}" );
+                    throw new NotImplementedException( $"Unimplemented node attachment type: {type}" );
             }
         }
 

@@ -20,7 +20,7 @@ namespace AtlusGfdEditor.GUI.Controls
     {
         private Model mModel;
         private GLShaderProgram mShaderProgram;
-        private List<GLGeometry> mGeometries = new List<GLGeometry>();
+        private readonly List<GLGeometry> mGeometries = new List<GLGeometry>();
         private GLPerspectiveCamera mCamera;
         private bool mIsModelLoaded;
         private bool mIsFieldModel;
@@ -31,7 +31,11 @@ namespace AtlusGfdEditor.GUI.Controls
             new GraphicsMode( 32, 24, 0, 4 ),
             3,
             3,
+#if DEBUG
             GraphicsContextFlags.Debug | GraphicsContextFlags.ForwardCompatible )
+#else
+            GraphicsContextFlags.ForwardCompatible )
+#endif
         {
             InitializeComponent();
 
@@ -40,6 +44,9 @@ namespace AtlusGfdEditor.GUI.Controls
 
             // required to use GL in the context of this control
             MakeCurrent();
+            LogGLInfo();
+            InitializeGL();
+            InitializeGLShaders();
         }
 
         /// <summary>
@@ -80,11 +87,7 @@ namespace AtlusGfdEditor.GUI.Controls
         /// <param name="e"></param>
         protected override void OnLoad( EventArgs e )
         {
-            LogGLInfo();
-            InitializeGL();
-            InitializeGLShaders();
 
-            
         }
 
         /// <summary>
@@ -106,9 +109,12 @@ namespace AtlusGfdEditor.GUI.Controls
                     mShaderProgram.Use();
 
                     // set up model view projection matrix uniforms
-                    var modelViewProj = geometry.ModelMatrix * mCamera.CalculateViewProjectionMatrix();
+                    var modelViewProj = geometry.ModelMatrix * mCamera.CalculateViewMatrix();
+                    var projection = mCamera.CalculateProjectionMatrix();
 
-                    mShaderProgram.SetUniform( "modelViewProj", modelViewProj );
+                    //mShaderProgram.SetUniform( "modelViewProj", modelViewProj );
+                    mShaderProgram.SetUniform( "modelView", modelViewProj );
+                    mShaderProgram.SetUniform( "projection", projection );
 
                     // set material uniforms
                     mShaderProgram.SetUniform( "hasDiffuse", geometry.Material.HasDiffuse );
@@ -147,7 +153,7 @@ namespace AtlusGfdEditor.GUI.Controls
             if ( !mIsModelLoaded )
                 return;
 
-            mCamera.AspectRatio = ( float )Width / ( float )Height;
+            mCamera.AspectRatio = ( float )Width / Height;
             GL.Viewport( ClientRectangle );
         }
 
@@ -157,7 +163,7 @@ namespace AtlusGfdEditor.GUI.Controls
         private void LogGLInfo()
         {
             // todo: log to file? would help with debugging crashes on clients
-            Trace.TraceInformation( "GL Info" );
+            Trace.TraceInformation( "GL Info:" );
             Trace.TraceInformation( $"     Vendor         {GL.GetString( StringName.Vendor )}" );
             Trace.TraceInformation( $"     Renderer       {GL.GetString( StringName.Renderer )}" );
             Trace.TraceInformation( $"     Version        {GL.GetString( StringName.Version )}" );
@@ -176,8 +182,12 @@ namespace AtlusGfdEditor.GUI.Controls
             GL.CullFace( CullFaceMode.Back );
             GL.Enable( EnableCap.CullFace );
             GL.Enable( EnableCap.DepthTest );
+
+#if DEBUG
             GL.Enable( EnableCap.DebugOutputSynchronous );
             GL.DebugMessageCallback( GLDebugMessageCallback, IntPtr.Zero );
+#endif
+
             GL.Enable( EnableCap.Multisample );
         }
 
@@ -188,7 +198,7 @@ namespace AtlusGfdEditor.GUI.Controls
                 return;
 
             var msg = Marshal.PtrToStringAnsi( message, length );
-            Trace.TraceInformation( $"{severity} {type} {msg}" );
+            Trace.TraceInformation( $"GL Debug: {severity} {type} {msg}" );
         }
 
         /// <summary>
@@ -197,23 +207,26 @@ namespace AtlusGfdEditor.GUI.Controls
         private void InitializeGLShaders()
         {
             if ( !GLShaderProgram.TryCreate(
-                Path.Combine( AppDomain.CurrentDomain.BaseDirectory, "VertexShader.glsl" ),
-                Path.Combine( AppDomain.CurrentDomain.BaseDirectory, "FragmentShader.glsl" ),
+                Path.Combine( AppDomain.CurrentDomain.BaseDirectory, "GUI\\Controls\\ModelView\\Shaders\\VertexShader.glsl" ),
+                Path.Combine( AppDomain.CurrentDomain.BaseDirectory, "GUI\\Controls\\ModelView\\Shaders\\FragmentShader.glsl" ),
                 out mShaderProgram ) )
             {
                 Trace.TraceWarning( "Failed to compile shaders. Trying to use basic shaders.." );
 
                 if ( !GLShaderProgram.TryCreate(
-                    Path.Combine( AppDomain.CurrentDomain.BaseDirectory, "VertexShaderBasic.glsl" ),
-                    Path.Combine( AppDomain.CurrentDomain.BaseDirectory, "FragmentShaderBasic.glsl" ),
+                    Path.Combine( AppDomain.CurrentDomain.BaseDirectory, "GUI\\Controls\\ModelView\\Shaders\\VertexShaderBasic.glsl" ),
+                    Path.Combine( AppDomain.CurrentDomain.BaseDirectory, "GUI\\Controls\\ModelView\\Shaders\\FragmentShaderBasic.glsl" ),
                     out mShaderProgram ) )
                 {
                     Trace.TraceError( "Failed to compile basic shaders." );
+                    throw new Exception( "Failed to compile basic shaders." );
                 }
             }
 
             // register shader uniforms
-            mShaderProgram.RegisterUniform<Matrix4>( "modelViewProj" );
+            //mShaderProgram.RegisterUniform<Matrix4>( "modelViewProj" );
+            mShaderProgram.RegisterUniform<Matrix4>( "modelView" );
+            mShaderProgram.RegisterUniform<Matrix4>( "projection" );
             mShaderProgram.RegisterUniform<bool>( "hasDiffuse" );
             mShaderProgram.RegisterUniform<Vector4>( "matAmbient" );
             mShaderProgram.RegisterUniform<Vector4>( "matDiffuse" );
@@ -338,11 +351,17 @@ namespace AtlusGfdEditor.GUI.Controls
 
             // todo: identify and retrieve values from texture
             // todo: disable mipmaps for now, they often break and show up as black ( eg after replacing a texture )
-            SetGLTextureParameters( TextureWrapMode.Repeat, TextureWrapMode.Repeat, TextureMagFilter.Linear, TextureMinFilter.Linear, ddsHeader.dwMipMapCount - 1 );
+            int mipMapCount = ddsHeader.dwMipMapCount;
+            if ( mipMapCount > 0 )
+                --mipMapCount;
+            else
+                mipMapCount = 1;
+
+            SetGLTextureParameters( TextureWrapMode.Repeat, TextureWrapMode.Repeat, TextureMagFilter.Linear, TextureMinFilter.Linear, mipMapCount );
 
             var format = GetGLTexturePixelInternalFormat( ddsHeader.Format );
 
-            SetGLTextureDDSImageData( ddsHeader.Width, ddsHeader.Height, format, ddsHeader.dwMipMapCount, texture.Data, 0x80 );
+            SetGLTextureDDSImageData( ddsHeader.Width, ddsHeader.Height, format, mipMapCount, texture.Data, 0x80 );
 
             return textureId;
         }
@@ -425,7 +444,7 @@ namespace AtlusGfdEditor.GUI.Controls
             {
                 int mipSize = ( ( mipWidth * mipHeight ) / 16 ) * blockSize;
 
-                if ( mipSize != 0 )
+                if ( mipSize > blockSize )
                     GL.CompressedTexImage2D( TextureTarget.Texture2D, mipLevel, format, mipWidth, mipHeight, 0, mipSize, data + mipOffset );
 
                 mipOffset += mipSize;

@@ -301,7 +301,7 @@ namespace AtlusGfdLib
 
     public enum MaterialDrawOrder
     {
-        Normal,
-        Behind,
+        Front,
+        Back,
     }
 }

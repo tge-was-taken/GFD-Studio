@@ -236,13 +236,11 @@ namespace AtlusGfdLib.IO.Resource
         {
             switch ( type )
             {
-                // Normal resource types
+                // Front resource types
                 case ResourceType.Model:
                 case ResourceType.AnimationPackage:
                 case ResourceType.ChunkType000100F9:
-                case ResourceType.MaterialDictionary:
                 case ResourceType.Scene:
-                case ResourceType.TextureDictionary:
                     return ResourceFileType.ModelResourceBundle;
 
                 // Shader caches
@@ -254,6 +252,12 @@ namespace AtlusGfdLib.IO.Resource
                 // Custom resource types
                 case ResourceType.Bundle:
                     return ResourceFileType.CustomGenericResourceBundle;
+
+                case ResourceType.TextureDictionary:
+                    return ResourceFileType.CustomTextureDictionary;
+
+                case ResourceType.MaterialDictionary:
+                    return ResourceFileType.CustomMaterialDictionary;
 
                 case ResourceType.Material:
                     return ResourceFileType.CustomMaterial;
@@ -274,7 +278,7 @@ namespace AtlusGfdLib.IO.Resource
         {
             switch ( type )
             {
-                // Normal resource types
+                // Front resource types
                 case ResourceType.AnimationPackage:
                     return ResourceChunkType.AnimationPackage;
                 case ResourceType.TextureDictionary:
@@ -307,7 +311,7 @@ namespace AtlusGfdLib.IO.Resource
         {
             switch ( resource.Type )
             {
-                // Normal resource types
+                // Front resource types
                 case ResourceType.Model:
                     WriteModel( ( Model )resource );
                     break;
@@ -378,6 +382,9 @@ namespace AtlusGfdLib.IO.Resource
 
             if ( model.Scene != null )
                 WriteScene( model.Scene );
+
+            if ( model.ChunkType000100F9 != null )
+                WriteChunkType000100F9( model.ChunkType000100F9 );
 
             if ( model.AnimationPackage != null )
                 WriteAnimationPackage( model.AnimationPackage );

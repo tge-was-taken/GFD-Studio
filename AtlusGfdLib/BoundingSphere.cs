@@ -94,7 +94,7 @@ namespace AtlusGfdLib
 
         public override string ToString()
         {
-            return $"{Center} {Radius}";
+            return $"[{Center.X}, {Center.Y}, {Center.Z}] {Radius}";
         }
     }
 }

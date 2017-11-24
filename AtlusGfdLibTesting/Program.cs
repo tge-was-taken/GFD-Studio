@@ -7,13 +7,9 @@ using System.Linq;
 using System.Numerics;
 using AtlusGfdLib;
 using AtlusGfdLib.Assimp;
-using AtlusGfdLib.IO;
-using AtlusLibSharp.FileSystems.PAKToolArchive;
 using AtlusLibSharp.Graphics.RenderWare;
 using AtlusLibSharp.Utilities;
 using CSharpImageLibrary;
-using OpenTK.Graphics.OpenGL;
-using OpenTK.Input;
 
 namespace AtlusGfdLibTesting
 {
@@ -30,28 +26,28 @@ namespace AtlusGfdLibTesting
             return;
             */
 
-            var options = new SceneConverterOptions
+            var options = new ModelConverterOptions
             {
+                MaterialPreset = MaterialPreset.CharacterClothP4D,
                 Version = 0x01105030,
                 ConvertSkinToZUp = false,
                 GenerateVertexColors = true,
             };
 
-            var model = ModelConverter.CreateFromAssimpScene( @"D:\Modding\Persona 4 Dancing CPK RIP\Game mods\DanteOverYu\Dante.FBX",
-                                                              MaterialPreset.CharacterSkinP4D, options );
+            var model = ModelConverter.ConvertFromAssimpScene( @"D:\Modding\Persona 4 Dancing CPK RIP\Game mods\DanteOverYu\Dante.FBX", options );
 
             Resource.Save( model, @"D:\Modding\Persona 4 Dancing CPK RIP\Game mods\DanteOverYu\mod\dance\player\pc001_01.GMD" );
             return;
 
             /*
-            var model = ModelFactory.CreateFromAssimpScene( @"D:\Modding\Persona 5 EU\Game mods\TeapotKun\CityEscape.FBX", MaterialPreset.FieldDiffuseCastShadow );
+            var model = ModelFactory.ConvertFromAssimpScene( @"D:\Modding\Persona 5 EU\Game mods\TeapotKun\CityEscape.FBX", MaterialPreset.FieldTerrainDiffuseCastShadow );
             model.TextureDictionary = TextureDictionary.ToFieldTextureArchive( model.TextureDictionary, @"D:\Modding\Persona 5 EU\Game mods\TeapotKun\mod\model\field_tex\textures\tex000_100_00_00.bin" );
             Resource.Save( model, @"D:\Modding\Persona 5 EU\Game mods\TeapotKun\mod\model\field_tex\f000_100_0.GFS" );
             */
 
             /*
-            var model = ModelFactory.CreateFromAssimpScene( @"D:\Modding\Persona 4 Dancing CPK RIP\Game mods\DanteOverYu\Dante.FBX",
-                                                            MaterialPreset.CharacterSkinP4D, false, false, 0x01105030 );
+            var model = ModelFactory.ConvertFromAssimpScene( @"D:\Modding\Persona 4 Dancing CPK RIP\Game mods\DanteOverYu\Dante.FBX",
+                                                            MaterialPreset.CharacterClothP4D, false, false, 0x01105030 );
 
             Resource.Save( model, @"D:\Modding\Persona 4 Dancing CPK RIP\Game mods\DanteOverYu\mod\dance\player\pc001_01.GMD" );
             */
@@ -70,7 +66,7 @@ namespace AtlusGfdLibTesting
             */
 
             /*
-            var model = ModelFactory.CreateFromAssimpScene( @"D:\Modding\Persona 5 EU\Game mods\TeapotKun\SA2Man.FBX", MaterialPreset.CharacterSkin );
+            var model = ModelFactory.ConvertFromAssimpScene( @"D:\Modding\Persona 5 EU\Game mods\TeapotKun\SA2Man.FBX", MaterialPreset.CharacterSkinP5 );
             var originalModel = Resource.Load< Model >( @"D:\Modding\Persona 5 EU\Main game\Extracted\data\model\character\0001\c0001_002_00.GMD" );
             foreach ( var entry in originalModel.MaterialDictionary )
                 model.MaterialDictionary[ entry.Key ] = entry.Value;

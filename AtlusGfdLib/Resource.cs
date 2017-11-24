@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using AtlusGfdLib.IO;
 using AtlusGfdLib.IO.Common;
 using AtlusGfdLib.IO.Resource;
 

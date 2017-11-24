@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.IO;
 using System.Text;
-using AtlusGfdLib.IO;
 using AtlusGfdLib.IO.Common;
 
 namespace AtlusGfdLib
