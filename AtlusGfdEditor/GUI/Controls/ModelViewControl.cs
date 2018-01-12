@@ -482,7 +482,14 @@ namespace AtlusGfdEditor.GUI.Controls
             glGeometry.ElementIndexCount = geometry.Triangles.Length * 3;
 
             // material
-            glGeometry.Material = CreateGLMaterial( mModel.MaterialDictionary[geometry.MaterialName] );
+            if ( mModel.MaterialDictionary.TryGetMaterial( geometry.MaterialName, out var material ) )
+            {
+                glGeometry.Material = CreateGLMaterial( material );
+            }
+            else
+            {
+                Trace.TraceError( $"Geometry referenced material \"{geometry.MaterialName}\" which does not exist in the model" );
+            }
 
             glGeometry.IsVisible = true;
 
