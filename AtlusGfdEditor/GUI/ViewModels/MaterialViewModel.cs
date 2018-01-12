@@ -315,7 +315,7 @@ namespace AtlusGfdEditor.GUI.ViewModels
                     }
                 }
 
-                material.Attributes.Clear();
+                material.Attributes = new List< MaterialAttribute >();
                 foreach ( var attribute in AttributesViewModel.Model )
                 {
                     material.Attributes.Add( attribute );
