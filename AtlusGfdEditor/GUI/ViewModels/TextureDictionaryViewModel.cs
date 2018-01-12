@@ -1,4 +1,6 @@
-﻿using AtlusGfdLib;
+﻿using System.Windows.Forms;
+using AtlusGfdEditor.FormatModules;
+using AtlusGfdLib;
 
 namespace AtlusGfdEditor.GUI.ViewModels
 {
@@ -28,6 +30,26 @@ namespace AtlusGfdEditor.GUI.ViewModels
                 }
 
                 return textureDictionary;
+            } );
+
+            RegisterCustomHandler( "Convert to field texture archive", () =>
+            {
+                using ( var dialog = new SaveFileDialog() )
+                {
+                    dialog.Filter = "Field texture archive (*.bin)|*.bin";
+                    dialog.AutoUpgradeEnabled = true;
+                    dialog.CheckPathExists = true;
+                    dialog.FileName = Text;
+                    dialog.OverwritePrompt = true;
+                    dialog.Title = "Select a file to export to.";
+                    dialog.ValidateNames = true;
+                    dialog.AddExtension = true;
+
+                    if ( dialog.ShowDialog() != DialogResult.OK )
+                        return;
+
+                    Replace( TextureDictionary.ConvertToFieldTextureArchive( Model, dialog.FileName ) );
+                }
             } );
         }
 

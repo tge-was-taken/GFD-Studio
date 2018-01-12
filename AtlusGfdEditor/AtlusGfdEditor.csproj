@@ -175,6 +175,7 @@
     <Compile Include="GUI\ViewModels\TreeNodeViewModel.cs" />
     <Compile Include="GUI\ViewModels\TreeNodeViewModelFactory.cs" />
     <Compile Include="GUI\ViewModels\TreeNodeViewModelGeneric.cs" />
+    <Compile Include="GUI\ViewModels\TreeNodeViewModelPropertyChangedEventArgs.cs" />
     <Compile Include="GUI\ViewModels\TreeNodeViewModelView.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -218,6 +219,7 @@
     <Compile Include="FormatModules\FormatModuleRegistry.cs" />
     <Compile Include="FormatModules\TextureDictionaryFormatModule.cs" />
     <Compile Include="FormatModules\TextureFormatModule.cs" />
+    <Compile Include="IO\ModelConverterUtillity.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="IO\PathUtilities.cs" />

@@ -91,7 +91,7 @@ namespace AtlusGfdLib
         public int AttachmentCount => HasAttachments ? Attachments.Count : 0;
 
         // EC
-        public Dictionary<string, NodeProperty> Properties { get; set; }
+        public UserPropertyCollection Properties { get; set; }
 
         public bool HasProperties => Properties != null && Properties.Count > 0;
 
@@ -128,7 +128,7 @@ namespace AtlusGfdLib
         internal Node()
         {
             Attachments = new List<NodeAttachment>();
-            Properties = new Dictionary<string, NodeProperty>();
+            Properties = new UserPropertyCollection();
             mChildren = new List<Node>();
         }
 
@@ -139,7 +139,7 @@ namespace AtlusGfdLib
             Rotation = Quaternion.Identity;
             Scale = Vector3.Zero;
             Attachments = new List<NodeAttachment>();
-            Properties = new Dictionary<string, NodeProperty>();
+            Properties = new UserPropertyCollection();
             FieldE0 = 1.0f;
             mChildren = new List<Node>();
         }
@@ -151,7 +151,7 @@ namespace AtlusGfdLib
             Rotation = rotation;
             Scale = scale;
             Attachments = new List<NodeAttachment>();
-            Properties = new Dictionary<string, NodeProperty>();
+            Properties = new UserPropertyCollection();
             FieldE0 = 1.0f;
             mChildren = new List<Node>();
         }
@@ -162,6 +162,11 @@ namespace AtlusGfdLib
 
             if (!mChildren.Contains(node))
                 mChildren.Add( node );
+        }
+
+        public void RemoveChildNode( Node node )
+        {
+            mChildren.Remove( node );
         }
 
         public bool FindNodeDepthFirst( string name, out Node node )

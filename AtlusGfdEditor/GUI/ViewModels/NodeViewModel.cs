@@ -54,10 +54,10 @@ namespace AtlusGfdEditor.GUI.ViewModels
         public ListViewModel<NodeAttachment> AttachmentListViewModel { get; set; }
 
         [ Browsable( true ) ]
-        [ TypeConverter( typeof( NodePropertyDictionaryTypeConverter ) ) ]
-        public Dictionary< string, NodeProperty > Properties
+        [ TypeConverter( typeof( UserPropertyDictionaryTypeConverter ) ) ]
+        public UserPropertyCollection Properties
         {
-            get => GetModelProperty<Dictionary<string, NodeProperty>>();
+            get => GetModelProperty<UserPropertyCollection>();
             set => SetModelProperty( value );
         }
 

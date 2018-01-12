@@ -3,13 +3,13 @@ using System.Text;
 
 namespace AtlusGfdLib
 {
-    public abstract class NodeProperty
+    public abstract class UserProperty
     {
-        public PropertyValueType ValueType { get; }
+        public UserPropertyValueType ValueType { get; }
 
         public string Name { get; set; }
 
-        protected NodeProperty( PropertyValueType valueType, string name )
+        protected UserProperty( UserPropertyValueType valueType, string name )
         {
             ValueType = valueType;
             Name = name;
@@ -27,13 +27,13 @@ namespace AtlusGfdLib
         protected abstract string ValueToUserPropertyString();
     }
 
-    public sealed class NodeIntProperty : NodeProperty
+    public sealed class UserIntProperty : UserProperty
     {
         public int Value { get; set; }
 
-        public NodeIntProperty( string name ) : base(PropertyValueType.Int, name) { }
+        public UserIntProperty( string name ) : base(UserPropertyValueType.Int, name) { }
 
-        public NodeIntProperty( string name, int value ) : base(PropertyValueType.Int, name) => Value = value;
+        public UserIntProperty( string name, int value ) : base(UserPropertyValueType.Int, name) => Value = value;
 
         public override object GetValue()
         {
@@ -46,13 +46,13 @@ namespace AtlusGfdLib
         }
     }
 
-    public sealed class NodeFloatProperty : NodeProperty
+    public sealed class UserFloatProperty : UserProperty
     {
         public float Value { get; set; }
 
-        public NodeFloatProperty( string name ) : base( PropertyValueType.Float, name ) { }
+        public UserFloatProperty( string name ) : base( UserPropertyValueType.Float, name ) { }
 
-        public NodeFloatProperty( string name, float value ) : base( PropertyValueType.Float, name ) => Value = value;
+        public UserFloatProperty( string name, float value ) : base( UserPropertyValueType.Float, name ) => Value = value;
 
         public override object GetValue()
         {
@@ -65,13 +65,13 @@ namespace AtlusGfdLib
         }
     }
 
-    public sealed class NodeBoolProperty : NodeProperty
+    public sealed class UserBoolProperty : UserProperty
     {
         public bool Value { get; set; }
 
-        public NodeBoolProperty( string name ) : base( PropertyValueType.Bool, name ) { }
+        public UserBoolProperty( string name ) : base( UserPropertyValueType.Bool, name ) { }
 
-        public NodeBoolProperty( string name, bool value ) : base( PropertyValueType.Bool, name ) => Value = value;
+        public UserBoolProperty( string name, bool value ) : base( UserPropertyValueType.Bool, name ) => Value = value;
 
         public override object GetValue()
         {
@@ -84,13 +84,13 @@ namespace AtlusGfdLib
         }
     }
 
-    public sealed class NodeStringProperty : NodeProperty
+    public sealed class UserStringProperty : UserProperty
     {
         public string Value { get; set; }
 
-        public NodeStringProperty( string name ) : base( PropertyValueType.String, name ) { }
+        public UserStringProperty( string name ) : base( UserPropertyValueType.String, name ) { }
 
-        public NodeStringProperty( string name, string value ) : base( PropertyValueType.String, name ) => Value = value;
+        public UserStringProperty( string name, string value ) : base( UserPropertyValueType.String, name ) => Value = value;
 
         public override object GetValue()
         {
@@ -103,13 +103,13 @@ namespace AtlusGfdLib
         }
     }
 
-    public sealed class NodeByteVector3Property : NodeProperty
+    public sealed class UserByteVector3Property : UserProperty
     {
         public ByteVector3 Value { get; set; }
 
-        public NodeByteVector3Property( string name ) : base( PropertyValueType.ByteVector3, name ) { }
+        public UserByteVector3Property( string name ) : base( UserPropertyValueType.ByteVector3, name ) { }
 
-        public NodeByteVector3Property( string name, ByteVector3 value ) : base( PropertyValueType.ByteVector3, name ) => Value = value;
+        public UserByteVector3Property( string name, ByteVector3 value ) : base( UserPropertyValueType.ByteVector3, name ) => Value = value;
 
         public override object GetValue()
         {
@@ -122,13 +122,13 @@ namespace AtlusGfdLib
         }
     }
 
-    public sealed class NodeByteVector4Property : NodeProperty
+    public sealed class UserByteVector4Property : UserProperty
     {
         public ByteVector4 Value { get; set; }
 
-        public NodeByteVector4Property( string name ) : base( PropertyValueType.ByteVector4, name ) { }
+        public UserByteVector4Property( string name ) : base( UserPropertyValueType.ByteVector4, name ) { }
 
-        public NodeByteVector4Property( string name, ByteVector4 value ) : base( PropertyValueType.ByteVector4, name ) => Value = value;
+        public UserByteVector4Property( string name, ByteVector4 value ) : base( UserPropertyValueType.ByteVector4, name ) => Value = value;
 
         public override object GetValue()
         {
@@ -141,13 +141,13 @@ namespace AtlusGfdLib
         }
     }
 
-    public sealed class NodeVector3Property : NodeProperty
+    public sealed class UserVector3Property : UserProperty
     {
         public Vector3 Value { get; set; }
 
-        public NodeVector3Property( string name ) : base( PropertyValueType.Vector3, name ) { }
+        public UserVector3Property( string name ) : base( UserPropertyValueType.Vector3, name ) { }
 
-        public NodeVector3Property( string name, Vector3 value ) : base( PropertyValueType.Vector3, name ) => Value = value;
+        public UserVector3Property( string name, Vector3 value ) : base( UserPropertyValueType.Vector3, name ) => Value = value;
 
         public override object GetValue()
         {
@@ -160,13 +160,13 @@ namespace AtlusGfdLib
         }
     }
 
-    public sealed class NodeVector4Property : NodeProperty
+    public sealed class UserVector4Property : UserProperty
     {
         public Vector4 Value { get; set; }
 
-        public NodeVector4Property( string name ) : base( PropertyValueType.Vector4, name ) { }
+        public UserVector4Property( string name ) : base( UserPropertyValueType.Vector4, name ) { }
 
-        public NodeVector4Property( string name, Vector4 value ) : base( PropertyValueType.Vector4, name ) => Value = value;
+        public UserVector4Property( string name, Vector4 value ) : base( UserPropertyValueType.Vector4, name ) => Value = value;
 
         public override object GetValue()
         {
@@ -179,13 +179,13 @@ namespace AtlusGfdLib
         }
     }
 
-    public sealed class NodeByteArrayProperty : NodeProperty
+    public sealed class UserByteArrayProperty : UserProperty
     {
         public byte[] Value { get; set; }
 
-        public NodeByteArrayProperty( string name ) : base( PropertyValueType.ByteArray, name ) { }
+        public UserByteArrayProperty( string name ) : base( UserPropertyValueType.ByteArray, name ) { }
 
-        public NodeByteArrayProperty( string name, byte[] value ) : base( PropertyValueType.ByteArray, name ) => Value = value;
+        public UserByteArrayProperty( string name, byte[] value ) : base( UserPropertyValueType.ByteArray, name ) => Value = value;
 
         public override object GetValue()
         {
@@ -213,7 +213,7 @@ namespace AtlusGfdLib
         }
     }
 
-    public enum PropertyValueType
+    public enum UserPropertyValueType
     {
         Invalid      = 0,
         Int          = 1,

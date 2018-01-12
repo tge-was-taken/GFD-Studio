@@ -31,7 +31,7 @@ namespace AtlusGfdEditor.GUI.Controls
             new GraphicsMode( 32, 24, 0, 4 ),
             3,
             3,
-#if DEBUG
+#if GL_DEBUG
             GraphicsContextFlags.Debug | GraphicsContextFlags.ForwardCompatible )
 #else
             GraphicsContextFlags.ForwardCompatible )
@@ -183,7 +183,7 @@ namespace AtlusGfdEditor.GUI.Controls
             GL.Enable( EnableCap.CullFace );
             GL.Enable( EnableCap.DepthTest );
 
-#if DEBUG
+#if GL_DEBUG
             GL.Enable( EnableCap.DebugOutputSynchronous );
             GL.DebugMessageCallback( GLDebugMessageCallback, IntPtr.Zero );
 #endif
@@ -498,7 +498,18 @@ namespace AtlusGfdEditor.GUI.Controls
             GL.BindBuffer( target, buffer );
 
             // upload data to buffer store
+
+#if GL_DEBUG
+            try
+            {
+#endif
             GL.BufferData( target, size, data, BufferUsageHint.StaticDraw );
+#if GL_DEBUG
+            }
+            catch ( Exception )
+            {
+            }
+#endif
 
             return buffer;
         }

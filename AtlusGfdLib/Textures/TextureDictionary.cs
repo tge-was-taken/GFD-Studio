@@ -21,7 +21,7 @@ namespace AtlusGfdLib
         /// <param name="textureDictionary"></param>
         /// <param name="archiveFilePath"></param>
         /// <returns></returns>
-        public static TextureDictionary ToFieldTextureArchive( TextureDictionary textureDictionary, string archiveFilePath )
+        public static TextureDictionary ConvertToFieldTextureArchive( TextureDictionary textureDictionary, string archiveFilePath )
         {
             var archiveBuilder = new ArchiveBuilder();
 

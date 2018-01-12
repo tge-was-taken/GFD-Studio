@@ -578,7 +578,7 @@ namespace AtlusGfdLib.Tests
                 var otherSortedProperties = b.Properties.Values.OrderBy( x => x.Name ).ToList();
                 for ( int i = 0; i < a.PropertyCount; i++ )
                 {
-                    CompareNodeProperty( sortedProperties[i], otherSortedProperties[i] );
+                    CompareUserProperty( sortedProperties[i], otherSortedProperties[i] );
                 }
             }
 
@@ -602,7 +602,7 @@ namespace AtlusGfdLib.Tests
             }
         }
 
-        private void CompareNodeProperty( NodeProperty a, NodeProperty b )
+        private void CompareUserProperty( UserProperty a, UserProperty b )
         {
             if ( a == null || b == null )
             {

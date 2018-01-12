@@ -32,6 +32,8 @@ namespace AtlusGfdEditor.GUI.Forms
         {
             this.mMainMenuStrip = new System.Windows.Forms.MenuStrip();
             this.mFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.modelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mOpenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -57,6 +59,7 @@ namespace AtlusGfdEditor.GUI.Forms
             // mFileToolStripMenuItem
             // 
             this.mFileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.newToolStripMenuItem,
             this.mOpenToolStripMenuItem,
             this.saveToolStripMenuItem,
             this.saveAsToolStripMenuItem});
@@ -64,25 +67,44 @@ namespace AtlusGfdEditor.GUI.Forms
             this.mFileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.mFileToolStripMenuItem.Text = "File";
             // 
+            // newToolStripMenuItem
+            // 
+            this.newToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.modelToolStripMenuItem});
+            this.newToolStripMenuItem.Name = "newToolStripMenuItem";
+            this.newToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
+            this.newToolStripMenuItem.Text = "New";
+            // 
+            // modelToolStripMenuItem
+            // 
+            this.modelToolStripMenuItem.Name = "modelToolStripMenuItem";
+            this.modelToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.modelToolStripMenuItem.Text = "Model";
+            this.modelToolStripMenuItem.Click += new System.EventHandler(this.NewModelToolStripMenuItemClickEventHandler);
+            // 
             // mOpenToolStripMenuItem
             // 
             this.mOpenToolStripMenuItem.Name = "mOpenToolStripMenuItem";
-            this.mOpenToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.mOpenToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
+            this.mOpenToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
             this.mOpenToolStripMenuItem.Text = "Open";
             this.mOpenToolStripMenuItem.Click += new System.EventHandler(this.OpenToolStripMenuItemClickEventHandler);
             // 
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
             this.saveToolStripMenuItem.Text = "Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.SaveToolStripMenuItemClickEventHandler);
             // 
             // saveAsToolStripMenuItem
             // 
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.saveAsToolStripMenuItem.Text = "Save As";
+            this.saveAsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
+            | System.Windows.Forms.Keys.S)));
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
+            this.saveAsToolStripMenuItem.Text = "Save as...";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.SaveAsToolStripMenuItemClickEventHandler);
             // 
             // mEditToolStripMenuItem
@@ -96,7 +118,7 @@ namespace AtlusGfdEditor.GUI.Forms
             // mOptionsToolStripMenuItem
             // 
             this.mOptionsToolStripMenuItem.Name = "mOptionsToolStripMenuItem";
-            this.mOptionsToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
+            this.mOptionsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.mOptionsToolStripMenuItem.Text = "Options";
             // 
             // mPropertyGrid
@@ -140,7 +162,7 @@ namespace AtlusGfdEditor.GUI.Forms
             this.Controls.Add(this.mContentPanel);
             this.MainMenuStrip = this.mMainMenuStrip;
             this.Name = "MainForm";
-            this.Text = "Atlus Gfd Editor";
+            this.Text = "Atlus GFD Model Editor";
             this.mMainMenuStrip.ResumeLayout(false);
             this.mMainMenuStrip.PerformLayout();
             this.ResumeLayout(false);
@@ -160,5 +182,7 @@ namespace AtlusGfdEditor.GUI.Forms
         private System.Windows.Forms.Panel mContentPanel;
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem newToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem modelToolStripMenuItem;
     }
 }

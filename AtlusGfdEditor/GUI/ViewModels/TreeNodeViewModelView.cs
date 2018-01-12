@@ -2,8 +2,12 @@
 
 namespace AtlusGfdEditor.GUI.ViewModels
 {
+    public delegate void TreeNodeViewModelPropertyChangedEventHandler( object sender, TreeNodeViewModelPropertyChangedEventArgs args );
+
     public class TreeNodeViewModelView : TreeView
     {
+        public event TreeNodeViewModelPropertyChangedEventHandler UserPropertyChanged;
+
         public new TreeNodeViewModel TopNode
         {
             get => ( TreeNodeViewModel )base.TopNode;
@@ -52,6 +56,11 @@ namespace AtlusGfdEditor.GUI.ViewModels
                     childNode.Nodes.Add( new TreeNode() );
                 }
             }
+        }
+
+        internal void InvokeUserPropertyChanged( TreeNodeViewModel viewModel, string propertyName )
+        {
+            UserPropertyChanged?.Invoke( this, new TreeNodeViewModelPropertyChangedEventArgs( viewModel, propertyName ) );
         }
 
         protected override void OnAfterSelect( TreeViewEventArgs e )

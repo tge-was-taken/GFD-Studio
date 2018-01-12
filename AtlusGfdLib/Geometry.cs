@@ -324,6 +324,6 @@ namespace AtlusGfdLib
         Tangent      = 1 << 28,
         Binormal     = 1 << 29, // 12 bytes, after tangent -- binormal?
         Color1       = 1 << 30, // 4 bytes, after tex coord 2
-        Flag80000000 = 1u << 31, // 20 bytes, after Flag40000000
+        Flag80000000 = 1u << 31, // 20 bytes, after HasBoundingBox
     }
 }

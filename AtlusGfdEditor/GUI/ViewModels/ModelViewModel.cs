@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using AtlusGfdEditor.GUI.Forms;
+using AtlusGfdEditor.IO;
 using AtlusGfdLib;
 using AtlusGfdLib.Assimp;
 
@@ -37,21 +38,12 @@ namespace AtlusGfdEditor.GUI.ViewModels
             RegisterReplaceHandler<Model>( Resource.Load<Model> );
             RegisterReplaceHandler< Assimp.Scene >( path =>
             {
-                using ( var dialog = new ModelConverterOptionsDialog( false ) )
-                {
-                    if ( dialog.ShowDialog() != System.Windows.Forms.DialogResult.OK )
-                        return Model;
+                var model = ModelConverterUtillity.ConvertAssimpModel( path );
 
-                    ModelConverterOptions options = new ModelConverterOptions()
-                    {
-                        MaterialPreset = dialog.MaterialPreset,
-                        Version = dialog.Version,
-                        ConvertSkinToZUp = dialog.ConvertSkinToZUp,
-                        GenerateVertexColors = dialog.GenerateVertexColors
-                    };
-
-                    return ModelConverter.ConvertFromAssimpScene( path, options );
-                }
+                if ( model == null )
+                    return Model;
+                else
+                    return model;
             });
 
             RegisterModelUpdateHandler( () =>

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Text.RegularExpressions;
 using AtlusGfdLib.Assimp;
 using Ai = Assimp;
 
@@ -12,6 +13,8 @@ namespace AtlusGfdLib
         private static readonly Matrix4x4 YToZUpMatrix = new Matrix4x4( 1, 0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1 );
 
         private static readonly Matrix4x4 ZToYUpMatrix = new Matrix4x4( 1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1 );
+
+        private static readonly Regex MeshAttachmentNameRegex = new Regex( "_Mesh([0-9]+)", RegexOptions.Compiled );
 
         public static Scene ConvertFromAssimpScene( string filePath, SceneConverterOptions options )
         {
@@ -54,6 +57,51 @@ namespace AtlusGfdLib
             return name.Replace( "___", " " );
         }
 
+        private static Ai.Matrix4x4 GetWorldTransform( Ai.Node aiNode )
+        {
+            var transform = aiNode.Transform;
+            var parent = aiNode.Parent;
+            while ( parent != null )
+            {
+                transform *= parent.Transform;
+                parent = parent.Parent;
+            }
+
+            return transform;
+        }
+
+        private static bool NearlyEquals( float a, float b, float epsilon = 0.001f )
+        {
+            double absA = Math.Abs( a );
+            double absB = Math.Abs( b );
+            double diff = Math.Abs( a - b );
+
+            if ( a == b )
+            { 
+                // shortcut, handles infinities
+                return true;
+            }
+            else if ( a == 0 || b == 0 || diff < double.Epsilon )
+            {
+                // a or b is zero or both are extremely close to it
+                // relative error is less meaningful here
+                return diff < epsilon;
+            }
+            else
+            { 
+                // use relative error
+                return diff / ( absA + absB ) < epsilon;
+            }
+        }
+
+        private static bool NearlyEquals( Ai.Matrix4x4 left, Ai.Matrix4x4 right )
+        {
+            return NearlyEquals( left.A1, right.A1 ) && NearlyEquals( left.A2, right.A2 ) && NearlyEquals( left.A3, right.A3 ) && NearlyEquals( left.A4, right.A4 ) &&
+                   NearlyEquals( left.B1, right.B1 ) && NearlyEquals( left.B2, right.B2 ) && NearlyEquals( left.B3, right.B3 ) && NearlyEquals( left.B4, right.B4 ) &&
+                   NearlyEquals( left.C1, right.C1 ) && NearlyEquals( left.C2, right.C2 ) && NearlyEquals( left.C3, right.C3 ) && NearlyEquals( left.C4, right.C4 ) &&
+                   NearlyEquals( left.D1, right.D1 ) && NearlyEquals( left.D2, right.D2 ) && NearlyEquals( left.D3, right.D3 ) && NearlyEquals( left.D4, right.D4 );
+        }
+
         private static Node ConvertAssimpNodeRecursively( Ai.Node aiNode, Dictionary<string, NodeInfo> nodeLookup, ref int nextIndex )
         {
             aiNode.Transform.Decompose( out var scale, out var rotation, out var translation );
@@ -64,29 +112,50 @@ namespace AtlusGfdLib
                                  new Quaternion( rotation.X, rotation.Y, rotation.Z, rotation.W ),
                                  new Vector3( scale.X, scale.Y, scale.Z ) );
 
-            // Convert properties
-            ConvertAssimpMetadataToProperties( aiNode.Metadata, node );
+            bool isMeshAttachmentNode = aiNode.Parent != null &&                                             // definitely not a mesh attachment if it doesnt have a parent -> RootNode
+                                        aiNode.Parent.Name != "RootNode" &&                                  // probably not a mesh attachment if its part of the scene root
+                                        MeshAttachmentNameRegex.IsMatch( aiNode.Name ) &&                    // match name regex
+                                        NearlyEquals( GetWorldTransform( aiNode ), GetWorldTransform( aiNode.Parent ) );   // world transforms of both the node and the parent must match
 
-            // Add to lookup
-            nodeLookup.Add( node.Name, new NodeInfo( aiNode, node, nextIndex++ ) );
-
-            // Process children
-            foreach ( var aiNodeChild in aiNode.Children )
+            if ( !isMeshAttachmentNode )
             {
-                if ( aiNodeChild.Name == "RootNode" )
+                // Convert properties
+                ConvertAssimpMetadataToProperties( aiNode.Metadata, node );
+
+                if ( !nodeLookup.ContainsKey( node.Name ) )
                 {
-                    // For compatibility with old exports 
-                    foreach ( var aiFakeRootNodeChild in aiNodeChild.Children )
-                    {
-                        var childNode = ConvertAssimpNodeRecursively( aiFakeRootNodeChild, nodeLookup, ref nextIndex );
-                        node.AddChildNode( childNode );
-                    }
+                    // Add to lookup
+                    nodeLookup.Add( node.Name, new NodeInfo( aiNode, node, nextIndex++, false ) );
                 }
                 else
                 {
-                    var childNode = ConvertAssimpNodeRecursively( aiNodeChild, nodeLookup, ref nextIndex );
-                    node.AddChildNode( childNode );
+                    throw new Exception( $"Duplicate node name '{node.Name}'" );
                 }
+                
+
+                // Process children
+                foreach ( var aiNodeChild in aiNode.Children )
+                {
+                    if ( aiNodeChild.Name == "RootNode" )
+                    {
+                        // For compatibility with old exports 
+                        // Merge children of 'RootNode' node with actual root node
+                        foreach ( var aiFakeRootNodeChild in aiNodeChild.Children )
+                        {
+                            var childNode = ConvertAssimpNodeRecursively( aiFakeRootNodeChild, nodeLookup, ref nextIndex );
+                            node.AddChildNode( childNode );
+                        }
+                    }
+                    else
+                    {
+                        var childNode = ConvertAssimpNodeRecursively( aiNodeChild, nodeLookup, ref nextIndex );
+                        node.AddChildNode( childNode );
+                    }
+                }
+            }
+            else
+            {
+                nodeLookup.Add( node.Name, new NodeInfo( aiNode, node, -1, true ) );
             }
 
             return node;
@@ -96,7 +165,7 @@ namespace AtlusGfdLib
         {
             foreach ( var metadataEntry in metadata )
             {
-                NodeProperty property = null;
+                UserProperty property = null;
 
                 // Skip some garbage entries
                 if ( metadataEntry.Key == "IsNull" ||
@@ -135,7 +204,7 @@ namespace AtlusGfdLib
                         if ( kvp.Value == null )
                         {
                             // Assume flag bool
-                            property = new NodeBoolProperty( kvp.Key, true );
+                            property = new UserBoolProperty( kvp.Key, true );
                         }
                         else if ( kvp.Value.StartsWith( "[" ) && kvp.Value.EndsWith( "]" ) )
                         {
@@ -156,33 +225,33 @@ namespace AtlusGfdLib
 
                             if ( arrayFloatValues.Count == 3 )
                             {
-                                property = new NodeVector3Property( kvp.Key, new Vector3( arrayFloatValues[0], arrayFloatValues[1], arrayFloatValues[2] ) );
+                                property = new UserVector3Property( kvp.Key, new Vector3( arrayFloatValues[0], arrayFloatValues[1], arrayFloatValues[2] ) );
                             }
                             else if ( arrayFloatValues.Count == 4 )
                             {
-                                property = new NodeVector4Property( kvp.Key, new Vector4( arrayFloatValues[0], arrayFloatValues[1], arrayFloatValues[2], arrayFloatValues[3] ) );
+                                property = new UserVector4Property( kvp.Key, new Vector4( arrayFloatValues[0], arrayFloatValues[1], arrayFloatValues[2], arrayFloatValues[3] ) );
                             }
                             else
                             {
                                 var arrayByteValues = arrayFloatValues.Cast<byte>();
-                                property = new NodeByteArrayProperty( kvp.Key, arrayByteValues.ToArray() );
+                                property = new UserByteArrayProperty( kvp.Key, arrayByteValues.ToArray() );
                             }
                         }
                         else if ( int.TryParse( kvp.Value, out int intValue ) )
                         {
-                            property = new NodeIntProperty( kvp.Key, intValue );
+                            property = new UserIntProperty( kvp.Key, intValue );
                         }
                         else if ( float.TryParse( kvp.Value, out float floatValue ) )
                         {
-                            property = new NodeFloatProperty( kvp.Key, floatValue );
+                            property = new UserFloatProperty( kvp.Key, floatValue );
                         }
                         else if ( bool.TryParse( kvp.Value, out bool boolValue ) )
                         {
-                            property = new NodeBoolProperty( kvp.Key, boolValue );
+                            property = new UserBoolProperty( kvp.Key, boolValue );
                         }
                         else
                         {
-                            property = new NodeStringProperty( kvp.Key, kvp.Value );
+                            property = new UserStringProperty( kvp.Key, kvp.Value );
                         }
                     }
                 }
@@ -191,23 +260,23 @@ namespace AtlusGfdLib
                     switch ( metadataEntry.Value.DataType )
                     {
                         case Ai.MetaDataType.Bool:
-                            property = new NodeBoolProperty( metadataEntry.Key, metadataEntry.Value.DataAs<bool>().Value );
+                            property = new UserBoolProperty( metadataEntry.Key, metadataEntry.Value.DataAs<bool>().Value );
                             break;
                         case Ai.MetaDataType.Int:
-                            property = new NodeIntProperty( metadataEntry.Key, metadataEntry.Value.DataAs<int>().Value );
+                            property = new UserIntProperty( metadataEntry.Key, metadataEntry.Value.DataAs<int>().Value );
                             break;
                         case Ai.MetaDataType.UInt64:
-                            property = new NodeByteArrayProperty( metadataEntry.Key, BitConverter.GetBytes( metadataEntry.Value.DataAs<ulong>().Value ) );
+                            property = new UserByteArrayProperty( metadataEntry.Key, BitConverter.GetBytes( metadataEntry.Value.DataAs<ulong>().Value ) );
                             break;
                         case Ai.MetaDataType.Float:
-                            property = new NodeFloatProperty( metadataEntry.Key, metadataEntry.Value.DataAs<float>().Value );
+                            property = new UserFloatProperty( metadataEntry.Key, metadataEntry.Value.DataAs<float>().Value );
                             break;
                         case Ai.MetaDataType.String:
-                            property = new NodeStringProperty( metadataEntry.Key, ( string )metadataEntry.Value.Data );
+                            property = new UserStringProperty( metadataEntry.Key, ( string )metadataEntry.Value.Data );
                             break;
                         case Ai.MetaDataType.Vector3D:
                             var data = metadataEntry.Value.DataAs<Ai.Vector3D>().Value;
-                            property = new NodeVector3Property( metadataEntry.Key, new Vector3( data.X, data.Y, data.Z ) );
+                            property = new UserVector3Property( metadataEntry.Key, new Vector3( data.X, data.Y, data.Z ) );
                             break;
                         default:
                             throw new ArgumentOutOfRangeException();
@@ -227,8 +296,8 @@ namespace AtlusGfdLib
         {
             if ( aiNode.HasMeshes )
             {
-                var nodeLookupData = nodeLookup[ UnescapeName( aiNode.Name ) ];
-                var node = nodeLookupData.Node;
+                var nodeInfo = nodeLookup[ UnescapeName( aiNode.Name ) ];
+                var node = nodeInfo.Node;
                 var nodeWorldTransform = node.WorldTransform;
                 Matrix4x4.Invert( nodeWorldTransform, out var nodeInverseWorldTransform );
 
@@ -237,7 +306,16 @@ namespace AtlusGfdLib
                     var aiMesh = aiScene.Meshes[aiMeshIndex];
                     var aiMaterial = aiScene.Materials[aiMesh.MaterialIndex];
                     var geometry = ConvertAssimpMeshToGeometry( aiMesh, aiMaterial, nodeLookup, ref nextBoneIndex, nodeToBoneIndices, boneInverseBindMatrices, ref nodeWorldTransform, ref nodeInverseWorldTransform, transformedVertices, options );
-                    node.Attachments.Add( new NodeGeometryAttachment( geometry ) );
+
+                    if ( !nodeInfo.IsMeshAttachment )
+                    {
+                        node.Attachments.Add( new NodeGeometryAttachment( geometry ) );
+                    }
+                    else
+                    {
+                        node.Parent.Attachments.Add( new NodeGeometryAttachment( geometry ) );
+                        node.Parent.RemoveChildNode( node );
+                    }
                 }
             }
 
@@ -314,7 +392,7 @@ namespace AtlusGfdLib
 
             if ( aiMesh.HasFaces )
             {
-                geometry.TriangleIndexType = TriangleIndexType.UInt16;
+                geometry.TriangleIndexType = aiMesh.VertexCount <= ushort.MaxValue ? TriangleIndexType.UInt16 : TriangleIndexType.UInt32;
                 geometry.Triangles = aiMesh.Faces
                                            .Select( x => new Triangle( ( uint )x.Indices[0], ( uint )x.Indices[1], ( uint )x.Indices[2] ) )
                                            .ToArray();
@@ -419,12 +497,14 @@ namespace AtlusGfdLib
             public readonly Ai.Node AssimpNode;
             public readonly Node Node;
             public readonly int Index;
+            public readonly bool IsMeshAttachment;
 
-            public NodeInfo( Ai.Node aiNode, Node node, int index )
+            public NodeInfo( Ai.Node aiNode, Node node, int index, bool isMesh )
             {
                 AssimpNode = aiNode;
                 Node = node;
                 Index = index;
+                IsMeshAttachment = isMesh;
             }
         }
     }

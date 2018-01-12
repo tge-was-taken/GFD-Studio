@@ -15,7 +15,7 @@ namespace AtlusGfdEditor.FormatModules
             new[] { "png", "bmp" };
 
         public override FormatModuleUsageFlags UsageFlags =>
-             FormatModuleUsageFlags.Import | FormatModuleUsageFlags.Export | FormatModuleUsageFlags.Bitmap;
+             FormatModuleUsageFlags.ImportForEditing | FormatModuleUsageFlags.Export | FormatModuleUsageFlags.Bitmap;
 
         protected override bool CanImportCore( Stream stream, string filename = null )
         {

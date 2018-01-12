@@ -125,7 +125,6 @@ namespace AtlusGfdLib.Assimp
 
         private string EscapeName( string name )
         {
-            // damn assimp bug
             return name.Replace( " ", "___" );
         }
 
@@ -160,7 +159,7 @@ namespace AtlusGfdLib.Assimp
             return aiNode;
         }
 
-        private static void ConvertNodeProperties( Dictionary<string, NodeProperty> properties, Ai.Node aiNode )
+        private static void ConvertNodeProperties( UserPropertyCollection properties, Ai.Node aiNode )
         {
             var stringBuilder = new StringBuilder();
 

@@ -88,6 +88,56 @@ namespace AtlusGfdLib.IO.Resource
 
         private float ReadFloat() => mReader.ReadSingle();
 
+        private float ReadHalfFloat()
+        {
+            var encoded = ReadUShort();
+
+            // Decode half float
+            // Based on numpy implementation (https://github.com/numpy/numpy/blob/984bc91367f9b525eadef14c48c759999bc4adfc/numpy/core/src/npymath/halffloat.c#L477)
+            uint decoded;
+            uint halfExponent = ( encoded & 0x7c00u );
+            uint singleSign = ( encoded & 0x8000u ) << 16;
+            switch ( halfExponent )
+            {
+                case 0x0000u: /* 0 or subnormal */
+                    uint halfSign = ( encoded & 0x03ffu );
+                
+                    if ( halfSign == 0 )
+                    {
+                        /* Signed zero */
+                        decoded = singleSign;
+                    }
+                    else
+                    {
+                        /* Subnormal */
+                        halfSign <<= 1;
+
+                        while ( ( halfSign & 0x0400u ) == 0 )
+                        {
+                            halfSign <<= 1;
+                            halfExponent++;
+                        }
+
+                        uint singleExponent = 127 - 15 - halfExponent << 23;
+                        uint singleSig = ( halfSign & 0x03ffu ) << 13;
+                        decoded = singleSign + singleExponent + singleSig;
+                    }
+                    break;
+
+                case 0x7c00u: /* inf or NaN */
+                    /* All-ones exponent and a copy of the significand */
+                    decoded = singleSign + 0x7f800000u + ( ( encoded & 0x03ffu ) << 13 );
+                    break;
+
+                default: /* normalized */
+                    /* Just need to adjust the exponent and shift */
+                    decoded = singleSign + ( ( ( encoded & 0x7fffu ) + 0x1c000u ) << 13 );
+                    break;
+            }
+
+            return UnsafeUtillities.ReinterpretCast< uint, float >( decoded );
+        }
+
         private Vector2 ReadVector2()
         {
             Vector2 value;
@@ -333,9 +383,9 @@ namespace AtlusGfdLib.IO.Resource
                     case ResourceChunkType.ChunkType000100F9:
                         model.ChunkType000100F9 = ReadChunkType000100F9( header.Version );
                         break;
-                    //case ChunkType.AnimationPackage:
-                    //    model.AnimationPackage = ReadAnimationPackage( header.Version );
-                    //    break;
+                    case ResourceChunkType.AnimationPackage:
+                        model.AnimationPackage = ReadAnimationPackage( header.Version );
+                        break;
                     default:
                         DebugLogPosition( $"Unknown chunk type '{header.Type}'" );
                         mReader.SeekCurrent( header.Size - 12 );
@@ -883,7 +933,7 @@ namespace AtlusGfdLib.IO.Resource
                 var hasProperties = ReadBool();
                 if ( hasProperties )
                 {
-                    node.Properties = ReadNodeProperties( version );
+                    node.Properties = ReadUserPropertyCollection( version );
                 }
             }
 
@@ -944,47 +994,47 @@ namespace AtlusGfdLib.IO.Resource
             return morph;
         }
 
-        private Dictionary<string, NodeProperty> ReadNodeProperties( uint version )
+        private UserPropertyCollection ReadUserPropertyCollection( uint version )
         {
             int propertyCount = ReadInt();
-            var properties = new Dictionary<string, NodeProperty>( propertyCount );
+            var userPropertyCollection = new UserPropertyCollection( propertyCount );
 
             for ( int i = 0; i < propertyCount; i++ )
             {
                 DebugLogPosition( "Property" );
-                var type = ( PropertyValueType )ReadInt();
+                var type = ( UserPropertyValueType )ReadInt();
                 var name = ReadStringWithHash( version );
                 var size = ReadInt();
-                NodeProperty property;
 
+                UserProperty property;
                 switch ( type )
                 {
-                    case PropertyValueType.Int:
-                        property = new NodeIntProperty( name, ReadInt() );
+                    case UserPropertyValueType.Int:
+                        property = new UserIntProperty( name, ReadInt() );
                         break;
-                    case PropertyValueType.Float:
-                        property = new NodeFloatProperty( name, ReadFloat() );
+                    case UserPropertyValueType.Float:
+                        property = new UserFloatProperty( name, ReadFloat() );
                         break;
-                    case PropertyValueType.Bool:
-                        property = new NodeBoolProperty( name, ReadBool() );
+                    case UserPropertyValueType.Bool:
+                        property = new UserBoolProperty( name, ReadBool() );
                         break;
-                    case PropertyValueType.String:
-                        property = new NodeStringProperty( name, ReadString( size - 1 ) );
+                    case UserPropertyValueType.String:
+                        property = new UserStringProperty( name, ReadString( size - 1 ) );
                         break;
-                    case PropertyValueType.ByteVector3:
-                        property = new NodeByteVector3Property( name, ReadByteVector3() );
+                    case UserPropertyValueType.ByteVector3:
+                        property = new UserByteVector3Property( name, ReadByteVector3() );
                         break;
-                    case PropertyValueType.ByteVector4:
-                        property = new NodeByteVector4Property( name, ReadByteVector4() );
+                    case UserPropertyValueType.ByteVector4:
+                        property = new UserByteVector4Property( name, ReadByteVector4() );
                         break;
-                    case PropertyValueType.Vector3:
-                        property = new NodeVector3Property( name, ReadVector3() );
+                    case UserPropertyValueType.Vector3:
+                        property = new UserVector3Property( name, ReadVector3() );
                         break;
-                    case PropertyValueType.Vector4:
-                        property = new NodeVector4Property( name, ReadVector4() );
+                    case UserPropertyValueType.Vector4:
+                        property = new UserVector4Property( name, ReadVector4() );
                         break;
-                    case PropertyValueType.ByteArray:
-                        property = new NodeByteArrayProperty( name, ReadBytes( size ) );
+                    case UserPropertyValueType.ByteArray:
+                        property = new UserByteArrayProperty( name, ReadBytes( size ) );
                         break;
                     default:
                         throw new Exception( $"Unknown node property type: {type}" );
@@ -992,10 +1042,10 @@ namespace AtlusGfdLib.IO.Resource
 
                 DebugLog( $"{type} {name} {size} {property.GetValue()}" );
 
-                properties[property.Name] = property;
+                userPropertyCollection[property.Name] = property;
             }
 
-            return properties;
+            return userPropertyCollection;
         }
         #endregion
 
@@ -1407,7 +1457,474 @@ namespace AtlusGfdLib.IO.Resource
         // Animation read methods
         private AnimationPackage ReadAnimationPackage( uint version )
         {
+            var animationPackage = new AnimationPackage( version );
+
+            if ( version > 0x1104950 )
+            {
+                animationPackage.Flags = ( AnimationPackageFlags )ReadInt(); // r26
+            }
+
+            int count1 = ReadInt();
+            for ( int i = 0; i < count1; i++ )
+            {
+                var animation = ReadAnimation( version );
+                animationPackage.Animations.Add( animation );
+            }
+
+            int count2 = ReadInt();
+            for ( int i = 0; i < count2; i++ )
+            {
+                var animation = ReadAnimation( version );
+                animationPackage.BlendAnimations.Add( animation );
+            }
+
+            if ( animationPackage.Flags.HasFlag( AnimationPackageFlags.Flag4 ) )
+            {
+                animationPackage.ExtraData = ReadAnimationExtraData( version );
+            }
+
+            return animationPackage;
+        }
+
+        private AnimationExtraData ReadAnimationExtraData( uint version )
+        {
+            var animationExtraData = new AnimationExtraData();
+
+            animationExtraData.Field00 = ReadAnimation( version );
+            animationExtraData.Field10 = ReadFloat();
+            animationExtraData.Field04 = ReadAnimation( version );
+            animationExtraData.Field14 = ReadFloat();
+            animationExtraData.Field08 = ReadAnimation( version );
+            animationExtraData.Field18 = ReadFloat();
+            animationExtraData.Field0C = ReadAnimation( version );
+            animationExtraData.Field1C = ReadFloat();
+
+            return animationExtraData;
+        }
+
+        private Animation ReadAnimation( uint version )
+        {
+            var animation = new Animation();
+
+            if ( version > 0x1104110 )
+            {
+                animation.Flags = ( AnimationFlags )ReadInt();
+            }
+
+            animation.Duration = ReadFloat();
+
+            var controllerCount = ReadInt();
+            for ( var i = 0; i < controllerCount; i++ )
+            {
+                var controller = ReadAnimationController( version );
+                animation.Controllers.Add( controller );
+            }
+
+            if ( animation.Flags.HasFlag( AnimationFlags.Flag10000000 ) )
+            {
+                var count = ReadInt();
+                for ( var i = 0; i < count; i++ )
+                {
+                    animation.Field10.Add( new AnimationFlag10000000DataEntry
+                    {
+                        Field00 = ReadEpl( version ),
+                        Field04 = ReadStringWithHash( version )
+                    });
+                }
+            }
+
+            if ( animation.Flags.HasFlag( AnimationFlags.Flag20000000 ) )
+            {
+                animation.Field14 = ReadAnimationExtraData( version );
+            }
+
+            if ( animation.Flags.HasFlag( AnimationFlags.Flag80000000 ) )
+            {
+                animation.Field1C = new AnimationFlag80000000Data
+                {
+                    Field00 = ReadInt(),
+                    Field04 = ReadStringWithHash( version ),
+                    Field20 = ReadAnimationKeyframeTrack( version )
+                };
+            }
+
+            if ( animation.Flags.HasFlag( AnimationFlags.HasBoundingBox ) )
+            {
+                animation.BoundingBox = ReadBoundingBox();
+            }
+
+            if ( animation.Flags.HasFlag( AnimationFlags.Flag2000000 ) )
+            {
+                animation.Field24 = ReadFloat();
+            }
+
+            if ( animation.Flags.HasFlag( AnimationFlags.HasProperties ) )
+            {
+                animation.Properties = ReadUserPropertyCollection( version );
+            }
+
+            return animation;
+        }
+
+        private AnimationController ReadAnimationController( uint version )
+        {
+            var controller = new AnimationController();
+            controller.Type = ( AnimationControllerType )ReadShort();
+            controller.TargetId = ReadInt();
+            controller.TargetName = ReadStringWithHash( version );
+
+            var trackCount = ReadInt();
+            for ( int j = 0; j < trackCount; j++ )
+            {
+                var keyframeTrack = ReadAnimationKeyframeTrack( version );
+                controller.Tracks.Add( keyframeTrack );
+            }
+
+            return controller;
+        }
+
+        private AnimationKeyframeTrack ReadAnimationKeyframeTrack( uint version )
+        {
+            var track = new AnimationKeyframeTrack();
+            track.KeyframeType = ( AnimationKeyframeType )ReadInt();
+
+            int keyframeCount = ReadInt();
+
+            for ( int i = 0; i < keyframeCount; i++ )
+                track.KeyframeTimings.Add( ReadFloat() );
+
+            for ( int i = 0; i < keyframeCount; i++ )
+            {
+                var keyframe = ReadAnimationKeyframe( version, track.KeyframeType );
+                track.Keyframes.Add( keyframe );
+            }
+
+            if ( track.KeyframeType == AnimationKeyframeType.Type26 || track.KeyframeType == AnimationKeyframeType.PRSHalf ||
+                 track.KeyframeType == AnimationKeyframeType.PRHalf )
+            {
+                track.BasePosition = ReadVector3();
+                track.BaseScale = ReadVector3();
+            }
+
+            return track;
+        }
+
+        private IAnimationKeyframe ReadAnimationKeyframe( uint version, AnimationKeyframeType type )
+        {
+            switch ( type )
+            {
+                case AnimationKeyframeType.PRSingle:
+                    return ReadAnimationType01( version );
+
+                case AnimationKeyframeType.PRSSingle:
+                    return ReadAnimationType02( version );
+
+                case AnimationKeyframeType.Type03:
+                    return ReadAnimationType03( version );
+
+                case AnimationKeyframeType.Type04:
+                    return ReadAnimationType04( version );
+
+                case AnimationKeyframeType.Type05:
+                    return ReadAnimationType05( version );
+
+                case AnimationKeyframeType.Type06:
+                    return ReadAnimationType06( version );
+
+                case AnimationKeyframeType.Type07:
+                    return ReadAnimationType07( version );
+
+                case AnimationKeyframeType.Type08:
+                    return ReadAnimationType08( version );
+
+                case AnimationKeyframeType.Type09:
+                    return ReadAnimationType09( version );
+
+                case AnimationKeyframeType.Type10:
+                    return ReadAnimationType10( version );
+
+                case AnimationKeyframeType.Type11:
+                    return ReadAnimationType11( version );
+
+                case AnimationKeyframeType.Type12:
+                    return ReadAnimationType12( version );
+
+                case AnimationKeyframeType.Type13:
+                    return ReadAnimationType13( version );
+
+                case AnimationKeyframeType.Type14:
+                    return ReadAnimationType14( version );
+
+                case AnimationKeyframeType.Type15:
+                    return ReadAnimationType15( version );
+
+                case AnimationKeyframeType.Type16:
+                    return ReadAnimationType16( version );
+
+                case AnimationKeyframeType.Type17:
+                    return ReadAnimationType17( version );
+
+                case AnimationKeyframeType.Type18:
+                    return ReadAnimationType18( version );
+
+                case AnimationKeyframeType.Type19:
+                    return ReadAnimationType19( version );
+
+                case AnimationKeyframeType.Type20:
+                    return ReadAnimationType20( version );
+
+                case AnimationKeyframeType.Type21:
+                    return ReadAnimationType21( version );
+
+                case AnimationKeyframeType.Type22:
+                    return ReadAnimationType22( version );
+
+                case AnimationKeyframeType.Type23:
+                    return ReadAnimationType23( version );
+
+                case AnimationKeyframeType.Type24:
+                    return ReadAnimationType24( version );
+
+                case AnimationKeyframeType.Type25:
+                    return ReadAnimationType25( version );
+
+                case AnimationKeyframeType.Type26:
+                    return ReadAnimationType26( version );
+
+                case AnimationKeyframeType.PRSHalf:
+                    return ReadAnimationType27( version );
+
+                case AnimationKeyframeType.PRHalf:
+                    return ReadAnimationType28( version );
+
+                case AnimationKeyframeType.Type29:
+                    return ReadAnimationType29( version );
+
+                case AnimationKeyframeType.Type30:
+                    return ReadAnimationType30( version );
+
+                case AnimationKeyframeType.Type31:
+                    return ReadAnimationType31( version );
+
+                default:
+                    throw new Exception( $"Invalid keyframe type! '{type}'" );
+            }
+        }
+
+        private IAnimationKeyframe ReadAnimationType01( uint version )
+        {
+            return new AnimationKeyframePRSingle()
+            {
+                Position = ReadVector3(),
+                Rotation = ReadQuaternion(),
+            };
+        }
+
+        private IAnimationKeyframe ReadAnimationType02( uint version )
+        {
+            return new AnimationKeyframePRSSingle
+            {
+                Position = ReadVector3(),
+                Rotation = ReadQuaternion(),
+                Scale = ReadVector3()
+            };
+        }
+
+        private IAnimationKeyframe ReadAnimationType03( uint version )
+        {
             throw new NotImplementedException();
+        }
+
+        private IAnimationKeyframe ReadAnimationType04( uint version )
+        {
+            throw new NotImplementedException();
+        }
+
+        private IAnimationKeyframe ReadAnimationType05( uint version )
+        {
+            throw new NotImplementedException();
+        }
+
+        private IAnimationKeyframe ReadAnimationType06( uint version )
+        {
+            throw new NotImplementedException();
+        }
+
+        private IAnimationKeyframe ReadAnimationType07( uint version )
+        {
+            throw new NotImplementedException();
+        }
+
+        private IAnimationKeyframe ReadAnimationType08( uint version )
+        {
+            throw new NotImplementedException();
+        }
+
+        private IAnimationKeyframe ReadAnimationType09( uint version )
+        {
+            throw new NotImplementedException();
+        }
+
+        private IAnimationKeyframe ReadAnimationType10( uint version )
+        {
+            throw new NotImplementedException();
+        }
+
+        private IAnimationKeyframe ReadAnimationType11( uint version )
+        {
+            throw new NotImplementedException();
+        }
+
+        private IAnimationKeyframe ReadAnimationType12( uint version )
+        {
+            return new AnimationMaterialKeyframeType12 { Field00 = ReadFloat() };
+        }
+
+        private IAnimationKeyframe ReadAnimationType13( uint version )
+        {
+            throw new NotImplementedException();
+        }
+
+        private IAnimationKeyframe ReadAnimationType14( uint version )
+        {
+            return new AnimationMaterialKeyframeType14()
+            {
+                Field00 = ReadFloat(),
+                Field04 = ReadFloat(),
+                Field08 = ReadFloat(),
+            };
+        }
+
+        private IAnimationKeyframe ReadAnimationType15( uint version )
+        {
+            throw new NotImplementedException();
+        }
+
+        private IAnimationKeyframe ReadAnimationType16( uint version )
+        {
+            throw new NotImplementedException();
+        }
+
+        private IAnimationKeyframe ReadAnimationType17( uint version )
+        {
+            throw new NotImplementedException();
+        }
+
+        private IAnimationKeyframe ReadAnimationType18( uint version )
+        {
+            throw new NotImplementedException();
+        }
+
+        private IAnimationKeyframe ReadAnimationType19( uint version )
+        {
+            throw new NotImplementedException();
+        }
+
+        private IAnimationKeyframe ReadAnimationType20( uint version )
+        {
+            throw new NotImplementedException();
+        }
+
+        private IAnimationKeyframe ReadAnimationType21( uint version )
+        {
+            throw new NotImplementedException();
+        }
+
+        private IAnimationKeyframe ReadAnimationType22( uint version )
+        {
+            throw new NotImplementedException();
+        }
+
+        private IAnimationKeyframe ReadAnimationType23( uint version )
+        {
+            throw new NotImplementedException();
+        }
+
+        private IAnimationKeyframe ReadAnimationType24( uint version )
+        {
+            throw new NotImplementedException();
+        }
+
+        private IAnimationKeyframe ReadAnimationType25( uint version )
+        {
+            throw new NotImplementedException();
+        }
+
+        private IAnimationKeyframe ReadAnimationType26( uint version )
+        {
+            throw new NotImplementedException();
+        }
+
+        private IAnimationKeyframe ReadAnimationType27( uint version )
+        {
+            return new AnimationKeyframePRSHalf
+            {
+                Position = new Vector3( ReadHalfFloat(), ReadHalfFloat(), ReadHalfFloat() ),
+                Rotation = new Quaternion( ReadHalfFloat(), ReadHalfFloat(), ReadHalfFloat(), ReadHalfFloat() ),
+                Scale = new Vector3( ReadHalfFloat(), ReadHalfFloat(), ReadHalfFloat() )
+            };
+        }
+
+        private IAnimationKeyframe ReadAnimationType28( uint version )
+        {
+            return new AnimationKeyframePRHalf
+            {
+                Position = new Vector3( ReadHalfFloat(), ReadHalfFloat(), ReadHalfFloat() ),
+                Rotation = new Quaternion( ReadHalfFloat(), ReadHalfFloat(), ReadHalfFloat(), ReadHalfFloat() )
+            };
+        }
+
+        private IAnimationKeyframe ReadAnimationType29( uint version )
+        {
+            return new AnimationMaterialKeyframeType29 { Field00 = ReadFloat() };
+        }
+
+        private IAnimationKeyframe ReadAnimationType30( uint version )
+        {
+            throw new NotImplementedException();
+        }
+
+        private IAnimationKeyframe ReadAnimationType31( uint version )
+        {
+            throw new NotImplementedException();
+        }
+
+        // Epl
+
+        private Epl ReadEpl( uint version )
+        {
+            var epl = new Epl();
+
+            epl.Field20 = ReadInt() | 4;
+            epl.Field2C = ReadNodeRecursive( version );
+            epl.Field30 = ReadEplAnimation( version );
+
+            if ( version > 0x1105060 )
+            {
+                epl.Field40 = ReadShort();
+            }
+
+            return epl;
+        }
+
+        private EplAnimation ReadEplAnimation( uint version )
+        {
+            var epl = new EplAnimation();
+
+            epl.Field00 = ReadInt();
+            epl.Field04 = ReadFloat();
+            epl.Field0C = ReadAnimation( version );
+
+            var count = ReadInt();
+            for ( int i = 0; i < count; i++ )
+            {
+                ReadFloat();
+                ReadFloat();
+                ReadInt();
+                ReadInt();
+            }
+
+            return epl;
         }
 
         // Shader read methods

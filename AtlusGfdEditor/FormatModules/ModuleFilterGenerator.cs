@@ -9,7 +9,7 @@ namespace AtlusGfdEditor.FormatModules
     /// </summary>
     public static class ModuleFilterGenerator
     {
-        private static StringBuilder sBuilder = new StringBuilder();
+        private static readonly StringBuilder sBuilder = new StringBuilder();
 
         /// <summary>
         /// Generate a file filter using the modules that match the specified flags.
@@ -19,6 +19,33 @@ namespace AtlusGfdEditor.FormatModules
         public static string GenerateFilter( FormatModuleUsageFlags flags )
         {
             return GenerateFilter( flags, null );
+        }
+
+        public static string GenerateFilterForAllSupportedImportFormats()
+        {
+            var builder = new StringBuilder();
+            var extensionListBuilder = new StringBuilder();
+            var query = FormatModuleRegistry.Modules.Where( x => x.UsageFlags.HasFlag( FormatModuleUsageFlags.Import ) );
+
+            foreach ( var module in query )
+            {
+                bool isLastModule = module == query.Last();
+
+                for ( var i = 0; i < module.Extensions.Length; i++ )
+                {
+                    string extension = module.Extensions[i];
+                    extensionListBuilder.Append( $"*.{extension}" );
+
+                    bool isLastExtension = isLastModule && i == module.Extensions.Length - 1;
+                    if ( !isLastExtension )
+                        extensionListBuilder.Append( ";" );
+                }
+            }
+
+            builder.Append( $"All supported files ({extensionListBuilder})|{extensionListBuilder}|" );
+            builder.Append( GenerateFilter( FormatModuleUsageFlags.Import ) );
+
+            return builder.ToString();
         }
 
         /// <summary>

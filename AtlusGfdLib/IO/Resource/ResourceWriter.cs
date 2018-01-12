@@ -936,7 +936,7 @@ namespace AtlusGfdLib.IO.Resource
             WriteStringWithHash( version, morph.MaterialName );
         }
 
-        private void WriteNodeProperties( uint version, Dictionary<string, NodeProperty> properties )
+        private void WriteNodeProperties( uint version, UserPropertyCollection properties )
         {
             WriteInt( properties.Count );
 
@@ -947,42 +947,42 @@ namespace AtlusGfdLib.IO.Resource
 
                 switch ( property.ValueType )
                 {
-                    case PropertyValueType.Int:
-                        WriteInt( sizeof( int ) );
+                    case UserPropertyValueType.Int:
+                        WriteInt( 4 );
                         WriteInt( property.GetValue<int>() );
                         break;
-                    case PropertyValueType.Float:
-                        WriteInt( sizeof( float ) );
+                    case UserPropertyValueType.Float:
+                        WriteInt( 4 );
                         WriteFloat( property.GetValue<float>() );
                         break;
-                    case PropertyValueType.Bool:
-                        WriteInt( sizeof( bool ) );
+                    case UserPropertyValueType.Bool:
+                        WriteInt( 1 );
                         WriteBool( property.GetValue<bool>() );
                         break;
-                    case PropertyValueType.String:
+                    case UserPropertyValueType.String:
                         {
                             var value = property.GetValue<string>();
                             WriteInt( value.Length + 1 );
                             WriteString( value, value.Length );
                         }
                         break;
-                    case PropertyValueType.ByteVector3:
-                        WriteInt( sizeof( byte) * 3 );
+                    case UserPropertyValueType.ByteVector3:
+                        WriteInt( 3 );
                         WriteByteVector3( property.GetValue<ByteVector3>() );
                         break;
-                    case PropertyValueType.ByteVector4:
-                        WriteInt( sizeof( byte ) * 4 );
+                    case UserPropertyValueType.ByteVector4:
+                        WriteInt( 4 );
                         WriteByteVector4( property.GetValue<ByteVector4>() );
                         break;
-                    case PropertyValueType.Vector3:
-                        WriteInt( sizeof( float ) * 3 );
+                    case UserPropertyValueType.Vector3:
+                        WriteInt( 12 );
                         WriteVector3( property.GetValue<Vector3>() );
                         break;
-                    case PropertyValueType.Vector4:
-                        WriteInt( sizeof( float ) * 4 );
+                    case UserPropertyValueType.Vector4:
+                        WriteInt( 16 );
                         WriteVector4( property.GetValue<Vector4>() );
                         break;
-                    case PropertyValueType.ByteArray:
+                    case UserPropertyValueType.ByteArray:
                         {
                             var value = property.GetValue<byte[]>();
                             WriteInt( value.Length );

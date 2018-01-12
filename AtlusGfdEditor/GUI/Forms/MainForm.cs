@@ -6,17 +6,20 @@ using System.Windows.Forms;
 using AtlusGfdEditor.FormatModules;
 using AtlusGfdEditor.GUI.Controls;
 using AtlusGfdEditor.GUI.ViewModels;
+using AtlusGfdEditor.IO;
 using AtlusGfdLib;
 
 namespace AtlusGfdEditor.GUI.Forms
 {
     public partial class MainForm : Form
     {
+        private const string RECENTLY_OPENED_FILES_LIST_FILEPATH = "RecentlyOpenedFiles.txt";
         private TreeNodeViewModel mLastSelectedNode;
         private Stack<string> mRecentlyOpenedFileHistoryStack;
-        private const string RECENTLY_OPENED_FILES_LIST_FILEPATH = "RecentlyOpenedFiles.txt";
 
         public TreeNodeViewModelView TreeView => mTreeView;
+
+        public string LastOpenedFilePath { get; private set; }
 
         //
         // Initialization
@@ -60,6 +63,18 @@ namespace AtlusGfdEditor.GUI.Forms
             mTreeView.AfterSelect += TreeViewAfterSelectEventHandler;
             mContentPanel.ControlAdded += ContentPanelControlAddedEventHandler;
             mContentPanel.Resize += ContentPanelResizeEventHandler;
+            mTreeView.UserPropertyChanged += TreeViewUserPropertyChangedEventHandler;
+        }
+
+        private void TreeViewUserPropertyChangedEventHandler( object sender, TreeNodeViewModelPropertyChangedEventArgs args )
+        {
+            var controls = mContentPanel.Controls.Find( nameof( ModelViewControl ), true );
+
+            if ( controls.Length == 1 )
+            {
+                var modelViewControl = ( ModelViewControl )controls[ 0 ];
+                modelViewControl.LoadModel( ( Model ) TreeView.TopNode.Model );
+            }
         }
 
         //
@@ -75,20 +90,14 @@ namespace AtlusGfdEditor.GUI.Forms
         //
         private void AddRecentlyOpenedFile( string filePath )
         {
+            LastOpenedFilePath = filePath;
+
             mRecentlyOpenedFileHistoryStack.Push( filePath );
 
             var item = new ToolStripMenuItem( filePath );
             item.Click += OpenToolStripRecentlyOpenedFileClickEventHandler;
 
             mOpenToolStripMenuItem.DropDown.Items.Insert( 0, item );
-        }
-
-        public string GetLastOpenedFile()
-        {
-            if ( mRecentlyOpenedFileHistoryStack.Count == 0 )
-                return null;
-
-            return mRecentlyOpenedFileHistoryStack.Peek();
         }
 
         private void SaveRecentlyOpenedFilesList()
@@ -119,7 +128,7 @@ namespace AtlusGfdEditor.GUI.Forms
         {
             using ( var dialog = new OpenFileDialog() )
             {
-                dialog.Filter = ModuleFilterGenerator.GenerateFilter( FormatModuleUsageFlags.Import );
+                dialog.Filter = ModuleFilterGenerator.GenerateFilterForAllSupportedImportFormats();
                 if ( dialog.ShowDialog() != DialogResult.OK )
                     return null;
 
@@ -214,6 +223,7 @@ namespace AtlusGfdEditor.GUI.Forms
                 {
                     ClearContentPanel();
                     var modelViewControl = new ModelViewControl();
+                    modelViewControl.Name = nameof( ModelViewControl );
                     modelViewControl.Visible = false;
                     modelViewControl.LoadModel( ( Model )viewModel.Model );
                     control = modelViewControl;
@@ -262,13 +272,27 @@ namespace AtlusGfdEditor.GUI.Forms
 
         private void SaveToolStripMenuItemClickEventHandler( object sender, EventArgs e )
         {
-            SaveFile( GetLastOpenedFile() );
+            if ( LastOpenedFilePath != null )
+                SaveFile( LastOpenedFilePath );
+            else
+                MessageBox.Show( "No file opened! Use the 'Save as...' option instead.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error );
         }
 
         private void SaveAsToolStripMenuItemClickEventHandler( object sender, EventArgs e )
         {
             var path = SelectFileAndSave();
             OpenFile( path );
+        }
+
+        private void NewModelToolStripMenuItemClickEventHandler( object sender, EventArgs e )
+        {
+            var model = ModelConverterUtillity.ConvertAssimpModel();
+            if ( model != null )
+            {
+                var viewModel = TreeNodeViewModelFactory.Create( "Model", model );
+                mTreeView.SetTopNode( viewModel );
+                LastOpenedFilePath = null;
+            }
         }
     }
 }

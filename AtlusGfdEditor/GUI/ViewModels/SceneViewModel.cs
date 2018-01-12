@@ -67,7 +67,21 @@ namespace AtlusGfdEditor.GUI.ViewModels
 
             RegisterModelUpdateHandler( () =>
             {
-                var scene = Model;
+                var scene = new Scene( Model.Version );
+                scene.BoundingBox = Model.BoundingBox;
+                scene.BoundingSphere = Model.BoundingSphere;
+                scene.Flags = Model.Flags;
+
+                if ( MatrixPaletteViewModel != null && Nodes.Contains(MatrixPaletteViewModel) )
+                    scene.MatrixPalette = MatrixPaletteViewModel.Model;
+                else
+                    scene.MatrixPalette = null;
+
+                if ( RootNodeViewModel != null && Nodes.Contains( RootNodeViewModel ) )
+                    scene.RootNode = RootNodeViewModel.Model;
+                else
+                    scene.RootNode = null;
+
                 return scene;
             });
         }

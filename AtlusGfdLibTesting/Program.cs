@@ -20,12 +20,17 @@ namespace AtlusGfdLibTesting
     {
         static void Main( string[] args )
         {
+            var animationPackage = Resource.Load<Model>( @"D:\Modding\Persona 5 EU\Main game\Extracted\data\model\character\0001\emt0001.GAP" ).AnimationPackage;
+            return;
+
+
             /*
             var model = Resource.Load< Model >( @"D:\Modding\Persona 4 Dancing CPK RIP\data\dance\player\pc001_01.GMD" );
             var material = model.MaterialDictionary["_pc001_01_01"];
             return;
             */
 
+            /*
             var options = new ModelConverterOptions
             {
                 MaterialPreset = MaterialPreset.CharacterClothP4D,
@@ -38,10 +43,11 @@ namespace AtlusGfdLibTesting
 
             Resource.Save( model, @"D:\Modding\Persona 4 Dancing CPK RIP\Game mods\DanteOverYu\mod\dance\player\pc001_01.GMD" );
             return;
+            */
 
             /*
             var model = ModelFactory.ConvertFromAssimpScene( @"D:\Modding\Persona 5 EU\Game mods\TeapotKun\CityEscape.FBX", MaterialPreset.FieldTerrainDiffuseCastShadow );
-            model.TextureDictionary = TextureDictionary.ToFieldTextureArchive( model.TextureDictionary, @"D:\Modding\Persona 5 EU\Game mods\TeapotKun\mod\model\field_tex\textures\tex000_100_00_00.bin" );
+            model.TextureDictionary = TextureDictionary.ConvertToFieldTextureArchive( model.TextureDictionary, @"D:\Modding\Persona 5 EU\Game mods\TeapotKun\mod\model\field_tex\textures\tex000_100_00_00.bin" );
             Resource.Save( model, @"D:\Modding\Persona 5 EU\Game mods\TeapotKun\mod\model\field_tex\f000_100_0.GFS" );
             */
 

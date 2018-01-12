@@ -21,7 +21,7 @@ namespace AtlusGfdEditor.GUI.Forms
         {
             get
             {
-                uint version = 0;
+                uint version;
 
                 if ( VersionTextBox.Text.StartsWith( "0x" ) )
                 {
@@ -58,6 +58,7 @@ namespace AtlusGfdEditor.GUI.Forms
             else
             {
                 MaterialPresetComboBox.DataSource = Enum.GetNames( typeof( MaterialPreset ) );
+                MaterialPresetComboBox.SelectedIndex = ( int )MaterialPreset.CharacterSkinP5;
             }
         }
     }

@@ -133,6 +133,7 @@ namespace AtlusGfdEditor.GUI.ViewModels
 
         private bool mHasPendingChanges;
         private bool mIsInitializingView;
+        private List<ToolStripMenuItem> mCustomHandlers;
 
         /// <summary>
         /// Gets or sets if the tree node is dirty and its resource needs to be rebuilt.
@@ -158,6 +159,7 @@ namespace AtlusGfdEditor.GUI.ViewModels
             mExportHandlers = new Dictionary<Type, TreeNodeAdapterExportHandler>();
             mReplaceHandlers = new Dictionary<Type, TreeNodeAdapterReplaceHandler>();
             mAddHandlers = new Dictionary<Type, TreeNodeAdapterAddHandler>();
+            mCustomHandlers = new List< ToolStripMenuItem >();
         }
 
         //
@@ -243,7 +245,12 @@ namespace AtlusGfdEditor.GUI.ViewModels
 
             Trace.TraceInformation( $"{nameof( TreeNodeViewModel )} [{Text}]: {nameof( Replace )} {type} from {filepath}" );
 
-            Model = replaceAction( filepath );
+            Replace( replaceAction( filepath ) );
+        }
+
+        public void Replace( object model )
+        {
+            Model = model;
             NotifyModelPropertyChanged();
             InitializeView( true );
             TreeView.RefreshSelection();
@@ -435,6 +442,7 @@ namespace AtlusGfdEditor.GUI.ViewModels
 
             // invoke property changed event
             PropertyChanged?.Invoke( this, new PropertyChangedEventArgs( propertyName ) );
+            TreeView?.InvokeUserPropertyChanged( this, propertyName );
         }
 
         protected void NotifyModelPropertyChanged()
@@ -450,6 +458,7 @@ namespace AtlusGfdEditor.GUI.ViewModels
 
             // invoke property changed event
             PropertyChanged?.Invoke( this, new PropertyChangedEventArgs( nameof( Model ) ) );
+            TreeView?.InvokeUserPropertyChanged( this, nameof(Model) );
         }
 
         // 
@@ -468,6 +477,11 @@ namespace AtlusGfdEditor.GUI.ViewModels
         protected void RegisterAddHandler<T>( TreeNodeAdapterAddHandler handler )
         {
             mAddHandlers[typeof( T )] = handler;
+        }
+
+        protected void RegisterCustomHandler( string text, Action action, Keys shortcutKeys = Keys.None )
+        {
+            mCustomHandlers.Add( new ToolStripMenuItem( text, null, CreateEventHandler( action ), shortcutKeys ) );
         }
 
         //
@@ -587,6 +601,14 @@ namespace AtlusGfdEditor.GUI.ViewModels
         private void InitializeContextMenuStrip()
         {
             ContextMenuStrip = new ContextMenuStrip();
+
+            if ( mCustomHandlers.Count > 0 )
+            {
+                foreach ( var menuItem in mCustomHandlers )
+                    ContextMenuStrip.Items.Add( menuItem );
+
+                ContextMenuStrip.Items.Add( new ToolStripSeparator() );
+            }
 
             if ( ContextMenuFlags.HasFlag( TreeNodeViewModelMenuFlags.Export ) )
             {

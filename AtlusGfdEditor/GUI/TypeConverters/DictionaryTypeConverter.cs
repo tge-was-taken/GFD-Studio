@@ -7,20 +7,20 @@ using AtlusGfdLib;
 
 namespace AtlusGfdEditor.GUI.TypeConverters
 {
-    public class NodePropertyDictionaryTypeConverter : ExpandableObjectConverter
+    public class UserPropertyDictionaryTypeConverter : ExpandableObjectConverter
     {
         public override PropertyDescriptorCollection GetProperties( ITypeDescriptorContext context, object value, Attribute[] attributes )
         {
-            var dictionary = value as Dictionary<string, NodeProperty>;
+            var dictionary = value as UserPropertyCollection;
             if ( dictionary == null )
                 return new PropertyDescriptorCollection( new PropertyDescriptor[0] );
 
             var properties = new PropertyDescriptor[ dictionary.Count ];
 
             int nextIndex = -1;
-            foreach ( KeyValuePair<string, NodeProperty> e in dictionary )
+            foreach ( KeyValuePair<string, UserProperty> e in dictionary )
             {
-                properties[ ++nextIndex ] = ( new NodePropertyDictionaryPropertyDescriptor( dictionary, e.Key ) );
+                properties[ ++nextIndex ] = ( new UserPropertyDictionaryPropertyDescriptor( dictionary, e.Key ) );
             }
 
             return new PropertyDescriptorCollection( properties );
@@ -47,12 +47,12 @@ namespace AtlusGfdEditor.GUI.TypeConverters
         }
     }
 
-    public class NodePropertyDictionaryPropertyDescriptor : PropertyDescriptor
+    public class UserPropertyDictionaryPropertyDescriptor : PropertyDescriptor
     {
-        private readonly Dictionary<string, NodeProperty> mDictionary;
+        private readonly UserPropertyCollection mDictionary;
         private readonly string mKey;
 
-        internal NodePropertyDictionaryPropertyDescriptor( Dictionary<string, NodeProperty> d, string key )
+        internal UserPropertyDictionaryPropertyDescriptor( UserPropertyCollection d, string key )
             : base( key, null )
         {
             mDictionary = d;
@@ -63,20 +63,20 @@ namespace AtlusGfdEditor.GUI.TypeConverters
 
         public override void SetValue( object component, object value )
         {
-            NodeProperty property = null;
+            UserProperty property = null;
             var input = ( string ) value;
 
             if ( int.TryParse( input, out int intValue ) )
             {
-                property = new NodeIntProperty( mKey, intValue );
+                property = new UserIntProperty( mKey, intValue );
             }
             else if ( float.TryParse( input, out float floatValue ) )
             {
-                property = new NodeFloatProperty( mKey, floatValue );
+                property = new UserFloatProperty( mKey, floatValue );
             }
             else if ( bool.TryParse( input, out bool boolValue ) )
             {
-                property = new NodeBoolProperty( mKey, boolValue );
+                property = new UserBoolProperty( mKey, boolValue );
             }
             else if ( input.Contains( "," ) )
             {
@@ -94,22 +94,22 @@ namespace AtlusGfdEditor.GUI.TypeConverters
 
                 if ( vectorFloats.Length == 3 )
                 {
-                    property = new NodeVector3Property( mKey, new Vector3( vectorFloats[ 0 ], vectorFloats[ 1 ], vectorFloats[ 2 ] ) );
+                    property = new UserVector3Property( mKey, new Vector3( vectorFloats[ 0 ], vectorFloats[ 1 ], vectorFloats[ 2 ] ) );
                 }
                 else if ( vectorFloats.Length == 4 )
                 {
-                    property = new NodeVector4Property(
+                    property = new UserVector4Property(
                         mKey, new Vector4( vectorFloats[ 0 ], vectorFloats[ 1 ], vectorFloats[ 2 ], vectorFloats[ 3 ] ) );
                 }
                 else
                 {
-                    property = new NodeByteArrayProperty( mKey, vectorFloats.Cast< byte >().ToArray() );
+                    property = new UserByteArrayProperty( mKey, vectorFloats.Cast< byte >().ToArray() );
                 }
             }
 
             if ( property == null )
             {
-                property = new NodeStringProperty( mKey, input );
+                property = new UserStringProperty( mKey, input );
             }
 
             mDictionary[mKey] = property;

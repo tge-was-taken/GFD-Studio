@@ -21,7 +21,7 @@ namespace AtlusGfdEditor.GUI.ViewModels
 
                 return ( T )base.Model;
             }
-            private set
+            protected set
             {
                 base.Model = value;
             }

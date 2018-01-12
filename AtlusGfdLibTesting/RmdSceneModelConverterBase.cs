@@ -271,7 +271,7 @@ namespace AtlusGfdLibTesting
 
             var collisionNode = ConvertFrom( rwCollisionFrame );
             collisionNode.Name = "atari";
-            collisionNode.Properties["fldCollisObj"] = new NodeBoolProperty( "fldCollisObj", true );
+            collisionNode.Properties["fldCollisObj"] = new UserBoolProperty( "fldCollisObj", true );
 
             foreach ( var rwMesh in ((RwMeshListNode)rwCollisionGeometry.ExtensionNodes.Find( x => x.Id == RwNodeId.RwMeshListNode)).MaterialMeshes)
             {
