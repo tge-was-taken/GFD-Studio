@@ -85,21 +85,21 @@ namespace AtlusGfdEditor.GUI.ViewModels
         {
             Entry1ListViewModel =
                 ( ListViewModel<ChunkType000100F9Entry1> )TreeNodeViewModelFactory.Create(
-                    "Entry1List", Model.Entry1List,
+                    "Entry Type 1 List", Model.Entry1List,
                     new object[] { new ListItemNameProvider<ChunkType000100F9Entry1>( ( item, index ) => item.NodeName == null ? index.ToString() : item.NodeName ) } );
 
             Nodes.Add( Entry1ListViewModel );
 
             Entry2ListViewModel =
                 ( ListViewModel<ChunkType000100F9Entry2> )TreeNodeViewModelFactory.Create(
-                    "Entry2List", Model.Entry2List,
+                    "Entry Type 2 List", Model.Entry2List,
                     new object[] { new ListItemNameProvider<ChunkType000100F9Entry2>( ( item, index ) => item.NodeName == null ? index.ToString() : item.NodeName ) } );
 
             Nodes.Add( Entry2ListViewModel );
 
             Entry3ListViewModel =
                 ( ListViewModel<ChunkType000100F9Entry3> )TreeNodeViewModelFactory.Create(
-                    "Entry3List", Model.Entry3List,
+                    "Entry Type 3 List", Model.Entry3List,
                     new object[] { new ListItemNameProvider<ChunkType000100F9Entry3>( ( item, index ) => index.ToString() ) } );
 
             Nodes.Add( Entry3ListViewModel );

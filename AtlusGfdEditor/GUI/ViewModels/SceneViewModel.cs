@@ -90,7 +90,7 @@ namespace AtlusGfdEditor.GUI.ViewModels
         {
             if ( Model.MatrixPalette != null )
             {
-                MatrixPaletteViewModel = ( MatrixPaletteViewModel )TreeNodeViewModelFactory.Create( "MatrixPalette", Model.MatrixPalette );
+                MatrixPaletteViewModel = ( MatrixPaletteViewModel )TreeNodeViewModelFactory.Create( "Matrix Palette", Model.MatrixPalette );
                 Nodes.Add( MatrixPaletteViewModel );
             }
 

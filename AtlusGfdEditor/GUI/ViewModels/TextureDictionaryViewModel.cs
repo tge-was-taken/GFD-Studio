@@ -36,7 +36,7 @@ namespace AtlusGfdEditor.GUI.ViewModels
             {
                 using ( var dialog = new SaveFileDialog() )
                 {
-                    dialog.Filter = "Field texture archive (*.bin)|*.bin";
+                    dialog.Filter = "Field Texture Archive (*.bin)|*.bin";
                     dialog.AutoUpgradeEnabled = true;
                     dialog.CheckPathExists = true;
                     dialog.FileName = Text;

@@ -330,7 +330,7 @@ namespace AtlusGfdEditor.GUI.ViewModels
         protected override void InitializeViewCore()
         {
             var textureMapInfo = CreateTextureMapInfo();
-            TextureMapsViewModel = ( ListViewModel<TextureMap> )TreeNodeViewModelFactory.Create( "TextureMaps", textureMapInfo.TextureMapList, new object[] { textureMapInfo.TextureMapItemNames } );
+            TextureMapsViewModel = ( ListViewModel<TextureMap> )TreeNodeViewModelFactory.Create( "Texture Maps", textureMapInfo.TextureMapList, new object[] { textureMapInfo.TextureMapItemNames } );
             Nodes.Add( TextureMapsViewModel );
 
             AttributesViewModel =

@@ -30,3 +30,5 @@ _ReSharper*/
 #Ignore test project
 AtlusGfdLibTesting/
 /.vs/AtlusGfdEditor/v15
+/packages
+/.vs

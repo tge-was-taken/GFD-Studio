@@ -97,7 +97,7 @@
   <ItemGroup>
     <Reference Include="AssimpNet, Version=3.3.1.0, Culture=neutral, PublicKeyToken=0d51b391f59f42a6, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\..\..\Programming\Amicitia\Dependencies\Managed\AssimpNet.dll</HintPath>
+      <HintPath>..\Dependencies\Assimp.Net\AssimpNet.dll</HintPath>
     </Reference>
     <Reference Include="CSharpImageLibrary, Version=4.2.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\CSharpImageLibrary.4.2.0\lib\net462\CSharpImageLibrary.dll</HintPath>
@@ -107,10 +107,10 @@
     </Reference>
     <Reference Include="OpenTK, Version=3.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\Downloads\OpenTK\OpenTK.dll</HintPath>
+      <HintPath>..\Dependencies\OpenTK\OpenTK.dll</HintPath>
     </Reference>
     <Reference Include="OpenTK.GLControl">
-      <HintPath>..\..\..\..\..\Downloads\opentk-develop\bin\OpenTK.GLControl\OpenTK.GLControl.dll</HintPath>
+      <HintPath>..\Dependencies\OpenTK\OpenTK.GLControl.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

@@ -87,7 +87,7 @@ namespace AtlusGfdEditor.GUI.ViewModels
 
             if ( Model.ChunkType000100F9 != null )
             {
-                ChunkType000100F9ViewModel = ( ChunkType000100F9ViewModel )TreeNodeViewModelFactory.Create( "ChunkType000100F9", Model.ChunkType000100F9 );
+                ChunkType000100F9ViewModel = ( ChunkType000100F9ViewModel )TreeNodeViewModelFactory.Create( "Chunk Type 000100F9", Model.ChunkType000100F9 );
                 Nodes.Add( ChunkType000100F9ViewModel );
             }
         }
