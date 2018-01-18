@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace AtlusGfdLib.IO.Common
 {
-    public static class EndiannessSwapUtillity
+    public static class EndiannessSwapUtility
     {
         public static Endianness SystemEndianness
         {

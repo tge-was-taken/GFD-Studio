@@ -19,7 +19,7 @@ namespace AtlusGfdLib.IO.Common
             get { return mEndianness; }
             set
             {
-                if (value != EndiannessSwapUtillity.SystemEndianness)
+                if (value != EndiannessSwapUtility.SystemEndianness)
                     mSwap = true;
                 else
                     mSwap = false;
@@ -129,7 +129,7 @@ namespace AtlusGfdLib.IO.Common
 
         public override void Write(short value)
         {
-            base.Write(mSwap ? EndiannessSwapUtillity.Swap(value) : value);
+            base.Write(mSwap ? EndiannessSwapUtility.Swap(value) : value);
         }
 
         public void Write(short[] values)
@@ -140,7 +140,7 @@ namespace AtlusGfdLib.IO.Common
 
         public override void Write(ushort value)
         {
-            base.Write(mSwap ? EndiannessSwapUtillity.Swap(value) : value);
+            base.Write(mSwap ? EndiannessSwapUtility.Swap(value) : value);
         }
 
         public void Write(ushort[] values)
@@ -151,7 +151,7 @@ namespace AtlusGfdLib.IO.Common
 
         public override void Write(int value)
         {
-            base.Write(mSwap ? EndiannessSwapUtillity.Swap(value) : value);
+            base.Write(mSwap ? EndiannessSwapUtility.Swap(value) : value);
         }
 
         public void Write(int[] values)
@@ -162,7 +162,7 @@ namespace AtlusGfdLib.IO.Common
 
         public override void Write(uint value)
         {
-            base.Write(mSwap ? EndiannessSwapUtillity.Swap(value) : value);
+            base.Write(mSwap ? EndiannessSwapUtility.Swap(value) : value);
         }
 
         public void Write(uint[] values)
@@ -173,7 +173,7 @@ namespace AtlusGfdLib.IO.Common
 
         public override void Write(long value)
         {
-            base.Write(mSwap ? EndiannessSwapUtillity.Swap(value) : value);
+            base.Write(mSwap ? EndiannessSwapUtility.Swap(value) : value);
         }
 
         public void Write(long[] values)
@@ -184,7 +184,7 @@ namespace AtlusGfdLib.IO.Common
 
         public override void Write(ulong value)
         {
-            base.Write(mSwap ? EndiannessSwapUtillity.Swap(value) : value);
+            base.Write(mSwap ? EndiannessSwapUtility.Swap(value) : value);
         }
 
         public void Write(ulong[] values)
@@ -195,7 +195,7 @@ namespace AtlusGfdLib.IO.Common
 
         public override void Write(float value)
         {
-            base.Write(mSwap ? EndiannessSwapUtillity.Swap(value) : value);
+            base.Write(mSwap ? EndiannessSwapUtility.Swap(value) : value);
         }
 
         public void Write(float[] values)
@@ -206,7 +206,7 @@ namespace AtlusGfdLib.IO.Common
 
         public override void Write(decimal value)
         {
-            base.Write(mSwap ? EndiannessSwapUtillity.Swap(value) : value);
+            base.Write(mSwap ? EndiannessSwapUtility.Swap(value) : value);
         }
 
         public void Write(decimal[] values)
@@ -286,7 +286,7 @@ namespace AtlusGfdLib.IO.Common
                 {
                     // Marshal the structure into the allocated byte array
                     if (mSwap)
-                        Marshal.StructureToPtr(EndiannessSwapUtillity.Swap(value), (IntPtr)ptr, true);
+                        Marshal.StructureToPtr(EndiannessSwapUtility.Swap(value), (IntPtr)ptr, true);
                     else
                         Marshal.StructureToPtr(value, (IntPtr)ptr, true);
                 }
@@ -311,7 +311,7 @@ namespace AtlusGfdLib.IO.Common
                     {
                         // Marshal the structure into the allocated byte array
                         if (mSwap)
-                            Marshal.StructureToPtr(EndiannessSwapUtillity.Swap(value[i]), (IntPtr)(ptr + (i * typeSize)), true);
+                            Marshal.StructureToPtr(EndiannessSwapUtility.Swap(value[i]), (IntPtr)(ptr + (i * typeSize)), true);
                         else
                             Marshal.StructureToPtr(value[i], (IntPtr)(ptr + (i * typeSize)), true);
                     }             

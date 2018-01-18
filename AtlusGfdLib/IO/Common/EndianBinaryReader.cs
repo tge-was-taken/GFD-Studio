@@ -19,7 +19,7 @@ namespace AtlusGfdLib.IO.Common
             get { return mEndianness; }
             set
             {
-                if (value != EndiannessSwapUtillity.SystemEndianness)
+                if (value != EndiannessSwapUtility.SystemEndianness)
                     mSwap = true;
                 else
                     mSwap = false;
@@ -137,7 +137,7 @@ namespace AtlusGfdLib.IO.Common
         public override short ReadInt16()
         {
             if (mSwap)
-                return EndiannessSwapUtillity.Swap(base.ReadInt16());
+                return EndiannessSwapUtility.Swap(base.ReadInt16());
             else
                 return base.ReadInt16();
         }
@@ -156,7 +156,7 @@ namespace AtlusGfdLib.IO.Common
         public override ushort ReadUInt16()
         {
             if (mSwap)
-                return EndiannessSwapUtillity.Swap(base.ReadUInt16());
+                return EndiannessSwapUtility.Swap(base.ReadUInt16());
             else
                 return base.ReadUInt16();
         }
@@ -175,7 +175,7 @@ namespace AtlusGfdLib.IO.Common
         public override decimal ReadDecimal()
         {
             if (mSwap)
-                return EndiannessSwapUtillity.Swap(base.ReadDecimal());
+                return EndiannessSwapUtility.Swap(base.ReadDecimal());
             else
                 return base.ReadDecimal();
         }
@@ -194,7 +194,7 @@ namespace AtlusGfdLib.IO.Common
         public override double ReadDouble()
         {
             if (mSwap)
-                return EndiannessSwapUtillity.Swap(base.ReadDouble());
+                return EndiannessSwapUtility.Swap(base.ReadDouble());
             else
                 return base.ReadDouble();
         }
@@ -213,7 +213,7 @@ namespace AtlusGfdLib.IO.Common
         public override int ReadInt32()
         {
             if (mSwap)
-                return EndiannessSwapUtillity.Swap(base.ReadInt32());
+                return EndiannessSwapUtility.Swap(base.ReadInt32());
             else
                 return base.ReadInt32();
         }
@@ -232,7 +232,7 @@ namespace AtlusGfdLib.IO.Common
         public override long ReadInt64()
         {
             if (mSwap)
-                return EndiannessSwapUtillity.Swap(base.ReadInt64());
+                return EndiannessSwapUtility.Swap(base.ReadInt64());
             else
                 return base.ReadInt64();
         }
@@ -251,7 +251,7 @@ namespace AtlusGfdLib.IO.Common
         public override float ReadSingle()
         {
             if (mSwap)
-                return EndiannessSwapUtillity.Swap(base.ReadSingle());
+                return EndiannessSwapUtility.Swap(base.ReadSingle());
             else
                 return base.ReadSingle();
         }
@@ -270,7 +270,7 @@ namespace AtlusGfdLib.IO.Common
         public override uint ReadUInt32()
         {
             if (mSwap)
-                return EndiannessSwapUtillity.Swap(base.ReadUInt32());
+                return EndiannessSwapUtility.Swap(base.ReadUInt32());
             else
                 return base.ReadUInt32();
         }
@@ -289,7 +289,7 @@ namespace AtlusGfdLib.IO.Common
         public override ulong ReadUInt64()
         {
             if (mSwap)
-                return EndiannessSwapUtillity.Swap(base.ReadUInt64());
+                return EndiannessSwapUtility.Swap(base.ReadUInt64());
             else
                 return base.ReadUInt64();
         }
@@ -390,7 +390,7 @@ namespace AtlusGfdLib.IO.Common
             }
 
             if (mSwap)
-                obj = EndiannessSwapUtillity.Swap(obj);
+                obj = EndiannessSwapUtility.Swap(obj);
 
             return obj;
         }
@@ -410,7 +410,7 @@ namespace AtlusGfdLib.IO.Common
                     for (int i = 0; i < objects.Length; i++)
                     {
                         if (mSwap)
-                            objects[i] = EndiannessSwapUtillity.Swap(Marshal.PtrToStructure<T>((IntPtr)(ptr + (i * typeSize))));
+                            objects[i] = EndiannessSwapUtility.Swap(Marshal.PtrToStructure<T>((IntPtr)(ptr + (i * typeSize))));
                         else
                             objects[i] = Marshal.PtrToStructure<T>((IntPtr)(ptr + (i * typeSize)));
                     }

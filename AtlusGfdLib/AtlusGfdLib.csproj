@@ -78,7 +78,7 @@
     <Compile Include="Assimp\AssimpImporter.cs" />
     <Compile Include="Common\Utillities\BitmapUtillities.cs" />
     <Compile Include="Animations\AnimationFlag10000000DataEntry.cs" />
-    <Compile Include="IO\Common\EndiannessSwapUtillity.cs" />
+    <Compile Include="IO\Common\EndiannessSwapUtility.cs" />
     <Compile Include="Animations\AnimationController.cs" />
     <Compile Include="Animations\AnimationFlags.cs" />
     <Compile Include="Animations\IAnimationKeyframe.cs" />
