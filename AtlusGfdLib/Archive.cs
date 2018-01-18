@@ -197,7 +197,7 @@ namespace AtlusGfdLib
 
             if ( skipData )
             {
-                mReader.Position = AlignmentUtillities.Align( mReader.Position + entry.Length, 64 );
+                mReader.Position = AlignmentUtilities.Align( mReader.Position + entry.Length, 64 );
             }
 
             return true;
@@ -252,7 +252,7 @@ namespace AtlusGfdLib
 
         private void WriteEntryAlignment()
         {
-            mWriter.Position = AlignmentUtillities.Align( mWriter.Position, 64 );
+            mWriter.Position = AlignmentUtilities.Align( mWriter.Position, 64 );
         }
 
         private void WriteTerminatorEntry()

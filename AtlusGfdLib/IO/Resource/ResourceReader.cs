@@ -135,7 +135,7 @@ namespace AtlusGfdLib.IO.Resource
                     break;
             }
 
-            return UnsafeUtillities.ReinterpretCast< uint, float >( decoded );
+            return UnsafeUtilities.ReinterpretCast< uint, float >( decoded );
         }
 
         private Vector2 ReadVector2()

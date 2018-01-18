@@ -84,8 +84,8 @@ namespace AtlusGfdLib.IO.Common
 
         public unsafe static float Swap(float value)
         {
-            return UnsafeUtillities.ReinterpretCast<uint, float>(
-                Swap(UnsafeUtillities.ReinterpretCast<float, uint>(value))
+            return UnsafeUtilities.ReinterpretCast<uint, float>(
+                Swap(UnsafeUtilities.ReinterpretCast<float, uint>(value))
             );
         }
 
@@ -96,8 +96,8 @@ namespace AtlusGfdLib.IO.Common
 
         public unsafe static double Swap(double value)
         {
-            return UnsafeUtillities.ReinterpretCast<ulong, double>(
-                Swap(UnsafeUtillities.ReinterpretCast<double, ulong>(value))
+            return UnsafeUtilities.ReinterpretCast<ulong, double>(
+                Swap(UnsafeUtilities.ReinterpretCast<double, ulong>(value))
             );
         }
 

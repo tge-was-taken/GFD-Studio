@@ -2,7 +2,7 @@
 
 namespace AtlusGfdLib.IO.Common
 {
-    public static class AlignmentUtillities
+    public static class AlignmentUtilities
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static long Align(long value, int alignment)

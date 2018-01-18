@@ -107,7 +107,7 @@
     <Compile Include="Geometry.cs" />
     <Compile Include="ChunkType000100F9.cs" />
     <Compile Include="ChunkType000100F9Entry1.cs" />
-    <Compile Include="IO\Common\AlignmentUtillities.cs" />
+    <Compile Include="IO\Common\AlignmentUtilities.cs" />
     <Compile Include="Common\Utillities\ImageFormatUtillities.cs" />
     <Compile Include="IO\Common\StreamExtensions.cs" />
     <Compile Include="IO\Common\StreamView.cs" />
@@ -119,7 +119,7 @@
     <Compile Include="IO\Common\EndianBinaryWriter.cs" />
     <Compile Include="IO\Resource\ResourceWriter.cs" />
     <Compile Include="IO\Common\StringBinaryFormat.cs" />
-    <Compile Include="IO\Common\UnsafeUtillities.cs" />
+    <Compile Include="IO\Common\UnsafeUtilities.cs" />
     <Compile Include="IO\Resource\ResourceFileHeader.cs" />
     <Compile Include="Light.cs" />
     <Compile Include="Materials\Material.cs" />
