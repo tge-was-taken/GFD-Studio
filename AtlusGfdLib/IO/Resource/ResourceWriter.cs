@@ -403,7 +403,11 @@ namespace AtlusGfdLib.IO.Resource
         // Texture
         private void WriteTextureDictionaryChunk( TextureDictionary textureDictionary )
         {
+            StartWritingChunk( textureDictionary.Version, ResourceChunkType.TextureDictionary );
+
             WriteTextureDictionary( textureDictionary );
+
+            FinishWritingChunk();
         }
 
         private void WriteTextureDictionary( TextureDictionary textureDictionary )
