@@ -73,7 +73,7 @@ namespace AtlusGfdEditor.GUI.Forms
             if ( controls.Length == 1 )
             {
                 var modelViewControl = ( ModelViewControl )controls[ 0 ];
-                modelViewControl.LoadModel( ( Model ) TreeView.TopNode.Model );
+                modelViewControl.LoadModel( ( Model ) ( ( TreeNodeViewModel ) TreeView.Nodes[ 0 ] ).Model );
             }
         }
 
