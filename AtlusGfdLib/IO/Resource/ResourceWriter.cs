@@ -311,7 +311,6 @@ namespace AtlusGfdLib.IO.Resource
         {
             switch ( resource.Type )
             {
-                // Front resource types
                 case ResourceType.Model:
                     WriteModel( ( Model )resource );
                     break;
@@ -372,22 +371,23 @@ namespace AtlusGfdLib.IO.Resource
             }
         }
 
+        // Model
         private void WriteModel( Model model )
         {
             if ( model.TextureDictionary != null )
-                WriteTextureDictionary( model.TextureDictionary );
+                WriteTextureDictionaryChunk( model.TextureDictionary );
 
             if ( model.MaterialDictionary != null )
-                WriteMaterialDictionary( model.MaterialDictionary );
+                WriteMaterialDictionaryChunk( model.MaterialDictionary );
 
             if ( model.Scene != null )
-                WriteScene( model.Scene );
+                WriteSceneChunk( model.Scene );
 
             if ( model.ChunkType000100F9 != null )
-                WriteChunkType000100F9( model.ChunkType000100F9 );
+                WriteChunkType000100F9Chunk( model.ChunkType000100F9 );
 
             if ( model.AnimationPackage != null )
-                WriteAnimationPackage( model.AnimationPackage );
+                WriteAnimationPackageChunk( model.AnimationPackage );
 
             bool animationOnly = model.AnimationPackage != null &&
                 model.TextureDictionary == null &&
@@ -400,18 +400,19 @@ namespace AtlusGfdLib.IO.Resource
                 WriteEndChunk( model.Version );
         }
 
-        // Write texture dictionary methods
+        // Texture
+        private void WriteTextureDictionaryChunk( TextureDictionary textureDictionary )
+        {
+            WriteTextureDictionary( textureDictionary );
+        }
+
         private void WriteTextureDictionary( TextureDictionary textureDictionary )
         {
-            StartWritingChunk( textureDictionary.Version, ResourceChunkType.TextureDictionary );
-
             WriteInt( textureDictionary.Count );
             foreach ( var texture in textureDictionary.Textures )
             {
                 WriteTexture( texture );
             }
-
-            FinishWritingChunk();
         }
 
         private void WriteTexture( Texture texture )
@@ -426,18 +427,23 @@ namespace AtlusGfdLib.IO.Resource
             WriteByte( texture.Field1F );
         }
 
-        // Write material methods
-        private void WriteMaterialDictionary( MaterialDictionary materialDictionary )
+        // Material
+        private void WriteMaterialDictionaryChunk( MaterialDictionary materialDictionary )
         {
             StartWritingChunk( materialDictionary.Version, ResourceChunkType.MaterialDictionary );
 
+            WriteMaterialDictionary( materialDictionary );
+
+            FinishWritingChunk();
+        }
+
+        private void WriteMaterialDictionary( MaterialDictionary materialDictionary )
+        {
             WriteInt( materialDictionary.Count );
             foreach ( var material in materialDictionary.Materials )
             {
                 WriteMaterial( materialDictionary.Version, material );
             }
-
-            FinishWritingChunk();
         }
 
         private void WriteMaterial( uint version, Material material )
@@ -757,12 +763,19 @@ namespace AtlusGfdLib.IO.Resource
             WriteInt( attribute.Field14 );
         }
 
-        // Write scene methods
-        private void WriteScene( Scene scene )
+        // Scene
+        private void WriteSceneChunk( Scene scene )
         {
             StartWritingChunk( scene.Version, ResourceChunkType.Scene );
 
-            WriteInt( (int)scene.Flags );
+            WriteScene( scene );
+
+            FinishWritingChunk();
+        }
+
+        private void WriteScene( Scene scene )
+        {
+            WriteInt( ( int )scene.Flags );
 
             if ( scene.Flags.HasFlag( SceneFlags.HasSkinning ) )
                 WriteMatrixMap( scene.MatrixPalette );
@@ -774,8 +787,6 @@ namespace AtlusGfdLib.IO.Resource
                 WriteBoundingSphere( scene.BoundingSphere.Value );
 
             WriteNodeRecursive( scene.Version, scene.RootNode );
-
-            FinishWritingChunk();
         }
 
         private void WriteMatrixMap( MatrixPalette matrixMap )
@@ -1126,10 +1137,18 @@ namespace AtlusGfdLib.IO.Resource
             }
         }
 
-        private void WriteChunkType000100F9( ChunkType000100F9 resource )
+        // Chunk type 000100F9
+        private void WriteChunkType000100F9Chunk( ChunkType000100F9 resource )
         {
             StartWritingChunk( resource.Version, ResourceChunkType.ChunkType000100F9 );
 
+            WriteChunkType000100F9( resource );
+
+            FinishWritingChunk();
+        }
+
+        private void WriteChunkType000100F9( ChunkType000100F9 resource )
+        {
             WriteInt( resource.Field140 );
             WriteFloat( resource.Field13C );
             WriteFloat( resource.Field138 );
@@ -1209,16 +1228,19 @@ namespace AtlusGfdLib.IO.Resource
                     WriteShort( entry.Field0E );
                 }
             }
+        }
 
+        // Animation
+        private void WriteAnimationPackageChunk( AnimationPackage animationPackage )
+        {
+            StartWritingChunk( animationPackage.Version, ResourceChunkType.AnimationPackage );
+            WriteAnimationPackage( animationPackage );
             FinishWritingChunk();
         }
 
         private void WriteAnimationPackage( AnimationPackage animationPackage )
         {
             throw new NotImplementedException();
-
-            StartWritingChunk( animationPackage.Version, ResourceChunkType.AnimationPackage );
-            FinishWritingChunk();
         }
 
         private void WriteEndChunk( uint version )
@@ -1229,7 +1251,7 @@ namespace AtlusGfdLib.IO.Resource
             WriteUInt( 0 ); 
         }
 
-        // Write shader cache methods
+        // Shader Cache
         private void WriteShaderCacheFileHeader( uint version, ResourceFileType type )
         {
             WriteFileHeader( ResourceFileHeader.MAGIC_SHADERCACHE, version, type );
