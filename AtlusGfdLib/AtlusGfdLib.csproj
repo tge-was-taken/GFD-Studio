@@ -72,6 +72,7 @@
     <Compile Include="Animations\Animation.cs" />
     <Compile Include="Animations\AnimationKeyframePRHalf.cs" />
     <Compile Include="Animations\AnimationKeyframePRSSingle.cs" />
+    <Compile Include="Animations\AnimationMaterialKeyframeType29.cs" />
     <Compile Include="Animations\AnimationPackage.cs" />
     <Compile Include="Animations\AnimationPackageFlags.cs" />
     <Compile Include="Archive.cs" />
