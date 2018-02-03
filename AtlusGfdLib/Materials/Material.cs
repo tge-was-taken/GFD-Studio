@@ -239,7 +239,7 @@ namespace AtlusGfdLib
             ValidateMapFlags( DetailMap,     MaterialFlags.HasDetailMap );
             ValidateMapFlags( ShadowMap,     MaterialFlags.HasShadowMap );
 
-            if ( Attributes == null )
+            if ( Attributes == null || Attributes.Count == 0 )
             {
                 mFlags &= ~MaterialFlags.HasAttributes;
             }
