@@ -1,8 +1,8 @@
 ﻿using System.IO;
-using AtlusGfdLib.IO.Common;
-using AtlusGfdLib.IO.Resource;
+using AtlusGfdLibrary.IO.Common;
+using AtlusGfdLibrary.IO.Resource;
 
-namespace AtlusGfdLib
+namespace AtlusGfdLibrary
 {
     public abstract class Resource
     {

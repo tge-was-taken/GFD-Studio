@@ -6,7 +6,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using AtlusGfdEditor.GUI.Controls.ModelView;
-using AtlusGfdLib;
+using AtlusGfdLibrary;
 using CSharpImageLibrary;
 using CSharpImageLibrary.Headers;
 using OpenTK;

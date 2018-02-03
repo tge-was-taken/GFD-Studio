@@ -1,8 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using AtlusGfdLib.IO.Resource;
+﻿using System.Collections.Generic;
 
-namespace AtlusGfdLib
+namespace AtlusGfdLibrary
 {
     public sealed class AnimationPackage : Resource
     {

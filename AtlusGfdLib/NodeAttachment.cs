@@ -1,4 +1,7 @@
-﻿namespace AtlusGfdLib
+﻿using AtlusGfdLibrary.Cameras;
+using AtlusGfdLibrary.Lights;
+
+namespace AtlusGfdLibrary
 {
     public abstract class NodeAttachment
     {

@@ -1,4 +1,4 @@
-﻿namespace AtlusGfdLib.IO.Common
+﻿namespace AtlusGfdLibrary.IO.Common
 {
     public enum StringBinaryFormat
     {

@@ -5,9 +5,9 @@ VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtlusGfdEditor", "AtlusGfdEditor\AtlusGfdEditor.csproj", "{75D72552-D73F-47F9-BC26-A5C6BE341901}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtlusGfdLib", "AtlusGfdLib\AtlusGfdLib.csproj", "{A41AC644-A107-4788-8E4F-E10CCA64F3B6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtlusGfdLibrary", "AtlusGfdLib\AtlusGfdLibrary.csproj", "{A41AC644-A107-4788-8E4F-E10CCA64F3B6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtlusGfdLibUnitTests", "AtlusGfdLibTests\AtlusGfdLibUnitTests.csproj", "{B8FD6F26-3B3B-43C5-AE25-DAF1D5F554BE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtlusGfdLibraryRegressionTests", "AtlusGfdLibTests\AtlusGfdLibraryRegressionTests.csproj", "{B8FD6F26-3B3B-43C5-AE25-DAF1D5F554BE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

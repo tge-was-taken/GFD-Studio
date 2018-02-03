@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Numerics;
 
-namespace AtlusGfdLib
+namespace AtlusGfdLibrary
 {
     public sealed class Geometry
     {

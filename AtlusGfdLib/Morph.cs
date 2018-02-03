@@ -1,4 +1,4 @@
-﻿namespace AtlusGfdLib
+﻿namespace AtlusGfdLibrary
 {
     public sealed class Morph
     {

@@ -1,8 +1,8 @@
-﻿using System.Numerics;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 
-namespace AtlusGfdLib
+namespace AtlusGfdLibrary
 {
     /// <summary>
     /// Represents a sphere consisting of a center vector and a sphere radius used for calculations.

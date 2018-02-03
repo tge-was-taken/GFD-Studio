@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Numerics;
 
-namespace AtlusGfdLib
+namespace AtlusGfdLibrary
 {
     public sealed class Node
     {

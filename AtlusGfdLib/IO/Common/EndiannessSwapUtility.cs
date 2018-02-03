@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 
-namespace AtlusGfdLib.IO.Common
+namespace AtlusGfdLibrary.IO.Common
 {
     public static class EndiannessSwapUtility
     {

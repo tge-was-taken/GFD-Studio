@@ -1,6 +1,6 @@
 using System.ComponentModel;
 using System.Numerics;
-using AtlusGfdLib;
+using AtlusGfdLibrary;
 
 namespace AtlusGfdEditor.GUI.ViewModels
 {

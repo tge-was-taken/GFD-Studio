@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AtlusGfdLib
+namespace AtlusGfdLibrary
 {
     /// <summary>
     /// Represents a vector consisting out of 4 byte components.

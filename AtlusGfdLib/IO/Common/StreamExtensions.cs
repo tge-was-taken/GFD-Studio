@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace AtlusGfdLib.IO.Common
+namespace AtlusGfdLibrary.IO.Common
 {
     public static class StreamExtensions
     {

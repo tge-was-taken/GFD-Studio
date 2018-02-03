@@ -1,7 +1,7 @@
 ﻿using System.Numerics;
 using System.Text;
 
-namespace AtlusGfdLib
+namespace AtlusGfdLibrary
 {
     public abstract class UserProperty
     {

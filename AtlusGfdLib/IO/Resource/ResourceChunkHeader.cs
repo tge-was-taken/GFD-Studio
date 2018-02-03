@@ -1,4 +1,4 @@
-﻿namespace AtlusGfdLib.IO
+﻿namespace AtlusGfdLibrary.IO.Resource
 {
     internal struct ResourceChunkHeader
     {

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Reflection;
 using System.Windows.Forms;
-using AtlusGfdEditor.GUI;
 using AtlusGfdEditor.GUI.Forms;
 
 namespace AtlusGfdEditor

@@ -1,6 +1,6 @@
 ﻿using System.IO;
 using Assimp;
-using AtlusGfdLib.Assimp;
+using AtlusGfdLibrary.Assimp;
 using AtlusGfdEditor.IO;
 
 namespace AtlusGfdEditor.FormatModules
@@ -23,12 +23,12 @@ namespace AtlusGfdEditor.FormatModules
 
         protected override Scene ImportCore( Stream stream, string filename = null )
         {
-            return AssimpImporter.ImportFile( filename );
+            return AssimpSceneImporter.ImportFile( filename );
         }
 
         protected override void ExportCore( Scene obj, Stream stream, string filename = null )
         {
-            AssimpExporter.ExportFile( obj, filename );
+            ModelExporter.ExportFile( obj, filename );
         }
     }
 }

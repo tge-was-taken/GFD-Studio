@@ -2,9 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using AtlusGfdLibrary;
+using AtlusGfdLibrary.Cameras;
+using AtlusGfdLibrary.Lights;
+using AtlusGfdLibrary.Shaders;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace AtlusGfdLib.Tests
+namespace AtlusGfdLibraryRegressionTests
 {
     [TestClass()]
     public class ResourceTests

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace AtlusGfdLib
+namespace AtlusGfdLibrary
 {
     public sealed class Scene : Resource
     {

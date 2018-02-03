@@ -1,4 +1,4 @@
-﻿using AtlusGfdLib;
+﻿using AtlusGfdLibrary;
 
 namespace AtlusGfdEditor.GUI.ViewModels
 {

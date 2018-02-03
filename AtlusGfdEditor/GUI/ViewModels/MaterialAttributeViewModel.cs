@@ -1,6 +1,6 @@
 using System.ComponentModel;
 using AtlusGfdEditor.GUI.TypeConverters;
-using AtlusGfdLib;
+using AtlusGfdLibrary;
 
 namespace AtlusGfdEditor.GUI.ViewModels
 {

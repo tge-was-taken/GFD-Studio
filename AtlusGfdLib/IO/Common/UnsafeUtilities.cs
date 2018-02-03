@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AtlusGfdLib.IO.Common
+namespace AtlusGfdLibrary.IO.Common
 {
     public static unsafe class UnsafeUtilities
     {

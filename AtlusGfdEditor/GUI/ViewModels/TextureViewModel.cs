@@ -2,8 +2,8 @@
 using System.Drawing;
 using System.IO;
 using AtlusGfdEditor.GUI.TypeConverters;
-using AtlusGfdLib;
-using AtlusGfdLib.Common.Utillities;
+using AtlusGfdLibrary;
+using AtlusGfdLibrary.Utillities;
 
 namespace AtlusGfdEditor.GUI.ViewModels
 {

@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace AtlusGfdLib
+namespace AtlusGfdLibrary
 {
     public struct Triangle : IEquatable<Triangle>
     {
-        public static int SizeInBytes = 3 * sizeof( uint );
+        public const int SizeInBytes = 3 * sizeof( uint );
 
         public uint A;
         public uint B;

@@ -1,4 +1,4 @@
-﻿namespace AtlusGfdLib
+﻿namespace AtlusGfdLibrary.Shaders
 {
     public abstract class ShaderBase
     {

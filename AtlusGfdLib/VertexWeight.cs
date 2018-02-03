@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AtlusGfdLib
+namespace AtlusGfdLibrary
 {
     public struct VertexWeight : IEquatable<VertexWeight>
     {

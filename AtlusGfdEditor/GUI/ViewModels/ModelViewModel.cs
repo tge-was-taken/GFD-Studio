@@ -1,8 +1,7 @@
 ﻿using System.ComponentModel;
-using AtlusGfdEditor.GUI.Forms;
 using AtlusGfdEditor.IO;
-using AtlusGfdLib;
-using AtlusGfdLib.Assimp;
+using AtlusGfdLibrary;
+using AtlusGfdLibrary.Assimp;
 
 namespace AtlusGfdEditor.GUI.ViewModels
 {
@@ -33,7 +32,7 @@ namespace AtlusGfdEditor.GUI.ViewModels
         protected override void InitializeCore()
         {
             RegisterExportHandler< Model >( ( path ) => Resource.Save( Model, path ) );
-            RegisterExportHandler< Assimp.Scene >( path => AssimpExporter.ExportFile( Model, path ) );
+            RegisterExportHandler< Assimp.Scene >( path => ModelExporter.ExportFile( Model, path ) );
 
             RegisterReplaceHandler<Model>( Resource.Load<Model> );
             RegisterReplaceHandler< Assimp.Scene >( path =>

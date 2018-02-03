@@ -2,7 +2,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Numerics;
 using AtlusGfdEditor.GUI.TypeConverters;
-using AtlusGfdLib;
+using AtlusGfdLibrary;
 
 namespace AtlusGfdEditor.GUI.ViewModels
 {

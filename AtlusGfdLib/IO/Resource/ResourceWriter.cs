@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
 using System.Text;
-using AtlusGfdLib.IO.Common;
+using AtlusGfdLibrary.Cameras;
+using AtlusGfdLibrary.IO.Common;
+using AtlusGfdLibrary.Lights;
+using AtlusGfdLibrary.Shaders;
 
-namespace AtlusGfdLib.IO.Resource
+namespace AtlusGfdLibrary.IO.Resource
 {
     internal class ResourceWriter : IDisposable
     {
@@ -19,7 +22,7 @@ namespace AtlusGfdLib.IO.Resource
             InitWriterStack( stream, endianness );
         }
 
-        public static void WriteToStream( AtlusGfdLib.Resource resource, Stream stream, Endianness endianness )
+        public static void WriteToStream( AtlusGfdLibrary.Resource resource, Stream stream, Endianness endianness )
         {
             using ( var writer = new ResourceWriter( stream, endianness ) )
                 writer.WriteResourceFile( resource );
@@ -226,7 +229,7 @@ namespace AtlusGfdLib.IO.Resource
         }
 
         // Write resource methods
-        private void WriteResourceFile( AtlusGfdLib.Resource resource )
+        private void WriteResourceFile( AtlusGfdLibrary.Resource resource )
         {
             WriteResourceFileHeader( resource.Version, GetFileType( resource.Type ) );
             WriteResource( resource );
@@ -307,7 +310,7 @@ namespace AtlusGfdLib.IO.Resource
             }
         }
 
-        private void WriteResource( AtlusGfdLib.Resource resource )
+        private void WriteResource( AtlusGfdLibrary.Resource resource )
         {
             switch ( resource.Type )
             {

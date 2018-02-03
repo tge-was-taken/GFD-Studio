@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
-namespace AtlusGfdLib
+namespace AtlusGfdLibrary.Shaders
 {
     public abstract class ShaderCacheBase<TShader> : Resource, IList<TShader>
     {

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using AtlusGfdLib.IO.Resource;
 
-namespace AtlusGfdLib
+namespace AtlusGfdLibrary
 {
     public sealed class Animation
     {
@@ -14,10 +13,10 @@ namespace AtlusGfdLib
         // 08 = Controller count
 
         // 0C
-        public List<AnimationController> Controllers { get; set; }
+        public List<Controller> Controllers { get; set; }
 
         // 10
-        public List<AnimationFlag10000000DataEntry> Field10 { get; set; }
+        public List<Flag10000000DataEntry> Field10 { get; set; }
 
         // 14
         public AnimationExtraData Field14 { get; set; }
@@ -26,7 +25,7 @@ namespace AtlusGfdLib
         public BoundingBox? BoundingBox { get; set; }
 
         // 1C
-        public AnimationFlag80000000Data Field1C { get; set; }
+        public Flag80000000Data Field1C { get; set; }
 
         // 20
         public UserPropertyCollection Properties { get; set; }
@@ -36,8 +35,8 @@ namespace AtlusGfdLib
 
         public Animation()
         {
-            Controllers = new List< AnimationController >();
-            Field10 = new List< AnimationFlag10000000DataEntry >();
+            Controllers = new List< Controller >();
+            Field10 = new List< Flag10000000DataEntry >();
             Field24 = 1.0f;
         }
     }

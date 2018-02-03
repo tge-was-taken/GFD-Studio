@@ -1,6 +1,5 @@
 ﻿using System.Windows.Forms;
-using AtlusGfdEditor.FormatModules;
-using AtlusGfdLib;
+using AtlusGfdLibrary;
 
 namespace AtlusGfdEditor.GUI.ViewModels
 {

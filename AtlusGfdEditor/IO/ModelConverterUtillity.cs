@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
 using AtlusGfdEditor.FormatModules;
 using AtlusGfdEditor.GUI.Forms;
-using AtlusGfdLib;
+using AtlusGfdLibrary;
 
 namespace AtlusGfdEditor.IO
 {
@@ -38,7 +33,7 @@ namespace AtlusGfdEditor.IO
         {
             using ( var dialog = new ModelConverterOptionsDialog( false ) )
             {
-                if ( dialog.ShowDialog() != System.Windows.Forms.DialogResult.OK )
+                if ( dialog.ShowDialog() != DialogResult.OK )
                     return null;
 
                 ModelConverterOptions options = new ModelConverterOptions()

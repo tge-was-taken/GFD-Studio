@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
-namespace AtlusGfdLib
+namespace AtlusGfdLibrary
 {
     public class MorphTargetList : IList<MorphTarget>
     {

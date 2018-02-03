@@ -4,7 +4,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace AtlusGfdLib.IO.Common
+namespace AtlusGfdLibrary.IO.Common
 {
     public class EndianBinaryReader : BinaryReader
     {

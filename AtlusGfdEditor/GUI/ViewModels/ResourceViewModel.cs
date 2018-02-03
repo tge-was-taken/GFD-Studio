@@ -4,7 +4,7 @@ using AtlusGfdEditor.GUI.TypeConverters;
 namespace AtlusGfdEditor.GUI.ViewModels
 {
     public abstract class ResourceViewModel<T> : TreeNodeViewModel<T>
-        where T : AtlusGfdLib.Resource
+        where T : AtlusGfdLibrary.Resource
     {
         [Browsable( true )]
         [TypeConverter( typeof( UInt32HexTypeConverter ) )]

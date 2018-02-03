@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AtlusGfdLib
+namespace AtlusGfdLibrary
 {
     [Flags]
     public enum AnimationFlags

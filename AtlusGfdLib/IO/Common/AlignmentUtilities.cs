@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
-namespace AtlusGfdLib.IO.Common
+namespace AtlusGfdLibrary.IO.Common
 {
     public static class AlignmentUtilities
     {

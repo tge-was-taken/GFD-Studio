@@ -1,4 +1,4 @@
-﻿namespace AtlusGfdLib
+﻿namespace AtlusGfdLibrary
 {
     public static class StringHasher
     {

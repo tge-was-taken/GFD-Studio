@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Numerics;
 
-namespace AtlusGfdLib
+namespace AtlusGfdLibrary
 {
     public sealed class MatrixPalette
     {

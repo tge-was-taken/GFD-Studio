@@ -4,9 +4,13 @@ using System.IO;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Text;
-using AtlusGfdLib.IO.Common;
+using AtlusGfdLibrary.Cameras;
+using AtlusGfdLibrary.IO.Common;
+using AtlusGfdLibrary.Keyframes;
+using AtlusGfdLibrary.Lights;
+using AtlusGfdLibrary.Shaders;
 
-namespace AtlusGfdLib.IO.Resource
+namespace AtlusGfdLibrary.IO.Resource
 {
     internal class ResourceReader : IDisposable
     {
@@ -18,14 +22,14 @@ namespace AtlusGfdLib.IO.Resource
             mReader = new EndianBinaryReader( stream, Encoding.Default, leaveOpen, endianness );
         }
 
-        public static AtlusGfdLib.Resource ReadFromStream( Stream stream, Endianness endianness, bool leaveOpen = false )
+        public static AtlusGfdLibrary.Resource ReadFromStream( Stream stream, Endianness endianness, bool leaveOpen = false )
         {
             using ( var reader = new ResourceReader( stream, endianness, leaveOpen ) )
                 return reader.ReadResourceBundleFile();
         }
 
         public static TResource ReadFromStream<TResource>( Stream stream, Endianness endianness, bool leaveOpen = false )
-            where TResource : AtlusGfdLib.Resource
+            where TResource : AtlusGfdLibrary.Resource
         {
             return ( TResource )ReadFromStream( stream, endianness, leaveOpen );
         }
@@ -309,13 +313,13 @@ namespace AtlusGfdLib.IO.Resource
         }
 
         // Resource read methods
-        private AtlusGfdLib.Resource ReadResourceBundleFile()
+        private AtlusGfdLibrary.Resource ReadResourceBundleFile()
         {
             if ( !ReadFileHeader( out ResourceFileHeader header ) || header.Magic != ResourceFileHeader.MAGIC_FS )
                 return null;
 
             // Read resource depending on type
-            AtlusGfdLib.Resource resource;
+            AtlusGfdLibrary.Resource resource;
 
             switch ( header.Type )
             {
@@ -1525,7 +1529,7 @@ namespace AtlusGfdLib.IO.Resource
                 var count = ReadInt();
                 for ( var i = 0; i < count; i++ )
                 {
-                    animation.Field10.Add( new AnimationFlag10000000DataEntry
+                    animation.Field10.Add( new Flag10000000DataEntry
                     {
                         Field00 = ReadEpl( version ),
                         Field04 = ReadStringWithHash( version )
@@ -1540,7 +1544,7 @@ namespace AtlusGfdLib.IO.Resource
 
             if ( animation.Flags.HasFlag( AnimationFlags.Flag80000000 ) )
             {
-                animation.Field1C = new AnimationFlag80000000Data
+                animation.Field1C = new Flag80000000Data
                 {
                     Field00 = ReadInt(),
                     Field04 = ReadStringWithHash( version ),
@@ -1566,10 +1570,10 @@ namespace AtlusGfdLib.IO.Resource
             return animation;
         }
 
-        private AnimationController ReadAnimationController( uint version )
+        private Controller ReadAnimationController( uint version )
         {
-            var controller = new AnimationController();
-            controller.Type = ( AnimationControllerType )ReadShort();
+            var controller = new Controller();
+            controller.TargetKind = ( TargetKind )ReadShort();
             controller.TargetId = ReadInt();
             controller.TargetName = ReadStringWithHash( version );
 
@@ -1583,10 +1587,10 @@ namespace AtlusGfdLib.IO.Resource
             return controller;
         }
 
-        private AnimationKeyframeTrack ReadAnimationKeyframeTrack( uint version )
+        private KeyframeTrack ReadAnimationKeyframeTrack( uint version )
         {
-            var track = new AnimationKeyframeTrack();
-            track.KeyframeType = ( AnimationKeyframeType )ReadInt();
+            var track = new KeyframeTrack();
+            track.KeyframeKind = ( KeyframeKind )ReadInt();
 
             int keyframeCount = ReadInt();
 
@@ -1595,12 +1599,12 @@ namespace AtlusGfdLib.IO.Resource
 
             for ( int i = 0; i < keyframeCount; i++ )
             {
-                var keyframe = ReadAnimationKeyframe( version, track.KeyframeType );
+                var keyframe = ReadAnimationKeyframe( version, track.KeyframeKind );
                 track.Keyframes.Add( keyframe );
             }
 
-            if ( track.KeyframeType == AnimationKeyframeType.Type26 || track.KeyframeType == AnimationKeyframeType.PRSHalf ||
-                 track.KeyframeType == AnimationKeyframeType.PRHalf )
+            if ( track.KeyframeKind == KeyframeKind.Type26 || track.KeyframeKind == KeyframeKind.NodePRSHalf ||
+                 track.KeyframeKind == KeyframeKind.NodePRHalf )
             {
                 track.BasePosition = ReadVector3();
                 track.BaseScale = ReadVector3();
@@ -1609,120 +1613,120 @@ namespace AtlusGfdLib.IO.Resource
             return track;
         }
 
-        private IAnimationKeyframe ReadAnimationKeyframe( uint version, AnimationKeyframeType type )
+        private IKeyframe ReadAnimationKeyframe( uint version, KeyframeKind kind )
         {
-            switch ( type )
+            switch ( kind )
             {
-                case AnimationKeyframeType.PRSingle:
+                case KeyframeKind.NodePR:
                     return ReadAnimationType01( version );
 
-                case AnimationKeyframeType.PRSSingle:
+                case KeyframeKind.NodePRS:
                     return ReadAnimationType02( version );
 
-                case AnimationKeyframeType.Type03:
+                case KeyframeKind.Type03:
                     return ReadAnimationType03( version );
 
-                case AnimationKeyframeType.Type04:
+                case KeyframeKind.Type04:
                     return ReadAnimationType04( version );
 
-                case AnimationKeyframeType.Type05:
+                case KeyframeKind.Type05:
                     return ReadAnimationType05( version );
 
-                case AnimationKeyframeType.Type06:
+                case KeyframeKind.Type06:
                     return ReadAnimationType06( version );
 
-                case AnimationKeyframeType.Type07:
+                case KeyframeKind.Type07:
                     return ReadAnimationType07( version );
 
-                case AnimationKeyframeType.Type08:
+                case KeyframeKind.Type08:
                     return ReadAnimationType08( version );
 
-                case AnimationKeyframeType.Type09:
+                case KeyframeKind.Type09:
                     return ReadAnimationType09( version );
 
-                case AnimationKeyframeType.Type10:
+                case KeyframeKind.Type10:
                     return ReadAnimationType10( version );
 
-                case AnimationKeyframeType.Type11:
+                case KeyframeKind.Type11:
                     return ReadAnimationType11( version );
 
-                case AnimationKeyframeType.Type12:
+                case KeyframeKind.MaterialType12:
                     return ReadAnimationType12( version );
 
-                case AnimationKeyframeType.Type13:
+                case KeyframeKind.Type13:
                     return ReadAnimationType13( version );
 
-                case AnimationKeyframeType.Type14:
+                case KeyframeKind.MaterialType14:
                     return ReadAnimationType14( version );
 
-                case AnimationKeyframeType.Type15:
+                case KeyframeKind.Type15:
                     return ReadAnimationType15( version );
 
-                case AnimationKeyframeType.Type16:
+                case KeyframeKind.Type16:
                     return ReadAnimationType16( version );
 
-                case AnimationKeyframeType.Type17:
+                case KeyframeKind.Type17:
                     return ReadAnimationType17( version );
 
-                case AnimationKeyframeType.Type18:
+                case KeyframeKind.Type18:
                     return ReadAnimationType18( version );
 
-                case AnimationKeyframeType.Type19:
+                case KeyframeKind.Type19:
                     return ReadAnimationType19( version );
 
-                case AnimationKeyframeType.Type20:
+                case KeyframeKind.Type20:
                     return ReadAnimationType20( version );
 
-                case AnimationKeyframeType.Type21:
+                case KeyframeKind.Type21:
                     return ReadAnimationType21( version );
 
-                case AnimationKeyframeType.Type22:
+                case KeyframeKind.Type22:
                     return ReadAnimationType22( version );
 
-                case AnimationKeyframeType.Type23:
+                case KeyframeKind.Type23:
                     return ReadAnimationType23( version );
 
-                case AnimationKeyframeType.Type24:
+                case KeyframeKind.Type24:
                     return ReadAnimationType24( version );
 
-                case AnimationKeyframeType.Type25:
+                case KeyframeKind.Type25:
                     return ReadAnimationType25( version );
 
-                case AnimationKeyframeType.Type26:
+                case KeyframeKind.Type26:
                     return ReadAnimationType26( version );
 
-                case AnimationKeyframeType.PRSHalf:
+                case KeyframeKind.NodePRSHalf:
                     return ReadAnimationType27( version );
 
-                case AnimationKeyframeType.PRHalf:
+                case KeyframeKind.NodePRHalf:
                     return ReadAnimationType28( version );
 
-                case AnimationKeyframeType.Type29:
+                case KeyframeKind.MaterialType29:
                     return ReadAnimationType29( version );
 
-                case AnimationKeyframeType.Type30:
+                case KeyframeKind.Type30:
                     return ReadAnimationType30( version );
 
-                case AnimationKeyframeType.Type31:
+                case KeyframeKind.Type31:
                     return ReadAnimationType31( version );
 
                 default:
-                    throw new Exception( $"Invalid keyframe type! '{type}'" );
+                    throw new Exception( $"Invalid keyframe type! '{kind}'" );
             }
         }
 
-        private IAnimationKeyframe ReadAnimationType01( uint version )
+        private IKeyframe ReadAnimationType01( uint version )
         {
-            return new AnimationKeyframePRSingle()
+            return new NodePRKeyframe()
             {
                 Position = ReadVector3(),
                 Rotation = ReadQuaternion(),
             };
         }
 
-        private IAnimationKeyframe ReadAnimationType02( uint version )
+        private IKeyframe ReadAnimationType02( uint version )
         {
-            return new AnimationKeyframePRSSingle
+            return new NodePRSKeyframe
             {
                 Position = ReadVector3(),
                 Rotation = ReadQuaternion(),
@@ -1730,64 +1734,64 @@ namespace AtlusGfdLib.IO.Resource
             };
         }
 
-        private IAnimationKeyframe ReadAnimationType03( uint version )
+        private IKeyframe ReadAnimationType03( uint version )
         {
             throw new NotImplementedException();
         }
 
-        private IAnimationKeyframe ReadAnimationType04( uint version )
+        private IKeyframe ReadAnimationType04( uint version )
         {
             throw new NotImplementedException();
         }
 
-        private IAnimationKeyframe ReadAnimationType05( uint version )
+        private IKeyframe ReadAnimationType05( uint version )
         {
             throw new NotImplementedException();
         }
 
-        private IAnimationKeyframe ReadAnimationType06( uint version )
+        private IKeyframe ReadAnimationType06( uint version )
         {
             throw new NotImplementedException();
         }
 
-        private IAnimationKeyframe ReadAnimationType07( uint version )
+        private IKeyframe ReadAnimationType07( uint version )
         {
             throw new NotImplementedException();
         }
 
-        private IAnimationKeyframe ReadAnimationType08( uint version )
+        private IKeyframe ReadAnimationType08( uint version )
         {
             throw new NotImplementedException();
         }
 
-        private IAnimationKeyframe ReadAnimationType09( uint version )
+        private IKeyframe ReadAnimationType09( uint version )
         {
             throw new NotImplementedException();
         }
 
-        private IAnimationKeyframe ReadAnimationType10( uint version )
+        private IKeyframe ReadAnimationType10( uint version )
         {
             throw new NotImplementedException();
         }
 
-        private IAnimationKeyframe ReadAnimationType11( uint version )
+        private IKeyframe ReadAnimationType11( uint version )
         {
             throw new NotImplementedException();
         }
 
-        private IAnimationKeyframe ReadAnimationType12( uint version )
+        private IKeyframe ReadAnimationType12( uint version )
         {
-            return new AnimationMaterialKeyframeType12 { Field00 = ReadFloat() };
+            return new MaterialKeyframeType12 { Field00 = ReadFloat() };
         }
 
-        private IAnimationKeyframe ReadAnimationType13( uint version )
+        private IKeyframe ReadAnimationType13( uint version )
         {
             throw new NotImplementedException();
         }
 
-        private IAnimationKeyframe ReadAnimationType14( uint version )
+        private IKeyframe ReadAnimationType14( uint version )
         {
-            return new AnimationMaterialKeyframeType14()
+            return new MaterialKeyframeType14()
             {
                 Field00 = ReadFloat(),
                 Field04 = ReadFloat(),
@@ -1795,69 +1799,69 @@ namespace AtlusGfdLib.IO.Resource
             };
         }
 
-        private IAnimationKeyframe ReadAnimationType15( uint version )
+        private IKeyframe ReadAnimationType15( uint version )
         {
             throw new NotImplementedException();
         }
 
-        private IAnimationKeyframe ReadAnimationType16( uint version )
+        private IKeyframe ReadAnimationType16( uint version )
         {
             throw new NotImplementedException();
         }
 
-        private IAnimationKeyframe ReadAnimationType17( uint version )
+        private IKeyframe ReadAnimationType17( uint version )
         {
             throw new NotImplementedException();
         }
 
-        private IAnimationKeyframe ReadAnimationType18( uint version )
+        private IKeyframe ReadAnimationType18( uint version )
         {
             throw new NotImplementedException();
         }
 
-        private IAnimationKeyframe ReadAnimationType19( uint version )
+        private IKeyframe ReadAnimationType19( uint version )
         {
             throw new NotImplementedException();
         }
 
-        private IAnimationKeyframe ReadAnimationType20( uint version )
+        private IKeyframe ReadAnimationType20( uint version )
         {
             throw new NotImplementedException();
         }
 
-        private IAnimationKeyframe ReadAnimationType21( uint version )
+        private IKeyframe ReadAnimationType21( uint version )
         {
             throw new NotImplementedException();
         }
 
-        private IAnimationKeyframe ReadAnimationType22( uint version )
+        private IKeyframe ReadAnimationType22( uint version )
         {
             throw new NotImplementedException();
         }
 
-        private IAnimationKeyframe ReadAnimationType23( uint version )
+        private IKeyframe ReadAnimationType23( uint version )
         {
             throw new NotImplementedException();
         }
 
-        private IAnimationKeyframe ReadAnimationType24( uint version )
+        private IKeyframe ReadAnimationType24( uint version )
         {
             throw new NotImplementedException();
         }
 
-        private IAnimationKeyframe ReadAnimationType25( uint version )
+        private IKeyframe ReadAnimationType25( uint version )
         {
             throw new NotImplementedException();
         }
 
-        private IAnimationKeyframe ReadAnimationType26( uint version )
+        private IKeyframe ReadAnimationType26( uint version )
         {
             throw new NotImplementedException();
         }
 
-        private IAnimationKeyframe ReadAnimationType27( uint version )
+        private IKeyframe ReadAnimationType27( uint version )
         {
-            return new AnimationKeyframePRSHalf
+            return new NodePRSHalfKeyframe
             {
                 Position = new Vector3( ReadHalfFloat(), ReadHalfFloat(), ReadHalfFloat() ),
                 Rotation = new Quaternion( ReadHalfFloat(), ReadHalfFloat(), ReadHalfFloat(), ReadHalfFloat() ),
@@ -1865,26 +1869,26 @@ namespace AtlusGfdLib.IO.Resource
             };
         }
 
-        private IAnimationKeyframe ReadAnimationType28( uint version )
+        private IKeyframe ReadAnimationType28( uint version )
         {
-            return new AnimationKeyframePRHalf
+            return new NodePRHalfKeyframe
             {
                 Position = new Vector3( ReadHalfFloat(), ReadHalfFloat(), ReadHalfFloat() ),
                 Rotation = new Quaternion( ReadHalfFloat(), ReadHalfFloat(), ReadHalfFloat(), ReadHalfFloat() )
             };
         }
 
-        private IAnimationKeyframe ReadAnimationType29( uint version )
+        private IKeyframe ReadAnimationType29( uint version )
         {
-            return new AnimationMaterialKeyframeType29 { Field00 = ReadFloat() };
+            return new MaterialKeyframeType29 { Field00 = ReadFloat() };
         }
 
-        private IAnimationKeyframe ReadAnimationType30( uint version )
+        private IKeyframe ReadAnimationType30( uint version )
         {
             throw new NotImplementedException();
         }
 
-        private IAnimationKeyframe ReadAnimationType31( uint version )
+        private IKeyframe ReadAnimationType31( uint version )
         {
             throw new NotImplementedException();
         }

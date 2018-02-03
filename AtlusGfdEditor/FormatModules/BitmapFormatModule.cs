@@ -2,7 +2,7 @@
 using System.Drawing.Imaging;
 using System.IO;
 using AtlusGfdEditor.IO;
-using AtlusGfdLib.Common.Utillities;
+using AtlusGfdLibrary.Utillities;
 
 namespace AtlusGfdEditor.FormatModules
 {

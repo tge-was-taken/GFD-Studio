@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace AtlusGfdLib
+namespace AtlusGfdLibrary.Cameras
 {
     public sealed class Camera
     {

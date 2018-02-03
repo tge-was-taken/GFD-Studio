@@ -7,7 +7,7 @@ using AtlusGfdEditor.FormatModules;
 using AtlusGfdEditor.GUI.Controls;
 using AtlusGfdEditor.GUI.ViewModels;
 using AtlusGfdEditor.IO;
-using AtlusGfdLib;
+using AtlusGfdLibrary;
 
 namespace AtlusGfdEditor.GUI.Forms
 {
