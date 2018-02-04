@@ -44,7 +44,7 @@ namespace AtlusGfdEditor.GUI.ViewModels
             if ( viewModel.Nodes.Count > 0 && viewModel.Nodes[0].Text == string.Empty )
             {
                 // initialize the view so the user doesn't get to see the dummy node
-                viewModel.InitializeView();
+                viewModel.InitializeView(true);
             }
 
             foreach ( TreeNodeViewModel childNode in viewModel.Nodes )

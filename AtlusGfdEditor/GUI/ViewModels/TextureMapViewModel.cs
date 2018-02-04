@@ -4,7 +4,7 @@ using AtlusGfdLibrary;
 
 namespace AtlusGfdEditor.GUI.ViewModels
 {
-    class TextureMapViewModel : TreeNodeViewModel<TextureMap>
+    public class TextureMapViewModel : TreeNodeViewModel<TextureMap>
     {
         public override TreeNodeViewModelMenuFlags ContextMenuFlags
             => TreeNodeViewModelMenuFlags.Export | TreeNodeViewModelMenuFlags.Replace | TreeNodeViewModelMenuFlags.Move | TreeNodeViewModelMenuFlags.Rename | TreeNodeViewModelMenuFlags.Delete;

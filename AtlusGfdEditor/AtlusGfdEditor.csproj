@@ -114,6 +114,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Numerics.Vectors, Version=4.1.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Numerics.Vectors.4.4.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
@@ -124,12 +125,19 @@
     </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
     <Reference Include="UsefulThings, Version=1.7.3.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\UsefulCSharpThings.1.7.3\lib\net462\UsefulThings.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FormatModules\AssimpSceneFormatModule.cs" />
+    <Compile Include="GUI\Forms\CreateTextureMapDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Forms\CreateTextureMapDialog.Designer.cs">
+      <DependentUpon>CreateTextureMapDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Forms\ModelConverterOptionsDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -167,6 +175,7 @@
     <Compile Include="GUI\ViewModels\ResourceViewModel.cs" />
     <Compile Include="GUI\ViewModels\SceneViewModel.cs" />
     <Compile Include="GUI\ViewModels\StreamViewModel.cs" />
+    <Compile Include="GUI\ViewModels\TextureMapListViewModel.cs" />
     <Compile Include="GUI\ViewModels\TextureViewModel.cs" />
     <Compile Include="GUI\ViewModels\TextureDictionaryViewModel.cs" />
     <Compile Include="GUI\ViewModels\TextureMapViewModel.cs" />
@@ -226,6 +235,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Controls\ModelViewControl.resx">
       <DependentUpon>ModelViewControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Forms\CreateTextureMapDialog.resx">
+      <DependentUpon>CreateTextureMapDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\Forms\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>

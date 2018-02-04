@@ -269,7 +269,7 @@ namespace AtlusGfdEditor.GUI.ViewModels
                 openFileDlg.AutoUpgradeEnabled = true;
                 openFileDlg.CheckPathExists = true;
                 openFileDlg.CheckFileExists = true;
-                openFileDlg.Filter = ModuleFilterGenerator.GenerateFilter( FormatModuleUsageFlags.Import | FormatModuleUsageFlags.ImportForEditing, mAddHandlers.Keys.ToArray() );
+                openFileDlg.Filter = ModuleFilterGenerator.GenerateFilter( new[] { FormatModuleUsageFlags.Import, FormatModuleUsageFlags.ImportForEditing }, mAddHandlers.Keys.ToArray() );
                 openFileDlg.Multiselect = true;
                 openFileDlg.SupportMultiDottedExtensions = true;
                 openFileDlg.Title = "Select file(s) to add.";
@@ -284,6 +284,8 @@ namespace AtlusGfdEditor.GUI.ViewModels
                 {
                     Add( fileName );
                 }
+
+                InitializeView( true );
             }
 
         }
@@ -360,7 +362,14 @@ namespace AtlusGfdEditor.GUI.ViewModels
         //
         // Delete method
         //
-        public void Delete() => Remove();
+        public void Delete()
+        {
+            if ( Parent != null )
+                Parent.HasPendingChanges = true;
+            base.Remove();
+        }
+
+        public new void Remove() => Delete();
 
         // INotifyPropertyChanged
         protected void SetProperty<T>( object instance, T value, [CallerMemberName] string propertyName = null )

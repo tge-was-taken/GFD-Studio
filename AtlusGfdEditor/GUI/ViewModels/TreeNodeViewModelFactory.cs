@@ -38,6 +38,7 @@ namespace AtlusGfdEditor.GUI.ViewModels
             Register<MaterialDictionaryViewModel>();
             Register<MaterialViewModel>();
             Register<TextureMapViewModel>();
+            Register<TextureMapListViewModel>();
             Register<MaterialAttributeType0ViewModel>();
             Register<MaterialAttributeType1ViewModel>();
             Register<MaterialAttributeType2ViewModel>();
@@ -48,9 +49,9 @@ namespace AtlusGfdEditor.GUI.ViewModels
             Register<MaterialAttributeType7ViewModel>();
 
             // gfd scene view models
-            Register< SceneViewModel >();
-            Register< MatrixPaletteViewModel >();
-            Register< NodeViewModel >();
+            Register<SceneViewModel>();
+            Register<MatrixPaletteViewModel>();
+            Register<NodeViewModel>();
 
             // gfd chunk type 000100F9 view models
             Register<ChunkType000100F9ViewModel>();

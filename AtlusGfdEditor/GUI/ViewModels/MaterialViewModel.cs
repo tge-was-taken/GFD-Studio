@@ -186,7 +186,7 @@ namespace AtlusGfdEditor.GUI.ViewModels
         }
 
         [Browsable( false )]
-        public ListViewModel<TextureMap> TextureMapsViewModel { get; set; }
+        public TextureMapListViewModel TextureMapsViewModel { get; set; }
 
         [Browsable( false )]
         public ListViewModel<MaterialAttribute> AttributesViewModel { get; set; }
@@ -195,66 +195,22 @@ namespace AtlusGfdEditor.GUI.ViewModels
         {
         }
 
-        private (List<TextureMap> TextureMapList, List<string> TextureMapItemNames) CreateTextureMapInfo()
+        private List<TextureMap> CreateTextureMapInfo()
         {
-            var textureMapItemNames = new List<string>();
             var textureMapList = new List<TextureMap>();
+             textureMapList.Add( Model.DiffuseMap );
+            textureMapList.Add( Model.NormalMap );
+            textureMapList.Add( Model.SpecularMap );
+            textureMapList.Add( Model.ReflectionMap );
+            textureMapList.Add( Model.HighlightMap );
+            textureMapList.Add( Model.GlowMap );
+            textureMapList.Add( Model.NightMap );
 
-            if ( Model.DiffuseMap != null )
-            {
-                textureMapList.Add( Model.DiffuseMap );
-                textureMapItemNames.Add( nameof( Model.DiffuseMap ) );
-            }
+            textureMapList.Add( Model.DetailMap );
 
-            if ( Model.NormalMap != null )
-            {
-                textureMapList.Add( Model.NormalMap );
-                textureMapItemNames.Add( nameof( Model.NormalMap ) );
-            }
+            textureMapList.Add( Model.ShadowMap );
 
-            if ( Model.SpecularMap != null )
-            {
-                textureMapList.Add( Model.SpecularMap );
-                textureMapItemNames.Add( nameof( Model.SpecularMap ) );
-            }
-
-            if ( Model.ReflectionMap != null )
-            {
-                textureMapList.Add( Model.ReflectionMap );
-                textureMapItemNames.Add( nameof( Model.ReflectionMap ) );
-            }
-
-            if ( Model.HighlightMap != null )
-            {
-                textureMapList.Add( Model.HighlightMap );
-                textureMapItemNames.Add( nameof( Model.HighlightMap ) );
-            }
-
-            if ( Model.GlowMap != null )
-            {
-                textureMapList.Add( Model.GlowMap );
-                textureMapItemNames.Add( nameof( Model.GlowMap ) );
-            }
-
-            if ( Model.NightMap != null )
-            {
-                textureMapList.Add( Model.NightMap );
-                textureMapItemNames.Add( nameof( Model.NightMap ) );
-            }
-
-            if ( Model.DetailMap != null )
-            {
-                textureMapList.Add( Model.DetailMap );
-                textureMapItemNames.Add( nameof( Model.DetailMap ) );
-            }
-
-            if ( Model.ShadowMap != null )
-            {
-                textureMapList.Add( Model.ShadowMap );
-                textureMapItemNames.Add( nameof( Model.ShadowMap ) );
-            }
-
-            return (textureMapList, textureMapItemNames);
+            return textureMapList;
         }
 
         protected override void InitializeCore()
@@ -281,36 +237,37 @@ namespace AtlusGfdEditor.GUI.ViewModels
                     TextureMapsViewModel.InitializeView();
                 }
 
-                foreach ( TextureMapViewModel viewModel in TextureMapsViewModel.Nodes )
+                for ( var i = 0; i < TextureMapsViewModel.Model.Count; i++ )
                 {
-                    switch ( viewModel.Text )
+                    var textureMap = TextureMapsViewModel.Model[ i ];
+                    switch ( i )
                     {
-                        case nameof( Material.DiffuseMap ):
-                            material.DiffuseMap = viewModel.Model;
+                        case 0:
+                            material.DiffuseMap = textureMap;
                             break;
-                        case nameof( Material.DetailMap ):
-                            material.DetailMap = viewModel.Model;
+                        case 1:
+                            material.NormalMap = textureMap;
                             break;
-                        case nameof( Material.GlowMap ):
-                            material.GlowMap = viewModel.Model;
+                        case 2:
+                            material.SpecularMap = textureMap;
                             break;
-                        case nameof( Material.HighlightMap ):
-                            material.HighlightMap = viewModel.Model;
+                        case 3:
+                            material.ReflectionMap = textureMap;
                             break;
-                        case nameof( Material.NightMap ):
-                            material.NightMap = viewModel.Model;
+                        case 4:
+                            material.HighlightMap = textureMap;
                             break;
-                        case nameof( Material.NormalMap ):
-                            material.NormalMap = viewModel.Model;
+                        case 5:
+                            material.GlowMap = textureMap;
                             break;
-                        case nameof( Material.ReflectionMap ):
-                            material.ReflectionMap = viewModel.Model;
+                        case 6:
+                            material.NightMap = textureMap;
                             break;
-                        case nameof( Material.ShadowMap ):
-                            material.ShadowMap = viewModel.Model;
+                        case 7:
+                            material.DetailMap = textureMap;
                             break;
-                        case nameof( Material.SpecularMap ):
-                            material.SpecularMap = viewModel.Model;
+                        case 8:
+                            material.ShadowMap = textureMap;
                             break;
                     }
                 }
@@ -329,8 +286,7 @@ namespace AtlusGfdEditor.GUI.ViewModels
 
         protected override void InitializeViewCore()
         {
-            var textureMapInfo = CreateTextureMapInfo();
-            TextureMapsViewModel = ( ListViewModel<TextureMap> )TreeNodeViewModelFactory.Create( "Texture Maps", textureMapInfo.TextureMapList, new object[] { textureMapInfo.TextureMapItemNames } );
+            TextureMapsViewModel = ( TextureMapListViewModel)TreeNodeViewModelFactory.Create( "Texture Maps", CreateTextureMapInfo() );
             Nodes.Add( TextureMapsViewModel );
 
             AttributesViewModel =

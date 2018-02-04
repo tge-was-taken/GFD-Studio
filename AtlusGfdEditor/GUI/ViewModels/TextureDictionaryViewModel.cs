@@ -1,4 +1,6 @@
-﻿using System.Windows.Forms;
+﻿using System.Drawing;
+using System.IO;
+using System.Windows.Forms;
 using AtlusGfdLibrary;
 
 namespace AtlusGfdEditor.GUI.ViewModels
@@ -7,7 +9,7 @@ namespace AtlusGfdEditor.GUI.ViewModels
     {
         public override TreeNodeViewModelMenuFlags ContextMenuFlags =>
             TreeNodeViewModelMenuFlags.Export | TreeNodeViewModelMenuFlags.Replace | TreeNodeViewModelMenuFlags.Move |
-            TreeNodeViewModelMenuFlags.Rename | TreeNodeViewModelMenuFlags.Delete;
+            TreeNodeViewModelMenuFlags.Rename | TreeNodeViewModelMenuFlags.Delete | TreeNodeViewModelMenuFlags.Add;
 
         public override TreeNodeViewModelFlags NodeFlags => TreeNodeViewModelFlags.Branch;
 
@@ -19,6 +21,12 @@ namespace AtlusGfdEditor.GUI.ViewModels
         {
             RegisterExportHandler<TextureDictionary>( path => Resource.Save( Model, path ) );
             RegisterReplaceHandler<TextureDictionary>( Resource.Load<TextureDictionary> );
+
+            RegisterAddHandler< Bitmap >( path => Model.Add( TextureEncoder.Encode( Path.GetFileNameWithoutExtension( path ) + ".dds", 
+                TextureFormat.DDS, new Bitmap( path ) ) ) );
+
+            RegisterAddHandler< Stream >( path => Model.Add( new Texture( Path.GetFileNameWithoutExtension( path ) + ".dds", 
+                TextureFormat.DDS, File.ReadAllBytes( path ) ) ) );
 
             RegisterModelUpdateHandler( () =>
             {
@@ -56,7 +64,8 @@ namespace AtlusGfdEditor.GUI.ViewModels
         {
             foreach ( var texture in Model.Textures )
             {
-                Nodes.Add( TreeNodeViewModelFactory.Create( texture.Name, texture ) );
+                var node = TreeNodeViewModelFactory.Create( texture.Name, texture );
+                Nodes.Add( node );
             }
         }
     }

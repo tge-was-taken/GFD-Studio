@@ -6,7 +6,7 @@ namespace AtlusGfdEditor.GUI.ViewModels
     {
         public override TreeNodeViewModelMenuFlags ContextMenuFlags =>
             TreeNodeViewModelMenuFlags.Export | TreeNodeViewModelMenuFlags.Replace | TreeNodeViewModelMenuFlags.Move |
-            TreeNodeViewModelMenuFlags.Rename | TreeNodeViewModelMenuFlags.Delete;
+            TreeNodeViewModelMenuFlags.Rename | TreeNodeViewModelMenuFlags.Delete | TreeNodeViewModelMenuFlags.Add;
 
         public override TreeNodeViewModelFlags NodeFlags => TreeNodeViewModelFlags.Branch;
 
@@ -18,6 +18,7 @@ namespace AtlusGfdEditor.GUI.ViewModels
         {
             RegisterExportHandler<MaterialDictionary>( path => Resource.Save( Model, path ) );
             RegisterReplaceHandler<MaterialDictionary>( Resource.Load<MaterialDictionary> );
+            RegisterAddHandler< Material >( path => Model.Add( Resource.Load< Material >( path ) ) );
 
             RegisterModelUpdateHandler( () =>
             {
