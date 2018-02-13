@@ -43,7 +43,7 @@ namespace AtlusGfdLibrary
 
             if ( hasTransparency )
             {
-                //material.DrawOrder = MaterialDrawOrder.Back;
+                material.DrawOrder = MaterialDrawOrder.Back;
                 material.Field4D = 1;
                 material.Field90 = 0x0080;
             }
@@ -112,7 +112,7 @@ namespace AtlusGfdLibrary
 
             if ( hasTransparency )
             {
-                //material.DrawOrder = MaterialDrawOrder.Back;
+                material.DrawOrder = MaterialDrawOrder.Back;
                 material.Field4D = 1;
                 material.Field90 = 0x0080;
             }
@@ -174,7 +174,7 @@ namespace AtlusGfdLibrary
 
             if ( hasTransparency )
             {
-                //material.DrawOrder = MaterialDrawOrder.Back;
+                material.DrawOrder = MaterialDrawOrder.Back;
                 material.Field4D = 1;
                 material.Field90 = 0x0080;
             }

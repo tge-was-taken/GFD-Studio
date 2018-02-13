@@ -30,6 +30,7 @@ namespace AtlusGfdEditor.GUI.Forms
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.mMainMenuStrip = new System.Windows.Forms.MenuStrip();
             this.mFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -78,7 +79,7 @@ namespace AtlusGfdEditor.GUI.Forms
             // modelToolStripMenuItem
             // 
             this.modelToolStripMenuItem.Name = "modelToolStripMenuItem";
-            this.modelToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.modelToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
             this.modelToolStripMenuItem.Text = "Model";
             this.modelToolStripMenuItem.Click += new System.EventHandler(this.NewModelToolStripMenuItemClickEventHandler);
             // 
@@ -118,7 +119,7 @@ namespace AtlusGfdEditor.GUI.Forms
             // mOptionsToolStripMenuItem
             // 
             this.mOptionsToolStripMenuItem.Name = "mOptionsToolStripMenuItem";
-            this.mOptionsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.mOptionsToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
             this.mOptionsToolStripMenuItem.Text = "Options";
             // 
             // mPropertyGrid
@@ -160,6 +161,7 @@ namespace AtlusGfdEditor.GUI.Forms
             this.Controls.Add(this.mTreeView);
             this.Controls.Add(this.mMainMenuStrip);
             this.Controls.Add(this.mContentPanel);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.mMainMenuStrip;
             this.Name = "MainForm";
             this.Text = "Atlus GFD Model Editor";
