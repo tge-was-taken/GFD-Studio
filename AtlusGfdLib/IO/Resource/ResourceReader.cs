@@ -387,9 +387,9 @@ namespace AtlusGfdLibrary.IO.Resource
                     case ResourceChunkType.ChunkType000100F9:
                         model.ChunkType000100F9 = ReadChunkType000100F9( header.Version );
                         break;
-                    case ResourceChunkType.AnimationPackage:
-                        model.AnimationPackage = ReadAnimationPackage( header.Version );
-                        break;
+                    //case ResourceChunkType.AnimationPackage:
+                    //    model.AnimationPackage = ReadAnimationPackage( header.Version );
+                    //    break;
                     default:
                         DebugLogPosition( $"Unknown chunk type '{header.Type}'" );
                         mReader.SeekCurrent( header.Size - 12 );
@@ -511,7 +511,7 @@ namespace AtlusGfdLibrary.IO.Resource
             material.Field70 = ReadUInt();
             material.Field50 = ReadShort();
 
-            if ( version <= 0x1105070 )
+            if ( version <= 0x1105070 || version >= 0x1105090 )
             {
                 material.Field98 = ReadUInt();
             }

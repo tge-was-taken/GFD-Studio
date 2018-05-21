@@ -505,7 +505,7 @@ namespace AtlusGfdLibrary.IO.Resource
             WriteUInt( material.Field70 );
             WriteShort( material.Field50 );
 
-            if ( version <= 0x1105070 )
+            if ( version <= 0x1105070 || version >= 0x1105090 )
             {
                 WriteUInt( material.Field98 );
             }
