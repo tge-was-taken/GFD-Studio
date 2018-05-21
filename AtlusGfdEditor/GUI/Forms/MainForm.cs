@@ -42,7 +42,7 @@ namespace AtlusGfdEditor.GUI.Forms
 #endif
 
             mTreeView.LabelEdit = true;
-            
+            AllowDrop = true;
         }
 
         private void InitializeRecentlyOpenedFilesList()
@@ -61,9 +61,37 @@ namespace AtlusGfdEditor.GUI.Forms
         private void InitializeEvents()
         {
             mTreeView.AfterSelect += TreeViewAfterSelectEventHandler;
+            mTreeView.UserPropertyChanged += TreeViewUserPropertyChangedEventHandler;
             mContentPanel.ControlAdded += ContentPanelControlAddedEventHandler;
             mContentPanel.Resize += ContentPanelResizeEventHandler;
-            mTreeView.UserPropertyChanged += TreeViewUserPropertyChangedEventHandler;
+            DragDrop += DragDropEventHandler;
+            DragEnter += DragEnterEventHandler;
+        }
+
+        private void DragDropEventHandler( object sender, DragEventArgs e )
+        {
+            var data = e.Data.GetData( DataFormats.FileDrop );
+            if ( data == null )
+                return;
+
+            var paths = ( string[] ) data;
+            if ( paths.Length == 0 )
+                return;
+
+            var path = paths[ 0 ];
+            if ( !File.Exists( path ) )
+                return;
+
+            OpenFile( path );
+        }
+
+
+        private void DragEnterEventHandler( object sender, DragEventArgs e )
+        {
+            if ( e.Data.GetDataPresent( DataFormats.FileDrop ) )
+                e.Effect = DragDropEffects.Copy;
+            else
+                e.Effect = DragDropEffects.None;
         }
 
         private void TreeViewUserPropertyChangedEventHandler( object sender, TreeNodeViewModelPropertyChangedEventArgs args )
@@ -147,6 +175,7 @@ namespace AtlusGfdEditor.GUI.Forms
             AddRecentlyOpenedFile( filePath );
 
             mTreeView.SetTopNode( viewModel );
+            OnTreeNodeViewModelSelected( viewModel );
         }
 
         public string SelectFileToSaveTo()
@@ -206,7 +235,11 @@ namespace AtlusGfdEditor.GUI.Forms
         private void TreeViewAfterSelectEventHandler(object sender, TreeViewEventArgs e)
         {
             var viewModel = ( TreeNodeViewModel )e.Node;
+            OnTreeNodeViewModelSelected( viewModel );
+        }
 
+        private void OnTreeNodeViewModelSelected( TreeNodeViewModel viewModel )
+        {
             // Set property grid to display properties of the currently selected node
             mPropertyGrid.SelectedObject = viewModel;
 
@@ -219,7 +252,7 @@ namespace AtlusGfdEditor.GUI.Forms
                     control = new BitmapViewControl( module.GetBitmap( viewModel.Model ) );
                     control.Visible = false;
                 }
-                else if ( module.ModelType == typeof(Model) )
+                else if ( module.ModelType == typeof( Model ) )
                 {
                     ClearContentPanel();
                     var modelViewControl = new ModelViewControl();
