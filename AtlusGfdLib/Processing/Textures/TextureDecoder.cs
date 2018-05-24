@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using CSharpImageLibrary;
 using CSharpImageLibrary.Headers;
@@ -50,19 +52,18 @@ namespace AtlusGfdLibrary
 
             if ( format == TextureFormat.DDS )
             {
-                while ( true )
+                try
                 {
-                    try
-                    {
-                        // load image from dds data
-                        var image = new ImageEngineImage( data );
-                        bitmap = ImageEngineImageToBitmap( image );
-                        break;
-                    }
-                    catch ( Exception )
-                    {
-                        // Bug: ImagineEngine randomly crashes? Seems to happen with P3D/P5D files only.
-                    }
+                    // load image from dds data
+                    var image = new ImageEngineImage( data );
+                    bitmap = ImageEngineImageToBitmap( image );
+                }
+                catch ( Exception )
+                {
+                    // Bug: ImagineEngine randomly crashes? Seems to happen with P3D/P5D files only.
+                    // Seems like it doesn't support some configuration
+                    bitmap = new Bitmap( 32, 32, PixelFormat.Format32bppArgb );
+                    Trace.WriteLine( "ImageEngine failed to decode DDS texture" );
                 }
             }
             else
