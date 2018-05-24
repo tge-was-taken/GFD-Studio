@@ -50,9 +50,20 @@ namespace AtlusGfdLibrary
 
             if ( format == TextureFormat.DDS )
             {
-                // load image from dds data
-                var image = new ImageEngineImage( data );
-                bitmap = ImageEngineImageToBitmap( image );
+                while ( true )
+                {
+                    try
+                    {
+                        // load image from dds data
+                        var image = new ImageEngineImage( data );
+                        bitmap = ImageEngineImageToBitmap( image );
+                        break;
+                    }
+                    catch ( Exception )
+                    {
+                        // Bug: ImagineEngine randomly crashes? Seems to happen with P3D/P5D files only.
+                    }
+                }
             }
             else
             {
