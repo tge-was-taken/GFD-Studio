@@ -395,6 +395,9 @@ namespace AtlusGfdEditor.GUI.Controls
                 case ImageEngineFormat.DDS_DXT5:
                     return PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
 
+                case ImageEngineFormat.DDS_ARGB_8:
+                    return PixelInternalFormat.Rgba8;
+
                 default:
                     throw new NotImplementedException(format.ToString());
             }
