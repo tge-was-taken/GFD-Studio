@@ -62,11 +62,13 @@ namespace AtlusGfdEditor.GUI.ViewModels
             RegisterCustomHandler( "Add New", () =>
             {
                 var dialog = new CreateTextureMapDialog();
-                if ( dialog.ShowDialog() != DialogResult.OK )
+                if ( dialog.ShowDialog() != DialogResult.OK || dialog.Result.Name.Length == 0 || dialog.Result.Type == -1 )
                     return;
 
                 var textureMap = new TextureMap( dialog.Result.Name );
                 Model[dialog.Result.Type] = textureMap;
+                InitializeView( true );
+                HasPendingChanges = true;
 
             }, Keys.Control | Keys.A );
 
