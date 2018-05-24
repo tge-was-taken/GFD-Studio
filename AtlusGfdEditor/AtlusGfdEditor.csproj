@@ -144,6 +144,7 @@
     <Compile Include="GUI\Forms\ModelConverterOptionsDialog.Designer.cs">
       <DependentUpon>ModelConverterOptionsDialog.cs</DependentUpon>
     </Compile>
+    <Compile Include="GUI\Forms\RecentlyOpenedFilesList.cs" />
     <Compile Include="GUI\TypeConverters\EnumTypeConverter.cs" />
     <Compile Include="GUI\TypeConverters\Int16HexTypeConverter.cs" />
     <Compile Include="GUI\TypeConverters\Int32HexTypeConverter.cs" />

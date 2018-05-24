@@ -42,7 +42,7 @@ namespace AtlusGfdEditor.GUI.Forms
             this.mOptionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mPropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.mContentPanel = new System.Windows.Forms.Panel();
-            this.mTreeView = new AtlusGfdEditor.GUI.ViewModels.TreeNodeViewModelView();
+            this.TreeView = new AtlusGfdEditor.GUI.ViewModels.TreeNodeViewModelView();
             this.mMainMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -145,12 +145,12 @@ namespace AtlusGfdEditor.GUI.Forms
             // 
             // mTreeView
             // 
-            this.mTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.mTreeView.Location = new System.Drawing.Point(713, 27);
-            this.mTreeView.Name = "mTreeView";
-            this.mTreeView.Size = new System.Drawing.Size(497, 380);
-            this.mTreeView.TabIndex = 1;
-            this.mTreeView.TopNode = null;
+            this.TreeView.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.TreeView.Location = new System.Drawing.Point(713, 27);
+            this.TreeView.Name = "TreeView";
+            this.TreeView.Size = new System.Drawing.Size(497, 380);
+            this.TreeView.TabIndex = 1;
+            this.TreeView.TopNode = null;
             // 
             // MainForm
             // 
@@ -158,7 +158,7 @@ namespace AtlusGfdEditor.GUI.Forms
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1222, 839);
             this.Controls.Add(this.mPropertyGrid);
-            this.Controls.Add(this.mTreeView);
+            this.Controls.Add(this.TreeView);
             this.Controls.Add(this.mMainMenuStrip);
             this.Controls.Add(this.mContentPanel);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -176,7 +176,6 @@ namespace AtlusGfdEditor.GUI.Forms
 
         private System.Windows.Forms.MenuStrip mMainMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem mFileToolStripMenuItem;
-        private TreeNodeViewModelView mTreeView;
         private System.Windows.Forms.PropertyGrid mPropertyGrid;
         private System.Windows.Forms.ToolStripMenuItem mOpenToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem mEditToolStripMenuItem;

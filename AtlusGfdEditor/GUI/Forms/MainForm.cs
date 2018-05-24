@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -14,10 +13,10 @@ namespace AtlusGfdEditor.GUI.Forms
     public partial class MainForm : Form
     {
         private const string RECENTLY_OPENED_FILES_LIST_FILEPATH = "RecentlyOpenedFiles.txt";
-        private TreeNodeViewModel mLastSelectedNode;
-        private Stack<string> mRecentlyOpenedFileHistoryStack;
 
-        public TreeNodeViewModelView TreeView => mTreeView;
+        private RecentlyOpenedFilesList mRecentlyOpenedFilesList;
+
+        public TreeNodeViewModelView TreeView { get; private set; }
 
         public string LastOpenedFilePath { get; private set; }
 
@@ -28,7 +27,6 @@ namespace AtlusGfdEditor.GUI.Forms
         {
             InitializeComponent();
             InitializeState();
-            InitializeRecentlyOpenedFilesList();
             InitializeEvents();
         }
 
@@ -41,27 +39,16 @@ namespace AtlusGfdEditor.GUI.Forms
             Text = $"{Program.Name} {Program.Version.Major}.{Program.Version.Minor}.{Program.Version.Revision}";
 #endif
 
-            mTreeView.LabelEdit = true;
+            mRecentlyOpenedFilesList = new RecentlyOpenedFilesList( RECENTLY_OPENED_FILES_LIST_FILEPATH, 10, mOpenToolStripMenuItem.DropDown.Items,
+                                                                    OpenToolStripRecentlyOpenedFileClickEventHandler );
+            TreeView.LabelEdit = true;
             AllowDrop = true;
-        }
-
-        private void InitializeRecentlyOpenedFilesList()
-        {
-            mRecentlyOpenedFileHistoryStack = new Stack<string>();
-
-            if ( File.Exists( RECENTLY_OPENED_FILES_LIST_FILEPATH ) )
-            {
-                foreach ( string line in File.ReadAllLines( RECENTLY_OPENED_FILES_LIST_FILEPATH ) )
-                {
-                    AddRecentlyOpenedFile( line );
-                }
-            }
         }
 
         private void InitializeEvents()
         {
-            mTreeView.AfterSelect += TreeViewAfterSelectEventHandler;
-            mTreeView.UserPropertyChanged += TreeViewUserPropertyChangedEventHandler;
+            TreeView.AfterSelect += TreeViewAfterSelectEventHandler;
+            TreeView.UserPropertyChanged += TreeViewUserPropertyChangedEventHandler;
             mContentPanel.ControlAdded += ContentPanelControlAddedEventHandler;
             mContentPanel.Resize += ContentPanelResizeEventHandler;
             DragDrop += DragDropEventHandler;
@@ -110,34 +97,16 @@ namespace AtlusGfdEditor.GUI.Forms
         //
         private void DeInitialize()
         {
-            SaveRecentlyOpenedFilesList();
+            mRecentlyOpenedFilesList.Save( RECENTLY_OPENED_FILES_LIST_FILEPATH );
         }
 
         //
         // Recently opened files list
         //
-        private void AddRecentlyOpenedFile( string filePath )
+        private void RecordOpenedFile( string filePath )
         {
             LastOpenedFilePath = filePath;
-
-            mRecentlyOpenedFileHistoryStack.Push( filePath );
-
-            var item = new ToolStripMenuItem( filePath );
-            item.Click += OpenToolStripRecentlyOpenedFileClickEventHandler;
-
-            mOpenToolStripMenuItem.DropDown.Items.Insert( 0, item );
-        }
-
-        private void SaveRecentlyOpenedFilesList()
-        {
-            using ( var writer = File.CreateText( RECENTLY_OPENED_FILES_LIST_FILEPATH ) )
-            {
-                var paths = mRecentlyOpenedFileHistoryStack.ToArray().Reverse();
-                foreach ( var path in paths )
-                {
-                    writer.WriteLine( path );
-                }
-            }
+            mRecentlyOpenedFilesList.Add( filePath );
         }
 
         //
@@ -172,9 +141,8 @@ namespace AtlusGfdEditor.GUI.Forms
                 return;
             }
 
-            AddRecentlyOpenedFile( filePath );
-
-            mTreeView.SetTopNode( viewModel );
+            RecordOpenedFile( filePath );
+            TreeView.SetTopNode( viewModel );
             OnTreeNodeViewModelSelected( viewModel );
         }
 
@@ -192,17 +160,17 @@ namespace AtlusGfdEditor.GUI.Forms
 
         public void SaveFile( string filePath )
         {
-            if ( mTreeView != null && mTreeView.TopNode != null )
+            if ( TreeView != null && TreeView.TopNode != null )
             {
-                mTreeView.TopNode.Export( filePath );
+                TreeView.TopNode.Export( filePath );
             }
         }
 
         public string SelectFileAndSave()
         {
-            if ( mTreeView != null && mTreeView.TopNode != null )
+            if ( TreeView != null && TreeView.TopNode != null )
             {
-                return mTreeView.TopNode.Export();
+                return TreeView.TopNode.Export();
             }
 
             return null;
@@ -212,10 +180,7 @@ namespace AtlusGfdEditor.GUI.Forms
         {
             foreach ( var control in mContentPanel.Controls )
             {
-                if ( control is IDisposable )
-                {
-                    ( ( IDisposable )control ).Dispose();
-                }
+                ( control as IDisposable )?.Dispose();
             }
 
             mContentPanel.Controls.Clear();
@@ -269,8 +234,6 @@ namespace AtlusGfdEditor.GUI.Forms
                 ClearContentPanel();
                 mContentPanel.Controls.Add( control );
             }
-
-            mLastSelectedNode = viewModel;
         }
 
         private void OpenToolStripMenuItemClickEventHandler(object sender, EventArgs e)
@@ -323,7 +286,7 @@ namespace AtlusGfdEditor.GUI.Forms
             if ( model != null )
             {
                 var viewModel = TreeNodeViewModelFactory.Create( "Model", model );
-                mTreeView.SetTopNode( viewModel );
+                TreeView.SetTopNode( viewModel );
                 LastOpenedFilePath = null;
             }
         }
