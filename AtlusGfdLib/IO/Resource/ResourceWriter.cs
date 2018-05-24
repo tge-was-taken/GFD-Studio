@@ -870,9 +870,9 @@ namespace AtlusGfdLibrary.IO.Resource
                 case NodeAttachmentType.Light:
                     WriteLight( version, attachment.GetValue<Light>() );
                     break;
-                //case NodeAttachmentType.Epl:
-                //    WriteEpl( version, attachment.GetValue<Epl>() );
-                //    break;
+                case NodeAttachmentType.Epl:
+                    WriteEpl( version, attachment.GetValue<Epl>() );
+                    break;
                 //case NodeAttachmentType.EplLeaf:
                 //    WriteEplLeafs version, attachment.GetValue<EplLeaf>() );
                 //    break;
@@ -882,6 +882,12 @@ namespace AtlusGfdLibrary.IO.Resource
                 default:
                     throw new Exception( $"Unknown node attachment: {attachment.Type}" );
             }
+        }
+
+        private void WriteEpl( uint version, Epl epl )
+        {
+            if ( epl.Raw != null )
+                WriteBytes( epl.Raw );
         }
 
         private void WriteLight( uint version, Light light )

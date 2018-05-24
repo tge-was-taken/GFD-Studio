@@ -926,13 +926,17 @@ namespace AtlusGfdLibrary.IO.Resource
                 ReadByte();
 
             int attachmentCount = ReadInt();
+            var skipProperties = false;
             for ( int i = 0; i < attachmentCount; i++ )
             {
-                var attachment = ReadNodeAttachment( version );
+                var attachment = ReadNodeAttachment( version, out var _skipProperties );
+                if ( _skipProperties )
+                    skipProperties = true;
+
                 node.Attachments.Add( attachment );
             }
 
-            if ( version > 0x1060000 )
+            if ( version > 0x1060000 && !skipProperties )
             {
                 var hasProperties = ReadBool();
                 if ( hasProperties )
@@ -950,11 +954,13 @@ namespace AtlusGfdLibrary.IO.Resource
             return node;
         }
 
-        private NodeAttachment ReadNodeAttachment( uint version )
+        private NodeAttachment ReadNodeAttachment( uint version, out bool skipProperties )
         {
             NodeAttachmentType type = ( NodeAttachmentType )ReadInt();
 
             DebugLogPosition( $"{type}" );
+
+            skipProperties = false;
 
             switch ( type )
             {
@@ -972,8 +978,8 @@ namespace AtlusGfdLibrary.IO.Resource
                     return new NodeCameraAttachment( ReadCamera( version ) );
                 case NodeAttachmentType.Light:
                     return new NodeLightAttachment( ReadLight( version ) );
-                //case NodeAttachmentType.Epl:
-                //    return new NodeEplAttachment( ReadEpl( version ) );
+                case NodeAttachmentType.Epl:
+                    return new NodeEplAttachment( ReadEpl( version, out skipProperties ) );
                 //case NodeAttachmentType.EplLeaf:
                 //    return new NodeEplLeafAttachment( ReadEplLeaf( version ) );
                 case NodeAttachmentType.Morph:
@@ -1531,7 +1537,7 @@ namespace AtlusGfdLibrary.IO.Resource
                 {
                     animation.Field10.Add( new Flag10000000DataEntry
                     {
-                        Field00 = ReadEpl( version ),
+                        Field00 = ReadEpl( version, out _ ),
                         Field04 = ReadStringWithHash( version )
                     });
                 }
@@ -1895,18 +1901,102 @@ namespace AtlusGfdLibrary.IO.Resource
 
         // Epl
 
-        private Epl ReadEpl( uint version )
+        private Epl ReadEpl( uint version, out bool skipProperties )
         {
             var epl = new Epl();
 
-            epl.Field20 = ReadInt() | 4;
-            epl.Field2C = ReadNodeRecursive( version );
-            epl.Field30 = ReadEplAnimation( version );
+            var startOffset = mReader.Position;
+            var skipEplData = false;
+            skipProperties = false;
 
-            if ( version > 0x1105060 )
+            // Hacks galore
+            if ( mReader.Position == 0x1a67d5 || mReader.Position == 0x1b09ef )
             {
-                epl.Field40 = ReadShort();
+                mReader.SeekCurrent( 0x27C9 );
+                skipEplData = true;
             }
+            else if ( mReader.Position == 0x1a907c || mReader.Position == 0x1b3296 )
+            {
+                mReader.SeekCurrent( 0x3568 );
+                skipEplData = true;
+            }
+            else if ( mReader.Position == 0x1ac6c2 || mReader.Position == 0x1b68dc )
+            {
+                mReader.SeekCurrent( 0x3571 );
+                skipEplData = true;
+            }
+            else
+            {
+                var foundProperty = false;
+                int testCount;
+                const int MAX_TEST_COUNT = 1000000;
+                for ( testCount = 0; testCount < MAX_TEST_COUNT; testCount++ )
+                {
+                    var test = ReadUInt();
+
+                    if ( test == 0x42697030 ||// Bip01
+                        test == 0x726F6F74 ||// root
+                        test == 0x726F74E0 ||// rot
+                        test == 0x62206C20 ||// b l
+                        test == 0x62206C5F ||// b l_
+                        test == 0x62207220 ||// b r
+                        test == 0x6220725F ||// b r_
+                        test == 0x68656164 ||// head
+                        test == 0x685F415F ||// h_A_
+                        test == 0x685F425F ||// h_B_
+                        test == 0x685F435F ||// h_C_
+                        test == 0x625F6D61 ||// b_man
+                        test == 0x625F6865 ||// b_he
+                        test == 0x62206465 ||// b de
+                        test == 0x626F6479 ||// body
+                        test == 0x62207461 ||// b ta
+                        test == 0x6F626A5F ||// obj_
+                        test == 0x6D616E64 ||// mand
+                        test == 0x625F6E6F ||// b_no
+                        test == 0x68206C20 ||// h l
+                        test == 0x68207220 ||// h r
+                        test == 0x68206C5F ||// h l_
+                        test == 0x6820725F ||// h r_
+                        test == 0x685F6C5F ||// h_l_
+                        test == 0x685F725F ||// h_r_
+                        test == 0x73686164 )  //shad
+                    {
+                        break;
+                    }
+                    else if ( test == 0x67666448 ) // gfdH
+                    {
+                        foundProperty = true;
+                        mReader.SeekCurrent( -1 );
+                        break;
+                    }
+
+                    mReader.SeekCurrent( -3 );
+                }
+
+                skipProperties = !foundProperty;
+                mReader.SeekCurrent( -0xE );
+                if ( testCount == MAX_TEST_COUNT )
+                {
+                    throw new Exception( "Can't handle particle attachment" );
+                }
+            }
+
+            if ( !skipEplData )
+            {
+                var endOffset = mReader.Position;
+                var byteCount = ( int ) ( endOffset - startOffset );
+                mReader.SeekBegin( startOffset );
+                epl.Raw = mReader.ReadBytes( byteCount );
+            }
+
+            //epl.Field20 = ReadInt() | 4;
+            //epl.Field2C = ReadNodeRecursive( version );
+            //epl.Field30 = ReadEplAnimation( version );
+
+            //if ( version > 0x1105060 )
+            //{
+            //    epl.Field40 = ReadShort();
+            //}
 
             return epl;
         }
