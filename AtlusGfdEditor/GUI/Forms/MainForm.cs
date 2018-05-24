@@ -137,7 +137,7 @@ namespace AtlusGfdEditor.GUI.Forms
         {
             if ( !TreeNodeViewModelFactory.TryCreate( filePath, out var viewModel ) )
             {
-                MessageBox.Show( "File could not be loaded.", "Error", MessageBoxButtons.OK );
+                MessageBox.Show( "Hee file could not be loaded, ho.", "Error", MessageBoxButtons.OK );
                 return;
             }
 
@@ -160,20 +160,12 @@ namespace AtlusGfdEditor.GUI.Forms
 
         public void SaveFile( string filePath )
         {
-            if ( TreeView != null && TreeView.TopNode != null )
-            {
-                TreeView.TopNode.Export( filePath );
-            }
+            TreeView.TopNode?.Export( filePath );
         }
 
         public string SelectFileAndSave()
         {
-            if ( TreeView != null && TreeView.TopNode != null )
-            {
-                return TreeView.TopNode.Export();
-            }
-
-            return null;
+            return TreeView.TopNode?.Export();
         }
 
         private void ClearContentPanel()
@@ -269,15 +261,32 @@ namespace AtlusGfdEditor.GUI.Forms
         private void SaveToolStripMenuItemClickEventHandler( object sender, EventArgs e )
         {
             if ( LastOpenedFilePath != null )
+            {
                 SaveFile( LastOpenedFilePath );
+            }
+            else if ( TreeView.TopNode != null )
+            {
+                MessageBox.Show( "No hee file opened, ho! Use the 'Save as...' option instead.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error );
+            }
             else
-                MessageBox.Show( "No file opened! Use the 'Save as...' option instead.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error );
+            {
+                MessageBox.Show( "Nothing to save, hee ho!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error );
+            }
         }
 
         private void SaveAsToolStripMenuItemClickEventHandler( object sender, EventArgs e )
         {
+            if ( TreeView.TopNode == null )
+            {
+                MessageBox.Show( "Nothing to save, hee ho!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error );
+                return;
+            }
+
             var path = SelectFileAndSave();
-            OpenFile( path );
+            if ( path != null )
+            {
+                OpenFile( path );
+            }
         }
 
         private void NewModelToolStripMenuItemClickEventHandler( object sender, EventArgs e )
