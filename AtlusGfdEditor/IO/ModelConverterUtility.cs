@@ -5,7 +5,7 @@ using AtlusGfdLibrary;
 
 namespace AtlusGfdEditor.IO
 {
-    public static class ModelConverterUtillity
+    public static class ModelConverterUtility
     {
         public static Model ConvertAssimpModel()
         {

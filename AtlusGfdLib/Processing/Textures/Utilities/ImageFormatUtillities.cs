@@ -2,7 +2,7 @@
 using System.Drawing.Imaging;
 using System.IO;
 
-namespace AtlusGfdLibrary.Utillities
+namespace AtlusGfdLibrary.Utilities
 {
     public static class ImageFormatHelper
     {

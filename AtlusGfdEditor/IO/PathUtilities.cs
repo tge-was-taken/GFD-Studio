@@ -3,7 +3,7 @@ using System.IO;
 
 namespace AtlusGfdEditor.IO
 {
-    public static class PathUtillities
+    public static class PathUtilities
     {
         public static bool MatchesAnyExtension( string filename, params string[] extensions )
         {

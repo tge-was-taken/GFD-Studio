@@ -4,9 +4,9 @@ using System.IO;
 namespace AtlusGfdEditor.FormatModules
 {
     /// <summary>
-    /// PathUtilities for importing files using the module system.
+    /// Utilities for importing files using the module system.
     /// </summary>
-    public static class ModuleExportUtillities
+    public static class ModuleExportUtilities
     {
         /// <summary>
         /// Tries to create a stream containing exported data for a given resource.

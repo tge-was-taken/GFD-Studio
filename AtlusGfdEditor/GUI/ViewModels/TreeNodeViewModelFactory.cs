@@ -214,7 +214,7 @@ namespace AtlusGfdEditor.GUI.ViewModels
             }
 
             // try get module for importing
-            if ( !ModuleImportUtillities.TryGetModuleForImport( stream, out var module, filename ) )
+            if ( !ModuleImportUtilities.TryGetModuleForImport( stream, out var module, filename ) )
             {
                 // fallback
                 viewModel = new StreamViewModel( text, stream );

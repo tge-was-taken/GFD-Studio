@@ -291,7 +291,7 @@ namespace AtlusGfdEditor.GUI.Forms
 
         private void NewModelToolStripMenuItemClickEventHandler( object sender, EventArgs e )
         {
-            var model = ModelConverterUtillity.ConvertAssimpModel();
+            var model = ModelConverterUtility.ConvertAssimpModel();
             if ( model != null )
             {
                 var viewModel = TreeNodeViewModelFactory.Create( "Model", model );

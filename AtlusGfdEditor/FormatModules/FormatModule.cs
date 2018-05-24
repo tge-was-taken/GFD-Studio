@@ -39,7 +39,7 @@ namespace AtlusGfdEditor.FormatModules
                 return false;
 
             // if a filename was given, match the extension of it with the known extensions first
-            if ( filename != null && !PathUtillities.MatchesAnyExtension( filename, Extensions ) )
+            if ( filename != null && !PathUtilities.MatchesAnyExtension( filename, Extensions ) )
                 return false;
 
             return CanImportCore( stream, filename );

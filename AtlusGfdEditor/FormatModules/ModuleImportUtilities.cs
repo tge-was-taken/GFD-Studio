@@ -6,9 +6,9 @@ using System.Linq;
 namespace AtlusGfdEditor.FormatModules
 {
     /// <summary>
-    /// PathUtilities for importing files using the module system.
+    /// Utilities for importing files using the module system.
     /// </summary>
-    public static class ModuleImportUtillities
+    public static class ModuleImportUtilities
     {
         /// <summary>
         /// Gets a list of modules with the given extension.

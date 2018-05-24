@@ -221,13 +221,13 @@
     <Compile Include="FormatModules\FormatModule.cs" />
     <Compile Include="FormatModules\IFormatModule.cs" />
     <Compile Include="FormatModules\ModelFormatModule.cs" />
-    <Compile Include="FormatModules\ModuleExportUtillities.cs" />
+    <Compile Include="FormatModules\ModuleExportUtilities.cs" />
     <Compile Include="FormatModules\ModuleFilterGenerator.cs" />
-    <Compile Include="FormatModules\ModuleImportUtillities.cs" />
+    <Compile Include="FormatModules\ModuleImportUtilities.cs" />
     <Compile Include="FormatModules\FormatModuleRegistry.cs" />
     <Compile Include="FormatModules\TextureDictionaryFormatModule.cs" />
     <Compile Include="FormatModules\TextureFormatModule.cs" />
-    <Compile Include="IO\ModelConverterUtillity.cs" />
+    <Compile Include="IO\ModelConverterUtility.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="IO\PathUtilities.cs" />

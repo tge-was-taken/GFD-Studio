@@ -3,9 +3,9 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 
-namespace AtlusGfdLibrary.Utillities
+namespace AtlusGfdLibrary.Utilities
 {
-    public static class BitmapUtillities
+    public static class BitmapUtilities
     {   
         // https://stackoverflow.com/questions/3064854/determine-if-alpha-channel-is-used-in-an-image/39013496#39013496
         public static Boolean HasTransparency( Bitmap bitmap )

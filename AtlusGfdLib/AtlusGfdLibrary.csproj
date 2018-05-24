@@ -70,7 +70,7 @@
     <Compile Include="Animations\AnimationPackageFlags.cs" />
     <Compile Include="Common\Archive.cs" />
     <Compile Include="Processing\Models\AssimpSceneImporter.cs" />
-    <Compile Include="Processing\Textures\Utillities\BitmapUtillities.cs" />
+    <Compile Include="Processing\Textures\Utilities\BitmapUtilities.cs" />
     <Compile Include="Animations\Flag10000000DataEntry.cs" />
     <Compile Include="IO\Common\EndiannessSwapUtility.cs" />
     <Compile Include="Animations\Controller.cs" />
@@ -87,7 +87,7 @@
     <Compile Include="Epl\EplAnimation.cs" />
     <Compile Include="Processing\Textures\TextureInfo.cs" />
     <Compile Include="Processing\Textures\TexturePixelFormat.cs" />
-    <Compile Include="Processing\Textures\TextureUtillities.cs" />
+    <Compile Include="Processing\Textures\TextureUtilities.cs" />
     <Compile Include="Common\BoundingBox.cs" />
     <Compile Include="Common\BoundingSphere.cs" />
     <Compile Include="Common\ByteVector3.cs" />
@@ -102,7 +102,7 @@
     <Compile Include="ChunkType000100F9\ChunkType000100F9.cs" />
     <Compile Include="ChunkType000100F9\ChunkType000100F9Entry1.cs" />
     <Compile Include="IO\Common\AlignmentUtilities.cs" />
-    <Compile Include="Processing\Textures\Utillities\ImageFormatUtillities.cs" />
+    <Compile Include="Processing\Textures\Utilities\ImageFormatUtillities.cs" />
     <Compile Include="IO\Common\StreamExtensions.cs" />
     <Compile Include="IO\Common\StreamView.cs" />
     <Compile Include="Processing\Materials\MaterialFactory.cs" />

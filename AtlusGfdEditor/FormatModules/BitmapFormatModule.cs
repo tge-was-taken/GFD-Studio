@@ -2,7 +2,7 @@
 using System.Drawing.Imaging;
 using System.IO;
 using AtlusGfdEditor.IO;
-using AtlusGfdLibrary.Utillities;
+using AtlusGfdLibrary.Utilities;
 
 namespace AtlusGfdEditor.FormatModules
 {
@@ -19,7 +19,7 @@ namespace AtlusGfdEditor.FormatModules
 
         protected override bool CanImportCore( Stream stream, string filename = null )
         {
-            return PathUtillities.MatchesAnyExtension( filename, Extensions );
+            return PathUtilities.MatchesAnyExtension( filename, Extensions );
         }
 
         protected override void ExportCore( Bitmap obj, Stream stream, string filename = null )

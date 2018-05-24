@@ -18,7 +18,7 @@ namespace AtlusGfdEditor.FormatModules
 
         protected override bool CanImportCore( Stream stream, string filename = null )
         {
-            return PathUtillities.MatchesAnyExtension( filename, Extensions );
+            return PathUtilities.MatchesAnyExtension( filename, Extensions );
         }
 
         protected override Scene ImportCore( Stream stream, string filename = null )

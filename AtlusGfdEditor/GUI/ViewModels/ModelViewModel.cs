@@ -37,7 +37,7 @@ namespace AtlusGfdEditor.GUI.ViewModels
             RegisterReplaceHandler<Model>( Resource.Load<Model> );
             RegisterReplaceHandler< Assimp.Scene >( path =>
             {
-                var model = ModelConverterUtillity.ConvertAssimpModel( path );
+                var model = ModelConverterUtility.ConvertAssimpModel( path );
 
                 if ( model == null )
                     return Model;

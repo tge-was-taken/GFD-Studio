@@ -39,7 +39,7 @@ namespace AtlusGfdLibrary
             foreach ( var texture in textureDictionary.Textures )
             {
                 var textureInfo = TextureInfo.GetTextureInfo( texture );
-                var texturePixelData = TextureUtillities.GetRawPixelData( texture );
+                var texturePixelData = TextureUtilities.GetRawPixelData( texture );
 
                 // Create field texture & save it
                 var fieldTexture = new FieldTexture( textureInfo.PixelFormat, (byte)textureInfo.MipMapCount, ( short )textureInfo.Width, ( short )textureInfo.Height, texturePixelData );

@@ -27,7 +27,7 @@ namespace AtlusGfdEditor.GUI.ViewModels
 
                 foreach ( TreeNodeViewModel node in Nodes )
                 {
-                    builder.AddFile( node.Text, ModuleExportUtillities.CreateStream( node.Model ) );
+                    builder.AddFile( node.Text, ModuleExportUtilities.CreateStream( node.Model ) );
                 }
 
                 return builder.Build();

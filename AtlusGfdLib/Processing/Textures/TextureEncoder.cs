@@ -2,7 +2,7 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using AtlusGfdLibrary.Utillities;
+using AtlusGfdLibrary.Utilities;
 using CSharpImageLibrary;
 
 namespace AtlusGfdLibrary
@@ -45,7 +45,7 @@ namespace AtlusGfdLibrary
         private static ImageEngineFormat DetermineBestDDSFormat( Bitmap bitmap )
         {
             var ddsFormat = ImageEngineFormat.DDS_DXT1;
-            if ( BitmapUtillities.HasTransparency( bitmap ) )
+            if ( BitmapUtilities.HasTransparency( bitmap ) )
             {
                 ddsFormat = ImageEngineFormat.DDS_DXT3;
             }

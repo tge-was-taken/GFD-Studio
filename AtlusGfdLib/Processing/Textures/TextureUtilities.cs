@@ -2,7 +2,7 @@
 
 namespace AtlusGfdLibrary
 {
-    public static class TextureUtillities
+    public static class TextureUtilities
     {
         public static byte[] GetRawPixelData( Texture texture )
         {
