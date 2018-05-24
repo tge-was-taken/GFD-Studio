@@ -115,6 +115,7 @@ namespace AtlusGfdEditor.GUI.Forms
             this.mEditToolStripMenuItem.Name = "mEditToolStripMenuItem";
             this.mEditToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
             this.mEditToolStripMenuItem.Text = "Edit";
+            this.mEditToolStripMenuItem.Visible = false;
             // 
             // mOptionsToolStripMenuItem
             // 
