@@ -6,8 +6,8 @@
 - Export, replace and edit **Materials** and their maps & properties
 - Export and import models using assimp (automatic conversion to and from DAE/FBX)
 ## Requirements
-- A videocard that supports at least OpenGL 3.3
-(This is required for compiling shaders for the model viewer)
+- A videocard that supports at least OpenGL 3.3 to use the model viewer.
+(This is required for compiling shaders)
 ## Usage
 ### Model Conversion
 For best results, use the [GMD Maxscript](https://cdn.discordapp.com/attachments/316238229948989450/448899211950555136/p5_gmd_gfs_gap_v0_13.7z) to import models directly into 3ds Max.
