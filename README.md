@@ -6,7 +6,7 @@
 - Export, replace and edit **Materials** and their maps & properties
 - Export and import models using assimp (automatic conversion to and from DAE/FBX)
 ## Requirements
-- A videocard that supports at least OpenGL 4.0
+- A videocard that supports at least OpenGL 3.3
 (This is required for compiling shaders for the model viewer)
 ## Usage
 ### Model Conversion
