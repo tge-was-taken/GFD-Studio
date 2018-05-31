@@ -1,0 +1,38 @@
+﻿namespace GFDLibrary
+{
+    public enum KeyframeKind
+    {
+        Type00,
+        NodePR,
+        NodePRS,
+        Type03,
+        Type04,
+        Type05,
+        Type06,
+        Type07,
+        Type08,
+        Type09,
+        Type10,
+        Type11,
+        MaterialType12,
+        Type13,
+        MaterialType14,
+        Type15,
+        Type16,
+        Type17,
+        Type18,
+        Type19,
+        Type20,
+        Type21,
+        Type22,
+        Type23,
+        Type24,
+        Type25,
+        Type26,
+        NodePRSHalf,
+        NodePRHalf,
+        MaterialType29,
+        Type30,
+        Type31
+    }
+}

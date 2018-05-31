@@ -1,1 +1,1 @@
-# AtlusGfdEditor
+# GFDStudio
