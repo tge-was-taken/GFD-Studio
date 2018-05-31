@@ -13,6 +13,7 @@ using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
+using System.Runtime.CompilerServices;
 
 namespace GFDStudio.GUI.Controls
 {
@@ -22,6 +23,7 @@ namespace GFDStudio.GUI.Controls
         private GLShaderProgram mShaderProgram;
         private readonly List<GLGeometry> mGeometries = new List<GLGeometry>();
         private GLPerspectiveCamera mCamera;
+        private bool mCanRender = true;
         private bool mIsModelLoaded;
         private bool mIsFieldModel;
         private Archive mFieldTextures;
@@ -45,8 +47,16 @@ namespace GFDStudio.GUI.Controls
             // required to use GL in the context of this control
             MakeCurrent();
             LogGLInfo();
-            InitializeGL();
-            InitializeGLShaders();
+
+            if ( !InitializeGLShaders() )
+            {
+                Visible = false;
+                mCanRender = false;
+            }
+            else
+            {
+                InitializeGLRenderState();
+            }
         }
 
         /// <summary>
@@ -55,6 +65,9 @@ namespace GFDStudio.GUI.Controls
         /// <param name="model"></param>
         public void LoadModel( Model model )
         {
+            if ( !mCanRender )
+                return;
+
             mModel = model;
             DeleteModel();
             LoadModel();
@@ -96,6 +109,9 @@ namespace GFDStudio.GUI.Controls
         /// <param name="e"></param>
         protected override void OnPaint( PaintEventArgs e )
         {
+            if ( !mCanRender )
+                return;
+
             // clear the buffers
             GL.Clear( ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit );
 
@@ -150,7 +166,7 @@ namespace GFDStudio.GUI.Controls
         /// <param name="e"></param>
         protected override void OnResize( EventArgs e )
         {
-            if ( !mIsModelLoaded )
+            if ( !mCanRender || !mIsModelLoaded )
                 return;
 
             mCamera.AspectRatio = ( float )Width / Height;
@@ -175,7 +191,7 @@ namespace GFDStudio.GUI.Controls
         /// <summary>
         /// Initializes GL state before rendering starts.
         /// </summary>
-        private void InitializeGL()
+        private void InitializeGLRenderState()
         {
             GL.ClearColor( Color.LightGray );
             GL.FrontFace( FrontFaceDirection.Ccw );
@@ -191,6 +207,7 @@ namespace GFDStudio.GUI.Controls
             GL.Enable( EnableCap.Multisample );
         }
 
+        [Conditional("DEBUG")]
         private void GLDebugMessageCallback( DebugSource source, DebugType type, int id, DebugSeverity severity, int length, IntPtr message, IntPtr userParam )
         {
             // notication for buffer using VIDEO memory
@@ -204,7 +221,7 @@ namespace GFDStudio.GUI.Controls
         /// <summary>
         /// Initializes shaders and links the shader program. Assumes only 1 shader program will be used.
         /// </summary>
-        private void InitializeGLShaders()
+        private bool InitializeGLShaders()
         {
             if ( !GLShaderProgram.TryCreate(
                 Path.Combine( AppDomain.CurrentDomain.BaseDirectory, "GUI\\Controls\\ModelView\\Shaders\\VertexShader.glsl" ),
@@ -218,8 +235,8 @@ namespace GFDStudio.GUI.Controls
                     Path.Combine( AppDomain.CurrentDomain.BaseDirectory, "GUI\\Controls\\ModelView\\Shaders\\FragmentShaderBasic.glsl" ),
                     out mShaderProgram ) )
                 {
-                    Trace.TraceError( "Failed to compile basic shaders." );
-                    throw new Exception( "Failed to compile basic shaders." );
+                    Trace.TraceError( "Failed to compile basic shaders. Disabling GL rendering." );
+                    return false;
                 }
             }
 
@@ -232,6 +249,7 @@ namespace GFDStudio.GUI.Controls
             mShaderProgram.RegisterUniform<Vector4>( "matDiffuse" );
             mShaderProgram.RegisterUniform<Vector4>( "matSpecular" );
             mShaderProgram.RegisterUniform<Vector4>( "matEmissive" );
+            return true;
         }
 
         //
@@ -240,7 +258,7 @@ namespace GFDStudio.GUI.Controls
 
         private void LoadModel()
         {
-            if ( mModel.Scene == null )
+            if ( !mCanRender || mModel.Scene == null )
                 return;
 
             InitializeCamera();
@@ -256,7 +274,8 @@ namespace GFDStudio.GUI.Controls
                         continue;
 
                     var geometry = CreateGLGeometry( attachment.GetValue<Geometry>() );
-                    geometry.ModelMatrix = ToMatrix4( node.WorldTransform );
+                    var transform = node.WorldTransform;
+                    geometry.ModelMatrix = ToMatrix4( ref transform );
 
                     mGeometries.Add( geometry );
                 }
@@ -329,13 +348,9 @@ namespace GFDStudio.GUI.Controls
             return cameraTranslation;
         }
 
-        private static Matrix4 ToMatrix4( System.Numerics.Matrix4x4 matrix )
+        private static Matrix4 ToMatrix4( ref System.Numerics.Matrix4x4 matrix )
         {
-            return new Matrix4(
-                matrix.M11, matrix.M12, matrix.M13, matrix.M14,
-                matrix.M21, matrix.M22, matrix.M23, matrix.M24,
-                matrix.M31, matrix.M32, matrix.M33, matrix.M34,
-                matrix.M41, matrix.M42, matrix.M43, matrix.M44 );
+            return Unsafe.As<System.Numerics.Matrix4x4, Matrix4>( ref matrix );
         }
 
         //
@@ -612,18 +627,19 @@ namespace GFDStudio.GUI.Controls
                     if ( mModel.Scene.BoundingSphere.HasValue )
                     {
                         var bSphere = mModel.Scene.BoundingSphere.Value;
-                        mCamera = new GLPerspectiveTargetCamera( mCamera.Translation, mCamera.ZNear, mCamera.ZFar, mCamera.FieldOfView, mCamera.AspectRatio, new Vector3( bSphere.Center.X, bSphere.Center.Y, bSphere.Center.Z ) );
-
-                        mCamera.Translation = new Vector3(
-                            mCamera.Translation.X - ( ( locationDelta.X / 3f ) * multiplier ),
-                            mCamera.Translation.Y + ( ( locationDelta.Y / 3f ) * multiplier ),
-                            mCamera.Translation.Z );
+                        var camera = new GLPerspectiveTargetCamera( mCamera.Translation, mCamera.ZNear, mCamera.ZFar, mCamera.FieldOfView, mCamera.AspectRatio, new Vector3( bSphere.Center.X, bSphere.Center.Y, bSphere.Center.Z ) );
+                        camera.Rotate( -locationDelta.Y / 100f, -locationDelta.X / 100f );
+                        mCamera = camera;
                     }
                 }
                 else
                 {
                     // Move camera
-                    mCamera = new GLPerspectiveFreeCamera( mCamera.Translation, mCamera.ZNear, mCamera.ZFar, mCamera.FieldOfView, mCamera.AspectRatio, Quaternion.Identity );
+                    var translation = mCamera.Translation;
+                    if ( !( mCamera is GLPerspectiveFreeCamera ) )
+                        translation = CalculateCameraTranslation( mCamera.FieldOfView, mModel.Scene.BoundingSphere.Value );
+
+                    mCamera = new GLPerspectiveFreeCamera( translation, mCamera.ZNear, mCamera.ZFar, mCamera.FieldOfView, mCamera.AspectRatio, Quaternion.Identity );
                     mCamera.Translation = new Vector3(
                         mCamera.Translation.X - ( ( locationDelta.X / 3f ) * multiplier ),
                         mCamera.Translation.Y + ( ( locationDelta.Y / 3f ) * multiplier ),
@@ -653,7 +669,9 @@ namespace GFDStudio.GUI.Controls
                 multiplier /= 2f;
             }
 
-            mCamera.Translation = Vector3.Subtract( mCamera.Translation, ( Vector3.UnitZ * ( (float)e.Delta * multiplier ) ) );
+            var translation = mCamera.Translation;
+            translation.Z += -( ( float )e.Delta * multiplier );
+            mCamera.Translation = translation;
 
             Invalidate();
         }
