@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("AtlusGfdEditor")]
+[assembly: AssemblyTitle( "GFD Studio" )]
 [assembly: AssemblyDescription("Editor for graphical assets used in recent Persona games")]
 
 #if DEBUG
@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("Release")]
 #endif
 
-[assembly: AssemblyProduct("AtlusGfdEditor")]
+[assembly: AssemblyProduct( "GFD Studio" )]
 [assembly: AssemblyCopyright("Copyright © 2017 TGE")]
 [assembly: AssemblyTrademark("TGE")]
 
