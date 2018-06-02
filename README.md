@@ -10,7 +10,7 @@
 (This is required for compiling shaders for the model viewer)
 ## Usage
 ### Model Conversion
-For best results, use the [GMD Maxscript](https://cdn.discordapp.com/attachments/316238229948989450/448899211950555136/p5_gmd_gfs_gap_v0_13.7z) to import models directly into 3ds Max.
+For best results, use the [GMD Maxscript](https://github.com/TGEnigma/GFD-Studio/blob/master/Resources/GfdImporter/GfdImporter.ms) to import models directly into 3ds Max.
 Alternatively, you can use GFD studio to export as DAE, which you can import into your program of choice.
 1. Skin your new model to the existing bones and export as an **ASCII 2011 FBX**.
 2. In GFD Studio, navigate to **New > Model** and select your FBX.
