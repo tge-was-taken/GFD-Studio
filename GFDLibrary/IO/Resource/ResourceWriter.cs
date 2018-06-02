@@ -1253,7 +1253,7 @@ namespace GFDLibrary.IO.Resource
 
         private void WriteAnimationPackage( AnimationPackage animationPackage )
         {
-            WriteBytes( animationPackage.RawData );
+            throw new NotImplementedException();
         }
 
         private void WriteEndChunk( uint version )

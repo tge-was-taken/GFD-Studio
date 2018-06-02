@@ -4,9 +4,6 @@ namespace GFDLibrary
 {
     public sealed class AnimationPackage : Resource
     {
-        // Just store raw data for now
-        public byte[] RawData { get; set; }
-
         public AnimationPackageFlags Flags { get; set; }
 
         public List<Animation> Animations { get; set; }
