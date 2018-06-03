@@ -48,6 +48,8 @@ namespace GFDLibrary
                 material.Field90 = 0x0080;
             }
 
+            material.IsPresetMaterial = true;
+
             return material;
         }
 
@@ -117,6 +119,8 @@ namespace GFDLibrary
                 material.Field90 = 0x0080;
             }
 
+            material.IsPresetMaterial = true;
+
             return material;
         }
 
@@ -178,6 +182,8 @@ namespace GFDLibrary
                 material.Field4D = 1;
                 material.Field90 = 0x0080;
             }
+
+            material.IsPresetMaterial = true;
 
             return material;
         }

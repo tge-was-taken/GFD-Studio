@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Linq;
 
 namespace GFDLibrary
 {
@@ -86,6 +88,90 @@ namespace GFDLibrary
 
                     yield return attachment.GetValue<Geometry>();
                 }
+            }
+        }
+
+        public void ReplaceWith( Scene other )
+        {
+            // Remove geometries from this scene
+            ClearGeometries();
+
+            MatrixPalette = other.MatrixPalette;
+            BoundingBox = other.BoundingBox;
+            BoundingSphere = other.BoundingSphere;
+            Flags = other.Flags;
+
+            var uniqueNodes = new List<Node>();
+            foreach ( var otherNode in other.Nodes )
+            {
+                var thisNode = Nodes.SingleOrDefault( x => x.Name.Equals( otherNode.Name ) );
+
+                if ( thisNode == null )
+                {
+                    // Node not present, can't merge
+                    uniqueNodes.Add( otherNode );
+                    continue;
+                }
+
+                // Merge attachments
+                if (otherNode.HasAttachments)
+                    thisNode.Attachments.AddRange( otherNode.Attachments );
+
+                // Replace properties
+                foreach ( var property in otherNode.Properties )
+                    thisNode.Properties[property.Key] = property.Value;
+            }
+
+            // Condense unique nodes
+            foreach ( var uniqueNode in uniqueNodes.ToList() )
+            {
+                if ( uniqueNode.Parent != other.RootNode )
+                {
+                    // Find top of hierarchy
+                    var parent = uniqueNode.Parent;
+                    while ( parent.Parent != other.RootNode )
+                    {
+                        var thisNode = Nodes.SingleOrDefault( x => x.Name.Equals( parent.Name ) );
+                        Trace.Assert( thisNode == null );
+                        parent = parent.Parent;
+                    }
+
+                    // Remove children from unique nodes list, we only need to the topmost parent.
+                    foreach ( var child in parent.Children )
+                        uniqueNodes.Remove( child );
+                }
+            }
+
+            // Add unique nodes to root.
+            foreach ( var uniqueNode in uniqueNodes )
+                RootNode.AddChildNode( uniqueNode );
+
+            FixupMatrixPalette( MatrixPalette, other.Nodes.ToList() );
+
+            PopulateNodeList();
+        }
+
+        private void FixupMatrixPalette( MatrixPalette matrixPalette, List<Node> otherNodes )
+        {
+            for ( int i = 0; i < matrixPalette.BoneToNodeIndices.Length; i++ )
+            {
+                // Remap node indices to the correct ones
+                var otherNodeIndex = matrixPalette.BoneToNodeIndices[ i ];
+                var otherNode = otherNodes[ otherNodeIndex ];
+                var thisNode = Nodes.FirstOrDefault( x => x.Name == otherNode.Name );
+                Trace.Assert( thisNode != null );
+                var thisNodeIndex = Nodes.IndexOf( thisNode );
+                matrixPalette.BoneToNodeIndices[i] = (byte)thisNodeIndex;
+            }
+        }
+
+        public void ClearGeometries()
+        {
+            foreach ( var node in Nodes )
+            {
+                if ( node.HasAttachments )
+                    foreach ( var geometryAttachment in node.Attachments.Where( x => x.Type == NodeAttachmentType.Geometry ).ToList() )
+                        node.Attachments.Remove( geometryAttachment );
             }
         }
 

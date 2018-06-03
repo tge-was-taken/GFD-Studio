@@ -2,7 +2,7 @@
 {
     public sealed class Texture : Resource
     {
-        public static byte[] DummyTextureData { get; } =
+        private static byte[] sDummyTextureData { get; } =
         {
             0x44, 0x44, 0x53, 0x20, 0x7C, 0x00, 0x00, 0x00, 0x07, 0x10, 0x00, 0x00,
             0x08, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -40,6 +40,8 @@
         // 1F
         public byte Field1F { get; set; }
 
+        public bool IsDefaultTexture { get; private set; }
+
         internal Texture() : base(ResourceType.Texture, PERSONA5_RESOURCE_VERSION)
         {          
         }
@@ -64,6 +66,11 @@
             Field1D = field1d;
             Field1E = field1e;
             Field1F = field1f;
+        }
+
+        public static Texture CreateDefaultTexture(string name)
+        {
+            return new Texture( name, TextureFormat.DDS, Texture.sDummyTextureData ) { IsDefaultTexture = true };
         }
 
         public override string ToString()

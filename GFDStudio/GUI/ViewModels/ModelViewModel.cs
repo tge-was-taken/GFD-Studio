@@ -38,11 +38,10 @@ namespace GFDStudio.GUI.ViewModels
             RegisterReplaceHandler< Assimp.Scene >( path =>
             {
                 var model = ModelConverterUtility.ConvertAssimpModel( path );
+                if ( model != null )
+                    Model.ReplaceWith( model );
 
-                if ( model == null )
-                    return Model;
-                else
-                    return model;
+                return Model;
             });
 
             RegisterModelUpdateHandler( () =>

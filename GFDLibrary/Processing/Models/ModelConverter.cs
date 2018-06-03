@@ -159,7 +159,7 @@ namespace GFDLibrary
             Texture texture;
             if ( !File.Exists( fullFilePath ) )
             {
-                texture = new Texture( textureName, TextureFormat.DDS, Texture.DummyTextureData );
+                texture = Texture.CreateDefaultTexture( textureName );
             }
             else if ( relativeFilePath.EndsWith( ".dds", StringComparison.InvariantCultureIgnoreCase ) )
             {

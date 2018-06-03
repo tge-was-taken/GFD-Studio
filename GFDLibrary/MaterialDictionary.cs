@@ -20,6 +20,26 @@ namespace GFDLibrary
             set => mDictionary[name] = value;
         }
 
+        public void ReplaceWith( MaterialDictionary other )
+        {
+            foreach ( var material in other )
+            {
+                // Don't replace the material if we're replacing a normal material with a preset one.
+                if ( !ContainsKey( material.Key ) || ContainsKey(material.Key) && this[ material.Key ].IsPresetMaterial )
+                    this[material.Key] = material.Value;
+            }
+
+            var toRemove = new List<string>();
+            foreach ( var material in this )
+            {
+                if ( !other.TryGetMaterial( material.Key, out _ ) )
+                    toRemove.Add( material.Key );
+            }
+
+            foreach ( string s in toRemove )
+                Remove( s );
+        }
+
         public IList<Material> Materials
             => mDictionary.Values.ToList();
 

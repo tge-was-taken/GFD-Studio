@@ -193,6 +193,8 @@ namespace GFDLibrary
             }
         }
 
+        public bool IsPresetMaterial { get; internal set; }
+
         public Material( string name )
             : this()
         {

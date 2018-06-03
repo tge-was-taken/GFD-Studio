@@ -350,7 +350,11 @@ namespace GFDStudio.GUI.Controls
 
         private static Matrix4 ToMatrix4( ref System.Numerics.Matrix4x4 matrix )
         {
-            return Unsafe.As<System.Numerics.Matrix4x4, Matrix4>( ref matrix );
+            unsafe
+            {
+                fixed ( System.Numerics.Matrix4x4* pMatrix = &matrix )
+                    return *( Matrix4* )pMatrix;
+            }
         }
 
         //

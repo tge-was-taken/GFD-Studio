@@ -54,7 +54,7 @@ namespace GFDLibrary
             // Dummy out textures in texture dictionary
             var newTextureDictionary = new TextureDictionary( textureDictionary.Version );
             foreach ( var texture in textureDictionary.Textures )
-                newTextureDictionary.Add( new Texture( texture.Name, TextureFormat.DDS, Texture.DummyTextureData ) );
+                newTextureDictionary.Add( Texture.CreateDefaultTexture(texture.Name) );
 
             return newTextureDictionary;
         }
@@ -78,6 +78,26 @@ namespace GFDLibrary
         public bool TryGetTexture( string name, out Texture texture )
         {
             return mDictionary.TryGetValue( name, out texture );
+        }
+
+        public void ReplaceWith( TextureDictionary other )
+        {
+            foreach ( var texture in other )
+            {
+                // Don't replace the texture if we're replacing it with a default dummy texture.
+                if ( !ContainsKey(texture.Key) || !texture.Value.IsDefaultTexture  )
+                    this[texture.Key] = texture.Value;
+            }
+
+            var toRemove = new List<string>();
+            foreach ( var texture in this )
+            {
+                if ( !other.TryGetValue( texture.Key, out _ ) )
+                    toRemove.Add( texture.Key );
+            }
+
+            foreach ( string s in toRemove )
+                Remove( s );
         }
 
         #region IDictionary implementation 

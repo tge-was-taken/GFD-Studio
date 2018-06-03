@@ -102,6 +102,16 @@ namespace GFDLibrary
                    NearlyEquals( left.D1, right.D1 ) && NearlyEquals( left.D2, right.D2 ) && NearlyEquals( left.D3, right.D3 ) && NearlyEquals( left.D4, right.D4 );
         }
 
+        private static bool IsMeshAttachmentNode( Ai.Node node )
+        {
+            bool isMeshAttachmentNode = node.Parent != null &&                                                          // definitely not a mesh attachment if it doesnt have a parent -> RootNode
+                                        node.Parent.Name != "RootNode" &&                                               // probably not a mesh attachment if its part of the scene root
+                                        MeshAttachmentNameRegex.IsMatch( node.Name ) &&                                 // match name regex
+                                        NearlyEquals( GetWorldTransform( node ), GetWorldTransform( node.Parent ) );    // world transforms of both the node and the parent must match
+
+            return isMeshAttachmentNode;
+        }
+
         private static Node ConvertAssimpNodeRecursively( Ai.Node aiNode, Dictionary<string, NodeInfo> nodeLookup, ref int nextIndex )
         {
             aiNode.Transform.Decompose( out var scale, out var rotation, out var translation );
@@ -112,12 +122,9 @@ namespace GFDLibrary
                                  new Quaternion( rotation.X, rotation.Y, rotation.Z, rotation.W ),
                                  new Vector3( scale.X, scale.Y, scale.Z ) );
 
-            bool isMeshAttachmentNode = aiNode.Parent != null &&                                             // definitely not a mesh attachment if it doesnt have a parent -> RootNode
-                                        aiNode.Parent.Name != "RootNode" &&                                  // probably not a mesh attachment if its part of the scene root
-                                        MeshAttachmentNameRegex.IsMatch( aiNode.Name ) &&                    // match name regex
-                                        NearlyEquals( GetWorldTransform( aiNode ), GetWorldTransform( aiNode.Parent ) );   // world transforms of both the node and the parent must match
+            
 
-            if ( !isMeshAttachmentNode )
+            if ( !IsMeshAttachmentNode( aiNode) )
             {
                 // Convert properties
                 ConvertAssimpMetadataToProperties( aiNode.Metadata, node );
@@ -131,7 +138,7 @@ namespace GFDLibrary
                 {
                     throw new Exception( $"Duplicate node name '{node.Name}'" );
                 }
-                
+
 
                 // Process children
                 foreach ( var aiNodeChild in aiNode.Children )

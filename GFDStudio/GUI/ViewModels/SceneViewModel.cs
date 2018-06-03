@@ -61,7 +61,11 @@ namespace GFDStudio.GUI.ViewModels
                         GenerateVertexColors = dialog.GenerateVertexColors
                     };
 
-                    return SceneConverter.ConvertFromAssimpScene( path, options );
+                    var scene = SceneConverter.ConvertFromAssimpScene( path, options );
+                    if ( scene != null )
+                        Model.ReplaceWith( scene );
+
+                    return Model;
                 }
             } );
 
