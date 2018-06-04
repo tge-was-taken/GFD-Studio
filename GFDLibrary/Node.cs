@@ -68,6 +68,16 @@ namespace GFDLibrary
 
                 return mLocalTransform;
             }
+
+            set
+            {
+                mLocalTransform = value;
+                Matrix4x4.Decompose( mLocalTransform, out var scale, out var rotation, out var translation );
+                Scale = scale;
+                Rotation = rotation;
+                Translation = translation;
+                mTransformDirty = false;
+            }
         }
 
         public Matrix4x4 WorldTransform

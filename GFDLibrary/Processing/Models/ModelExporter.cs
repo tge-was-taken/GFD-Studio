@@ -296,7 +296,7 @@ namespace GFDLibrary.Assimp
                             continue;
 
                         var boneIndex = vertexWeight.Indices[j];
-                        var nodeIndex = scene.MatrixPalette.BoneToNodeIndices[boneIndex];
+                        var nodeIndex = scene.BonePalette.BoneToNodeIndices[boneIndex];
 
                         if ( !boneMap.ContainsKey( nodeIndex ) )
                         {

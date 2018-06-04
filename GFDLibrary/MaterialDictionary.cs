@@ -25,7 +25,7 @@ namespace GFDLibrary
             foreach ( var material in other )
             {
                 // Don't replace the material if we're replacing a normal material with a preset one.
-                if ( !ContainsKey( material.Key ) || ContainsKey(material.Key) && this[ material.Key ].IsPresetMaterial )
+                if ( !material.Value.IsPresetMaterial || ContainsKey( material.Key ) && this[ material.Key ].IsPresetMaterial )
                     this[material.Key] = material.Value;
             }
 

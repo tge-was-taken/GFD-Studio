@@ -22,7 +22,7 @@ namespace GFDStudio.GUI.ViewModels
         }
 
         [ Browsable( false ) ]
-        public MatrixPaletteViewModel MatrixPaletteViewModel { get; set; }
+        public BonePaletteViewModel BonePaletteViewModel { get; set; }
 
         [ Browsable( true ) ]
         public BoundingBox? BoundingBox
@@ -76,10 +76,10 @@ namespace GFDStudio.GUI.ViewModels
                 scene.BoundingSphere = Model.BoundingSphere;
                 scene.Flags = Model.Flags;
 
-                if ( MatrixPaletteViewModel != null && Nodes.Contains(MatrixPaletteViewModel) )
-                    scene.MatrixPalette = MatrixPaletteViewModel.Model;
+                if ( BonePaletteViewModel != null && Nodes.Contains(BonePaletteViewModel) )
+                    scene.BonePalette = BonePaletteViewModel.Model;
                 else
-                    scene.MatrixPalette = null;
+                    scene.BonePalette = null;
 
                 if ( RootNodeViewModel != null && Nodes.Contains( RootNodeViewModel ) )
                     scene.RootNode = RootNodeViewModel.Model;
@@ -92,10 +92,10 @@ namespace GFDStudio.GUI.ViewModels
 
         protected override void InitializeViewCore()
         {
-            if ( Model.MatrixPalette != null )
+            if ( Model.BonePalette != null )
             {
-                MatrixPaletteViewModel = ( MatrixPaletteViewModel )TreeNodeViewModelFactory.Create( "Matrix Palette", Model.MatrixPalette );
-                Nodes.Add( MatrixPaletteViewModel );
+                BonePaletteViewModel = ( BonePaletteViewModel )TreeNodeViewModelFactory.Create( "Matrix Palette", Model.BonePalette );
+                Nodes.Add( BonePaletteViewModel );
             }
 
             RootNodeViewModel = ( NodeViewModel ) TreeNodeViewModelFactory.Create( Model.RootNode.Name, Model.RootNode );

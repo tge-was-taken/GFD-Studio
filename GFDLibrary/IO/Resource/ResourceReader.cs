@@ -860,7 +860,7 @@ namespace GFDLibrary.IO.Resource
             var flags = ( SceneFlags )ReadInt();
 
             if ( flags.HasFlag( SceneFlags.HasSkinning ) )
-                scene.MatrixPalette = ReadMatrixPalette();
+                scene.BonePalette = ReadBonePalette();
 
             if ( flags.HasFlag( SceneFlags.HasBoundingBox ) )
                 scene.BoundingBox = ReadBoundingBox();
@@ -874,10 +874,10 @@ namespace GFDLibrary.IO.Resource
             return scene;
         }
 
-        private MatrixPalette ReadMatrixPalette()
+        private BonePalette ReadBonePalette()
         {
             int matrixCount = ReadInt();
-            var map = new MatrixPalette( matrixCount );
+            var map = new BonePalette( matrixCount );
 
             for ( int i = 0; i < map.InverseBindMatrices.Length; i++ )
                 map.InverseBindMatrices[i] = ReadMatrix4x4();

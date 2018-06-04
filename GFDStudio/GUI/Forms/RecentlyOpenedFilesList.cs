@@ -8,13 +8,17 @@ namespace GFDStudio.GUI.Forms
 {
     public class RecentlyOpenedFilesList
     {
-        private readonly Stack<string> mFileStack = new Stack<string>();
+        private readonly List<string> mFiles = new List<string>();
         private readonly ToolStripItemCollection mCollection;
         private readonly EventHandler mClickHandler;
 
-        public IEnumerable<string> Files => mFileStack.Reverse();
+        public IEnumerable<string> Files => mFiles;
 
         public int MaxFileCount { get; set; }
+
+        public int Count => mFiles.Count;
+
+        public string Last => mFiles[mFiles.Count - 1];
 
         public RecentlyOpenedFilesList( string path, int maxFileCount, ToolStripItemCollection collection, EventHandler clickHandler )
         {
@@ -33,14 +37,16 @@ namespace GFDStudio.GUI.Forms
         {
             // Don't add the file if it is already on top of the stack, prevents duplicates if you
             // open the same file multiple times consecutively.
-            if ( mFileStack.Count != 0 && mFileStack.Peek() == path )
+            if ( Count != 0 && Last == path )
                 return;
 
-            mFileStack.Push( path );
+            mFiles.Add( path );
 
-            // Pop entries if we have too many files on the stack
-            if ( mFileStack.Count > MaxFileCount )
-                mFileStack.Pop();
+            // Pop entries if we have too many files
+            if ( mFiles.Count > MaxFileCount )
+            {
+                mFiles.RemoveRange( 0, ( mFiles.Count - MaxFileCount ) );
+            }
 
             // Add menu item to the collection
             var item = new ToolStripMenuItem( path );
@@ -53,8 +59,7 @@ namespace GFDStudio.GUI.Forms
             using ( var writer = File.CreateText( path ) )
             {
                 // Write list of files backwards from least recent to most recent
-                var paths = mFileStack.ToArray().Reverse();
-                foreach ( var filePath in paths )
+                foreach ( var filePath in mFiles )
                     writer.WriteLine( filePath );
             }
         }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Numerics;
 
 namespace GFDLibrary
 {
@@ -19,13 +20,13 @@ namespace GFDLibrary
             }
         }
 
-        private MatrixPalette mMatrixPalette;
-        public MatrixPalette MatrixPalette
+        private BonePalette mBonePalette;
+        public BonePalette BonePalette
         {
-            get => mMatrixPalette;
+            get => mBonePalette;
             set
             {
-                mMatrixPalette = value;
+                mBonePalette = value;
                 ValidateFlags();
             }
         }
@@ -94,15 +95,36 @@ namespace GFDLibrary
         public void ReplaceWith( Scene other )
         {
             // Remove geometries from this scene
-            ClearGeometries();
+            RemoveGeometryAttachments();
 
-            MatrixPalette = other.MatrixPalette;
+            BonePalette = other.BonePalette;
             BoundingBox = other.BoundingBox;
             BoundingSphere = other.BoundingSphere;
             Flags = other.Flags;
 
+            // Replace common nodes and get the unique nodes
+            var uniqueNodes = ReplaceCommonNodesAndGetUniqueNodes( other.Nodes );
+
+            // Remove nodes that dont have attachments
+            uniqueNodes.RemoveAll( x => !x.HasAttachments );
+
+            // Fix unique nodes
+            FixUniqueNodes( other, uniqueNodes );
+
+            // Add unique nodes to root.
+            foreach ( var uniqueNode in uniqueNodes )
+                RootNode.AddChildNode( uniqueNode );
+
+            // Rebuild matrix palette
+            PopulateNodeList();
+            RebuildBonePalette( other.Nodes.ToList() );
+        }
+
+        private List<Node> ReplaceCommonNodesAndGetUniqueNodes( IEnumerable<Node> otherNodes )
+        {
             var uniqueNodes = new List<Node>();
-            foreach ( var otherNode in other.Nodes )
+
+            foreach ( var otherNode in otherNodes )
             {
                 var thisNode = Nodes.SingleOrDefault( x => x.Name.Equals( otherNode.Name ) );
 
@@ -114,58 +136,174 @@ namespace GFDLibrary
                 }
 
                 // Merge attachments
-                if (otherNode.HasAttachments)
-                    thisNode.Attachments.AddRange( otherNode.Attachments );
+                if ( otherNode.HasAttachments )
+                    thisNode.Attachments.AddRange( otherNode.Attachments.Where( x => x.Type != NodeAttachmentType.Epl ) );
 
                 // Replace properties
                 foreach ( var property in otherNode.Properties )
                     thisNode.Properties[property.Key] = property.Value;
             }
 
-            // Condense unique nodes
+            return uniqueNodes;
+        }
+
+        private void FixUniqueNodes( Scene other, List<Node> uniqueNodes )
+        {
             foreach ( var uniqueNode in uniqueNodes.ToList() )
             {
-                if ( uniqueNode.Parent != other.RootNode )
+                if ( uniqueNode.Parent == other.RootNode )
+                    continue;
+
+                // Find the last unique node in the hierarchy chain (going up the hierarchy)
+                var lastUniqueNode = uniqueNode;
+                while ( true )
                 {
-                    // Find top of hierarchy
-                    var parent = uniqueNode.Parent;
-                    while ( parent.Parent != other.RootNode )
+                    var parent = lastUniqueNode.Parent;
+                    if ( parent == null || parent == other.RootNode || Nodes.SingleOrDefault( x => x.Name.Equals( parent.Name ) ) != null )
+                        break;
+
+                    lastUniqueNode = parent;
+                }
+
+                // Get unweighted geometries
+                var unweightedGeometries = uniqueNode.Attachments.Where( x => x.Type == NodeAttachmentType.Geometry )
+                                                     .Select( x => x.GetValue<Geometry>() ).Where( x => x.VertexWeights == null );
+
+                if ( unweightedGeometries.Any() )
+                {
+                    // If we have unweighted geometries, we have to assign vertex weights to them so that they
+                    // properly animate.
+                    // The node we are going to assign the weights to is the shared ancestor (between this model and the replacement one)
+                    // in the hopes that it will work out.
+
+                    // Find the bone index of this node
+                    int lastUniqueNodeIndex = -1;
+                    for ( int i = 0; i < other.Nodes.Count; i++ )
                     {
-                        var thisNode = Nodes.SingleOrDefault( x => x.Name.Equals( parent.Name ) );
-                        Trace.Assert( thisNode == null );
-                        parent = parent.Parent;
+                        if ( other.Nodes[i].Name == lastUniqueNode.Parent.Name )
+                        {
+                            lastUniqueNodeIndex = i;
+                            break;
+                        }
                     }
 
-                    // Remove children from unique nodes list, we only need to the topmost parent.
-                    foreach ( var child in parent.Children )
-                        uniqueNodes.Remove( child );
+                    Trace.Assert( lastUniqueNodeIndex != -1 );
+                    int boneIndex = Array.IndexOf( BonePalette.BoneToNodeIndices,
+                                                   lastUniqueNodeIndex );
+
+                    if ( boneIndex == -1 )
+                    {
+                        Trace.Assert( BonePalette.BoneCount < 255 );
+
+                        // Node wasn't used as a bone, so we add it
+                        // TODO: This is a lazy hack. This should be done during the BonePalette fixup
+                        var boneToNodeIndices = BonePalette.BoneToNodeIndices;
+                        Array.Resize( ref boneToNodeIndices, BonePalette.BoneToNodeIndices.Length + 1 );
+                        boneToNodeIndices[boneToNodeIndices.Length - 1] = ( ushort )lastUniqueNodeIndex;
+                        BonePalette.BoneToNodeIndices = boneToNodeIndices;
+
+                        var inverseBindMatrices = BonePalette.InverseBindMatrices;
+                        Array.Resize( ref inverseBindMatrices, inverseBindMatrices.Length + 1 );
+                        BonePalette.InverseBindMatrices = inverseBindMatrices;
+
+                        boneIndex = BonePalette.BoneToNodeIndices.Length - 1;
+                    }
+
+                    // Set vertex weights
+                    foreach ( var geometry in uniqueNode.Attachments.Where( x => x.Type == NodeAttachmentType.Geometry ).Select( x => x.GetValue<Geometry>() ).Where( x => x.VertexWeights == null ) )
+                    {
+                        geometry.VertexWeights = new VertexWeight[geometry.VertexCount];
+                        for ( int i = 0; i < geometry.VertexWeights.Length; i++ )
+                        {
+                            ref var weight = ref geometry.VertexWeights[i];
+                            weight.Indices = new byte[4];
+                            weight.Indices[0] = ( byte )boneIndex;
+                            weight.Weights = new float[4];
+                            weight.Weights[0] = 1f;
+                        }
+                    }
+                }
+
+                // Fix transform for the node
+                var worldTransform = uniqueNode.WorldTransform;
+                uniqueNode.Parent?.RemoveChildNode( uniqueNode );
+                uniqueNode.LocalTransform = worldTransform;
+            }
+        }
+
+        private void RebuildBonePalette( List<Node> otherNodes )
+        {
+            var uniqueBones = new List<Bone>();
+
+            // Recalculate inverse bind matrices & update bone indices
+            foreach ( var node in Nodes )
+            {
+                if ( !node.HasAttachments )
+                    continue;
+
+                Matrix4x4.Invert( node.WorldTransform, out var nodeInvWorldTransform );
+
+                foreach ( var geometry in node.Attachments.Where( x => x.Type == NodeAttachmentType.Geometry ).Select( x => x.GetValue<Geometry>() )
+                                              .Where( x => x.VertexWeights != null ) )
+                {
+                    foreach ( var weight in geometry.VertexWeights )
+                    {
+                        for ( int i = 0; i < weight.Indices.Length; i++ )
+                        {
+                            var boneIndex = weight.Indices[i];
+                            var boneWeight = weight.Weights[i];
+                            if ( boneWeight == 0 )
+                                continue;
+
+                            var otherNodeIndex = BonePalette.BoneToNodeIndices[boneIndex];
+                            var otherBoneNode = otherNodes[otherNodeIndex];
+
+                            var thisBoneNode = Nodes.FirstOrDefault( x => x.Name == otherBoneNode.Name );
+                            if ( thisBoneNode == null )
+                            {
+                                // Find parent that does exist
+                                var curOtherBoneNode = otherBoneNode;
+                                while ( thisBoneNode == null )
+                                {
+                                    thisBoneNode = Nodes.FirstOrDefault( x => x.Name == curOtherBoneNode.Parent.Name );
+                                    curOtherBoneNode = curOtherBoneNode.Parent;
+                                }
+                            }
+
+                            var boneTransform = thisBoneNode.WorldTransform;
+
+                            // Attempt to fix spaghetti fingers
+                            if ( thisBoneNode.Name.Contains( "Finger" ) || thisBoneNode.Name.Contains( "Hand" ) ||
+                                 thisBoneNode.Name.Contains( "hand" ) )
+                                boneTransform = otherBoneNode.WorldTransform;
+
+                            var thisNodeIndex = Nodes.IndexOf( thisBoneNode );
+                            Trace.Assert( thisNodeIndex != -1 );
+                            var bindMatrix = boneTransform * nodeInvWorldTransform;
+                            Matrix4x4.Invert( bindMatrix, out var inverseBindMatrix );
+                            
+                            var newBoneIndex =
+                                uniqueBones.FindIndex( x => x.NodeIndex == thisNodeIndex && x.InverseBindMatrix.Equals( inverseBindMatrix ) );
+
+                            if ( newBoneIndex == -1 )
+                            {
+                                // Add if unique
+                                Trace.Assert( uniqueBones.Count < 255 );
+                                uniqueBones.Add( new Bone( (ushort)thisNodeIndex, inverseBindMatrix ) );
+                                newBoneIndex = uniqueBones.Count - 1;
+                            }
+
+                            // Update bone index
+                            weight.Indices[ i ] = ( byte ) newBoneIndex;
+                        }
+                    }
                 }
             }
 
-            // Add unique nodes to root.
-            foreach ( var uniqueNode in uniqueNodes )
-                RootNode.AddChildNode( uniqueNode );
-
-            FixupMatrixPalette( MatrixPalette, other.Nodes.ToList() );
-
-            PopulateNodeList();
+            BonePalette = new BonePalette( uniqueBones );
         }
 
-        private void FixupMatrixPalette( MatrixPalette matrixPalette, List<Node> otherNodes )
-        {
-            for ( int i = 0; i < matrixPalette.BoneToNodeIndices.Length; i++ )
-            {
-                // Remap node indices to the correct ones
-                var otherNodeIndex = matrixPalette.BoneToNodeIndices[ i ];
-                var otherNode = otherNodes[ otherNodeIndex ];
-                var thisNode = Nodes.FirstOrDefault( x => x.Name == otherNode.Name );
-                Trace.Assert( thisNode != null );
-                var thisNodeIndex = Nodes.IndexOf( thisNode );
-                matrixPalette.BoneToNodeIndices[i] = (byte)thisNodeIndex;
-            }
-        }
-
-        public void ClearGeometries()
+        private void RemoveGeometryAttachments()
         {
             foreach ( var node in Nodes )
             {
@@ -193,7 +331,7 @@ namespace GFDLibrary
 
         private void ValidateFlags()
         {
-            if ( MatrixPalette == null )
+            if ( BonePalette == null )
                 mFlags &= ~SceneFlags.HasSkinning;
             else
                 mFlags |= SceneFlags.HasSkinning;

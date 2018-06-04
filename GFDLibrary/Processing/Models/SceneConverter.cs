@@ -38,11 +38,11 @@ namespace GFDLibrary
             var transformedVertices = new List< Vector3 >();
             ProcessAssimpNodeMeshesRecursively( aiScene.RootNode, aiScene, nodeLookup, ref nextBoneIndex, nodeToBoneIndices, boneInverseBindMatrices, transformedVertices, options );
 
-            // Don't build a matrix palette if there are no skinned meshes
+            // Don't build a bone palette if there are no skinned meshes
             if ( boneInverseBindMatrices.Count > 0 )
             {
-                // Build matrix palette for skinning
-                scene.MatrixPalette = BuildMatrixPalette( boneInverseBindMatrices, nodeToBoneIndices );
+                // Build bone palette for skinning
+                scene.BonePalette = BuildBonePalette( boneInverseBindMatrices, nodeToBoneIndices );
             }
 
             // Build bounding box & sphere
@@ -480,9 +480,9 @@ namespace GFDLibrary
             return geometry;
         }
 
-        private static MatrixPalette BuildMatrixPalette( List<Matrix4x4> boneInverseBindMatrices, Dictionary<int, List<int>> nodeToBoneIndices )
+        private static BonePalette BuildBonePalette( List<Matrix4x4> boneInverseBindMatrices, Dictionary<int, List<int>> nodeToBoneIndices )
         {
-            var matrixPalette = new MatrixPalette( boneInverseBindMatrices.Count );
+            var matrixPalette = new BonePalette( boneInverseBindMatrices.Count );
 
             for ( int i = 0; i < matrixPalette.BoneToNodeIndices.Length; i++ )
             {

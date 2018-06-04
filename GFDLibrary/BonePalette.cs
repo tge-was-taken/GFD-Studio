@@ -4,32 +4,38 @@ using System.Numerics;
 
 namespace GFDLibrary
 {
-    public sealed class MatrixPalette
+    public sealed class BonePalette
     {
-        public int MatrixCount => InverseBindMatrices.Length;
+        public int BoneCount => InverseBindMatrices.Length;
 
         public Matrix4x4[] InverseBindMatrices { get; set; }
 
         public ushort[] BoneToNodeIndices { get; set; }
 
-        public MatrixPalette()
+        public BonePalette()
         {
             
         }
 
-        public MatrixPalette( int matrixCount )
+        public BonePalette( int matrixCount )
         {
             InverseBindMatrices = new Matrix4x4[matrixCount];
             BoneToNodeIndices = new ushort[matrixCount];
+        }
+
+        public BonePalette( IEnumerable<Bone> bones )
+        {
+            InverseBindMatrices = bones.Select( x => x.InverseBindMatrix ).ToArray();
+            BoneToNodeIndices = bones.Select( x => x.NodeIndex ).ToArray();
         }
 
         public static readonly Matrix4x4 YToZUpMatrix = new Matrix4x4( 1, 0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1 );
 
         public static readonly Matrix4x4 ZToYUpMatrix = new Matrix4x4( 1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1 );
 
-        public static MatrixPalette Create( List<int> skinnedNodeIndices, List<Matrix4x4> skinnedNodeWorldTransformMatrices, out Dictionary<int, int> nodeToBoneMap )
+        public static BonePalette Create( List<int> skinnedNodeIndices, List<Matrix4x4> skinnedNodeWorldTransformMatrices, out Dictionary<int, int> nodeToBoneMap )
         {
-            var map = new MatrixPalette( skinnedNodeIndices.Count );
+            var map = new BonePalette( skinnedNodeIndices.Count );
             nodeToBoneMap = new Dictionary<int, int>();
 
             for ( int i = 0; i < skinnedNodeIndices.Count; i++ )

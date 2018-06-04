@@ -785,7 +785,7 @@ namespace GFDLibrary.IO.Resource
             WriteInt( ( int )scene.Flags );
 
             if ( scene.Flags.HasFlag( SceneFlags.HasSkinning ) )
-                WriteMatrixMap( scene.MatrixPalette );
+                WriteBonePalette( scene.BonePalette );
 
             if ( scene.Flags.HasFlag( SceneFlags.HasBoundingBox ) )
                 WriteBoundingBox( scene.BoundingBox.Value );
@@ -796,15 +796,15 @@ namespace GFDLibrary.IO.Resource
             WriteNodeRecursive( scene.Version, scene.RootNode );
         }
 
-        private void WriteMatrixMap( MatrixPalette matrixMap )
+        private void WriteBonePalette( BonePalette bonePalette )
         {
-            WriteInt( matrixMap.MatrixCount );
+            WriteInt( bonePalette.BoneCount );
 
-            for ( int i = 0; i < matrixMap.InverseBindMatrices.Length; i++ )
-                WriteMatrix4x4( matrixMap.InverseBindMatrices[i] );
+            for ( int i = 0; i < bonePalette.InverseBindMatrices.Length; i++ )
+                WriteMatrix4x4( bonePalette.InverseBindMatrices[i] );
 
-            for ( int i = 0; i < matrixMap.BoneToNodeIndices.Length; i++ )
-                WriteUShort( matrixMap.BoneToNodeIndices[i] );
+            for ( int i = 0; i < bonePalette.BoneToNodeIndices.Length; i++ )
+                WriteUShort( bonePalette.BoneToNodeIndices[i] );
         }
 
         private void WriteNodeRecursive( uint version, Node node )

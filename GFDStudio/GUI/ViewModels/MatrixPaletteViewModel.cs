@@ -4,7 +4,7 @@ using GFDLibrary;
 
 namespace GFDStudio.GUI.ViewModels
 {
-    public class MatrixPaletteViewModel : TreeNodeViewModel<MatrixPalette>
+    public class BonePaletteViewModel : TreeNodeViewModel<BonePalette>
     {
         public override TreeNodeViewModelMenuFlags ContextMenuFlags
             => TreeNodeViewModelMenuFlags.Delete;
@@ -24,7 +24,7 @@ namespace GFDStudio.GUI.ViewModels
             get => Model.BoneToNodeIndices;
         }
 
-        public MatrixPaletteViewModel( string text, MatrixPalette resource ) : base( text, resource )
+        public BonePaletteViewModel( string text, BonePalette resource ) : base( text, resource )
         {
         }
 

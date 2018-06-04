@@ -34,7 +34,14 @@ namespace GFDStudio.GUI.ViewModels
             RegisterExportHandler< Model >( ( path ) => Resource.Save( Model, path ) );
             RegisterExportHandler< Assimp.Scene >( path => ModelExporter.ExportFile( Model, path ) );
 
-            RegisterReplaceHandler<Model>( Resource.Load<Model> );
+            RegisterReplaceHandler<Model>( path =>
+            {
+                var model = Resource.Load<Model>( path );
+                if ( model != null )
+                    Model.ReplaceWith( model );
+
+                return Model;
+            });
             RegisterReplaceHandler< Assimp.Scene >( path =>
             {
                 var model = ModelConverterUtility.ConvertAssimpModel( path );

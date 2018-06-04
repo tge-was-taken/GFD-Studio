@@ -71,6 +71,7 @@
     <Compile Include="Animations\Keyframes\MaterialKeyframeType29.cs" />
     <Compile Include="Animations\AnimationPackage.cs" />
     <Compile Include="Animations\AnimationPackageFlags.cs" />
+    <Compile Include="Bone.cs" />
     <Compile Include="Common\Archive.cs" />
     <Compile Include="Processing\Models\AssimpSceneImporter.cs" />
     <Compile Include="Processing\Textures\Utilities\BitmapUtilities.cs" />
@@ -112,7 +113,7 @@
     <Compile Include="MorphTargetList.cs" />
     <Compile Include="MorphTarget.cs" />
     <Compile Include="Processing\Models\ModelExporter.cs" />
-    <Compile Include="MatrixPalette.cs" />
+    <Compile Include="BonePalette.cs" />
     <Compile Include="IO\Common\EndianBinaryWriter.cs" />
     <Compile Include="IO\Resource\ResourceWriter.cs" />
     <Compile Include="IO\Common\StringBinaryFormat.cs" />

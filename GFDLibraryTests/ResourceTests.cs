@@ -516,13 +516,13 @@ namespace AtlusGfdLibraryRegressionTests
             Assert.AreEqual( a.Version, b.Version );
 
             Assert.AreEqual( a.Flags, b.Flags );
-            CompareBoneMap( a.MatrixPalette, b.MatrixPalette );
+            CompareBoneMap( a.BonePalette, b.BonePalette );
             Assert.AreEqual( a.BoundingBox, b.BoundingBox );
             Assert.AreEqual( a.BoundingSphere, b.BoundingSphere );
             CompareNodes( a.RootNode, b.RootNode );
         }
 
-        private void CompareBoneMap( MatrixPalette a, MatrixPalette b )
+        private void CompareBoneMap( BonePalette a, BonePalette b )
         {
             if ( a == null || b == null )
             {
@@ -530,7 +530,7 @@ namespace AtlusGfdLibraryRegressionTests
                 return;
             }
 
-            Assert.AreEqual( a.MatrixCount, b.MatrixCount );
+            Assert.AreEqual( a.BoneCount, b.BoneCount );
 
             if ( a.InverseBindMatrices == null || b.InverseBindMatrices == null )
             {
@@ -544,7 +544,7 @@ namespace AtlusGfdLibraryRegressionTests
                 return;
             }
 
-            for ( int i = 0; i < a.MatrixCount; i++ )
+            for ( int i = 0; i < a.BoneCount; i++ )
             {
                 Assert.AreEqual( a.InverseBindMatrices[i], b.InverseBindMatrices[i] );
                 Assert.AreEqual( a.BoneToNodeIndices[i], b.BoneToNodeIndices[i] );
