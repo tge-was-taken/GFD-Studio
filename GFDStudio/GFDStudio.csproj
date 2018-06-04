@@ -135,6 +135,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FormatModules\AnimationPackageFormatModule.cs" />
     <Compile Include="FormatModules\AssimpSceneFormatModule.cs" />
     <Compile Include="GUI\Forms\CreateTextureMapDialog.cs">
       <SubType>Form</SubType>
@@ -156,6 +157,7 @@
     <Compile Include="GUI\TypeConverters\QuaternionTypeConverter.cs" />
     <Compile Include="GUI\TypeConverters\Vector3TypeConverter.cs" />
     <Compile Include="GUI\TypeConverters\Vector4TypeConverter.cs" />
+    <Compile Include="GUI\ViewModels\AnimationPackageViewModel.cs" />
     <Compile Include="GUI\ViewModels\ArchiveViewModel.cs" />
     <Compile Include="GUI\ViewModels\BitmapViewModel.cs" />
     <Compile Include="GUI\ViewModels\ChunkType000100F9Entry1ViewModel.cs" />
