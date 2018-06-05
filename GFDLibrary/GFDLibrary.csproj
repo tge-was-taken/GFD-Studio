@@ -72,6 +72,7 @@
     <Compile Include="Animations\AnimationPackage.cs" />
     <Compile Include="Animations\AnimationPackageFlags.cs" />
     <Compile Include="Bone.cs" />
+    <Compile Include="ChunkType000100F8.cs" />
     <Compile Include="Common\Archive.cs" />
     <Compile Include="Processing\Models\AssimpSceneImporter.cs" />
     <Compile Include="Processing\Textures\Utilities\BitmapUtilities.cs" />

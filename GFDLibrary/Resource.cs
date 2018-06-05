@@ -80,6 +80,7 @@ namespace GFDLibrary
         Material,
         MaterialAttribute,
         TextureMap,
-        Texture
+        Texture,
+        ChunkType000100F8
     }
 }

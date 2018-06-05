@@ -244,6 +244,7 @@ namespace GFDLibrary.IO.Resource
                 case ResourceType.AnimationPackage:
                 case ResourceType.ChunkType000100F9:
                 case ResourceType.Scene:
+                case ResourceType.ChunkType000100F8:
                     return ResourceFileType.ModelResourceBundle;
 
                 // Shader caches
@@ -338,6 +339,10 @@ namespace GFDLibrary.IO.Resource
                     WriteChunkType000100F9( ( ChunkType000100F9 ) resource );
                     break;
 
+                case ResourceType.ChunkType000100F8:
+                    WriteBytes( ( ( ChunkType000100F8 ) resource ).RawData );
+                    break;
+
                 case ResourceType.ShaderCachePS3:
                     WriteShaderCache( ( ShaderCachePS3 )resource );
                     break;
@@ -389,6 +394,9 @@ namespace GFDLibrary.IO.Resource
             if ( model.ChunkType000100F9 != null )
                 WriteChunkType000100F9Chunk( model.ChunkType000100F9 );
 
+            if ( model.ChunkType000100F8 != null )
+                WriteChunkType000100F8Chunk( model.ChunkType000100F8 );
+
             if ( model.AnimationPackage != null )
                 WriteAnimationPackageChunk( model.AnimationPackage );
 
@@ -396,7 +404,8 @@ namespace GFDLibrary.IO.Resource
                 model.TextureDictionary == null &&
                 model.MaterialDictionary == null &&
                 model.Scene == null &&
-                model.ChunkType000100F9 == null;
+                model.ChunkType000100F9 == null &&
+                model.ChunkType000100F8 == null;
 
             // end chunk is not present in gap files
             if ( !animationOnly )
@@ -1241,6 +1250,15 @@ namespace GFDLibrary.IO.Resource
                     WriteShort( entry.Field0E );
                 }
             }
+        }
+
+        private void WriteChunkType000100F8Chunk( ChunkType000100F8 resource )
+        {
+            StartWritingChunk( resource.Version, ResourceChunkType.ChunkType000100F8 );
+
+            WriteBytes( resource.RawData );
+
+            FinishWritingChunk();
         }
 
         // Animation

@@ -12,6 +12,8 @@ namespace GFDLibrary
 
         public AnimationPackage AnimationPackage { get; set; }
 
+        public ChunkType000100F8 ChunkType000100F8 { get; set; }
+
         public ChunkType000100F9 ChunkType000100F9 { get; set; }
 
         public Model(uint version) : base( ResourceType.Model, version )
@@ -40,6 +42,18 @@ namespace GFDLibrary
                 if ( AnimationPackage == null )
                 {
                     AnimationPackage = other.AnimationPackage;
+                }
+                else
+                {
+                    // TODO
+                }
+            }
+
+            if ( other.ChunkType000100F8 != null )
+            {
+                if ( ChunkType000100F8 == null )
+                {
+                    ChunkType000100F8 = other.ChunkType000100F8;
                 }
                 else
                 {

@@ -387,13 +387,16 @@ namespace GFDLibrary.IO.Resource
                     case ResourceChunkType.ChunkType000100F9:
                         model.ChunkType000100F9 = ReadChunkType000100F9( header.Version );
                         break;
+                    case ResourceChunkType.ChunkType000100F8:
+                        model.ChunkType000100F8 = new ChunkType000100F8( header.Version ) { RawData = ReadBytes( header.Size - 16 ) };
+                        break;
                     case ResourceChunkType.AnimationPackage:
-                        model.AnimationPackage = new AnimationPackage( header.Version ) { RawData = ReadBytes( header.Size - 12 ) };
+                        model.AnimationPackage = new AnimationPackage( header.Version ) { RawData = ReadBytes( header.Size - 16 ) };
                         //model.AnimationPackage = ReadAnimationPackage( header.Version );
                         break;
                     default:
                         DebugLogPosition( $"Unknown chunk type '{header.Type}'" );
-                        mReader.SeekCurrent( header.Size - 12 );
+                        mReader.SeekCurrent( header.Size - 16 );
                         continue;
                 }
             }

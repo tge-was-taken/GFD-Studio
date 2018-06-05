@@ -45,7 +45,11 @@ namespace GFDStudio.FormatModules
 
                 // gfd material resource modules
                 new MaterialDictionaryFormatModule(),
-                new MaterialFormatModule()
+                new MaterialFormatModule(),
+
+                new AnimationPackageFormatModule(),
+                new ChunkType000100F8FormatModule(),
+                new ChunkType000100F9FormatModule()
             );
         }
 

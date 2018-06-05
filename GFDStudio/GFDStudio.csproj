@@ -137,6 +137,8 @@
   <ItemGroup>
     <Compile Include="FormatModules\AnimationPackageFormatModule.cs" />
     <Compile Include="FormatModules\AssimpSceneFormatModule.cs" />
+    <Compile Include="FormatModules\ChunkType000100F8FormatModule.cs" />
+    <Compile Include="FormatModules\ChunkType000100F9FormatModule.cs" />
     <Compile Include="GUI\Forms\CreateTextureMapDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -160,6 +162,7 @@
     <Compile Include="GUI\ViewModels\AnimationPackageViewModel.cs" />
     <Compile Include="GUI\ViewModels\ArchiveViewModel.cs" />
     <Compile Include="GUI\ViewModels\BitmapViewModel.cs" />
+    <Compile Include="GUI\ViewModels\ChunkType000100F8ViewModel.cs" />
     <Compile Include="GUI\ViewModels\ChunkType000100F9Entry1ViewModel.cs" />
     <Compile Include="GUI\ViewModels\ChunkType000100F9Entry2ViewModel.cs" />
     <Compile Include="GUI\ViewModels\ChunkType000100F9Entry3ViewModel.cs" />
