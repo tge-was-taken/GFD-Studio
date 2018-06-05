@@ -273,9 +273,9 @@ namespace GFDLibrary
                             var boneTransform = thisBoneNode.WorldTransform;
 
                             // Attempt to fix spaghetti fingers
-                            if ( thisBoneNode.Name.Contains( "Finger" ) || thisBoneNode.Name.Contains( "Hand" ) ||
-                                 thisBoneNode.Name.Contains( "hand" ) )
-                                boneTransform = otherBoneNode.WorldTransform;
+                            //if ( thisBoneNode.Name.Contains( "Finger" ) || thisBoneNode.Name.Contains( "Hand" ) ||
+                            //     thisBoneNode.Name.Contains( "hand" ) )
+                            //    boneTransform = otherBoneNode.WorldTransform;
 
                             var thisNodeIndex = Nodes.IndexOf( thisBoneNode );
                             Trace.Assert( thisNodeIndex != -1 );
