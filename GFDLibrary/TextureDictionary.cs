@@ -85,7 +85,7 @@ namespace GFDLibrary
             foreach ( var texture in other )
             {
                 // Don't replace the texture if we're replacing it with a default dummy texture.
-                if ( !texture.Value.IsDefaultTexture || ContainsKey(texture.Key) && this[texture.Key].IsDefaultTexture  )
+                if ( !ContainsKey(texture.Key) || !texture.Value.IsDefaultTexture || this[texture.Key].IsDefaultTexture  )
                     this[texture.Key] = texture.Value;
             }
 
