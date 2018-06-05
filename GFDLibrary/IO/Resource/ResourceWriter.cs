@@ -1282,7 +1282,7 @@ namespace GFDLibrary.IO.Resource
 
         private void WriteShader( ShaderBase shader )
         {
-            WriteUShort( shader.Type );
+            WriteUShort( ( ushort )shader.Type );
             WriteInt( shader.DataLength );
             WriteUShort( shader.Field06 );
             WriteUInt( shader.Field08 );

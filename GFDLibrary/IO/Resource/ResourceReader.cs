@@ -2042,7 +2042,7 @@ namespace GFDLibrary.IO.Resource
         private ShaderPS3 ReadShaderPS3( uint version )
         {
             var shader = new ShaderPS3();
-            shader.Type = ReadUShort();
+            shader.Type = ( ShaderType )ReadUShort();
             int size = ReadInt();
             shader.Field06 = ReadUShort();
             shader.Field08 = ReadUInt();
@@ -2074,7 +2074,7 @@ namespace GFDLibrary.IO.Resource
         private ShaderPSP2 ReadShaderPSP2( uint version )
         {
             var shader = new ShaderPSP2();
-            shader.Type = ReadUShort();
+            shader.Type = ( ShaderType )ReadUShort();
             int size = ReadInt();
             shader.Field06 = ReadUShort();
             shader.Field08 = ReadUInt();

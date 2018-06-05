@@ -2,7 +2,7 @@
 {
     public abstract class ShaderBase
     {
-        public ushort Type { get; set; }
+        public ShaderType Type { get; set; }
 
         public int DataLength => Data.Length;
 
@@ -27,5 +27,11 @@
 
     public sealed class ShaderPSP2 : ShaderBase
     {
+    }
+
+    public enum ShaderType
+    {
+        Vertex,
+        Fragment
     }
 }
