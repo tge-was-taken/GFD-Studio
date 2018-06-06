@@ -160,12 +160,16 @@ namespace GFDStudio.GUI.Forms
 
         public void SaveFile( string filePath )
         {
-            TreeView.TopNode?.Export( filePath );
+            if ( TreeView.Nodes.Count > 0 )
+                ( ( TreeNodeViewModel )TreeView.Nodes[0] ).Export( filePath );
         }
 
         public string SelectFileAndSave()
         {
-            return TreeView.TopNode?.Export();
+            if ( TreeView.Nodes.Count > 0 )
+                return ( ( TreeNodeViewModel )TreeView.Nodes[0] ).Export();
+
+            return null;
         }
 
         private void ClearContentPanel()

@@ -319,7 +319,7 @@ namespace GFDLibrary
 
         public void BuildFile( string filePath )
         {
-            WriteArchive( File.Create( filePath ), false );
+            WriteArchive( FileUtils.Create( filePath ), false );
         }
 
         public Stream BuildStream()

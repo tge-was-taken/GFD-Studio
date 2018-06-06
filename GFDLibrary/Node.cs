@@ -140,30 +140,29 @@ namespace GFDLibrary
             Attachments = new List<NodeAttachment>();
             Properties = new UserPropertyCollection();
             mChildren = new List<Node>();
+            FieldE0 = 1.0f;
         }
 
-        public Node( string name )
+        public Node( string name ) : this()
         {
             Name = name;
             Translation = Vector3.Zero;
             Rotation = Quaternion.Identity;
-            Scale = Vector3.Zero;
-            Attachments = new List<NodeAttachment>();
-            Properties = new UserPropertyCollection();
-            FieldE0 = 1.0f;
-            mChildren = new List<Node>();
+            Scale = Vector3.One;
         }
 
-        public Node( string name, Vector3 position, Quaternion rotation, Vector3 scale )
+        public Node( string name, Vector3 position, Quaternion rotation, Vector3 scale ) : this()
         {
             Name = name;
             Translation = position;
             Rotation = rotation;
             Scale = scale;
-            Attachments = new List<NodeAttachment>();
-            Properties = new UserPropertyCollection();
-            FieldE0 = 1.0f;
-            mChildren = new List<Node>();
+        }
+
+        public Node( string name, Matrix4x4 localTransform ) : this()
+        {
+            Name = name;
+            LocalTransform = localTransform;
         }
 
         public void AddChildNode( Node node )

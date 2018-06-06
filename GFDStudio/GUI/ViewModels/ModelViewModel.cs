@@ -60,22 +60,22 @@ namespace GFDStudio.GUI.ViewModels
             RegisterModelUpdateHandler( () =>
             {
                 var model = new Model( Version );
-                if ( TextureDictionaryViewModel != null )
+                if ( TextureDictionaryViewModel != null && Nodes.Contains( TextureDictionaryViewModel ) )
                     model.TextureDictionary = TextureDictionaryViewModel.Model;
 
-                if ( MaterialDictionaryViewModel != null )
+                if ( MaterialDictionaryViewModel != null && Nodes.Contains( MaterialDictionaryViewModel ) )
                     model.MaterialDictionary = MaterialDictionaryViewModel.Model;
 
-                if ( SceneViewModel != null )
+                if ( SceneViewModel != null && Nodes.Contains( SceneViewModel ) )
                     model.Scene = SceneViewModel.Model;
 
-                if ( ChunkType000100F9ViewModel != null )
+                if ( ChunkType000100F9ViewModel != null && Nodes.Contains( ChunkType000100F9ViewModel ) )
                     model.ChunkType000100F9 = ChunkType000100F9ViewModel.Model;
 
-                if ( ChunkType000100F8ViewModel != null )
+                if ( ChunkType000100F8ViewModel != null && Nodes.Contains( ChunkType000100F8ViewModel ) )
                     model.ChunkType000100F8 = ChunkType000100F8ViewModel.Model;
 
-                if ( AnimationPackage != null )
+                if ( AnimationPackage != null && Nodes.Contains( AnimationPackage ) )
                     model.AnimationPackage = AnimationPackage.Model;
 
                 return model;

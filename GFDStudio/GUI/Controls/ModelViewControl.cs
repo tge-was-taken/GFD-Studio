@@ -504,13 +504,16 @@ namespace GFDStudio.GUI.Controls
             glGeometry.ElementIndexCount = geometry.Triangles.Length * 3;
 
             // material
-            if ( mModel.MaterialDictionary.TryGetMaterial( geometry.MaterialName, out var material ) )
+            if ( geometry.MaterialName != null && mModel.MaterialDictionary != null )
             {
-                glGeometry.Material = CreateGLMaterial( material );
-            }
-            else
-            {
-                Trace.TraceError( $"Geometry referenced material \"{geometry.MaterialName}\" which does not exist in the model" );
+                if ( mModel.MaterialDictionary.TryGetMaterial( geometry.MaterialName, out var material ) )
+                {
+                    glGeometry.Material = CreateGLMaterial( material );
+                }
+                else
+                {
+                    Trace.TraceError( $"Geometry referenced material \"{geometry.MaterialName}\" which does not exist in the model" );
+                }
             }
 
             glGeometry.IsVisible = true;
