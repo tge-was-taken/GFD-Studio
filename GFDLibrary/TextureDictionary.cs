@@ -21,7 +21,7 @@ namespace GFDLibrary
         /// <param name="textureDictionary"></param>
         /// <param name="archiveFilePath"></param>
         /// <returns></returns>
-        public static TextureDictionary ConvertToFieldTextureArchive( TextureDictionary textureDictionary, string archiveFilePath )
+        public static TextureDictionary ConvertToFieldTextureArchive( TextureDictionary textureDictionary, string archiveFilePath, bool usePS4Format = false )
         {
             var archiveBuilder = new ArchiveBuilder();
 
@@ -42,9 +42,20 @@ namespace GFDLibrary
                 var texturePixelData = TextureUtilities.GetRawPixelData( texture );
 
                 // Create field texture & save it
-                var fieldTexture = new FieldTexture( textureInfo.PixelFormat, (byte)textureInfo.MipMapCount, ( short )textureInfo.Width, ( short )textureInfo.Height, texturePixelData );
-                var textureStream = new MemoryStream();
-                fieldTexture.Save( textureStream );
+                Stream textureStream = new MemoryStream();
+                if ( !usePS4Format )
+                {
+                    var fieldTexture = new FieldTexturePS3( textureInfo.PixelFormat, ( byte ) textureInfo.MipMapCount, ( short ) textureInfo.Width,
+                                                            ( short ) textureInfo.Height, texturePixelData );
+                    fieldTexture.Save( textureStream );
+                }
+                else
+                {
+                    var fieldTexture = new GNFTexture( textureInfo.PixelFormat, ( byte )textureInfo.MipMapCount, ( short )textureInfo.Width,
+                                                            ( short )textureInfo.Height, texturePixelData );
+                    fieldTexture.Save( textureStream );
+                }
+
                 archiveBuilder.AddFile( texture.Name, textureStream );
             }
 

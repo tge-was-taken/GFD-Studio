@@ -15,14 +15,21 @@ namespace GFDLibrary
             return Decode( texture.Data, texture.Format );
         }
 
-        public static Bitmap Decode( FieldTexture texture )
+        public static Bitmap Decode( FieldTexturePS3 texture )
         {
             var ddsBytes = DecodeToDDS( texture );
             var ddsImage = new ImageEngineImage( ddsBytes );
             return ImageEngineImageToBitmap( ddsImage );
         }
 
-        public static byte[] DecodeToDDS( FieldTexture texture )
+        public static Bitmap Decode( GNFTexture texture )
+        {
+            var ddsBytes = DecodeToDDS( texture );
+            var ddsImage = new ImageEngineImage( ddsBytes );
+            return ImageEngineImageToBitmap( ddsImage );
+        }
+
+        public static byte[] DecodeToDDS( FieldTexturePS3 texture )
         {
             var surfaceFormat = ImageEngineFormat.DDS_DXT1;
             if ( texture.Flags.HasFlag( FieldTextureFlags.DXT3 ) )
@@ -42,6 +49,26 @@ namespace GFDLibrary
 
             // write pixel data
             Array.Copy( texture.Data, 0, ddsBytes, 0x80, texture.DataLength );
+
+            return ddsBytes;
+        }
+
+        public static byte[] DecodeToDDS( GNFTexture texture )
+        {
+            var surfaceFormat = ImageEngineFormat.DDS_DXT1;
+            if ( texture.PixelFormat == 0x50 )
+            {
+                surfaceFormat = ImageEngineFormat.DDS_DXT3;
+            }
+
+            var ddsBytes = new byte[0x80 + texture.Data.Length];
+
+            // create & write header
+            var ddsHeader = new DDS_Header( 1, texture.Height, texture.Width, surfaceFormat );
+            ddsHeader.WriteToArray( ddsBytes, 0 );
+
+            // write pixel data
+            Array.Copy( texture.Data, 0, ddsBytes, 0x80, texture.Data.Length );
 
             return ddsBytes;
         }

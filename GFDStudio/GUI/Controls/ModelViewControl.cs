@@ -385,7 +385,7 @@ namespace GFDStudio.GUI.Controls
             return textureId;
         }
 
-        private static int CreateGLTexture( FieldTexture texture )
+        private static int CreateGLTexture( FieldTexturePS3 texture )
         {
             int textureId = GL.GenTexture();
             GL.BindTexture( TextureTarget.Texture2D, textureId );
@@ -577,7 +577,7 @@ namespace GFDStudio.GUI.Controls
                 {
                     using ( textureStream )
                     {
-                        var texture = new FieldTexture( textureStream );
+                        var texture = new FieldTexturePS3( textureStream );
                         glMaterial.DiffuseTextureId = CreateGLTexture( texture );
                     }
                 }

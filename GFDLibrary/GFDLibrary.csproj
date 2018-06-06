@@ -74,6 +74,8 @@
     <Compile Include="Bone.cs" />
     <Compile Include="ChunkType000100F8.cs" />
     <Compile Include="Common\Archive.cs" />
+    <Compile Include="FieldTexturePS3.cs" />
+    <Compile Include="GNFTexture.cs" />
     <Compile Include="IO\Common\FileUtils.cs" />
     <Compile Include="Processing\Models\AssimpSceneImporter.cs" />
     <Compile Include="Processing\Textures\Utilities\BitmapUtilities.cs" />
@@ -103,7 +105,6 @@
     <Compile Include="ChunkType000100F9\ChunkType000100F9Entry3.cs" />
     <Compile Include="Epl\Epl.cs" />
     <Compile Include="Epl\EplLeaf.cs" />
-    <Compile Include="FieldTexture.cs" />
     <Compile Include="Geometry.cs" />
     <Compile Include="ChunkType000100F9\ChunkType000100F9.cs" />
     <Compile Include="ChunkType000100F9\ChunkType000100F9Entry1.cs" />

@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Text;
 using GFDLibrary.IO.Common;
 
 namespace GFDLibrary
 {
-    public class FieldTexture
+    public class FieldTexturePS3
     {
         public int Field00 { get; set; }
 
@@ -38,7 +37,7 @@ namespace GFDLibrary
 
         public byte[] Data { get; set; }
 
-        public FieldTexture( TexturePixelFormat format, byte mipMapCount, short width, short height, byte[] data )
+        public FieldTexturePS3( TexturePixelFormat format, byte mipMapCount, short width, short height, byte[] data )
         {
             Field00 = 0x020200FF;
             Field08 = 0x00000001;
@@ -64,12 +63,12 @@ namespace GFDLibrary
             Data = data;
         }
 
-        public FieldTexture( Stream stream )
+        public FieldTexturePS3( Stream stream )
         {
             Read( stream, true );
         }
 
-        public FieldTexture( string filepath )
+        public FieldTexturePS3( string filepath )
         {
             using ( var fileStream = File.OpenRead( filepath ) )
             {
@@ -84,7 +83,7 @@ namespace GFDLibrary
 
         public void Save( string filepath )
         {
-            using ( var fileStream = File.Create( filepath ) )
+            using ( var fileStream = FileUtils.Create( filepath ) )
             {
                 Write( fileStream, false );
             }
@@ -110,7 +109,6 @@ namespace GFDLibrary
                 Width = reader.ReadInt16();
                 Height = reader.ReadInt16();
                 Field24 = reader.ReadInt16();
-                Debug.Assert( ( reader.Position - startPosition ) == 0x26 );
 
                 reader.Seek( startPosition + dataOffset, SeekOrigin.Begin );
                 Data = reader.ReadBytes( dataLength );
@@ -138,7 +136,6 @@ namespace GFDLibrary
                 writer.Write( Width );
                 writer.Write( Height );
                 writer.Write( Field24 );
-                Debug.Assert( ( writer.Position - startPosition ) == 0x26 );
 
                 writer.Seek( startPosition + dataOffset, SeekOrigin.Begin );
                 writer.Write( Data );
