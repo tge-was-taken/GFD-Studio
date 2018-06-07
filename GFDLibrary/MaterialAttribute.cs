@@ -1,4 +1,9 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Diagnostics;
+using System.IO;
+using System.Numerics;
+using GFDLibrary.IO;
+using GFDLibrary.IO.Common;
 
 namespace GFDLibrary
 {
@@ -8,11 +13,13 @@ namespace GFDLibrary
         private const int FLAG_SHIFT = 16;
         private const uint TYPE_MASK = 0x0000FFFF;
 
+        public override ResourceType ResourceType => ResourceType.MaterialAttribute;
+
         public uint RawFlags { get; private set; } 
 
         public MaterialAttributeFlags Flags
         {
-            get { return ( MaterialAttributeFlags )( (RawFlags & FLAG_MASK) >> FLAG_SHIFT ); }
+            get => ( MaterialAttributeFlags )( (RawFlags & FLAG_MASK) >> FLAG_SHIFT );
             set
             {
                 RawFlags &= ~FLAG_MASK;
@@ -20,9 +27,9 @@ namespace GFDLibrary
             }
         }
 
-        public MaterialAttributeType Type
+        public MaterialAttributeType AttributeType
         {
-            get { return ( MaterialAttributeType )( RawFlags & TYPE_MASK ); }
+            get => ( MaterialAttributeType )( RawFlags & TYPE_MASK );
             set
             {
                 RawFlags &= ~TYPE_MASK;
@@ -30,13 +37,78 @@ namespace GFDLibrary
             }
         }
 
-        protected MaterialAttribute( uint privateFlags ) : base( ResourceType.MaterialAttribute, PERSONA5_RESOURCE_VERSION )
+        protected MaterialAttribute( uint privateFlags, uint version ) : base(version)
             => RawFlags = privateFlags;
 
-        protected MaterialAttribute( MaterialAttributeFlags flags, MaterialAttributeType type ) : base( ResourceType.MaterialAttribute, PERSONA5_RESOURCE_VERSION )
+        protected MaterialAttribute( MaterialAttributeFlags flags, MaterialAttributeType type )
         {
             Flags = flags;
-            Type = type;
+            AttributeType = type;
+        }
+
+        internal static MaterialAttribute Read( ResourceReader reader, uint version )
+        {
+            MaterialAttribute attribute = null;
+            uint flags = reader.ReadUInt32();
+
+            switch ( ( MaterialAttributeType )( flags & 0xFFFF ) )
+            {
+                case MaterialAttributeType.Type0:
+                    attribute = new MaterialAttributeType0( flags, version );
+                    break;
+
+                case MaterialAttributeType.Type1:
+                    attribute = new MaterialAttributeType1( flags, version );
+                    break;
+
+                case MaterialAttributeType.Type2:
+                    attribute = new MaterialAttributeType2( flags, version );
+                    break;
+
+                case MaterialAttributeType.Type3:
+                    attribute = new MaterialAttributeType3( flags, version );
+                    break;
+
+                case MaterialAttributeType.Type4:
+                    attribute = new MaterialAttributeType4( flags, version );
+                    break;
+
+                case MaterialAttributeType.Type5:
+                    attribute = new MaterialAttributeType5( flags, version );
+                    break;
+
+                case MaterialAttributeType.Type6:
+                    attribute = new MaterialAttributeType6( flags, version );
+                    break;
+
+                case MaterialAttributeType.Type7:
+                    attribute = new MaterialAttributeType7( flags, version );
+                    break;
+
+                default:
+                    Trace.Assert( false, $"Unknown material attribute type: {flags:X8}" );
+                    break;
+            }
+
+            attribute.Read( reader );
+
+            return attribute;
+        }
+
+        public static void Save( MaterialAttribute attribute, string path )
+        {
+            using ( var stream = FileUtils.Create( path ) )
+            using ( var writer = new ResourceWriter(stream, false ))
+            {
+                writer.WriteFileHeader( ResourceFileIdentifier.Model, attribute.Version, ResourceType.MaterialAttribute );
+                Write( writer, attribute );
+            }
+        }
+
+        internal static void Write( ResourceWriter writer, MaterialAttribute attribute )
+        {
+            writer.WriteUInt32( attribute.RawFlags );
+            writer.WriteResource( attribute );
         }
     }
 
@@ -82,13 +154,101 @@ namespace GFDLibrary
 
         public MaterialAttributeType0() : base( MaterialAttributeFlags.Flag1, MaterialAttributeType.Type0 ) { }
 
-        internal MaterialAttributeType0( uint privateFlags ) : base( privateFlags ) { }
+        internal MaterialAttributeType0( uint privateFlags, uint version ) : base( privateFlags, version ) { }
 
         public MaterialAttributeType0( MaterialAttributeFlags flags ) : base( flags, MaterialAttributeType.Type0 )
         {
         }
+
+        internal override void Read( ResourceReader reader )
+        {
+            if ( Version > 0x1104500 )
+            {
+                Field0C = reader.ReadVector4();
+                Field1C = reader.ReadSingle();
+                Field20 = reader.ReadSingle();
+                Field24 = reader.ReadSingle();
+                Field28 = reader.ReadSingle();
+                Field2C = reader.ReadSingle();
+                Type0Flags = ( MaterialAttributeType0Flags )reader.ReadInt32();
+            }
+            else if ( Version > 0x1104220 )
+            {
+                Field0C = reader.ReadVector4();
+                Field1C = reader.ReadSingle();
+                Field20 = reader.ReadSingle();
+                Field24 = reader.ReadSingle();
+                Field28 = reader.ReadSingle();
+                Field2C = reader.ReadSingle();
+
+                if ( ( ( BinaryReader ) reader ).ReadBoolean() )
+                    Type0Flags |= MaterialAttributeType0Flags.Flag1;
+
+                if ( ( ( BinaryReader ) reader ).ReadBoolean() )
+                    Type0Flags |= MaterialAttributeType0Flags.Flag2;
+
+                if ( ( ( BinaryReader ) reader ).ReadBoolean() )
+                    Type0Flags |= MaterialAttributeType0Flags.Flag4;
+
+                if ( Version > 0x1104260 )
+                {
+                    if ( ( ( BinaryReader ) reader ).ReadBoolean() )
+                        Type0Flags |= MaterialAttributeType0Flags.Flag8;
+                }
+            }
+            else
+            {
+                Field0C = reader.ReadVector4();
+                Field1C = reader.ReadSingle();
+                Field20 = reader.ReadSingle();
+                Field24 = 1.0f;
+                Field28 = reader.ReadSingle();
+                Field2C = reader.ReadSingle();
+            }
+        }
+
+        internal override void Write( ResourceWriter writer )
+        {
+            if ( Version > 0x1104500 )
+            {
+                writer.WriteVector4( Field0C );
+                writer.WriteSingle( Field1C );
+                writer.WriteSingle( Field20 );
+                writer.WriteSingle( Field24 );
+                writer.WriteSingle( Field28 );
+                writer.WriteSingle( Field2C );
+                writer.WriteInt32( ( int )Type0Flags );
+            }
+            else if ( Version > 0x1104220 )
+            {
+                writer.WriteVector4( Field0C );
+                writer.WriteSingle( Field1C );
+                writer.WriteSingle( Field20 );
+                writer.WriteSingle( Field24 );
+                writer.WriteSingle( Field28 );
+                writer.WriteSingle( Field2C );
+
+                writer.WriteBoolean( Type0Flags.HasFlag( MaterialAttributeType0Flags.Flag1 ) );
+                writer.WriteBoolean( Type0Flags.HasFlag( MaterialAttributeType0Flags.Flag2 ) );
+                writer.WriteBoolean( Type0Flags.HasFlag( MaterialAttributeType0Flags.Flag4 ) );
+
+                if ( Version > 0x1104260 )
+                {
+                    writer.WriteBoolean( Type0Flags.HasFlag( MaterialAttributeType0Flags.Flag8 ) );
+                }
+            }
+            else
+            {
+                writer.WriteVector4( Field0C );
+                writer.WriteSingle( Field1C );
+                writer.WriteSingle( Field20 );
+                writer.WriteSingle( Field28 );
+                writer.WriteSingle( Field2C );
+            }
+        }
     }
 
+    [Flags]
     public enum MaterialAttributeType0Flags
     {
         Flag1 = 0b0001,
@@ -122,13 +282,86 @@ namespace GFDLibrary
 
         public MaterialAttributeType1() : base( MaterialAttributeFlags.Flag1, MaterialAttributeType.Type1 ) { }
 
-        internal MaterialAttributeType1( uint privateFlags ) : base( privateFlags ) { }
+        internal MaterialAttributeType1( uint privateFlags, uint version ) : base( privateFlags, version ) { }
 
         public MaterialAttributeType1( MaterialAttributeFlags flags ) : base( flags, MaterialAttributeType.Type1 )
         {
         }
+
+        internal override void Read( ResourceReader reader )
+        {
+            Field0C = reader.ReadVector4();
+            Field1C = reader.ReadSingle();
+            Field20 = reader.ReadSingle();
+            Field24 = reader.ReadVector4();
+            Field34 = reader.ReadSingle();
+            Field38 = reader.ReadSingle();
+
+            if ( Version <= 0x1104500 )
+            {
+                if ( reader.ReadBoolean() )
+                    Type1Flags |= MaterialAttributeType1Flags.Flag1;
+
+                if ( Version > 0x1104180 )
+                {
+                    if ( reader.ReadBoolean() )
+                        Type1Flags |= MaterialAttributeType1Flags.Flag2;
+                }
+
+                if ( Version > 0x1104210 )
+                {
+                    if ( reader.ReadBoolean() )
+                        Type1Flags |= MaterialAttributeType1Flags.Flag4;
+                }
+
+                if ( Version > 0x1104400 )
+                {
+                    if ( reader.ReadBoolean() )
+                        Type1Flags |= MaterialAttributeType1Flags.Flag8;
+                }
+            }
+            else
+            {
+                Type1Flags = ( MaterialAttributeType1Flags )reader.ReadInt32();
+            }
+        }
+
+        internal override void Write( ResourceWriter writer )
+        {
+            writer.WriteVector4( Field0C );
+            writer.WriteSingle( Field1C );
+            writer.WriteSingle( Field20 );
+            writer.WriteVector4( Field24 );
+            writer.WriteSingle( Field34 );
+            writer.WriteSingle( Field38 );
+
+            if ( Version <= 0x1104500 )
+            {
+                writer.WriteBoolean( Type1Flags.HasFlag( MaterialAttributeType1Flags.Flag1 ) );
+
+                if ( Version > 0x1104180 )
+                {
+                    writer.WriteBoolean( Type1Flags.HasFlag( MaterialAttributeType1Flags.Flag2 ) );
+                }
+
+                if ( Version > 0x1104210 )
+                {
+                    writer.WriteBoolean( Type1Flags.HasFlag( MaterialAttributeType1Flags.Flag4 ) );
+                }
+
+                if ( Version > 0x1104400 )
+                {
+                    writer.WriteBoolean( Type1Flags.HasFlag( MaterialAttributeType1Flags.Flag8 ) );
+                }
+            }
+            else
+            {
+                writer.WriteInt32( ( int )Type1Flags );
+            }
+        }
     }
 
+    [Flags]
     public enum MaterialAttributeType1Flags
     {
         Flag1 = 0b0001,
@@ -147,10 +380,22 @@ namespace GFDLibrary
 
         public MaterialAttributeType2() : base( MaterialAttributeFlags.Flag1, MaterialAttributeType.Type2 ) { }
 
-        internal MaterialAttributeType2( uint privateFlags ) : base( privateFlags ) { }
+        internal MaterialAttributeType2( uint privateFlags, uint version ) : base( privateFlags, version ) { }
 
         public MaterialAttributeType2( MaterialAttributeFlags flags ) : base( flags, MaterialAttributeType.Type2 )
         {
+        }
+
+        internal override void Read( ResourceReader reader )
+        {
+            Field0C = reader.ReadInt32();
+            Field10 = reader.ReadInt32();
+        }
+
+        internal override void Write( ResourceWriter writer )
+        {
+            writer.WriteInt32( Field0C );
+            writer.WriteInt32( Field10 );
         }
     }
 
@@ -197,10 +442,44 @@ namespace GFDLibrary
 
         public MaterialAttributeType3() : base( MaterialAttributeFlags.Flag1, MaterialAttributeType.Type3 ) { }
 
-        internal MaterialAttributeType3( uint privateFlags ) : base( privateFlags ) { }
+        internal MaterialAttributeType3( uint privateFlags, uint version ) : base( privateFlags, version ) { }
 
         public MaterialAttributeType3( MaterialAttributeFlags flags ) : base( flags, MaterialAttributeType.Type3 )
         {
+        }
+
+        internal override void Read( ResourceReader reader )
+        {
+            Field0C = reader.ReadSingle();
+            Field10 = reader.ReadSingle();
+            Field14 = reader.ReadSingle();
+            Field18 = reader.ReadSingle();
+            Field1C = reader.ReadSingle();
+            Field20 = reader.ReadSingle();
+            Field24 = reader.ReadSingle();
+            Field28 = reader.ReadSingle();
+            Field2C = reader.ReadSingle();
+            Field30 = reader.ReadSingle();
+            Field34 = reader.ReadSingle();
+            Field38 = reader.ReadSingle();
+            Field3C = reader.ReadInt32();
+        }
+
+        internal override void Write( ResourceWriter writer )
+        {
+            writer.WriteSingle( Field0C );
+            writer.WriteSingle( Field10 );
+            writer.WriteSingle( Field14 );
+            writer.WriteSingle( Field18 );
+            writer.WriteSingle( Field1C );
+            writer.WriteSingle( Field20 );
+            writer.WriteSingle( Field24 );
+            writer.WriteSingle( Field28 );
+            writer.WriteSingle( Field2C );
+            writer.WriteSingle( Field30 );
+            writer.WriteSingle( Field34 );
+            writer.WriteSingle( Field38 );
+            writer.WriteInt32( Field3C );
         }
     }
 
@@ -253,10 +532,48 @@ namespace GFDLibrary
 
         public MaterialAttributeType4() : base( MaterialAttributeFlags.Flag1, MaterialAttributeType.Type4 ) { }
 
-        internal MaterialAttributeType4( uint privateFlags ) : base( privateFlags ) { }
+        internal MaterialAttributeType4( uint privateFlags, uint version ) : base( privateFlags, version ) { }
 
         public MaterialAttributeType4( MaterialAttributeFlags flags ) : base( flags, MaterialAttributeType.Type4 )
         {
+        }
+
+        internal override void Read( ResourceReader reader )
+        {
+            Field0C = reader.ReadVector4();
+            Field1C = reader.ReadSingle();
+            Field20 = reader.ReadSingle();
+            Field24 = reader.ReadVector4();
+            Field34 = reader.ReadSingle();
+            Field38 = reader.ReadSingle();
+            Field3C = reader.ReadSingle();
+            Field40 = reader.ReadSingle();
+            Field44 = reader.ReadSingle();
+            Field48 = reader.ReadSingle();
+            Field4C = reader.ReadSingle();
+            Field50 = reader.ReadByte();
+            Field54 = reader.ReadSingle();
+            Field58 = reader.ReadSingle();
+            Field5C = reader.ReadInt32();
+        }
+
+        internal override void Write( ResourceWriter writer )
+        {
+            writer.WriteVector4( Field0C );
+            writer.WriteSingle( Field1C );
+            writer.WriteSingle( Field20 );
+            writer.WriteVector4( Field24 );
+            writer.WriteSingle( Field34 );
+            writer.WriteSingle( Field38 );
+            writer.WriteSingle( Field3C );
+            writer.WriteSingle( Field40 );
+            writer.WriteSingle( Field44 );
+            writer.WriteSingle( Field48 );
+            writer.WriteSingle( Field4C );
+            writer.WriteByte( Field50 );
+            writer.WriteSingle( Field54 );
+            writer.WriteSingle( Field58 );
+            writer.WriteInt32( Field5C );
         }
     }
 
@@ -288,10 +605,40 @@ namespace GFDLibrary
 
         public MaterialAttributeType5() : base( MaterialAttributeFlags.Flag1, MaterialAttributeType.Type5 ) { }
 
-        internal MaterialAttributeType5( uint privateFlags ) : base( privateFlags ) { }
+        internal MaterialAttributeType5( uint privateFlags, uint version ) : base( privateFlags, version ) { }
 
         public MaterialAttributeType5( MaterialAttributeFlags flags ) : base( flags, MaterialAttributeType.Type5 )
         {
+        }
+
+        internal override void Read( ResourceReader reader )
+        {
+            Field0C = reader.ReadInt32();
+            Field10 = reader.ReadInt32();
+            Field14 = reader.ReadSingle();
+            Field18 = reader.ReadSingle();
+            Field1C = reader.ReadVector4();
+            Field2C = reader.ReadSingle();
+            Field30 = reader.ReadSingle();
+            Field34 = reader.ReadSingle();
+            Field38 = reader.ReadSingle();
+            Field3C = reader.ReadSingle();
+            Field48 = reader.ReadVector4();
+        }
+
+        internal override void Write( ResourceWriter writer )
+        {
+            writer.WriteInt32( Field0C );
+            writer.WriteInt32( Field10 );
+            writer.WriteSingle( Field14 );
+            writer.WriteSingle( Field18 );
+            writer.WriteVector4( Field1C );
+            writer.WriteSingle( Field2C );
+            writer.WriteSingle( Field30 );
+            writer.WriteSingle( Field34 );
+            writer.WriteSingle( Field38 );
+            writer.WriteSingle( Field3C );
+            writer.WriteVector4( Field48 );
         }
     }
 
@@ -305,10 +652,24 @@ namespace GFDLibrary
 
         public MaterialAttributeType6() : base( MaterialAttributeFlags.Flag1, MaterialAttributeType.Type6 ) { }
 
-        internal MaterialAttributeType6( uint privateFlags ) : base( privateFlags ) { }
+        internal MaterialAttributeType6( uint privateFlags, uint version ) : base( privateFlags, version ) { }
 
         public MaterialAttributeType6( MaterialAttributeFlags flags ) : base( flags, MaterialAttributeType.Type6 )
         {
+        }
+
+        internal override void Read( ResourceReader reader )
+        {
+            Field0C = reader.ReadInt32();
+            Field10 = reader.ReadInt32();
+            Field14 = reader.ReadInt32();
+        }
+
+        internal override void Write( ResourceWriter writer )
+        {
+            writer.WriteInt32( Field0C );
+            writer.WriteInt32( Field10 );
+            writer.WriteInt32( Field14 );
         }
     }
 
@@ -316,9 +677,17 @@ namespace GFDLibrary
     {
         public MaterialAttributeType7() : base( MaterialAttributeFlags.Flag1, MaterialAttributeType.Type7 ) { }
 
-        internal MaterialAttributeType7( uint privateFlags ) : base( privateFlags ) { }
+        internal MaterialAttributeType7( uint privateFlags, uint version ) : base( privateFlags, version ) { }
 
         public MaterialAttributeType7( MaterialAttributeFlags flags ) : base( flags, MaterialAttributeType.Type7 )
+        {
+        }
+
+        internal override void Read( ResourceReader reader )
+        {
+        }
+
+        internal override void Write( ResourceWriter writer )
         {
         }
     }

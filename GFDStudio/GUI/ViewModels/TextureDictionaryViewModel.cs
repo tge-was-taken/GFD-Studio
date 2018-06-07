@@ -19,7 +19,7 @@ namespace GFDStudio.GUI.ViewModels
 
         protected override void InitializeCore()
         {
-            RegisterExportHandler<TextureDictionary>( path => Resource.Save( Model, path ) );
+            RegisterExportHandler<TextureDictionary>( path => Model.Save(  path ) );
             RegisterReplaceHandler<TextureDictionary>( Resource.Load<TextureDictionary> );
 
             RegisterAddHandler< Bitmap >( path => Model.Add( TextureEncoder.Encode( Path.GetFileNameWithoutExtension( path ) + ".dds", 

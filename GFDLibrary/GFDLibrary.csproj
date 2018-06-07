@@ -69,8 +69,8 @@
     <Compile Include="Animations\Keyframes\NodePRHalfKeyframe.cs" />
     <Compile Include="Animations\Keyframes\NodePRSKeyframe.cs" />
     <Compile Include="Animations\Keyframes\MaterialKeyframeType29.cs" />
-    <Compile Include="Animations\AnimationPackage.cs" />
-    <Compile Include="Animations\AnimationPackageFlags.cs" />
+    <Compile Include="AnimationPackage.cs" />
+    <Compile Include="AnimationPackageFlags.cs" />
     <Compile Include="Bone.cs" />
     <Compile Include="ChunkType000100F8.cs" />
     <Compile Include="Common\Archive.cs" />
@@ -92,7 +92,7 @@
     <Compile Include="Animations\Keyframes\MaterialKeyframeType12.cs" />
     <Compile Include="Animations\Keyframes\NodePRKeyframe.cs" />
     <Compile Include="Animations\Keyframes\MaterialKeyframeType14.cs" />
-    <Compile Include="Epl\EplAnimation.cs" />
+    <Compile Include="EplAnimation.cs" />
     <Compile Include="Processing\Textures\TextureInfo.cs" />
     <Compile Include="Processing\Textures\TexturePixelFormat.cs" />
     <Compile Include="Processing\Textures\TextureUtilities.cs" />
@@ -101,13 +101,13 @@
     <Compile Include="Common\ByteVector3.cs" />
     <Compile Include="Common\ByteVector4.cs" />
     <Compile Include="Camera.cs" />
-    <Compile Include="ChunkType000100F9\ChunkType000100F9Entry2.cs" />
-    <Compile Include="ChunkType000100F9\ChunkType000100F9Entry3.cs" />
-    <Compile Include="Epl\Epl.cs" />
-    <Compile Include="Epl\EplLeaf.cs" />
+    <Compile Include="ChunkType000100F9Entry2.cs" />
+    <Compile Include="ChunkType000100F9Entry3.cs" />
+    <Compile Include="Epl.cs" />
+    <Compile Include="EplLeaf.cs" />
     <Compile Include="Geometry.cs" />
-    <Compile Include="ChunkType000100F9\ChunkType000100F9.cs" />
-    <Compile Include="ChunkType000100F9\ChunkType000100F9Entry1.cs" />
+    <Compile Include="ChunkType000100F9.cs" />
+    <Compile Include="ChunkType000100F9Entry1.cs" />
     <Compile Include="IO\Common\AlignmentUtilities.cs" />
     <Compile Include="Processing\Textures\Utilities\ImageFormatUtillities.cs" />
     <Compile Include="IO\Common\StreamExtensions.cs" />
@@ -118,10 +118,8 @@
     <Compile Include="Processing\Models\ModelExporter.cs" />
     <Compile Include="BonePalette.cs" />
     <Compile Include="IO\Common\EndianBinaryWriter.cs" />
-    <Compile Include="IO\Resource\ResourceWriter.cs" />
     <Compile Include="IO\Common\StringBinaryFormat.cs" />
     <Compile Include="IO\Common\UnsafeUtilities.cs" />
-    <Compile Include="IO\Resource\ResourceFileHeader.cs" />
     <Compile Include="Light.cs" />
     <Compile Include="Material.cs" />
     <Compile Include="MaterialAttribute.cs" />
@@ -131,10 +129,17 @@
     <Compile Include="NodeAttachment.cs" />
     <Compile Include="Common\UserProperty.cs" />
     <Compile Include="Processing\Models\ModelConverter.cs" />
-    <Compile Include="ResourceBundle.cs" />
     <Compile Include="Processing\Models\SceneConverter.cs" />
     <Compile Include="Processing\Textures\TextureDecoder.cs" />
     <Compile Include="Processing\Textures\TextureEncoder.cs" />
+    <Compile Include="IO\ResourceChunkHeader.cs" />
+    <Compile Include="IO\ResourceChunkType.cs" />
+    <Compile Include="IO\ResourceFileHeader.cs" />
+    <Compile Include="IO\ResourceFileIdentifier.cs" />
+    <Compile Include="IO\ResourceReader.cs" />
+    <Compile Include="ResourceType.cs" />
+    <Compile Include="ResourceVersion.cs" />
+    <Compile Include="IO\ResourceWriter.cs" />
     <Compile Include="TextureMap.cs" />
     <Compile Include="Resource.cs" />
     <Compile Include="Model.cs" />
@@ -146,8 +151,6 @@
     <Compile Include="TextureDictionary.cs" />
     <Compile Include="IO\Common\EndianBinaryReader.cs" />
     <Compile Include="IO\Common\Endianness.cs" />
-    <Compile Include="IO\Resource\ResourceChunkHeader.cs" />
-    <Compile Include="IO\Resource\ResourceReader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Triangle.cs" />
     <Compile Include="Common\UserPropertyCollection.cs" />
@@ -165,7 +168,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="IO\ResourceOld\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

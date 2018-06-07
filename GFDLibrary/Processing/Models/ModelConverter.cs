@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.IO;
-using GFDLibrary.Assimp;
+using GFDLibrary.IO.Assimp;
 using Ai = Assimp;
 
 namespace GFDLibrary
@@ -206,7 +206,7 @@ namespace GFDLibrary
         public ModelConverterOptions()
         {
             MaterialPreset = MaterialPreset.CharacterSkinP5;
-            Version = Resource.PERSONA5_RESOURCE_VERSION;
+            Version = ResourceVersion.Persona5;
             ConvertSkinToZUp = false;
             GenerateVertexColors = false;
         }

@@ -142,7 +142,7 @@ namespace GFDLibrary
                         Field28 = 0,
                         Field2C = 0,
                         Flags = MaterialAttributeFlags.Flag1,
-                        Type = MaterialAttributeType.Type0,
+                        AttributeType = MaterialAttributeType.Type0,
                         Type0Flags = 0,
                     }
                 },

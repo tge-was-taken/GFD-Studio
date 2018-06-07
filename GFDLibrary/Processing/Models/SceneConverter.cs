@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Text.RegularExpressions;
-using GFDLibrary.Assimp;
+using GFDLibrary.IO.Assimp;
 using Ai = Assimp;
 
 namespace GFDLibrary
@@ -535,7 +535,7 @@ namespace GFDLibrary
 
         public SceneConverterOptions()
         {
-            Version = Resource.PERSONA5_RESOURCE_VERSION;
+            Version = ResourceVersion.Persona5;
             ConvertSkinToZUp = false;
             GenerateVertexColors = false;
         }

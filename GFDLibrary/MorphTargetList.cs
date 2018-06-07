@@ -1,17 +1,48 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using GFDLibrary.IO;
 
 namespace GFDLibrary
 {
-    public class MorphTargetList : IList<MorphTarget>
+    public class MorphTargetList : Resource, IList<MorphTarget>
     {
         private readonly List<MorphTarget> mList;
+
+        public override ResourceType ResourceType => ResourceType.MorphTargetList;
 
         public MorphTargetList()
         {
             mList = new List<MorphTarget>();
         }
 
+
+        public MorphTargetList(uint version) :base(version)
+        {
+            mList = new List<MorphTarget>();
+        }
+
+        internal override void Read( ResourceReader reader )
+        {
+            Flags = reader.ReadInt32();
+            int morphCount = reader.ReadInt32();
+
+            for ( int i = 0; i < morphCount; i++ )
+            {
+                var morphTarget = reader.Read<MorphTarget>( Version );
+                Add( morphTarget );
+            }
+        }
+
+        internal override void Write( ResourceWriter writer )
+        {
+            writer.WriteInt32( Flags );
+            writer.WriteInt32( Count );
+
+            foreach ( var target in this )
+                target.Write( writer );
+        }
+
+        #region IList
         public MorphTarget this[int index] { get => mList[index]; set => mList[index] = value; }
 
         public int Flags { get; set; }
@@ -69,5 +100,6 @@ namespace GFDLibrary
         {
             return ( ( IList<MorphTarget> )mList ).GetEnumerator();
         }
+        #endregion
     }
 }

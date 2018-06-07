@@ -1,5 +1,5 @@
-﻿using GFDLibrary.Cameras;
-using GFDLibrary.Lights;
+﻿using System;
+using GFDLibrary.IO;
 
 namespace GFDLibrary
 {
@@ -12,9 +12,48 @@ namespace GFDLibrary
             Type = type;
         }
 
-        public abstract object GetValue();
+        public abstract Resource GetValue();
 
-        public T GetValue<T>() => ( T )GetValue();
+        public T GetValue<T>() where T : Resource => ( T )GetValue();
+
+        internal static NodeAttachment Read( ResourceReader reader, uint version, out bool skipProperties )
+        {
+            NodeAttachmentType type = ( NodeAttachmentType )reader.ReadInt32();
+
+            skipProperties = false;
+
+            switch ( type )
+            {
+                case NodeAttachmentType.Invalid:
+                case NodeAttachmentType.Scene:
+                    throw new NotSupportedException();
+
+                //case NodeAttachmentType.Mesh:
+                //  return new NodeMeshAttachment( ReadMesh( version ) );
+                case NodeAttachmentType.Node:
+                    return new NodeNodeAttachment( reader.Read<Node>(version) );
+                case NodeAttachmentType.Geometry:
+                    return new NodeGeometryAttachment( reader.Read<Geometry>( version ) );
+                case NodeAttachmentType.Camera:
+                    return new NodeCameraAttachment( reader.Read<Camera>( version ) );
+                case NodeAttachmentType.Light:
+                    return new NodeLightAttachment( reader.Read<Light>( version ) );
+                case NodeAttachmentType.Epl:
+                    return new NodeEplAttachment( Epl.Read(reader, version, out skipProperties) );
+                //case NodeAttachmentType.EplLeaf:
+                //    return new NodeEplLeafAttachment( ReadEplLeaf( version ) );
+                case NodeAttachmentType.Morph:
+                    return new NodeMorphAttachment( reader.Read<Morph>( version ) );
+                default:
+                    throw new NotImplementedException( $"Unimplemented node attachment type: {type}" );
+            }
+        }
+
+        internal void Write( ResourceWriter writer )
+        {
+            writer.Write( ( int ) Type );
+            writer.WriteResource( GetValue() );
+        }
     }
 
     public sealed class NodeSceneAttachment : NodeAttachment
@@ -25,7 +64,7 @@ namespace GFDLibrary
 
         public NodeSceneAttachment( Scene scene ) : base( NodeAttachmentType.Scene ) => Scene = scene;
 
-        public override object GetValue()
+        public override Resource GetValue()
         {
             return Scene;
         }
@@ -55,7 +94,7 @@ namespace GFDLibrary
 
         public NodeNodeAttachment( Node node ) : base( NodeAttachmentType.Node ) => Node = node;
 
-        public override object GetValue()
+        public override Resource GetValue()
         {
             return Node;
         }
@@ -69,7 +108,7 @@ namespace GFDLibrary
 
         public NodeGeometryAttachment( Geometry geometry ) : base( NodeAttachmentType.Geometry ) => Geometry = geometry;
 
-        public override object GetValue()
+        public override Resource GetValue()
         {
             return Geometry;
         }
@@ -83,8 +122,8 @@ namespace GFDLibrary
 
         public NodeCameraAttachment( Camera camera ) : base( NodeAttachmentType.Camera ) => Camera = camera;
 
-        public override object GetValue()
-        {
+        public override Resource GetValue()
+        { 
             return Camera;
         }
     }
@@ -96,7 +135,7 @@ namespace GFDLibrary
 
         public NodeLightAttachment( Light light ) : base( NodeAttachmentType.Light ) => Light = light;
 
-        public override object GetValue()
+        public override Resource GetValue()
         {
             return Light;
         }
@@ -110,7 +149,7 @@ namespace GFDLibrary
 
         public NodeEplAttachment( Epl epl ) : base( NodeAttachmentType.Epl ) => Epl = epl;
 
-        public override object GetValue()
+        public override Resource GetValue()
         {
             return Epl;
         }
@@ -124,7 +163,7 @@ namespace GFDLibrary
 
         public NodeEplLeafAttachment( EplLeaf eplLeaf ) : base( NodeAttachmentType.EplLeaf ) => EplLeaf = eplLeaf;
 
-        public override object GetValue()
+        public override Resource GetValue()
         {
             return EplLeaf;
         }
@@ -138,7 +177,7 @@ namespace GFDLibrary
 
         public NodeMorphAttachment( Morph morph ) : base( NodeAttachmentType.Morph ) => Morph = morph;
 
-        public override object GetValue()
+        public override Resource GetValue()
         {
             return Morph;
         }

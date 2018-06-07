@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using GFDLibrary.IO;
 
 namespace GFDLibrary
 {
@@ -9,8 +10,15 @@ namespace GFDLibrary
     {
         private readonly Dictionary<string, Texture> mDictionary;
 
+        public override ResourceType ResourceType => ResourceType.TextureDictionary;
+
+        public TextureDictionary()
+        {
+            mDictionary = new Dictionary<string, Texture>();
+        }
+
         public TextureDictionary( uint version )
-            : base( ResourceType.TextureDictionary, version )
+            : base( version )
         {
             mDictionary = new Dictionary<string, Texture>();
         }
@@ -109,6 +117,23 @@ namespace GFDLibrary
 
             foreach ( string s in toRemove )
                 Remove( s );
+        }
+
+        internal override void Read( ResourceReader reader )
+        {
+            var textureCount = reader.ReadInt32();
+            for ( int i = 0; i < textureCount; i++ )
+            {
+                var texture = reader.Read<Texture>( Version );
+                Add( texture );
+            }
+        }
+
+        internal override void Write( ResourceWriter writer )
+        {
+            writer.WriteInt32( Count );
+            foreach ( var texture in Textures )
+                writer.WriteResource( texture );
         }
 
         #region IDictionary implementation 

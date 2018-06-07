@@ -42,7 +42,7 @@ namespace GFDStudio.GUI.Forms
         public ModelConverterOptionsDialog( bool showSceneOptionsOnly )
         {
             InitializeComponent();
-            VersionTextBox.Text = $"0x{Resource.PERSONA5_RESOURCE_VERSION:X8}";
+            VersionTextBox.Text = $"0x{ResourceVersion.Persona5:X8}";
 
             if ( showSceneOptionsOnly )
             {

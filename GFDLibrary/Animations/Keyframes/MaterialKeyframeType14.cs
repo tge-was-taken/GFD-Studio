@@ -1,4 +1,4 @@
-﻿namespace GFDLibrary.Keyframes
+﻿namespace GFDLibrary.IO.Keyframes
 {
     public struct MaterialKeyframeType14 : IKeyframe
     {

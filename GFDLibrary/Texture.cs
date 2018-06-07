@@ -1,8 +1,12 @@
-﻿namespace GFDLibrary
+﻿using System;
+using System.Diagnostics;
+using GFDLibrary.IO;
+
+namespace GFDLibrary
 {
     public sealed class Texture : Resource
     {
-        private static byte[] sDummyTextureData { get; } =
+        private static readonly byte[] sDummyTextureData =
         {
             0x44, 0x44, 0x53, 0x20, 0x7C, 0x00, 0x00, 0x00, 0x07, 0x10, 0x00, 0x00,
             0x08, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -21,6 +25,8 @@
             0x78, 0xFD, 0x89, 0x25, 0x05, 0x05, 0x50, 0x50, 0x00, 0x05, 0xFF, 0xFF,
             0xFF, 0xFF, 0xFF, 0xFF, 0x78, 0xFD, 0x89, 0x25, 0x05, 0x05, 0x50, 0x50
         };
+
+        public override ResourceType ResourceType => ResourceType.Texture;
 
         public string Name { get; set; }
 
@@ -42,8 +48,12 @@
 
         public bool IsDefaultTexture { get; private set; }
 
-        internal Texture() : base(ResourceType.Texture, PERSONA5_RESOURCE_VERSION)
+        public Texture()
         {          
+        }
+
+        public Texture( uint version ) : base( version )
+        {
         }
 
         public Texture( string name, TextureFormat format, byte[] data ) : this()
@@ -70,13 +80,35 @@
 
         public static Texture CreateDefaultTexture(string name)
         {
-            return new Texture( name, TextureFormat.DDS, Texture.sDummyTextureData ) { IsDefaultTexture = true };
+            return new Texture( name, TextureFormat.DDS, sDummyTextureData ) { IsDefaultTexture = true };
         }
 
-        public override string ToString()
+        internal override void Read( ResourceReader reader )
         {
-            return Name;
+            Name = reader.ReadString();
+            Format = ( TextureFormat )reader.ReadInt16();
+            Trace.Assert( Enum.IsDefined( typeof( TextureFormat ), Format ), "Unknown texture format" );
+            int size = reader.ReadInt32();
+            Data = reader.ReadBytes( size );
+            Field1C = reader.ReadByte();
+            Field1D = reader.ReadByte();
+            Field1E = reader.ReadByte();
+            Field1F = reader.ReadByte();
         }
+
+        internal override void Write( ResourceWriter writer )
+        {
+            writer.WriteString( Name );
+            writer.WriteInt16( ( short ) Format );
+            writer.WriteInt32( Data.Length );
+            writer.WriteBytes( Data );
+            writer.WriteByte( Field1C );
+            writer.WriteByte( Field1D );
+            writer.WriteByte( Field1E );
+            writer.WriteByte( Field1F );
+        }
+
+        public override string ToString() => Name;
     }
 
     public enum TextureFormat : ushort

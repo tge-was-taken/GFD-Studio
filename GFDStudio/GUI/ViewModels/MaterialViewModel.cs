@@ -215,7 +215,7 @@ namespace GFDStudio.GUI.ViewModels
 
         protected override void InitializeCore()
         {
-            RegisterExportHandler<Material>( path => Resource.Save( Model, path ) );
+            RegisterExportHandler<Material>( path => Model.Save(  path ) );
             RegisterReplaceHandler<Material>( Resource.Load<Material> );
             RegisterModelUpdateHandler( () =>
             {
@@ -300,7 +300,7 @@ namespace GFDStudio.GUI.ViewModels
                 ( ListViewModel< MaterialAttribute > ) TreeNodeViewModelFactory.Create(
                     "Attributes", 
                     Model.Attributes == null ? new List< MaterialAttribute >() : Model.Attributes,
-                    new object[] { new ListItemNameProvider< MaterialAttribute >( ( value, index ) => value.Type.ToString() ) } );
+                    new object[] { new ListItemNameProvider< MaterialAttribute >( ( value, index ) => value.AttributeType.ToString() ) } );
             Nodes.Add( AttributesViewModel );
         }
     }

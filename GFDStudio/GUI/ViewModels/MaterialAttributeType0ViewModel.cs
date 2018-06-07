@@ -78,7 +78,7 @@ namespace GFDStudio.GUI.ViewModels
 
         protected override void InitializeCore()
         {
-            RegisterExportHandler< Stream >( path => Resource.Save( Model, path ) );
+            RegisterExportHandler< Stream >( path => MaterialAttribute.Save(Model, path) );
             RegisterReplaceHandler<Stream>( Resource.Load< MaterialAttributeType0 > );
         }
     }

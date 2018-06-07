@@ -1,6 +1,6 @@
 ﻿using Ai = Assimp;
 
-namespace GFDLibrary.Assimp
+namespace GFDLibrary.IO.Assimp
 {
     public static class AssimpSceneImporter
     {

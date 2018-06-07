@@ -2,13 +2,15 @@
 
 namespace GFDLibrary
 {
-    public sealed class ChunkType000100F8 : Resource
+    public sealed class EplLeaf : Resource
     {
-        public byte[] RawData { get; set; }
+        public override ResourceType ResourceType => ResourceType.EplLeaf;
 
-        public override ResourceType ResourceType => ResourceType.ChunkType000100F8;
+        public EplLeaf()
+        {
+        }
 
-        public ChunkType000100F8( uint version ) : base( version )
+        public EplLeaf( uint version ) : base( version )
         {
         }
 
@@ -19,7 +21,7 @@ namespace GFDLibrary
 
         internal override void Write( ResourceWriter writer )
         {
-            writer.WriteBytes( RawData );
+            throw new System.NotImplementedException();
         }
     }
 }

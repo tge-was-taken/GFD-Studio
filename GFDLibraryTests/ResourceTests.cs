@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using GFDLibrary;
-using GFDLibrary.Cameras;
-using GFDLibrary.Lights;
-using GFDLibrary.Shaders;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace AtlusGfdLibraryRegressionTests
@@ -48,7 +45,7 @@ namespace AtlusGfdLibraryRegressionTests
         {
             var originalSize = new FileInfo( Model_P5PlayerModel_Path ).Length;
             var model = Resource.Load<Model>( Model_P5PlayerModel_Path );
-            Resource.Save( model, GetNewPath( Model_P5PlayerModel_Path ) );
+            model.Save( GetNewPath( Model_P5PlayerModel_Path ) );
             var newSize = new FileInfo( GetNewPath( Model_P5PlayerModel_Path ) ).Length;
 
             Assert.AreEqual( originalSize, newSize );
@@ -58,7 +55,7 @@ namespace AtlusGfdLibraryRegressionTests
         public void LoadAndSaveToFile_Model_P5PlayerModel_OutputShouldBeEqualToInput()
         {
             var originalModel = Resource.Load<Model>( Model_P5PlayerModel_Path );
-            Resource.Save( originalModel, GetNewPath( Model_P5PlayerModel_Path ) );
+            originalModel.Save( GetNewPath( Model_P5PlayerModel_Path ) );
             var newModel = Resource.Load<Model>( GetNewPath( Model_P5PlayerModel_Path ) );
 
             CompareModels( originalModel, newModel );
@@ -86,7 +83,7 @@ namespace AtlusGfdLibraryRegressionTests
         {
             var originalSize = new FileInfo( Model_P4DFaceModel_Path ).Length;
             var model = Resource.Load<Model>( Model_P4DFaceModel_Path );
-            Resource.Save( model, GetNewPath( Model_P4DFaceModel_Path ) );
+            model.Save( GetNewPath( Model_P4DFaceModel_Path ) );
             var newSize = new FileInfo( GetNewPath( Model_P4DFaceModel_Path ) ).Length;
 
             Assert.AreEqual( originalSize, newSize );
@@ -96,7 +93,7 @@ namespace AtlusGfdLibraryRegressionTests
         public void LoadAndSaveToFile_Model_P4DMorphFaceModel_OutputShouldBeEqualToInput()
         {
             var originalModel = Resource.Load<Model>( Model_P4DFaceModel_Path );
-            Resource.Save( originalModel, GetNewPath( Model_P4DFaceModel_Path ) );
+            originalModel.Save( GetNewPath( Model_P4DFaceModel_Path ) );
             var newModel = Resource.Load<Model>( GetNewPath( Model_P4DFaceModel_Path ) );
 
             CompareModels( originalModel, newModel );
@@ -124,7 +121,7 @@ namespace AtlusGfdLibraryRegressionTests
         {
             var originalSize = new FileInfo( Model_P5FieldLevelModel_Path ).Length;
             var model = Resource.Load<Model>( Model_P5FieldLevelModel_Path );
-            Resource.Save( model, GetNewPath( Model_P5FieldLevelModel_Path ) );
+            model.Save( GetNewPath( Model_P5FieldLevelModel_Path ) );
             var newSize = new FileInfo( GetNewPath( Model_P5FieldLevelModel_Path ) ).Length;
 
             Assert.AreEqual( originalSize, newSize );
@@ -134,7 +131,7 @@ namespace AtlusGfdLibraryRegressionTests
         public void LoadAndSaveToFile_Model_P5FieldLevelModel_OutputShouldBeEqualToInput()
         {
             var originalModel = Resource.Load<Model>( Model_P5FieldLevelModel_Path );
-            Resource.Save( originalModel, GetNewPath( Model_P5FieldLevelModel_Path ) );
+            originalModel.Save( GetNewPath( Model_P5FieldLevelModel_Path ) );
             var newModel = Resource.Load<Model>( GetNewPath( Model_P5FieldLevelModel_Path ) );
 
             CompareModels( originalModel, newModel );
@@ -163,7 +160,7 @@ namespace AtlusGfdLibraryRegressionTests
         {
             var originalSize = new FileInfo( ShaderCache_GFDPS3PRESET_Path ).Length;
             var shaderCache = Resource.Load<ShaderCachePS3>( ShaderCache_GFDPS3PRESET_Path );
-            Resource.Save( shaderCache, GetNewPath( ShaderCache_GFDPS3PRESET_Path ) );
+            shaderCache.Save( GetNewPath( ShaderCache_GFDPS3PRESET_Path ) );
             var newSize = new FileInfo( GetNewPath( ShaderCache_GFDPS3PRESET_Path ) ).Length;
 
             Assert.AreEqual( originalSize, newSize );
@@ -176,7 +173,7 @@ namespace AtlusGfdLibraryRegressionTests
         {
             var originalSize = new FileInfo( ShaderCache_GFDPS3_Path ).Length;
             var shaderCache = Resource.Load<ShaderCachePS3>( ShaderCache_GFDPS3_Path );
-            Resource.Save( shaderCache, GetNewPath( ShaderCache_GFDPS3_Path ) );
+            shaderCache.Save( GetNewPath( ShaderCache_GFDPS3_Path ) );
             var newSize = new FileInfo( GetNewPath( ShaderCache_GFDPS3_Path ) ).Length;
 
             Assert.AreEqual( originalSize, newSize );
@@ -205,7 +202,7 @@ namespace AtlusGfdLibraryRegressionTests
         {
             var originalSize = new FileInfo( ShaderCache_GFDPSP2PRESET_Path ).Length;
             var shaderCache = Resource.Load<ShaderCachePSP2>( ShaderCache_GFDPSP2PRESET_Path );
-            Resource.Save( shaderCache, GetNewPath( ShaderCache_GFDPSP2PRESET_Path ) );
+            shaderCache.Save( GetNewPath( ShaderCache_GFDPSP2PRESET_Path ) );
             var newSize = new FileInfo( GetNewPath( ShaderCache_GFDPSP2PRESET_Path ) ).Length;
 
             Assert.AreEqual( originalSize, newSize );
@@ -218,7 +215,7 @@ namespace AtlusGfdLibraryRegressionTests
         {
             var originalSize = new FileInfo( ShaderCache_GFDPSP2_Path ).Length;
             var shaderCache = Resource.Load<ShaderCachePSP2>( ShaderCache_GFDPSP2_Path );
-            Resource.Save( shaderCache, GetNewPath( ShaderCache_GFDPSP2_Path ) );
+            shaderCache.Save( GetNewPath( ShaderCache_GFDPSP2_Path ) );
             var newSize = new FileInfo( GetNewPath( ShaderCache_GFDPSP2_Path ) ).Length;
 
             Assert.AreEqual( originalSize, newSize );
@@ -234,7 +231,7 @@ namespace AtlusGfdLibraryRegressionTests
                 return;
             }
 
-            Assert.AreEqual( a.Type, b.Type );
+            Assert.AreEqual( a.ResourceType, b.ResourceType );
             Assert.AreEqual( a.Version, b.Version );
 
             CompareTextureDictionaries( a.TextureDictionary, a.TextureDictionary );
@@ -250,7 +247,7 @@ namespace AtlusGfdLibraryRegressionTests
                 Assert.IsTrue( a == null ? ( b == null ) : ( b != null ) );
                 return;
             }
-            Assert.AreEqual( a.Type, b.Type );
+            Assert.AreEqual( a.ResourceType, b.ResourceType );
             Assert.AreEqual( a.Version, b.Version );
             Assert.AreEqual( a.Count, b.Count );
 
@@ -285,7 +282,7 @@ namespace AtlusGfdLibraryRegressionTests
                 Assert.IsTrue( a == null ? ( b == null ) : ( b != null ) );
                 return;
             }
-            Assert.AreEqual( a.Type, b.Type );
+            Assert.AreEqual( a.ResourceType, b.ResourceType );
             Assert.AreEqual( a.Version, b.Version );
             
             var ordered = a.Materials.OrderBy( x => x.Name ).ToList();
@@ -386,7 +383,7 @@ namespace AtlusGfdLibraryRegressionTests
             {
                 Assert.AreEqual( a[i].RawFlags, b[i].RawFlags );
 
-                switch ( a[i].Type )
+                switch ( a[i].AttributeType )
                 {
                     case MaterialAttributeType.Type0:
                         {
@@ -512,7 +509,7 @@ namespace AtlusGfdLibraryRegressionTests
                 Assert.IsTrue( a == null ? ( b == null ) : ( b != null ) );
                 return;
             }
-            Assert.AreEqual( a.Type, b.Type );
+            Assert.AreEqual( a.ResourceType, b.ResourceType );
             Assert.AreEqual( a.Version, b.Version );
 
             Assert.AreEqual( a.Flags, b.Flags );
@@ -815,7 +812,7 @@ namespace AtlusGfdLibraryRegressionTests
                 Assert.IsTrue( a == null ? ( b == null ) : ( b != null ) );
                 return;
             }
-            Assert.AreEqual( a.Type, b.Type );
+            Assert.AreEqual( a.ResourceType, b.ResourceType );
             Assert.AreEqual( a.Version, b.Version );
 
             throw new NotImplementedException();

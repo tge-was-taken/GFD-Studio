@@ -1,15 +1,20 @@
 ﻿using System;
+using System.Diagnostics;
+using System.IO;
 using System.Numerics;
+using GFDLibrary.IO;
 
 namespace GFDLibrary
 {
-    public sealed class Geometry
+    public sealed class Geometry : Resource
     {
+        public override ResourceType ResourceType => ResourceType.Geometry;
+
         public GeometryFlags Flags { get; set; }
 
         public VertexAttributeFlags VertexAttributeFlags { get; set; }
 
-        public int TriangleCount => Triangles != null ? Triangles.Length : 0;
+        public int TriangleCount => Triangles?.Length ?? 0;
 
         public TriangleIndexType TriangleIndexType { get; set; }
 
@@ -246,6 +251,303 @@ namespace GFDLibrary
         public float FieldD4 { get; set; }
 
         public float FieldD8 { get; set; }
+
+        public Geometry()
+        {
+            
+        }
+
+        public Geometry(uint version):base(version)
+        {
+            
+        }
+
+        internal override void Read( ResourceReader reader )
+        {
+            var flags = ( GeometryFlags )reader.ReadInt32();
+            Flags = flags;
+            VertexAttributeFlags = ( VertexAttributeFlags )reader.ReadInt32();
+
+            int triangleCount = 0;
+
+            if ( Flags.HasFlag( GeometryFlags.HasTriangles ) )
+            {
+                triangleCount = reader.ReadInt32();
+                TriangleIndexType = ( TriangleIndexType )reader.ReadInt16();
+                Triangles = new Triangle[triangleCount];
+            }
+
+            int vertexCount = reader.ReadInt32();
+
+            if ( Version > 0x1103020 )
+            {
+                Field14 = reader.ReadInt32();
+            }
+
+            AllocateBuffers( vertexCount );
+
+            for ( int i = 0; i < vertexCount; i++ )
+            {
+                if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Position ) )
+                    Vertices[i] = reader.ReadVector3();
+
+                if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Normal ) )
+                    Normals[i] = reader.ReadVector3();
+
+                if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Tangent ) )
+                    Tangents[i] = reader.ReadVector3();
+
+                if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Binormal ) )
+                    Binormals[i] = reader.ReadVector3();
+
+                if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color0 ) )
+                    ColorChannel0[i] = reader.ReadUInt32();
+
+                if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord0 ) )
+                    TexCoordsChannel0[i] = reader.ReadVector2();
+
+                if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord1 ) )
+                    TexCoordsChannel1[i] = reader.ReadVector2();
+
+                if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord2 ) )
+                    TexCoordsChannel2[i] = reader.ReadVector2();
+
+                if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color1 ) )
+                    ColorChannel1[i] = reader.ReadUInt32();
+
+                if ( Flags.HasFlag( GeometryFlags.HasVertexWeights ) )
+                {
+                    const int MAX_NUM_WEIGHTS = 4;
+                    VertexWeights[i].Weights = new float[MAX_NUM_WEIGHTS];
+
+                    for ( int j = 0; j < VertexWeights[i].Weights.Length; j++ )
+                    {
+                        VertexWeights[i].Weights[j] = reader.ReadSingle();
+                    }
+
+                    VertexWeights[i].Indices = new byte[MAX_NUM_WEIGHTS];
+                    uint indices = reader.ReadUInt32();
+
+                    for ( int j = 0; j < VertexWeights[i].Indices.Length; j++ )
+                    {
+                        int shift = j * 8;
+                        VertexWeights[i].Indices[j] = ( byte )( ( indices & ( 0xFF << shift ) ) >> shift );
+                    }
+                }
+            }
+
+            if ( Flags.HasFlag( GeometryFlags.HasMorphTargets ) )
+            {
+                MorphTargets = reader.Read<MorphTargetList>( Version );
+            }
+
+            if ( Flags.HasFlag( GeometryFlags.HasTriangles ) )
+            {
+                for ( int i = 0; i < Triangles.Length; i++ )
+                {
+                    switch ( TriangleIndexType )
+                    {
+                        case TriangleIndexType.UInt16:
+                            Triangles[i].A = reader.ReadUInt16();
+                            Triangles[i].B = reader.ReadUInt16();
+                            Triangles[i].C = reader.ReadUInt16();
+                            break;
+                        case TriangleIndexType.UInt32:
+                            Triangles[i].A = reader.ReadUInt32();
+                            Triangles[i].B = reader.ReadUInt32();
+                            Triangles[i].C = reader.ReadUInt32();
+                            break;
+                        default:
+                            throw new Exception( $"Unsupported triangle index type: {TriangleIndexType}" );
+                    }
+                }
+            }
+
+            if ( Flags.HasFlag( GeometryFlags.HasMaterial ) )
+            {
+                MaterialName = reader.ReadStringWithHash( Version );
+            }
+
+            if ( Flags.HasFlag( GeometryFlags.HasBoundingBox ) )
+            {
+                BoundingBox = reader.ReadBoundingBox();
+            }
+
+            if ( Flags.HasFlag( GeometryFlags.HasBoundingSphere ) )
+            {
+                BoundingSphere = reader.ReadBoundingSphere();
+            }
+
+            if ( Flags.HasFlag( GeometryFlags.Flag1000 ) )
+            {
+                FieldD4 = reader.ReadSingle();
+                FieldD8 = reader.ReadSingle();
+            }
+
+            Trace.Assert( Flags == flags, "Geometry flags don't match flags in file" );
+        }
+
+        private void AllocateBuffers( int vertexCount )
+        {
+            if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Position ) )
+            {
+                Vertices = new Vector3[vertexCount];
+            }
+
+            if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Normal ) )
+            {
+                Normals = new Vector3[vertexCount];
+            }
+
+            if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Tangent ) )
+            {
+                Tangents = new Vector3[vertexCount];
+            }
+
+            if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Binormal ) )
+            {
+                Binormals = new Vector3[vertexCount];
+            }
+
+            if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color0 ) )
+            {
+                ColorChannel0 = new uint[vertexCount];
+            }
+
+            if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord0 ) )
+            {
+                TexCoordsChannel0 = new Vector2[vertexCount];
+            }
+
+            if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord1 ) )
+            {
+                TexCoordsChannel1 = new Vector2[vertexCount];
+            }
+
+            if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord2 ) )
+            {
+                TexCoordsChannel2 = new Vector2[vertexCount];
+            }
+
+            if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color1 ) )
+            {
+                ColorChannel1 = new uint[vertexCount];
+            }
+
+            if ( Flags.HasFlag( GeometryFlags.HasVertexWeights ) )
+            {
+                VertexWeights = new VertexWeight[vertexCount];
+            }
+        }
+
+        internal override void Write( ResourceWriter writer )
+        {
+            writer.WriteInt32( ( int )Flags );
+            writer.WriteInt32( ( int )VertexAttributeFlags );
+
+            if ( Flags.HasFlag( GeometryFlags.HasTriangles ) )
+            {
+                writer.WriteInt32( TriangleCount );
+                writer.WriteInt16( ( short )TriangleIndexType );
+            }
+
+            writer.WriteInt32( VertexCount );
+
+            if ( Version > 0x1103020 )
+            {
+                writer.WriteInt32( Field14 );
+            }
+
+            for ( int i = 0; i < VertexCount; i++ )
+            {
+                if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Position ) )
+                    writer.WriteVector3( Vertices[i] );
+
+                if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Normal ) )
+                    writer.WriteVector3( Normals[i] );
+
+                if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Tangent ) )
+                    writer.WriteVector3( Tangents[i] );
+
+                if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Binormal ) )
+                    writer.WriteVector3( Binormals[i] );
+
+                if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color0 ) )
+                    writer.WriteUInt32( ColorChannel0[i] );
+
+                if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord0 ) )
+                    writer.WriteVector2( TexCoordsChannel0[i] );
+
+                if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord1 ) )
+                    writer.WriteVector2( TexCoordsChannel1[i] );
+
+                if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord2 ) )
+                    writer.WriteVector2( TexCoordsChannel2[i] );
+
+                if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color1 ) )
+                    writer.WriteUInt32( ColorChannel1[i] );
+
+                if ( Flags.HasFlag( GeometryFlags.HasVertexWeights ) )
+                {
+                    var vertexWeight = VertexWeights[i];
+                    for ( int j = 0; j < 4; j++ )
+                        writer.WriteSingle( vertexWeight.Weights[j] );
+
+                    int indices = vertexWeight.Indices[0] << 00 | ( vertexWeight.Indices[1] << 08 ) |
+                                  vertexWeight.Indices[2] << 16 | ( vertexWeight.Indices[3] << 24 );
+
+                    writer.WriteInt32( indices );
+                }
+            }
+
+            if ( Flags.HasFlag( GeometryFlags.HasMorphTargets ) )
+            {
+                writer.WriteResource( MorphTargets );
+            }
+
+            if ( Flags.HasFlag( GeometryFlags.HasTriangles ) )
+            {
+                for ( int i = 0; i < Triangles.Length; i++ )
+                {
+                    switch ( TriangleIndexType )
+                    {
+                        case TriangleIndexType.UInt16:
+                            writer.WriteUInt16( ( ushort )Triangles[i].A );
+                            writer.WriteUInt16( ( ushort )Triangles[i].B );
+                            writer.WriteUInt16( ( ushort )Triangles[i].C );
+                            break;
+                        case TriangleIndexType.UInt32:
+                            writer.WriteUInt32( Triangles[i].A );
+                            writer.WriteUInt32( Triangles[i].B );
+                            writer.WriteUInt32( Triangles[i].C );
+                            break;
+                        default:
+                            throw new InvalidDataException( $"Unsupported triangle index type: {TriangleIndexType}" );
+                    }
+                }
+            }
+
+            if ( Flags.HasFlag( GeometryFlags.HasMaterial ) )
+            {
+                writer.WriteStringWithHash( Version, MaterialName );
+            }
+
+            if ( Flags.HasFlag( GeometryFlags.HasBoundingBox ) )
+            {
+                writer.WriteBoundingBox( BoundingBox.Value );
+            }
+
+            if ( Flags.HasFlag( GeometryFlags.HasBoundingSphere ) )
+            {
+                writer.WriteBoundingSphere( BoundingSphere.Value );
+            }
+
+            if ( Flags.HasFlag( GeometryFlags.Flag1000 ) )
+            {
+                writer.WriteSingle( FieldD4 );
+                writer.WriteSingle( FieldD8 );
+            }
+        }
     }
 
     public enum TriangleIndexType

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.IO;
 using GFDLibrary;
 using GFDStudio.GUI.Forms;
 using GFDStudio.GUI.TypeConverters;
@@ -45,8 +46,8 @@ namespace GFDStudio.GUI.ViewModels
 
         protected override void InitializeCore()
         {
-            RegisterExportHandler< Scene >( path => Resource.Save( Model, path ) );
-            RegisterReplaceHandler< Scene >( path => Resource.Load< Model >( path ) );
+            RegisterExportHandler< Stream >( path => Model.Save(  path ) );
+            RegisterReplaceHandler<Stream>( Resource.Load< Scene > );
             RegisterReplaceHandler<Assimp.Scene>( path =>
             {
                 using ( var dialog = new ModelConverterOptionsDialog( true ) )

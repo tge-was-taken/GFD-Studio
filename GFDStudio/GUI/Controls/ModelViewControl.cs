@@ -13,7 +13,6 @@ using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
-using System.Runtime.CompilerServices;
 
 namespace GFDStudio.GUI.Controls
 {

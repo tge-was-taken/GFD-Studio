@@ -4,7 +4,7 @@ using System.Text;
 using Ai = Assimp;
 using Matrix4x4 = System.Numerics.Matrix4x4;
 
-namespace GFDLibrary.Assimp
+namespace GFDLibrary.IO.Assimp
 {
     public class ModelExporter
     {

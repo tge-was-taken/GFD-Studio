@@ -16,7 +16,7 @@ namespace GFDStudio.GUI.ViewModels
 
         [Browsable(true)]
         [TypeConverter( typeof( EnumTypeConverter<MaterialAttributeType> ) )]
-        public MaterialAttributeType Type
+        public MaterialAttributeType AttributeType
         {
             get => GetModelProperty<MaterialAttributeType>();
         }

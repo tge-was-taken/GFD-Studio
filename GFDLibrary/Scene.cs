@@ -4,11 +4,14 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
+using GFDLibrary.IO;
 
 namespace GFDLibrary
 {
     public sealed class Scene : Resource
     {
+        public override ResourceType ResourceType => ResourceType.Scene;
+
         private SceneFlags mFlags;
         public SceneFlags Flags
         {
@@ -67,29 +70,62 @@ namespace GFDLibrary
         private List<Node> mNodeList;
         public ReadOnlyCollection<Node> Nodes => mNodeList.AsReadOnly();
 
-        public Scene(uint version) : base(ResourceType.Scene, version)
+        public Scene()
+        {         
+        }
+
+        public Scene(uint version) : base(version)
         {
         }
 
-        /// <summary>
-        /// Helper method that enumerates over all geometry attachments in the scene.
-        /// </summary>
-        /// <returns></returns>
-        public IEnumerable<Geometry> EnumerateGeometries()
+        internal override void Read( ResourceReader reader )
         {
-            foreach ( var node in Nodes )
+            var flags = ( SceneFlags ) reader.ReadInt32();
+
+            if ( flags.HasFlag( SceneFlags.HasSkinning ) )
             {
-                if ( !node.HasAttachments )
-                    continue;
+                int matrixCount = reader.ReadInt32();
+                BonePalette = new BonePalette( matrixCount );
 
-                foreach ( var attachment in node.Attachments )
-                {
-                    if ( attachment.Type != NodeAttachmentType.Geometry )
-                        continue;
+                for ( int i = 0; i < BonePalette.InverseBindMatrices.Length; i++ )
+                    BonePalette.InverseBindMatrices[i] = reader.ReadMatrix4x4();
 
-                    yield return attachment.GetValue<Geometry>();
-                }
+                for ( int i = 0; i < BonePalette.BoneToNodeIndices.Length; i++ )
+                    BonePalette.BoneToNodeIndices[i] = reader.ReadUInt16();
             }
+
+            if ( flags.HasFlag( SceneFlags.HasBoundingBox ) )
+                BoundingBox = reader.ReadBoundingBox();
+
+            if ( flags.HasFlag( SceneFlags.HasBoundingSphere ) )
+                BoundingSphere = reader.ReadBoundingSphere();
+
+            RootNode = Node.ReadRecursive( reader, Version );
+            Flags = flags;
+        }
+
+        internal override void Write( ResourceWriter writer )
+        {
+            writer.WriteInt32( ( int ) Flags );
+
+            if ( Flags.HasFlag( SceneFlags.HasSkinning ) )
+            {
+                writer.WriteInt32( BonePalette.BoneCount );
+
+                foreach ( var t in BonePalette.InverseBindMatrices )
+                    writer.WriteMatrix4x4( t );
+
+                foreach ( var index in BonePalette.BoneToNodeIndices )
+                    writer.WriteUInt16( index );
+            }
+
+            if ( Flags.HasFlag( SceneFlags.HasBoundingBox ) )
+                writer.WriteBoundingBox( BoundingBox.Value );
+
+            if ( Flags.HasFlag( SceneFlags.HasBoundingSphere ) )
+                writer.WriteBoundingSphere( BoundingSphere.Value );
+
+            Node.WriteRecursive( writer, RootNode );
         }
 
         public void ReplaceWith( Scene other )

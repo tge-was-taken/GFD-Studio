@@ -1,5 +1,4 @@
-﻿using System;
-using OpenTK;
+﻿using OpenTK;
 
 namespace GFDStudio.GUI.Controls.ModelView
 {

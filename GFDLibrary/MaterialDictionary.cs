@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using GFDLibrary.IO;
 
 namespace GFDLibrary
 {
@@ -8,8 +9,15 @@ namespace GFDLibrary
     {
         private readonly Dictionary<string, Material> mDictionary;
 
+        public override ResourceType ResourceType => ResourceType.MaterialDictionary;
+
+        public MaterialDictionary()
+        {
+            mDictionary = new Dictionary<string, Material>();
+        }
+
         public MaterialDictionary( uint version )
-            : base( ResourceType.MaterialDictionary, version )
+            : base( version )
         {
             mDictionary = new Dictionary<string, Material>();
         }
@@ -40,6 +48,24 @@ namespace GFDLibrary
                 Remove( s );
         }
 
+        internal override void Read( ResourceReader reader )
+        {
+            var count = reader.ReadInt32();
+            for ( int i = 0; i < count; i++ )
+            {
+                var material = reader.Read<Material>( Version );
+                Add( material );
+            }
+        }
+
+        internal override void Write( ResourceWriter writer )
+        {
+            writer.WriteInt32( Count );
+            foreach ( var material in Materials )
+                writer.WriteResource( material );
+        }
+
+        #region IDictionary
         public IList<Material> Materials
             => mDictionary.Values.ToList();
 
@@ -120,5 +146,6 @@ namespace GFDLibrary
         {
             return ( ( IDictionary<string, Material> )mDictionary ).GetEnumerator();
         }
+        #endregion
     }
 }

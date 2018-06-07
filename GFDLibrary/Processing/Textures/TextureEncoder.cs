@@ -3,7 +3,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using CSharpImageLibrary;
-using GFDLibrary.Utilities;
+using GFDLibrary.IO.Utilities;
 
 namespace GFDLibrary
 {

@@ -167,7 +167,7 @@ namespace GFDStudio.GUI.ViewModels
 
         public TextureMapViewModel( string text, TextureMap resource ) : base( text, resource )
         {
-            RegisterExportHandler<Stream>( path => Resource.Save( Model, path ) );
+            RegisterExportHandler<Stream>( path => Model.Save(  path ) );
             RegisterReplaceHandler<Stream>( Resource.Load<TextureMap> );
         }
 

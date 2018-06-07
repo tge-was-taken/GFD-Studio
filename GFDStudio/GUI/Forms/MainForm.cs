@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Windows.Forms;
 using GFDLibrary;
 using GFDStudio.FormatModules;

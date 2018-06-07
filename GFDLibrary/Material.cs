@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Numerics;
+using GFDLibrary.IO;
 
 namespace GFDLibrary
 {
     public sealed class Material : Resource
     {
+        public override ResourceType ResourceType => ResourceType.Material;
+
         public string Name { get; set; }
 
         // 0x54
@@ -201,7 +205,23 @@ namespace GFDLibrary
             Name = name;
         }
 
-        internal Material() : base( ResourceType.Material, PERSONA5_RESOURCE_VERSION )
+        public Material()
+        {
+            Initialize();
+        }
+
+        public Material( uint version ) : base( version )
+        {
+            Initialize();
+        }
+
+        public override string ToString()
+        {
+            return Name;
+        }
+
+
+        private void Initialize()
         {
             Field40 = 1.0f;
             Field44 = 0;
@@ -217,16 +237,6 @@ namespace GFDLibrary
             Field70 = 0xFFFFFFFF;
             Field98 = 0xFFFFFFFF;
             Field6C = 0xFFFFFFFF;
-        }
-
-        public override string ToString()
-        {
-            return Name;
-        }
-
-        public Material ShallowCopy()
-        {
-            return (Material)MemberwiseClone();
         }
 
         private void ValidateFlags()
@@ -260,6 +270,243 @@ namespace GFDLibrary
             else
             {
                 mFlags |= flag;
+            }
+        }
+
+        internal override void Read( ResourceReader reader )
+        {
+            // Read material header
+            Name = reader.ReadStringWithHash( Version );
+            var flags = ( MaterialFlags )reader.ReadUInt32();
+
+            if ( Version < 0x1104000 )
+            {
+                flags = ( MaterialFlags )( ( uint )Flags & 0x7FFFFFFF );
+            }
+
+            Ambient = reader.ReadVector4();
+            Diffuse = reader.ReadVector4();
+            Specular = reader.ReadVector4();
+            Emissive = reader.ReadVector4();
+            Field40 = reader.ReadSingle();
+            Field44 = reader.ReadSingle();
+
+            if ( Version <= 0x1103040 )
+            {
+                DrawOrder = ( MaterialDrawOrder )reader.ReadInt16();
+                Field49 = ( byte )reader.ReadInt16();
+                Field4A = ( byte )reader.ReadInt16();
+                Field4B = ( byte )reader.ReadInt16();
+                Field4C = ( byte )reader.ReadInt16();
+
+                if ( Version > 0x108011b )
+                {
+                    Field4D = ( byte )reader.ReadInt16();
+                }
+            }
+            else
+            {
+                DrawOrder = ( MaterialDrawOrder )reader.ReadByte();
+                Field49 = reader.ReadByte();
+                Field4A = reader.ReadByte();
+                Field4B = reader.ReadByte();
+                Field4C = reader.ReadByte();
+                Field4D = reader.ReadByte();
+            }
+
+            Field90 = reader.ReadInt16();
+            Field92 = reader.ReadInt16();
+
+            if ( Version <= 0x1104800 )
+            {
+                Field94 = 1;
+                Field96 = ( short )reader.ReadInt32();
+            }
+            else
+            {
+                Field94 = reader.ReadInt16();
+                Field96 = reader.ReadInt16();
+            }
+
+            Field5C = reader.ReadInt16();
+            Field6C = reader.ReadUInt32();
+            Field70 = reader.ReadUInt32();
+            Field50 = reader.ReadInt16();
+
+            if ( Version <= 0x1105070 || Version >= 0x1105090 )
+            {
+                Field98 = reader.ReadUInt32();
+            }
+
+            if ( flags.HasFlag( MaterialFlags.HasDiffuseMap ) )
+            {
+                DiffuseMap = reader.Read<TextureMap>( Version );
+            }
+
+            if ( flags.HasFlag( MaterialFlags.HasNormalMap ) )
+            {
+                NormalMap = reader.Read<TextureMap>( Version );
+            }
+
+            if ( flags.HasFlag( MaterialFlags.HasSpecularMap ) )
+            {
+                SpecularMap = reader.Read<TextureMap>( Version );
+            }
+
+            if ( flags.HasFlag( MaterialFlags.HasReflectionMap ) )
+            {
+                ReflectionMap = reader.Read<TextureMap>( Version );
+            }
+
+            if ( flags.HasFlag( MaterialFlags.HasHighlightMap ) )
+            {
+                HighlightMap = reader.Read<TextureMap>( Version );
+            }
+
+            if ( flags.HasFlag( MaterialFlags.HasGlowMap ) )
+            {
+                GlowMap = reader.Read<TextureMap>( Version );
+            }
+
+            if ( flags.HasFlag( MaterialFlags.HasNightMap ) )
+            {
+                NightMap = reader.Read<TextureMap>( Version );
+            }
+
+            if ( flags.HasFlag( MaterialFlags.HasDetailMap ) )
+            {
+                DetailMap = reader.Read<TextureMap>( Version );
+            }
+
+            if ( flags.HasFlag( MaterialFlags.HasShadowMap ) )
+            {
+                ShadowMap = reader.Read<TextureMap>( Version );
+            }
+
+            if ( flags.HasFlag( MaterialFlags.HasAttributes ) )
+            {
+                Attributes = new List<MaterialAttribute>();
+                int attributeCount = reader.ReadInt32();
+
+                for ( int i = 0; i < attributeCount; i++ )
+                {
+                    var attribute = MaterialAttribute.Read( reader, Version );
+                    Attributes.Add( attribute );
+                }
+            }
+
+            Flags = flags;
+            Trace.Assert( Flags == flags, "Material flags don't match flags from file" );
+        }
+
+        internal override void Write( ResourceWriter writer )
+        {
+            writer.WriteStringWithHash( Version, Name );
+            writer.WriteUInt32( ( uint )Flags );
+            writer.WriteVector4( Ambient );
+            writer.WriteVector4( Diffuse );
+            writer.WriteVector4( Specular );
+            writer.WriteVector4( Emissive );
+            writer.WriteSingle( Field40 );
+            writer.WriteSingle( Field44 );
+
+            if ( Version <= 0x1103040 )
+            {
+                writer.WriteInt16( ( short )DrawOrder );
+                writer.WriteInt16( Field49 );
+                writer.WriteInt16( Field4A );
+                writer.WriteInt16( Field4B );
+                writer.WriteInt16( Field4C );
+
+                if ( Version > 0x108011b )
+                {
+                    writer.WriteInt16( Field4D );
+                }
+            }
+            else
+            {
+                writer.WriteByte( ( byte )DrawOrder );
+                writer.WriteByte( Field49 );
+                writer.WriteByte( Field4A );
+                writer.WriteByte( Field4B );
+                writer.WriteByte( Field4C );
+                writer.WriteByte( Field4D );
+            }
+
+            writer.WriteInt16( Field90 );
+            writer.WriteInt16( Field92 );
+
+            if ( Version <= 0x1104800 )
+            {
+                writer.WriteInt32( Field96 );
+            }
+            else
+            {
+                writer.WriteInt16( Field94 );
+                writer.WriteInt16( Field96 );
+            }
+
+            writer.WriteInt16( Field5C );
+            writer.WriteUInt32( Field6C );
+            writer.WriteUInt32( Field70 );
+            writer.WriteInt16( Field50 );
+
+            if ( Version <= 0x1105070 || Version >= 0x1105090 )
+            {
+                writer.WriteUInt32( Field98 );
+            }
+
+            if ( Flags.HasFlag( MaterialFlags.HasDiffuseMap ) )
+            {
+                writer.WriteResource( DiffuseMap );
+            }
+
+            if ( Flags.HasFlag( MaterialFlags.HasNormalMap ) )
+            {
+                writer.WriteResource(  NormalMap );
+            }
+
+            if ( Flags.HasFlag( MaterialFlags.HasSpecularMap ) )
+            {
+                writer.WriteResource(  SpecularMap );
+            }
+
+            if ( Flags.HasFlag( MaterialFlags.HasReflectionMap ) )
+            {
+                writer.WriteResource(  ReflectionMap );
+            }
+
+            if ( Flags.HasFlag( MaterialFlags.HasHighlightMap ) )
+            {
+                writer.WriteResource(  HighlightMap );
+            }
+
+            if ( Flags.HasFlag( MaterialFlags.HasGlowMap ) )
+            {
+                writer.WriteResource(  GlowMap );
+            }
+
+            if ( Flags.HasFlag( MaterialFlags.HasNightMap ) )
+            {
+                writer.WriteResource(  NightMap );
+            }
+
+            if ( Flags.HasFlag( MaterialFlags.HasDetailMap ) )
+            {
+                writer.WriteResource(  DetailMap );
+            }
+
+            if ( Flags.HasFlag( MaterialFlags.HasShadowMap ) )
+            {
+                writer.WriteResource(  ShadowMap );
+            }
+
+            if ( Flags.HasFlag( MaterialFlags.HasAttributes ) && Attributes.Count != 0 )
+            {
+                writer.WriteInt32( Attributes.Count );
+
+                foreach ( var attribute in Attributes )
+                    MaterialAttribute.Write( writer, attribute );
             }
         }
     }

@@ -16,12 +16,12 @@ namespace GFDStudio.FormatModules
 
         protected override bool CanImportCore( Stream stream, string filename = null )
         {
-            return Resource.IsValidResource( stream );
+            return Resource.GetResourceType( stream ) == ResourceType.TextureDictionary;
         }
 
         protected override void ExportCore( TextureDictionary obj, Stream stream, string filename = null )
         {
-            Resource.Save( obj, stream );
+            obj.Save( stream, true );
         }
 
         protected override TextureDictionary ImportCore( Stream stream, string filename = null )

@@ -1,6 +1,6 @@
 ﻿using System.IO;
 using Assimp;
-using GFDLibrary.Assimp;
+using GFDLibrary.IO.Assimp;
 using GFDStudio.IO;
 
 namespace GFDStudio.FormatModules

@@ -1,7 +1,7 @@
 ﻿using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using GFDLibrary.Utilities;
+using GFDLibrary.IO.Utilities;
 using GFDStudio.IO;
 
 namespace GFDStudio.FormatModules

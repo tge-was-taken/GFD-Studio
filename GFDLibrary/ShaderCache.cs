@@ -1,16 +1,38 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using GFDLibrary.IO;
 
-namespace GFDLibrary.Shaders
+namespace GFDLibrary
 {
-    public abstract class ShaderCacheBase<TShader> : Resource, IList<TShader>
+    public abstract class ShaderCacheBase<TShader> : Resource, IList<TShader> where TShader : Resource, new() 
     {
-        private List<TShader> mShaders;
+        private readonly List<TShader> mShaders;
 
-        protected ShaderCacheBase( ResourceType type, uint version )
-            : base( type, version)
+        protected ShaderCacheBase( uint version )
+            : base( version )
         {
             mShaders = new List<TShader>();
+        }
+
+        internal override void Read( ResourceReader reader )
+        {
+            var header = reader.ReadFileHeader();
+            if ( header.Identifier != ResourceFileIdentifier.ShaderCache )
+                throw new InvalidDataException( "Expected shader cache identifier" );
+
+            while ( !reader.EndOfStream )
+            {
+                var shader = reader.Read<TShader>( Version );
+                Add( shader );
+            }
+        }
+
+        internal override void Write( ResourceWriter writer )
+        {
+            writer.WriteFileHeader( ResourceFileIdentifier.ShaderCache, Version, ResourceType );
+            foreach ( var shader in this )
+                writer.WriteResource( shader );
         }
 
         #region IList implementation
@@ -107,14 +129,27 @@ namespace GFDLibrary.Shaders
 
     public sealed class ShaderCachePS3 : ShaderCacheBase<ShaderPS3>
     {
-        public ShaderCachePS3( uint version ) : base( ResourceType.ShaderCachePS3, version )
+        public override ResourceType ResourceType => ResourceType.ShaderCachePS3;
+
+        public ShaderCachePS3( uint version ) : base( version )
         {
         }
     }
 
     public sealed class ShaderCachePSP2 : ShaderCacheBase<ShaderPSP2>
     {
-        public ShaderCachePSP2( uint version ) : base( ResourceType.ShaderCachePSP2, version )
+        public override ResourceType ResourceType => ResourceType.ShaderCachePSP2;
+
+        public ShaderCachePSP2( uint version ) : base( version )
+        {
+        }
+    }
+
+    public class ShaderCachePS4 : ShaderCacheBase<ShaderPS4>
+    {
+        public override ResourceType ResourceType => ResourceType.ShaderCachePS4;
+
+        public ShaderCachePS4( uint version ) : base( version )
         {
         }
     }

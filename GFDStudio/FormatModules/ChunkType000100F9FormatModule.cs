@@ -16,12 +16,12 @@ namespace GFDStudio.FormatModules
 
         protected override bool CanImportCore( Stream stream, string filename = null )
         {
-            return Resource.IsValidResource( stream );
+            return Resource.GetResourceType( stream ) == ResourceType.ChunkType000100F9;
         }
 
         protected override void ExportCore( ChunkType000100F9 obj, Stream stream, string filename = null )
         {
-            Resource.Save( obj, stream );
+            obj.Save( stream, true );
         }
 
         protected override ChunkType000100F9 ImportCore( Stream stream, string filename = null )

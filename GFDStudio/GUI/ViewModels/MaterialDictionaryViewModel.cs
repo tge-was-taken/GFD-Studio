@@ -16,7 +16,7 @@ namespace GFDStudio.GUI.ViewModels
 
         protected override void InitializeCore()
         {
-            RegisterExportHandler<MaterialDictionary>( path => Resource.Save( Model, path ) );
+            RegisterExportHandler<MaterialDictionary>( path => Model.Save(  path ) );
             RegisterReplaceHandler<MaterialDictionary>( Resource.Load<MaterialDictionary> );
             RegisterAddHandler< Material >( path => Model.Add( Resource.Load< Material >( path ) ) );
 

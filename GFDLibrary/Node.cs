@@ -1,20 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Numerics;
+using GFDLibrary.IO;
 
 namespace GFDLibrary
 {
-    public sealed class Node
+    public sealed class Node : Resource
     {
+        public override ResourceType ResourceType => ResourceType.Node;
+
         private string mName;
         public string Name
         {
             get => mName;
-            set
-            {
-                mName = value ?? throw new ArgumentNullException( nameof( value ) );
-            }
+            set => mName = value ?? throw new ArgumentNullException( nameof( value ) );
         }
 
         // 90
@@ -120,22 +121,29 @@ namespace GFDLibrary
                 {
                     mParent = value;
 
-                    if ( mParent != null )
-                        mParent.AddChildNode( this );
+                    mParent?.AddChildNode( this );
                 }
             }
         }
 
         public bool HasParent => Parent != null;
 
-        private List<Node> mChildren;
+        private readonly List<Node> mChildren;
         public ReadOnlyCollection<Node> Children => mChildren.AsReadOnly();
 
         public bool HasChildren => Children != null && Children.Count > 0;
 
         public int ChildCount => HasChildren ? Children.Count : 0;
 
-        internal Node()
+        public Node()
+        {
+            Attachments = new List<NodeAttachment>();
+            Properties = new UserPropertyCollection();
+            mChildren = new List<Node>();
+            FieldE0 = 1.0f;
+        }
+
+        public Node( uint version ) : base(version)
         {
             Attachments = new List<NodeAttachment>();
             Properties = new UserPropertyCollection();
@@ -244,6 +252,103 @@ namespace GFDLibrary
         public override string ToString()
         {
             return $"{Name}";
+        }
+
+        internal static Node ReadRecursive( ResourceReader reader, uint version )
+        {
+            var node = reader.Read<Node>( version );
+
+            int childCount = reader.ReadInt32();
+
+            var childStack = new Stack<Node>();
+            for ( int i = 0; i < childCount; i++ )
+            {
+                var childNode = ReadRecursive( reader, version );
+                childStack.Push( childNode );
+            }
+
+            while ( childStack.Count > 0 )
+                node.AddChildNode( childStack.Pop() );
+
+            return node;
+        }
+
+        internal static void WriteRecursive( ResourceWriter writer, Node node )
+        {
+            writer.WriteResource( node );
+            writer.WriteInt32( node.ChildCount );
+
+            for ( int i = 0; i < node.ChildCount; i++ )
+            {
+                WriteRecursive( writer, node.Children[( node.ChildCount - 1 ) - i] );
+            }
+        }
+
+        internal override void Read( ResourceReader reader )
+        {
+            Name = reader.ReadStringWithHash( Version );
+            Translation = reader.ReadVector3();
+            Rotation = reader.ReadQuaternion();
+            Scale = reader.ReadVector3();
+
+            if ( Version <= 0x1090000 )
+                reader.ReadByte();
+
+            int attachmentCount = reader.ReadInt32();
+            var skipProperties = false;
+            for ( int i = 0; i < attachmentCount; i++ )
+            {
+                var attachment = NodeAttachment.Read( reader, Version, out var _skipProperties );
+                if ( _skipProperties )
+                    skipProperties = true;
+
+                Attachments.Add( attachment );
+            }
+
+            if ( Version > 0x1060000 && !skipProperties )
+            {
+                var hasProperties = ( ( BinaryReader ) reader ).ReadBoolean();
+                if ( hasProperties )
+                {
+                    Properties = reader.Read<UserPropertyCollection>( Version );
+                }
+            }
+
+            if ( Version > 0x1104230 )
+            {
+                FieldE0 = reader.ReadSingle();
+            }
+        }
+
+        internal override void Write( ResourceWriter writer )
+        {
+            writer.WriteStringWithHash( Version, Name );
+            writer.WriteVector3( Translation );
+            writer.WriteQuaternion( Rotation );
+            writer.WriteVector3( Scale );
+
+            if ( Version <= 0x1090000 )
+                writer.WriteByte( 0 );
+
+            writer.WriteInt32( AttachmentCount );
+            foreach ( var attachment in Attachments )
+            {
+                attachment.Write( writer );
+            }
+
+            if ( Version > 0x1060000 )
+            {
+                writer.WriteBoolean( HasProperties );
+                if ( HasProperties )
+                {
+                    writer.WriteResource( Properties );
+                }
+            }
+
+            if ( Version > 0x1104230 )
+            {
+                writer.WriteSingle( FieldE0 );
+            }
         }
     }
 }

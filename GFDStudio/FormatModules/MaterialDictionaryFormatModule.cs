@@ -16,12 +16,12 @@ namespace GFDStudio.FormatModules
 
         protected override bool CanImportCore( Stream stream, string filename = null )
         {
-            return Resource.IsValidResource( stream );
+            return Resource.GetResourceType( stream ) == ResourceType.MaterialDictionary;
         }
 
         protected override void ExportCore( MaterialDictionary obj, Stream stream, string filename = null )
         {
-            Resource.Save( obj, stream );
+            obj.Save( stream, true );
         }
 
         protected override MaterialDictionary ImportCore( Stream stream, string filename = null )

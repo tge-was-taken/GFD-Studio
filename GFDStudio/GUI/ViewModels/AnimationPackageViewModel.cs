@@ -16,7 +16,7 @@ namespace GFDStudio.GUI.ViewModels
 
         protected override void InitializeCore()
         {
-            RegisterExportHandler<AnimationPackage>( ( path ) => Resource.Save( Model, path ) );
+            RegisterExportHandler<AnimationPackage>( ( path ) => Model.Save( path ) );
             RegisterReplaceHandler<AnimationPackage>( Resource.Load<AnimationPackage> );
         }
     }

@@ -1,7 +1,11 @@
-﻿namespace GFDLibrary
+﻿using GFDLibrary.IO;
+
+namespace GFDLibrary
 {
     public sealed class TextureMap : Resource
     {
+        public override ResourceType ResourceType => ResourceType.TextureMap;
+
         public string Name { get; set; }
 
         // 0x44
@@ -67,13 +71,23 @@
         // 0x88
         public float Field88 { get; set; }
 
-        internal TextureMap() : base(ResourceType.TextureMap, PERSONA5_RESOURCE_VERSION)
+        public TextureMap()
         {
+            Initialize();
+        }
+
+        public TextureMap( uint version ) : base(version)
+        {
+            Initialize();
         }
 
         public TextureMap( string name ) : this()
         {
             Name = name;
+        }
+
+        private void Initialize()
+        {
             Field44 = 0;
             Field48 = 1;
             Field49 = 1;
@@ -95,6 +109,58 @@
             Field80 = 0;
             Field84 = 0;
             Field88 = 0;
+        }
+
+        internal override void Read( ResourceReader reader )
+        {
+            Name = reader.ReadStringWithHash( Version );
+            Field44 = reader.ReadInt32();
+            Field48 = reader.ReadByte();
+            Field49 = reader.ReadByte();
+            Field4A = reader.ReadByte();
+            Field4B = reader.ReadByte();
+            Field4C = reader.ReadSingle();
+            Field50 = reader.ReadSingle();
+            Field54 = reader.ReadSingle();
+            Field58 = reader.ReadSingle();
+            Field5C = reader.ReadSingle();
+            Field60 = reader.ReadSingle();
+            Field64 = reader.ReadSingle();
+            Field68 = reader.ReadSingle();
+            Field6C = reader.ReadSingle();
+            Field70 = reader.ReadSingle();
+            Field74 = reader.ReadSingle();
+            Field78 = reader.ReadSingle();
+            Field7C = reader.ReadSingle();
+            Field80 = reader.ReadSingle();
+            Field84 = reader.ReadSingle();
+            Field88 = reader.ReadSingle();
+        }
+
+        internal override void Write( ResourceWriter writer )
+        {
+            writer.WriteStringWithHash( Version, Name );
+            writer.WriteInt32( Field44 );
+            writer.WriteByte( Field48 );
+            writer.WriteByte( Field49 );
+            writer.WriteByte( Field4A );
+            writer.WriteByte( Field4B );
+            writer.WriteSingle( Field4C );
+            writer.WriteSingle( Field50 );
+            writer.WriteSingle( Field54 );
+            writer.WriteSingle( Field58 );
+            writer.WriteSingle( Field5C );
+            writer.WriteSingle( Field60 );
+            writer.WriteSingle( Field64 );
+            writer.WriteSingle( Field68 );
+            writer.WriteSingle( Field6C );
+            writer.WriteSingle( Field70 );
+            writer.WriteSingle( Field74 );
+            writer.WriteSingle( Field78 );
+            writer.WriteSingle( Field7C );
+            writer.WriteSingle( Field80 );
+            writer.WriteSingle( Field84 );
+            writer.WriteSingle( Field88 );
         }
     }
 }

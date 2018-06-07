@@ -16,7 +16,7 @@ namespace GFDStudio.GUI.ViewModels
 
         protected override void InitializeCore()
         {
-            RegisterExportHandler<ChunkType000100F8>( ( path ) => Resource.Save( Model, path ) );
+            RegisterExportHandler<ChunkType000100F8>( ( path ) => Model.Save( path ) );
             RegisterReplaceHandler<ChunkType000100F8>( Resource.Load<ChunkType000100F8> );
         }
     }

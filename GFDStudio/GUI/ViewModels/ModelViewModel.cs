@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 using GFDLibrary;
-using GFDLibrary.Assimp;
+using GFDLibrary.IO.Assimp;
 using GFDStudio.IO;
 
 namespace GFDStudio.GUI.ViewModels
@@ -37,7 +37,7 @@ namespace GFDStudio.GUI.ViewModels
 
         protected override void InitializeCore()
         {
-            RegisterExportHandler< Model >( ( path ) => Resource.Save( Model, path ) );
+            RegisterExportHandler< Model >( ( path ) => Model.Save(  path ) );
             RegisterExportHandler< Assimp.Scene >( path => ModelExporter.ExportFile( Model, path ) );
 
             RegisterReplaceHandler<Model>( path =>

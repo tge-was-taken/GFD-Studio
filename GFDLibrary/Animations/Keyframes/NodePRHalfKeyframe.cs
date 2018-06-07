@@ -1,6 +1,6 @@
 using System.Numerics;
 
-namespace GFDLibrary.Keyframes
+namespace GFDLibrary.IO.Keyframes
 {
     public struct NodePRHalfKeyframe : IKeyframe
     {
