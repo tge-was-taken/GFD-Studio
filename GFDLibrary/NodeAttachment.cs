@@ -16,6 +16,31 @@ namespace GFDLibrary
 
         public T GetValue<T>() where T : Resource => ( T )GetValue();
 
+        public static NodeAttachment Create( Resource resource )
+        {
+            switch ( resource.ResourceType )
+            {
+                case ResourceType.Scene:
+                    return new NodeSceneAttachment( ( Scene ) resource );
+                case ResourceType.Node:
+                    return new NodeNodeAttachment( ( Node ) resource );
+                case ResourceType.Geometry:
+                    return new NodeGeometryAttachment( ( Geometry )resource );
+                case ResourceType.Camera:
+                    return new NodeCameraAttachment( ( Camera )resource );
+                case ResourceType.Light:
+                    return new NodeLightAttachment( ( Light )resource );
+                case ResourceType.Epl:
+                    return new NodeEplAttachment( ( Epl )resource );
+                case ResourceType.EplLeaf:
+                    return new NodeEplLeafAttachment( ( EplLeaf )resource );
+                case ResourceType.Morph:
+                    return new NodeMorphAttachment( ( Morph )resource );
+                default:
+                    throw new ArgumentOutOfRangeException( nameof( resource ), "Unsupported resource type" );
+            }
+        }
+
         internal static NodeAttachment Read( ResourceReader reader, uint version, out bool skipProperties )
         {
             NodeAttachmentType type = ( NodeAttachmentType )reader.ReadInt32();

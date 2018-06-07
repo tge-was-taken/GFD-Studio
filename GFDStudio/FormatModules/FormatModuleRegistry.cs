@@ -47,9 +47,19 @@ namespace GFDStudio.FormatModules
                 new MaterialDictionaryFormatModule(),
                 new MaterialFormatModule(),
 
+                // gfd animation modules
                 new AnimationPackageFormatModule(),
+
+                // gfd misc modules
                 new ChunkType000100F8FormatModule(),
-                new ChunkType000100F9FormatModule()
+                new ChunkType000100F9FormatModule(),
+                new SceneFormatModule(),
+                new NodeFormatModule(),
+                new GeometryFormatModule(),
+                new CameraFormatModule(),
+                new LightFormatModule(),
+                new EplFormatModule(),
+                new MorphFormatModule()
             );
         }
 

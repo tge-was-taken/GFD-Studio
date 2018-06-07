@@ -23,12 +23,12 @@ namespace GFDStudio.FormatModules
 
         protected override void ExportCore( Texture obj, Stream stream, string filename = null )
         {
-            throw new NotImplementedException();
+            obj.Save( stream, true );
         }
 
         protected override Texture ImportCore( Stream stream, string filename = null )
         {
-            throw new NotImplementedException();
+            return Resource.Load<Texture>( stream, true );
         }
 
         protected override Bitmap GetBitmapCore( Texture obj )

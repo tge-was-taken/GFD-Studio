@@ -52,6 +52,11 @@ namespace GFDStudio.GUI.ViewModels
             Register<SceneViewModel>();
             Register<BonePaletteViewModel>();
             Register<NodeViewModel>();
+            Register<GeometryViewModel>();
+            Register<CameraViewModel>();
+            Register<LightViewModel>();
+            Register<EplViewModel>();
+            Register<MorphViewModel>();
 
             // gfd chunk type 000100F9 view models
             Register<ChunkType000100F9ViewModel>();

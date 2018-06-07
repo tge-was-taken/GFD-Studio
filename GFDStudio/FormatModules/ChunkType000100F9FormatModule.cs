@@ -12,7 +12,7 @@ namespace GFDStudio.FormatModules
             new[] { "00100F9" };
 
         public override FormatModuleUsageFlags UsageFlags =>
-            FormatModuleUsageFlags.Export;
+            FormatModuleUsageFlags.Export | FormatModuleUsageFlags.ImportForEditing;
 
         protected override bool CanImportCore( Stream stream, string filename = null )
         {

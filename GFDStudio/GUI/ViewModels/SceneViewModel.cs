@@ -46,8 +46,8 @@ namespace GFDStudio.GUI.ViewModels
 
         protected override void InitializeCore()
         {
-            RegisterExportHandler< Stream >( path => Model.Save(  path ) );
-            RegisterReplaceHandler<Stream>( Resource.Load< Scene > );
+            RegisterExportHandler< Scene >( path => Model.Save(  path ) );
+            RegisterReplaceHandler<Scene>( Resource.Load< Scene > );
             RegisterReplaceHandler<Assimp.Scene>( path =>
             {
                 using ( var dialog = new ModelConverterOptionsDialog( true ) )

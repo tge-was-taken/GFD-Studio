@@ -12,7 +12,7 @@ namespace GFDStudio.FormatModules
             new[] { "gap" };
 
         public override FormatModuleUsageFlags UsageFlags =>
-            FormatModuleUsageFlags.Export;
+            FormatModuleUsageFlags.Export | FormatModuleUsageFlags.Import;
 
         protected override bool CanImportCore( Stream stream, string filename = null )
         {
