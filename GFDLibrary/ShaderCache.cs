@@ -9,10 +9,25 @@ namespace GFDLibrary
     {
         private readonly List<TShader> mShaders;
 
+        public uint CacheVersion { get; set; }
+
+        protected ShaderCacheBase() : this( ResourceVersion.Persona5 )
+        {
+            CacheVersion = ResourceVersion.Persona5ShaderCache;
+        }
+
         protected ShaderCacheBase( uint version )
             : base( version )
         {
             mShaders = new List<TShader>();
+            CacheVersion = ResourceVersion.Persona5ShaderCache;
+        }
+
+        protected ShaderCacheBase( uint version, uint cacheVersion )
+            : base( version )
+        {
+            mShaders = new List<TShader>();
+            CacheVersion = cacheVersion;
         }
 
         internal override void Read( ResourceReader reader )
@@ -21,16 +36,18 @@ namespace GFDLibrary
             if ( header.Identifier != ResourceFileIdentifier.ShaderCache )
                 throw new InvalidDataException( "Expected shader cache identifier" );
 
+            CacheVersion = header.Version;
+
             while ( !reader.EndOfStream )
             {
-                var shader = reader.Read<TShader>( Version );
+                var shader = reader.Read<TShader>( header.Version );
                 Add( shader );
             }
         }
 
         internal override void Write( ResourceWriter writer )
         {
-            writer.WriteFileHeader( ResourceFileIdentifier.ShaderCache, Version, ResourceType );
+            writer.WriteFileHeader( ResourceFileIdentifier.ShaderCache, CacheVersion, ResourceType );
             foreach ( var shader in this )
                 writer.WriteResource( shader );
         }
@@ -131,7 +148,15 @@ namespace GFDLibrary
     {
         public override ResourceType ResourceType => ResourceType.ShaderCachePS3;
 
+        public ShaderCachePS3()
+        {           
+        }
+
         public ShaderCachePS3( uint version ) : base( version )
+        {
+        }
+
+        public ShaderCachePS3( uint version, uint cacheVersion ) : base( version, cacheVersion )
         {
         }
     }
@@ -140,7 +165,15 @@ namespace GFDLibrary
     {
         public override ResourceType ResourceType => ResourceType.ShaderCachePSP2;
 
+        public ShaderCachePSP2()
+        {          
+        }
+
         public ShaderCachePSP2( uint version ) : base( version )
+        {
+        }
+
+        public ShaderCachePSP2( uint version, uint cacheVersion ) : base( version, cacheVersion )
         {
         }
     }
@@ -149,7 +182,15 @@ namespace GFDLibrary
     {
         public override ResourceType ResourceType => ResourceType.ShaderCachePS4;
 
+        public ShaderCachePS4()
+        {      
+        }
+
         public ShaderCachePS4( uint version ) : base( version )
+        {
+        }
+
+        public ShaderCachePS4( uint version, uint cacheVersion ) : base( version, cacheVersion )
         {
         }
     }
