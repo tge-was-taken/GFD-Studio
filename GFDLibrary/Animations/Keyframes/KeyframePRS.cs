@@ -48,7 +48,7 @@ namespace GFDLibrary
                     Rotation = reader.ReadQuaternionHalf();
                     break;
                 case KeyframeType.NodeSHalf:
-                    Scale = reader.ReadVector3();
+                    Scale = reader.ReadVector3Half();
                     break;
                 default:
                     throw new InvalidOperationException(nameof(Type));
