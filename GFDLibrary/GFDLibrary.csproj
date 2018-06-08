@@ -66,7 +66,6 @@
   <ItemGroup>
     <Compile Include="Animations\Animation.cs" />
     <Compile Include="Animations\TargetKind.cs" />
-    <Compile Include="Animations\Keyframes\NodePRHalfKeyframe.cs" />
     <Compile Include="Animations\Keyframes\NodePRSKeyframe.cs" />
     <Compile Include="Animations\Keyframes\MaterialKeyframeType29.cs" />
     <Compile Include="AnimationPackage.cs" />
@@ -88,9 +87,7 @@
     <Compile Include="Animations\KeyframeKind.cs" />
     <Compile Include="Animations\AnimationExtraData.cs" />
     <Compile Include="Animations\Flag80000000Data.cs" />
-    <Compile Include="Animations\Keyframes\NodePRSHalfKeyframe.cs" />
     <Compile Include="Animations\Keyframes\MaterialKeyframeType12.cs" />
-    <Compile Include="Animations\Keyframes\NodePRKeyframe.cs" />
     <Compile Include="Animations\Keyframes\MaterialKeyframeType14.cs" />
     <Compile Include="EplAnimation.cs" />
     <Compile Include="Processing\Textures\TextureInfo.cs" />
@@ -144,7 +141,7 @@
     <Compile Include="Resource.cs" />
     <Compile Include="Model.cs" />
     <Compile Include="Scene.cs" />
-    <Compile Include="ShaderPS3.cs" />
+    <Compile Include="Shader.cs" />
     <Compile Include="ShaderCache.cs" />
     <Compile Include="Common\StringHasher.cs" />
     <Compile Include="Texture.cs" />

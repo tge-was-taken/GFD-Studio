@@ -14,19 +14,19 @@ namespace GFDStudio.GUI.ViewModels
         public override TreeNodeViewModelFlags NodeFlags => TreeNodeViewModelFlags.Branch;
 
         [Browsable( false )]
-        public TextureDictionaryViewModel TextureDictionaryViewModel { get; set; }
+        public TextureDictionaryViewModel Textures { get; set; }
 
         [Browsable( false )]
-        public MaterialDictionaryViewModel MaterialDictionaryViewModel { get; set; }
+        public MaterialDictionaryViewModel Materials { get; set; }
 
         [Browsable( false )]
-        public SceneViewModel SceneViewModel { get; set; }
+        public SceneViewModel Scene { get; set; }
 
         [Browsable( false )]
-        public ChunkType000100F9ViewModel ChunkType000100F9ViewModel { get; set; }
+        public ChunkType000100F9ViewModel ChunkType000100F9 { get; set; }
 
         [Browsable( false )]
-        public ChunkType000100F8ViewModel ChunkType000100F8ViewModel { get; set; }
+        public ChunkType000100F8ViewModel ChunkType000100F8 { get; set; }
 
         [Browsable( false )]
         public AnimationPackageViewModel AnimationPackage { get; set; }
@@ -60,20 +60,20 @@ namespace GFDStudio.GUI.ViewModels
             RegisterModelUpdateHandler( () =>
             {
                 var model = new Model( Version );
-                if ( TextureDictionaryViewModel != null && Nodes.Contains( TextureDictionaryViewModel ) )
-                    model.TextureDictionary = TextureDictionaryViewModel.Model;
+                if ( Textures != null && Nodes.Contains( Textures ) )
+                    model.Textures = Textures.Model;
 
-                if ( MaterialDictionaryViewModel != null && Nodes.Contains( MaterialDictionaryViewModel ) )
-                    model.MaterialDictionary = MaterialDictionaryViewModel.Model;
+                if ( Materials != null && Nodes.Contains( Materials ) )
+                    model.Materials = Materials.Model;
 
-                if ( SceneViewModel != null && Nodes.Contains( SceneViewModel ) )
-                    model.Scene = SceneViewModel.Model;
+                if ( Scene != null && Nodes.Contains( Scene ) )
+                    model.Scene = Scene.Model;
 
-                if ( ChunkType000100F9ViewModel != null && Nodes.Contains( ChunkType000100F9ViewModel ) )
-                    model.ChunkType000100F9 = ChunkType000100F9ViewModel.Model;
+                if ( ChunkType000100F9 != null && Nodes.Contains( ChunkType000100F9 ) )
+                    model.ChunkType000100F9 = ChunkType000100F9.Model;
 
-                if ( ChunkType000100F8ViewModel != null && Nodes.Contains( ChunkType000100F8ViewModel ) )
-                    model.ChunkType000100F8 = ChunkType000100F8ViewModel.Model;
+                if ( ChunkType000100F8 != null && Nodes.Contains( ChunkType000100F8 ) )
+                    model.ChunkType000100F8 = ChunkType000100F8.Model;
 
                 if ( AnimationPackage != null && Nodes.Contains( AnimationPackage ) )
                     model.AnimationPackage = AnimationPackage.Model;
@@ -84,34 +84,34 @@ namespace GFDStudio.GUI.ViewModels
 
         protected override void InitializeViewCore()
         {
-            if ( Model.TextureDictionary != null )
+            if ( Model.Textures != null )
             {
-                TextureDictionaryViewModel = ( TextureDictionaryViewModel )TreeNodeViewModelFactory.Create( "Textures", Model.TextureDictionary );
-                Nodes.Add( TextureDictionaryViewModel );
+                Textures = ( TextureDictionaryViewModel )TreeNodeViewModelFactory.Create( "Textures", Model.Textures );
+                Nodes.Add( Textures );
             }
 
-            if ( Model.MaterialDictionary != null )
+            if ( Model.Materials != null )
             {
-                MaterialDictionaryViewModel = ( MaterialDictionaryViewModel )TreeNodeViewModelFactory.Create( "Materials", Model.MaterialDictionary );
-                Nodes.Add( MaterialDictionaryViewModel );
+                Materials = ( MaterialDictionaryViewModel )TreeNodeViewModelFactory.Create( "Materials", Model.Materials );
+                Nodes.Add( Materials );
             }
 
             if ( Model.Scene != null )
             {
-                SceneViewModel = ( SceneViewModel ) TreeNodeViewModelFactory.Create( "Scene", Model.Scene );
-                Nodes.Add( SceneViewModel );
+                Scene = ( SceneViewModel ) TreeNodeViewModelFactory.Create( "Scene", Model.Scene );
+                Nodes.Add( Scene );
             }
 
             if ( Model.ChunkType000100F9 != null )
             {
-                ChunkType000100F9ViewModel = ( ChunkType000100F9ViewModel )TreeNodeViewModelFactory.Create( "Chunk Type 000100F9", Model.ChunkType000100F9 );
-                Nodes.Add( ChunkType000100F9ViewModel );
+                ChunkType000100F9 = ( ChunkType000100F9ViewModel )TreeNodeViewModelFactory.Create( "Chunk Type 000100F9", Model.ChunkType000100F9 );
+                Nodes.Add( ChunkType000100F9 );
             }
 
             if ( Model.ChunkType000100F8 != null )
             {
-                ChunkType000100F8ViewModel = ( ChunkType000100F8ViewModel )TreeNodeViewModelFactory.Create( "Chunk Type 000100F8", Model.ChunkType000100F8 );
-                Nodes.Add( ChunkType000100F8ViewModel );
+                ChunkType000100F8 = ( ChunkType000100F8ViewModel )TreeNodeViewModelFactory.Create( "Chunk Type 000100F8", Model.ChunkType000100F8 );
+                Nodes.Add( ChunkType000100F8 );
             }
 
             if ( Model.AnimationPackage != null )

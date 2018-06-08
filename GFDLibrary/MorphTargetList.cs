@@ -28,7 +28,7 @@ namespace GFDLibrary
 
             for ( int i = 0; i < morphCount; i++ )
             {
-                var morphTarget = reader.Read<MorphTarget>( Version );
+                var morphTarget = reader.ReadResource<MorphTarget>( Version );
                 Add( morphTarget );
             }
         }

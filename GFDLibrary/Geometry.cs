@@ -338,7 +338,7 @@ namespace GFDLibrary
 
             if ( Flags.HasFlag( GeometryFlags.HasMorphTargets ) )
             {
-                MorphTargets = reader.Read<MorphTargetList>( Version );
+                MorphTargets = reader.ReadResource<MorphTargetList>( Version );
             }
 
             if ( Flags.HasFlag( GeometryFlags.HasTriangles ) )

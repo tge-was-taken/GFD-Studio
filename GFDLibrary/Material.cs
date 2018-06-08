@@ -340,47 +340,47 @@ namespace GFDLibrary
 
             if ( flags.HasFlag( MaterialFlags.HasDiffuseMap ) )
             {
-                DiffuseMap = reader.Read<TextureMap>( Version );
+                DiffuseMap = reader.ReadResource<TextureMap>( Version );
             }
 
             if ( flags.HasFlag( MaterialFlags.HasNormalMap ) )
             {
-                NormalMap = reader.Read<TextureMap>( Version );
+                NormalMap = reader.ReadResource<TextureMap>( Version );
             }
 
             if ( flags.HasFlag( MaterialFlags.HasSpecularMap ) )
             {
-                SpecularMap = reader.Read<TextureMap>( Version );
+                SpecularMap = reader.ReadResource<TextureMap>( Version );
             }
 
             if ( flags.HasFlag( MaterialFlags.HasReflectionMap ) )
             {
-                ReflectionMap = reader.Read<TextureMap>( Version );
+                ReflectionMap = reader.ReadResource<TextureMap>( Version );
             }
 
             if ( flags.HasFlag( MaterialFlags.HasHighlightMap ) )
             {
-                HighlightMap = reader.Read<TextureMap>( Version );
+                HighlightMap = reader.ReadResource<TextureMap>( Version );
             }
 
             if ( flags.HasFlag( MaterialFlags.HasGlowMap ) )
             {
-                GlowMap = reader.Read<TextureMap>( Version );
+                GlowMap = reader.ReadResource<TextureMap>( Version );
             }
 
             if ( flags.HasFlag( MaterialFlags.HasNightMap ) )
             {
-                NightMap = reader.Read<TextureMap>( Version );
+                NightMap = reader.ReadResource<TextureMap>( Version );
             }
 
             if ( flags.HasFlag( MaterialFlags.HasDetailMap ) )
             {
-                DetailMap = reader.Read<TextureMap>( Version );
+                DetailMap = reader.ReadResource<TextureMap>( Version );
             }
 
             if ( flags.HasFlag( MaterialFlags.HasShadowMap ) )
             {
-                ShadowMap = reader.Read<TextureMap>( Version );
+                ShadowMap = reader.ReadResource<TextureMap>( Version );
             }
 
             if ( flags.HasFlag( MaterialFlags.HasAttributes ) )

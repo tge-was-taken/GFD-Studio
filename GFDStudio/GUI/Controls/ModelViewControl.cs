@@ -503,9 +503,9 @@ namespace GFDStudio.GUI.Controls
             glGeometry.ElementIndexCount = geometry.Triangles.Length * 3;
 
             // material
-            if ( geometry.MaterialName != null && mModel.MaterialDictionary != null )
+            if ( geometry.MaterialName != null && mModel.Materials != null )
             {
-                if ( mModel.MaterialDictionary.TryGetMaterial( geometry.MaterialName, out var material ) )
+                if ( mModel.Materials.TryGetMaterial( geometry.MaterialName, out var material ) )
                 {
                     glGeometry.Material = CreateGLMaterial( material );
                 }
@@ -580,7 +580,7 @@ namespace GFDStudio.GUI.Controls
                         glMaterial.DiffuseTextureId = CreateGLTexture( texture );
                     }
                 }
-                else if ( mModel.TextureDictionary.TryGetTexture( material.DiffuseMap.Name, out var texture ) )
+                else if ( mModel.Textures.TryGetTexture( material.DiffuseMap.Name, out var texture ) )
                 {
                     glMaterial.DiffuseTextureId = CreateGLTexture( texture );
                 }

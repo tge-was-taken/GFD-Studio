@@ -181,18 +181,18 @@ namespace GFDLibrary
                 Field28 = reader.ReadSingle();
                 Field2C = reader.ReadSingle();
 
-                if ( ( ( BinaryReader ) reader ).ReadBoolean() )
+                if ( reader.ReadBoolean() )
                     Type0Flags |= MaterialAttributeType0Flags.Flag1;
 
-                if ( ( ( BinaryReader ) reader ).ReadBoolean() )
+                if ( reader.ReadBoolean() )
                     Type0Flags |= MaterialAttributeType0Flags.Flag2;
 
-                if ( ( ( BinaryReader ) reader ).ReadBoolean() )
+                if ( reader.ReadBoolean() )
                     Type0Flags |= MaterialAttributeType0Flags.Flag4;
 
                 if ( Version > 0x1104260 )
                 {
-                    if ( ( ( BinaryReader ) reader ).ReadBoolean() )
+                    if ( reader.ReadBoolean() )
                         Type0Flags |= MaterialAttributeType0Flags.Flag8;
                 }
             }

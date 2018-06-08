@@ -30,12 +30,12 @@ namespace GFDLibrary.IO
 
         public void WriteSingle( float value ) => Write( value );
 
-        public void WriteString( string value, int length ) => WriteBytes( sSJISEncoding.GetBytes( value ) );
+        public void WriteStringRaw( string value ) => WriteBytes( sSJISEncoding.GetBytes( value ) );
 
         public void WriteString( string value )
         {
             WriteUInt16( ( ushort )sSJISEncoding.GetByteCount( value ) );
-            WriteString( value, value.Length );
+            WriteStringRaw( value );
         }
 
         public void WriteStringWithHash( uint version, string value )

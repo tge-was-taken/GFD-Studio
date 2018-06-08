@@ -56,19 +56,19 @@ namespace GFDLibrary
                 //case NodeAttachmentType.Mesh:
                 //  return new NodeMeshAttachment( ReadMesh( version ) );
                 case NodeAttachmentType.Node:
-                    return new NodeNodeAttachment( reader.Read<Node>(version) );
+                    return new NodeNodeAttachment( reader.ReadResource<Node>(version) );
                 case NodeAttachmentType.Geometry:
-                    return new NodeGeometryAttachment( reader.Read<Geometry>( version ) );
+                    return new NodeGeometryAttachment( reader.ReadResource<Geometry>( version ) );
                 case NodeAttachmentType.Camera:
-                    return new NodeCameraAttachment( reader.Read<Camera>( version ) );
+                    return new NodeCameraAttachment( reader.ReadResource<Camera>( version ) );
                 case NodeAttachmentType.Light:
-                    return new NodeLightAttachment( reader.Read<Light>( version ) );
+                    return new NodeLightAttachment( reader.ReadResource<Light>( version ) );
                 case NodeAttachmentType.Epl:
                     return new NodeEplAttachment( Epl.Read(reader, version, out skipProperties) );
                 //case NodeAttachmentType.EplLeaf:
                 //    return new NodeEplLeafAttachment( ReadEplLeaf( version ) );
                 case NodeAttachmentType.Morph:
-                    return new NodeMorphAttachment( reader.Read<Morph>( version ) );
+                    return new NodeMorphAttachment( reader.ReadResource<Morph>( version ) );
                 default:
                     throw new NotImplementedException( $"Unimplemented node attachment type: {type}" );
             }

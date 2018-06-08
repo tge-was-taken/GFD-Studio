@@ -53,7 +53,7 @@ namespace GFDLibrary
                         property = new UserFloatProperty( name, reader.ReadSingle() );
                         break;
                     case UserPropertyValueType.Bool:
-                        property = new UserBoolProperty( name, ( ( BinaryReader ) reader ).ReadBoolean() );
+                        property = new UserBoolProperty( name, reader.ReadBoolean() );
                         break;
                     case UserPropertyValueType.String:
                         property = new UserStringProperty( name, reader.ReadString( size - 1 ) );
@@ -108,7 +108,7 @@ namespace GFDLibrary
                         {
                             var value = property.GetValue<string>();
                             writer.WriteInt32( value.Length + 1 );
-                            writer.WriteString( value, value.Length );
+                            writer.WriteStringRaw( value );
                         }
                         break;
                     case UserPropertyValueType.ByteVector3:

@@ -246,7 +246,7 @@ namespace GFDLibrary
                     }
 
                     // Set vertex weights
-                    foreach ( var geometry in uniqueNode.Attachments.Where( x => x.Type == NodeAttachmentType.Geometry ).Select( x => x.GetValue<Geometry>() ).Where( x => x.VertexWeights == null ) )
+                    foreach ( var geometry in unweightedGeometries )
                     {
                         geometry.VertexWeights = new VertexWeight[geometry.VertexCount];
                         for ( int i = 0; i < geometry.VertexWeights.Length; i++ )

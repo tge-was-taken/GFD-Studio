@@ -199,7 +199,7 @@ namespace GFDLibrary.IO
             return value;
         }
 
-        public T Read<T>( uint version ) where T : Resource, new()
+        public T ReadResource<T>( uint version ) where T : Resource, new()
         {
             var obj = new T();
             obj.Version = version;

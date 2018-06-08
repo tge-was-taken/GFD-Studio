@@ -2,7 +2,7 @@
 
 namespace GFDLibrary
 {
-    public abstract class ShaderBase : Resource
+    public abstract class Shader : Resource
     {
         public ShaderType ShaderType { get; set; }
 
@@ -22,9 +22,9 @@ namespace GFDLibrary
 
         public byte[] Data { get; set; }
 
-        protected ShaderBase() { }
+        protected Shader() { }
 
-        protected ShaderBase( uint version ) : base( version )
+        protected Shader( uint version ) : base( version )
         {
         }
 
@@ -55,7 +55,7 @@ namespace GFDLibrary
         }
     }
 
-    public sealed class ShaderPS3 : ShaderBase
+    public sealed class ShaderPS3 : Shader
     {
         public override ResourceType ResourceType => ResourceType.ShaderPS3;
 
@@ -69,7 +69,7 @@ namespace GFDLibrary
         }
     }
 
-    public sealed class ShaderPSP2 : ShaderBase
+    public sealed class ShaderPSP2 : Shader
     {
         public override ResourceType ResourceType => ResourceType.ShaderPSP2;
 
@@ -83,7 +83,7 @@ namespace GFDLibrary
         }
     }
 
-    public sealed class ShaderPS4 : ShaderBase
+    public sealed class ShaderPS4 : Shader
     {
         public override ResourceType ResourceType => ResourceType.ShaderPS4;
 

@@ -5,25 +5,25 @@ using GFDLibrary.IO;
 
 namespace GFDLibrary
 {
-    public abstract class ShaderCacheBase<TShader> : Resource, IList<TShader> where TShader : Resource, new() 
+    public abstract class ShaderCache<TShader> : Resource, IList<TShader> where TShader : Resource, new() 
     {
         private readonly List<TShader> mShaders;
 
         public uint CacheVersion { get; set; }
 
-        protected ShaderCacheBase() : this( ResourceVersion.Persona5 )
+        protected ShaderCache() : this( ResourceVersion.Persona5 )
         {
             CacheVersion = ResourceVersion.Persona5ShaderCache;
         }
 
-        protected ShaderCacheBase( uint version )
+        protected ShaderCache( uint version )
             : base( version )
         {
             mShaders = new List<TShader>();
             CacheVersion = ResourceVersion.Persona5ShaderCache;
         }
 
-        protected ShaderCacheBase( uint version, uint cacheVersion )
+        protected ShaderCache( uint version, uint cacheVersion )
             : base( version )
         {
             mShaders = new List<TShader>();
@@ -40,7 +40,7 @@ namespace GFDLibrary
 
             while ( !reader.EndOfStream )
             {
-                var shader = reader.Read<TShader>( header.Version );
+                var shader = reader.ReadResource<TShader>( header.Version );
                 Add( shader );
             }
         }
@@ -144,7 +144,7 @@ namespace GFDLibrary
         #endregion
     }
 
-    public sealed class ShaderCachePS3 : ShaderCacheBase<ShaderPS3>
+    public sealed class ShaderCachePS3 : ShaderCache<ShaderPS3>
     {
         public override ResourceType ResourceType => ResourceType.ShaderCachePS3;
 
@@ -161,7 +161,7 @@ namespace GFDLibrary
         }
     }
 
-    public sealed class ShaderCachePSP2 : ShaderCacheBase<ShaderPSP2>
+    public sealed class ShaderCachePSP2 : ShaderCache<ShaderPSP2>
     {
         public override ResourceType ResourceType => ResourceType.ShaderCachePSP2;
 
@@ -178,7 +178,7 @@ namespace GFDLibrary
         }
     }
 
-    public class ShaderCachePS4 : ShaderCacheBase<ShaderPS4>
+    public class ShaderCachePS4 : ShaderCache<ShaderPS4>
     {
         public override ResourceType ResourceType => ResourceType.ShaderCachePS4;
 

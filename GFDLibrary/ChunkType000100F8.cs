@@ -2,6 +2,9 @@
 
 namespace GFDLibrary
 {
+    /// <summary>
+    /// Only used by 1 model (c0003_051_00.GMD)
+    /// </summary>
     public sealed class ChunkType000100F8 : Resource
     {
         public byte[] RawData { get; set; }

@@ -6,9 +6,9 @@ namespace GFDLibrary
     {
         public override ResourceType ResourceType => ResourceType.Model;
 
-        public TextureDictionary TextureDictionary { get; set; }
+        public TextureDictionary Textures { get; set; }
 
-        public MaterialDictionary MaterialDictionary { get; set; }
+        public MaterialDictionary Materials { get; set; }
 
         public Scene Scene { get; set; }
 
@@ -28,15 +28,15 @@ namespace GFDLibrary
 
         public void ReplaceWith( Model other )
         {
-            if ( TextureDictionary == null || other.TextureDictionary == null )
-                TextureDictionary = other.TextureDictionary;
+            if ( Textures == null || other.Textures == null )
+                Textures = other.Textures;
             else
-                TextureDictionary.ReplaceWith( other.TextureDictionary );
+                Textures.ReplaceWith( other.Textures );
 
-            if ( MaterialDictionary == null || other.MaterialDictionary == null )
-                MaterialDictionary = other.MaterialDictionary;
+            if ( Materials == null || other.Materials == null )
+                Materials = other.Materials;
             else
-                MaterialDictionary.ReplaceWith( other.MaterialDictionary );
+                Materials.ReplaceWith( other.Materials );
 
             if ( Scene == null || other.Scene == null )
                 Scene = other.Scene;
@@ -88,28 +88,30 @@ namespace GFDLibrary
                 if ( chunk.Type == ResourceChunkType.Invalid )
                     break;
 
+                var chunkDataLength = chunk.Length - 16;
+
                 switch ( chunk.Type )
                 {
                     case ResourceChunkType.TextureDictionary:
-                        TextureDictionary = reader.Read<TextureDictionary>( chunk.Version );
+                        Textures = reader.ReadResource<TextureDictionary>( chunk.Version );
                         break;
                     case ResourceChunkType.MaterialDictionary:
-                        MaterialDictionary = reader.Read<MaterialDictionary>( chunk.Version );
+                        Materials = reader.ReadResource<MaterialDictionary>( chunk.Version );
                         break;
                     case ResourceChunkType.Scene:
-                        Scene = reader.Read<Scene>( chunk.Version );
+                        Scene = reader.ReadResource<Scene>( chunk.Version );
                         break;
                     case ResourceChunkType.ChunkType000100F9:
-                        ChunkType000100F9 = reader.Read<ChunkType000100F9>( chunk.Version );
+                        ChunkType000100F9 = reader.ReadResource<ChunkType000100F9>( chunk.Version );
                         break;
                     case ResourceChunkType.ChunkType000100F8:
-                        ChunkType000100F8 = new ChunkType000100F8( chunk.Version ) { RawData = reader.ReadBytes( chunk.Length - 16 ) };
+                        ChunkType000100F8 = new ChunkType000100F8( chunk.Version ) { RawData = reader.ReadBytes( chunkDataLength ) };
                         break;
                     case ResourceChunkType.AnimationPackage:
-                        AnimationPackage = new AnimationPackage( chunk.Version ) { RawData = reader.ReadBytes( chunk.Length - 16 ) };
+                        AnimationPackage = new AnimationPackage( chunk.Version ) { RawData = reader.ReadBytes( chunkDataLength ) };
                         break;
                     default:
-                        reader.SeekCurrent( chunk.Length - 16 );
+                        reader.SeekCurrent( chunkDataLength );
                         continue;
                 }
             }
@@ -117,11 +119,11 @@ namespace GFDLibrary
 
         internal override void Write( ResourceWriter writer )
         {
-            if ( TextureDictionary != null )
-                writer.WriteResourceChunk( TextureDictionary );
+            if ( Textures != null )
+                writer.WriteResourceChunk( Textures );
 
-            if ( MaterialDictionary != null )
-                writer.WriteResourceChunk( MaterialDictionary );
+            if ( Materials != null )
+                writer.WriteResourceChunk( Materials );
 
             if ( Scene != null )
                 writer.WriteResourceChunk( Scene );
@@ -136,8 +138,8 @@ namespace GFDLibrary
                 writer.WriteResourceChunk( AnimationPackage );
 
             bool animationOnly = AnimationPackage != null &&
-                                 TextureDictionary == null &&
-                                 MaterialDictionary == null &&
+                                 Textures == null &&
+                                 Materials == null &&
                                  Scene == null &&
                                  ChunkType000100F9 == null &&
                                  ChunkType000100F8 == null;

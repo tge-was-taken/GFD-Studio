@@ -18,13 +18,13 @@ namespace GFDLibrary
 
             // Build textures & Materials
             var model = new Model( options.Version );
-            model.TextureDictionary = new TextureDictionary( options.Version );
-            model.MaterialDictionary = new MaterialDictionary( options.Version );
+            model.Textures = new TextureDictionary( options.Version );
+            model.Materials = new MaterialDictionary( options.Version );
 
             foreach ( var aiSceneMaterial in aiScene.Materials )
             {
-                var material = ConvertMaterialAndTextures( aiSceneMaterial, options, baseDirectoryPath, model.TextureDictionary );
-                model.MaterialDictionary.Add( material );
+                var material = ConvertMaterialAndTextures( aiSceneMaterial, options, baseDirectoryPath, model.Textures );
+                model.Materials.Add( material );
             }
 
             // Create scene

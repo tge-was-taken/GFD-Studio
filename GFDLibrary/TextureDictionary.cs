@@ -124,7 +124,7 @@ namespace GFDLibrary
             var textureCount = reader.ReadInt32();
             for ( int i = 0; i < textureCount; i++ )
             {
-                var texture = reader.Read<Texture>( Version );
+                var texture = reader.ReadResource<Texture>( Version );
                 Add( texture );
             }
         }

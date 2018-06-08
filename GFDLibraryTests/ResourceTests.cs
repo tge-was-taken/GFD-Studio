@@ -234,8 +234,8 @@ namespace AtlusGfdLibraryRegressionTests
             Assert.AreEqual( a.ResourceType, b.ResourceType );
             Assert.AreEqual( a.Version, b.Version );
 
-            CompareTextureDictionaries( a.TextureDictionary, a.TextureDictionary );
-            CompareMaterialDictionaries( a.MaterialDictionary, b.MaterialDictionary );
+            CompareTextureDictionaries( a.Textures, a.Textures );
+            CompareMaterialDictionaries( a.Materials, b.Materials );
             CompareScenes( a.Scene, b.Scene );
             CompareAnimationPackage( a.AnimationPackage, b.AnimationPackage );
         }

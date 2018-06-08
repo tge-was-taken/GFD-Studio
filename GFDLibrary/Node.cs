@@ -256,7 +256,7 @@ namespace GFDLibrary
 
         internal static Node ReadRecursive( ResourceReader reader, uint version )
         {
-            var node = reader.Read<Node>( version );
+            var node = reader.ReadResource<Node>( version );
 
             int childCount = reader.ReadInt32();
 
@@ -307,10 +307,10 @@ namespace GFDLibrary
 
             if ( Version > 0x1060000 && !skipProperties )
             {
-                var hasProperties = ( ( BinaryReader ) reader ).ReadBoolean();
+                var hasProperties = reader.ReadBoolean();
                 if ( hasProperties )
                 {
-                    Properties = reader.Read<UserPropertyCollection>( Version );
+                    Properties = reader.ReadResource<UserPropertyCollection>( Version );
                 }
             }
 

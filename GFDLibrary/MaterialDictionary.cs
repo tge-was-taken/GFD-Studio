@@ -53,7 +53,7 @@ namespace GFDLibrary
             var count = reader.ReadInt32();
             for ( int i = 0; i < count; i++ )
             {
-                var material = reader.Read<Material>( Version );
+                var material = reader.ReadResource<Material>( Version );
                 Add( material );
             }
         }

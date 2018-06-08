@@ -42,11 +42,11 @@ namespace GFDLibrary.IO.Assimp
         {
             Init( path );
 
-            if ( model.TextureDictionary != null )
-                ConvertTextures( model.TextureDictionary );
+            if ( model.Textures != null )
+                ConvertTextures( model.Textures );
 
-            if ( model.MaterialDictionary != null )
-                ConvertMaterials( model.MaterialDictionary );
+            if ( model.Materials != null )
+                ConvertMaterials( model.Materials );
 
             if ( model.Scene != null )
                 ConvertScene( model.Scene );
