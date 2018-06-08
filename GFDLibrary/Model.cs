@@ -113,7 +113,7 @@ namespace GFDLibrary
                         {
                             AnimationPack = reader.ReadResource<AnimationPack>( chunk.Version );
 
-                            if ( AnimationPack.ErrorsOccuredDuringLoad )
+                            if ( AnimationPack.ErrorsOccuredDuringLoad && Scene != null )
                             {
                                 // Invalid data, let's not make model uneditable because the animation support sucks, now shall we?
                                 reader.SeekBegin( chunkDataStart );
