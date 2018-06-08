@@ -29,7 +29,7 @@ namespace GFDStudio.GUI.ViewModels
         public ChunkType000100F8ViewModel ChunkType000100F8 { get; set; }
 
         [Browsable( false )]
-        public AnimationPackageViewModel AnimationPackage { get; set; }
+        public AnimationPackViewModel AnimationPack { get; set; }
 
         protected internal ModelViewModel( string text, Model resource ) : base( text, resource )
         {
@@ -75,8 +75,8 @@ namespace GFDStudio.GUI.ViewModels
                 if ( ChunkType000100F8 != null && Nodes.Contains( ChunkType000100F8 ) )
                     model.ChunkType000100F8 = ChunkType000100F8.Model;
 
-                if ( AnimationPackage != null && Nodes.Contains( AnimationPackage ) )
-                    model.AnimationPackage = AnimationPackage.Model;
+                if ( AnimationPack != null && Nodes.Contains( AnimationPack ) )
+                    model.AnimationPack = AnimationPack.Model;
 
                 return model;
             } );
@@ -114,10 +114,10 @@ namespace GFDStudio.GUI.ViewModels
                 Nodes.Add( ChunkType000100F8 );
             }
 
-            if ( Model.AnimationPackage != null )
+            if ( Model.AnimationPack != null )
             {
-                AnimationPackage = ( AnimationPackageViewModel )TreeNodeViewModelFactory.Create( "Animations", Model.AnimationPackage );
-                Nodes.Add( AnimationPackage );
+                AnimationPack = ( AnimationPackViewModel )TreeNodeViewModelFactory.Create( "Animations", Model.AnimationPack );
+                Nodes.Add( AnimationPack );
             }
         }
     }

@@ -127,8 +127,8 @@ namespace GFDLibrary
                     case ResourceType.ChunkType000100F8:
                         res = new ChunkType000100F8( header.Version );
                         break;
-                    case ResourceType.AnimationPackage:
-                        res = new AnimationPackage( header.Version );
+                    case ResourceType.AnimationPack:
+                        res = new AnimationPack( header.Version );
                         break;
                     case ResourceType.MaterialAttribute:
                         return MaterialAttribute.Read( reader, header.Version );
@@ -148,6 +148,18 @@ namespace GFDLibrary
                         return Epl.Read( reader, header.Version, out _ );
                     case ResourceType.EplLeaf:
                         res = new EplLeaf( header.Version );
+                        break;
+                    case ResourceType.Animation:
+                        res = new Animation( header.Version );
+                        break;
+                    case ResourceType.AnimationExtraData:
+                        res = new AnimationExtraData( header.Version );
+                        break;
+                    case ResourceType.KeyframeTrack:
+                        res = new KeyframeTrack( header.Version );
+                        break;
+                    case ResourceType.AnimationController:
+                        res = new AnimationController( header.Version );
                         break;
                     default:
                         throw new InvalidDataException( "Unknown/Invalid resource type" );

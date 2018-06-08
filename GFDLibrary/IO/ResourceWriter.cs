@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
 using System.Text;
@@ -30,6 +31,48 @@ namespace GFDLibrary.IO
 
         public void WriteSingle( float value ) => Write( value );
 
+        public void WriteHalf( float value ) => Write( FloatToHalf( value ) );
+
+        // https://blog.fpmurphy.com/2008/12/half-precision-floating-point-format_14.html
+        private static ushort FloatToHalf( float value )
+        {
+            int i = UnsafeUtilities.ReinterpretCast<float, int>( value );
+            int s = ( i >> 16 ) & 0x00008000;                       // sign
+            int e = ( ( i >> 23 ) & 0x000000ff ) - ( 127 - 15 );    // exponent
+            int f = i & 0x007fffff;                                 // fraction
+
+            // need to handle NaNs and Inf?
+            if ( e <= 0 )
+            {
+                if ( e < -10 )
+                {
+                    if ( s > 0 ) // handle -0.0
+                        return 0x8000;
+                    else
+                        return 0;
+                }
+                f = ( f | 0x00800000 ) >> ( 1 - e );
+                return ( ushort ) ( s | ( f >> 13 ) );
+            }
+            else if ( e == 0xff - ( 127 - 15 ) )
+            {
+                if ( f == 0 ) // Inf
+                    return ( ushort ) ( s | 0x7c00 );
+                else
+                {
+                    // NAN
+                    f >>= 13;
+                    return ( ushort ) ( s | 0x7c00 | f | ( f == 0 ? 1 : 0 ) );
+                }
+            }
+            else
+            {
+                if ( e > 30 ) // Overflow
+                    return ( ushort ) ( s | 0x7c00 );
+                return ( ushort ) ( s | ( e << 10 ) | ( f >> 13 ) );
+            }
+        }
+
         public void WriteStringRaw( string value ) => WriteBytes( sSJISEncoding.GetBytes( value ) );
 
         public void WriteString( string value )
@@ -57,6 +100,14 @@ namespace GFDLibrary.IO
             WriteSingle( value.X );
             WriteSingle( value.Y );
             WriteSingle( value.Z );
+        }
+
+
+        public void WriteVector3Half( Vector3 value )
+        {
+            WriteHalf( value.X );
+            WriteHalf( value.Y );
+            WriteHalf( value.Z );
         }
 
         public void WriteByteVector3( ByteVector3 value )
@@ -88,6 +139,14 @@ namespace GFDLibrary.IO
             WriteSingle( value.Y );
             WriteSingle( value.Z );
             WriteSingle( value.W );
+        }
+
+        public void WriteQuaternionHalf( Quaternion value )
+        {
+            WriteHalf( value.X );
+            WriteHalf( value.Y );
+            WriteHalf( value.Z );
+            WriteHalf( value.W );
         }
 
         public void WriteMatrix4x4( Matrix4x4 matrix4x4 )
@@ -149,8 +208,8 @@ namespace GFDLibrary.IO
                 case ResourceType.ChunkType000100F8:
                     type = ResourceChunkType.ChunkType000100F8;
                     break;
-                case ResourceType.AnimationPackage:
-                    type = ResourceChunkType.AnimationPackage;
+                case ResourceType.AnimationPack:
+                    type = ResourceChunkType.AnimationPack;
                     break;
                 default:
                     throw new InvalidOperationException( $"Resource of type {resource.ResourceType} has no associated chunk type." );
@@ -183,6 +242,24 @@ namespace GFDLibrary.IO
         public void WriteResource<T>(T value) where T : Resource
         {
             value.Write( this );
+        }
+
+        public void WriteResources<T>( IEnumerable<T> values ) where T : Resource
+        {
+            foreach ( var value in values )
+            {
+                value.Write( this );
+            }
+        }
+
+
+        internal void WriteResourceList<T>( List<T> list ) where T : Resource
+        {
+            WriteInt32( list.Count );
+            foreach ( var item in list )
+            {
+                item.Write( this );
+            }
         }
     }
 }

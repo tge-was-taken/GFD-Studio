@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Numerics;
 using System.Text;
@@ -122,6 +125,15 @@ namespace GFDLibrary.IO
             return value;
         }
 
+        public Vector3 ReadVector3Half()
+        {
+            Vector3 value;
+            value.X = ReadHalf();
+            value.Y = ReadHalf();
+            value.Z = ReadHalf();
+            return value;
+        }
+
         public ByteVector3 ReadByteVector3()
         {
             ByteVector3 value;
@@ -158,6 +170,16 @@ namespace GFDLibrary.IO
             value.Y = ReadSingle();
             value.Z = ReadSingle();
             value.W = ReadSingle();
+            return value;
+        }
+
+        public Quaternion ReadQuaternionHalf()
+        {
+            Quaternion value;
+            value.X = ReadHalf();
+            value.Y = ReadHalf();
+            value.Z = ReadHalf();
+            value.W = ReadHalf();
             return value;
         }
 
@@ -205,6 +227,26 @@ namespace GFDLibrary.IO
             obj.Version = version;
             obj.Read( this );
             return obj;
+        }
+
+        public void ReadResources<T>( uint version, IList<T> list, int count ) where T : Resource, new()
+        {
+            for ( int i = 0; i < count; i++ )
+            {
+                list[ i ] = ReadResource<T>( version );
+            }
+        }
+
+        public List<T> ReadResourceList<T>( uint version ) where T : Resource, new()
+        {
+            var count = ReadInt32();
+            var list = new List<T>( count );
+            for ( int i = 0; i < count; i++ )
+            {
+                list.Add( ReadResource<T>( version ) );
+            }
+
+            return list;
         }
     }
 }

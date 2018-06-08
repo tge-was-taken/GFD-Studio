@@ -9,7 +9,7 @@ namespace GFDStudio.FormatModules
             "Model";
 
         public override string[] Extensions =>
-            new[] { "gfs", "gmd", "gap" };
+            new[] { "gfs", "gmd" };
 
         public override FormatModuleUsageFlags UsageFlags =>
              FormatModuleUsageFlags.Import | FormatModuleUsageFlags.Export;

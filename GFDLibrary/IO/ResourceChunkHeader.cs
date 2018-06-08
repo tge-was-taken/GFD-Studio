@@ -27,7 +27,7 @@ namespace GFDLibrary.IO
             Version = reader.ReadUInt32();
             Type = ( ResourceChunkType )reader.ReadInt32();
             Length = reader.ReadInt32();
-            Trace.Assert( reader.ReadInt32() == 0 );
+            reader.ReadInt32();
         }
 
         internal void Write( BinaryWriter writer )

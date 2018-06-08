@@ -1,6 +1,6 @@
 ﻿namespace GFDLibrary
 {
-    public class Flag80000000Data
+    public class AnimationFlag80000000Data
     {
         public int Field00 { get; set; }
 
@@ -8,7 +8,7 @@
 
         public KeyframeTrack Field20 { get; set; }
 
-        public Flag80000000Data()
+        public AnimationFlag80000000Data()
         {
         }
     }

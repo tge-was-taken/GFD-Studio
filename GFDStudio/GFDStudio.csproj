@@ -135,7 +135,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FormatModules\AnimationPackageFormatModule.cs" />
+    <Compile Include="FormatModules\AnimationFormatModule.cs" />
+    <Compile Include="FormatModules\AnimationPackFormatModule.cs" />
     <Compile Include="FormatModules\AssimpSceneFormatModule.cs" />
     <Compile Include="FormatModules\CameraFormatModule.cs" />
     <Compile Include="FormatModules\ChunkType000100F8FormatModule.cs" />
@@ -166,7 +167,9 @@
     <Compile Include="GUI\TypeConverters\QuaternionTypeConverter.cs" />
     <Compile Include="GUI\TypeConverters\Vector3TypeConverter.cs" />
     <Compile Include="GUI\TypeConverters\Vector4TypeConverter.cs" />
-    <Compile Include="GUI\ViewModels\AnimationPackageViewModel.cs" />
+    <Compile Include="GUI\ViewModels\AnimationExtraDataViewModel.cs" />
+    <Compile Include="GUI\ViewModels\AnimationPackViewModel.cs" />
+    <Compile Include="GUI\ViewModels\AnimationViewModel.cs" />
     <Compile Include="GUI\ViewModels\ArchiveViewModel.cs" />
     <Compile Include="GUI\ViewModels\BitmapViewModel.cs" />
     <Compile Include="GUI\ViewModels\CameraViewModel.cs" />

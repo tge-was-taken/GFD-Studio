@@ -67,7 +67,8 @@ namespace GFDStudio.GUI.ViewModels
             Register<ChunkType000100F8ViewModel>();
 
             // gfd animation view models
-            Register<AnimationPackageViewModel>();
+            Register<AnimationPackViewModel>();
+            Register<AnimationViewModel>();
         }
 
         /// <summary>

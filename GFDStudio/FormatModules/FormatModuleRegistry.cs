@@ -48,7 +48,8 @@ namespace GFDStudio.FormatModules
                 new MaterialFormatModule(),
 
                 // gfd animation modules
-                new AnimationPackageFormatModule(),
+                new AnimationPackFormatModule(),
+                new AnimationFormatModule(),
 
                 // gfd misc modules
                 new ChunkType000100F8FormatModule(),

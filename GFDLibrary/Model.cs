@@ -1,4 +1,5 @@
-﻿using GFDLibrary.IO;
+﻿using System;
+using GFDLibrary.IO;
 
 namespace GFDLibrary
 {
@@ -12,7 +13,7 @@ namespace GFDLibrary
 
         public Scene Scene { get; set; }
 
-        public AnimationPackage AnimationPackage { get; set; }
+        public AnimationPack AnimationPack { get; set; }
 
         public ChunkType000100F8 ChunkType000100F8 { get; set; }
 
@@ -43,11 +44,11 @@ namespace GFDLibrary
             else
                 Scene.ReplaceWith( other.Scene );
 
-            if ( other.AnimationPackage != null )
+            if ( other.AnimationPack != null )
             {
-                if ( AnimationPackage == null )
+                if ( AnimationPack == null )
                 {
-                    AnimationPackage = other.AnimationPackage;
+                    AnimationPack = other.AnimationPack;
                 }
                 else
                 {
@@ -85,10 +86,11 @@ namespace GFDLibrary
             while ( ( reader.Position + ResourceChunkHeader.SIZE ) < reader.BaseStream.Length )
             {
                 var chunk = reader.ReadChunkHeader();
-                if ( chunk.Type == ResourceChunkType.Invalid )
+                if ( chunk.Type == ResourceChunkType.Invalid || !Enum.IsDefined(typeof(ResourceChunkType), chunk.Type) )
                     break;
 
                 var chunkDataLength = chunk.Length - 16;
+                var chunkDataStart = reader.Position;
 
                 switch ( chunk.Type )
                 {
@@ -107,8 +109,17 @@ namespace GFDLibrary
                     case ResourceChunkType.ChunkType000100F8:
                         ChunkType000100F8 = new ChunkType000100F8( chunk.Version ) { RawData = reader.ReadBytes( chunkDataLength ) };
                         break;
-                    case ResourceChunkType.AnimationPackage:
-                        AnimationPackage = new AnimationPackage( chunk.Version ) { RawData = reader.ReadBytes( chunkDataLength ) };
+                    case ResourceChunkType.AnimationPack:
+                        {
+                            AnimationPack = reader.ReadResource<AnimationPack>( chunk.Version );
+
+                            if ( AnimationPack.ErrorsOccuredDuringLoad )
+                            {
+                                // Invalid data, let's not make model uneditable because the animation support sucks, now shall we?
+                                reader.SeekBegin( chunkDataStart );
+                                AnimationPack = new AnimationPack( chunk.Version ) { RawData = reader.ReadBytes( chunkDataLength ) };
+                            }
+                        }
                         break;
                     default:
                         reader.SeekCurrent( chunkDataLength );
@@ -134,10 +145,10 @@ namespace GFDLibrary
             if ( ChunkType000100F8 != null )
                 writer.WriteResourceChunk( ChunkType000100F8 );
 
-            if ( AnimationPackage != null )
-                writer.WriteResourceChunk( AnimationPackage );
+            if ( AnimationPack != null )
+                writer.WriteResourceChunk( AnimationPack );
 
-            bool animationOnly = AnimationPackage != null &&
+            bool animationOnly = AnimationPack != null &&
                                  Textures == null &&
                                  Materials == null &&
                                  Scene == null &&

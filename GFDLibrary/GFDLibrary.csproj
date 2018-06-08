@@ -40,6 +40,9 @@
     <Reference Include="CSharpImageLibrary, Version=4.2.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\CSharpImageLibrary.4.2.0\lib\net462\CSharpImageLibrary.dll</HintPath>
     </Reference>
+    <Reference Include="Generic.Math, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Generic.Math.1.0.2\lib\net46\Generic.Math.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.IO.RecyclableMemoryStream, Version=1.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.IO.RecyclableMemoryStream.1.2.2\lib\net45\Microsoft.IO.RecyclableMemoryStream.dll</HintPath>
     </Reference>
@@ -65,11 +68,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Animations\Animation.cs" />
+    <Compile Include="Animations\Keyframes\KeyframePRSByte.cs" />
+    <Compile Include="Animations\Keyframes\KeyframeQuaternion.cs" />
+    <Compile Include="Animations\Keyframes\KeyframeSingle4Byte.cs" />
+    <Compile Include="Animations\Keyframes\KeyframeSingle5.cs" />
+    <Compile Include="Animations\Keyframes\KeyframeSingleByte.cs" />
+    <Compile Include="Animations\Keyframes\KeyframeType22.cs" />
+    <Compile Include="Animations\Keyframes\KeyframeVector3.cs" />
     <Compile Include="Animations\TargetKind.cs" />
-    <Compile Include="Animations\Keyframes\NodePRSKeyframe.cs" />
-    <Compile Include="Animations\Keyframes\MaterialKeyframeType29.cs" />
-    <Compile Include="AnimationPackage.cs" />
-    <Compile Include="AnimationPackageFlags.cs" />
+    <Compile Include="Animations\Keyframes\KeyframePRS.cs" />
+    <Compile Include="AnimationPack.cs" />
+    <Compile Include="AnimationPackFlags.cs" />
     <Compile Include="Bone.cs" />
     <Compile Include="ChunkType000100F8.cs" />
     <Compile Include="Common\Archive.cs" />
@@ -78,17 +87,16 @@
     <Compile Include="IO\Common\FileUtils.cs" />
     <Compile Include="Processing\Models\AssimpSceneImporter.cs" />
     <Compile Include="Processing\Textures\Utilities\BitmapUtilities.cs" />
-    <Compile Include="Animations\Flag10000000DataEntry.cs" />
+    <Compile Include="Animations\AnimationFlag10000000DataEntry.cs" />
     <Compile Include="IO\Common\EndiannessSwapUtility.cs" />
-    <Compile Include="Animations\Controller.cs" />
+    <Compile Include="Animations\AnimationController.cs" />
     <Compile Include="Animations\AnimationFlags.cs" />
-    <Compile Include="Animations\IKeyframe.cs" />
+    <Compile Include="Animations\Keyframe.cs" />
     <Compile Include="Animations\KeyframeTrack.cs" />
-    <Compile Include="Animations\KeyframeKind.cs" />
+    <Compile Include="Animations\KeyframeType.cs" />
     <Compile Include="Animations\AnimationExtraData.cs" />
-    <Compile Include="Animations\Flag80000000Data.cs" />
-    <Compile Include="Animations\Keyframes\MaterialKeyframeType12.cs" />
-    <Compile Include="Animations\Keyframes\MaterialKeyframeType14.cs" />
+    <Compile Include="Animations\AnimationFlag80000000Data.cs" />
+    <Compile Include="Animations\Keyframes\KeyframeSingle.cs" />
     <Compile Include="EplAnimation.cs" />
     <Compile Include="Processing\Textures\TextureInfo.cs" />
     <Compile Include="Processing\Textures\TexturePixelFormat.cs" />

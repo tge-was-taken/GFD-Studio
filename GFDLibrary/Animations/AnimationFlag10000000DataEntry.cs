@@ -1,6 +1,6 @@
 ﻿namespace GFDLibrary
 {
-    public class Flag10000000DataEntry
+    public class AnimationFlag10000000DataEntry
     {
         public Epl Field00 { get; set; }
 

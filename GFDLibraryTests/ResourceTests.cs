@@ -237,7 +237,7 @@ namespace AtlusGfdLibraryRegressionTests
             CompareTextureDictionaries( a.Textures, a.Textures );
             CompareMaterialDictionaries( a.Materials, b.Materials );
             CompareScenes( a.Scene, b.Scene );
-            CompareAnimationPackage( a.AnimationPackage, b.AnimationPackage );
+            CompareAnimationPackage( a.AnimationPack, b.AnimationPack );
         }
 
         private void CompareTextureDictionaries( TextureDictionary a, TextureDictionary b )
@@ -805,7 +805,7 @@ namespace AtlusGfdLibraryRegressionTests
             }
         }
 
-        private void CompareAnimationPackage( AnimationPackage a, AnimationPackage b )
+        private void CompareAnimationPackage( AnimationPack a, AnimationPack b )
         {
             if ( a == null || b == null )
             {

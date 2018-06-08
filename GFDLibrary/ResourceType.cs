@@ -9,7 +9,7 @@
         ShaderCachePS4 = 6,
 
         // These are all used as intermediary output formats
-        TextureMap = 'R' << 24 | 'I' << 16 | 'G' << 8 | 0,
+        TextureMap = 'R' << 24 | 'I' << 16 | 'G' << 8,
         TextureDictionary,
         Texture,
         ShaderPS3,
@@ -24,13 +24,17 @@
         MaterialDictionary,
         ChunkType000100F9,
         ChunkType000100F8,
-        AnimationPackage,
+        AnimationPack,
         MaterialAttribute,
         Material,
         Light,
         Geometry,
         Camera,
         Epl,
-        EplLeaf
+        EplLeaf,
+        Animation,
+        AnimationExtraData,
+        KeyframeTrack,
+        AnimationController
     }
 }
