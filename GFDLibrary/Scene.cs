@@ -162,6 +162,24 @@ namespace GFDLibrary
 
             foreach ( var otherNode in otherNodes )
             {
+                if ( otherNode.Name == "RootNode" || ( otherNode.Parent == null || otherNode.Parent == otherNodes.First() ) && otherNode.Name.EndsWith( "_root" ) )
+                {
+                    continue;
+                }
+
+                if ( !Nodes.Any( x => x.Name == "Bip01 雜ｳ霍｡" ) )
+                {
+                    // Hacks to fix enemy/persona models
+                    if ( otherNode.Name == "Bip01 閼頑､・" )
+                        otherNode.Name = "Bip01 Spine";
+                    else if ( otherNode.Parent != null && otherNode.Parent.Name == "Bip01 Spine" && otherNode.Name == "Bip01 閼頑､・" )
+                        otherNode.Name = "Bip01 Spine1";
+                    else if ( otherNode.Name == "Bip01 鬥・" )
+                        otherNode.Name = "Bip01 Neck";
+                    else if ( otherNode.Name == "Bip01 雜ｳ霍｡" )
+                        otherNode.Name = "Bip01 Footsteps";
+                }
+
                 var thisNode = Nodes.SingleOrDefault( x => x.Name.Equals( otherNode.Name ) );
 
                 if ( thisNode == null )
@@ -298,12 +316,15 @@ namespace GFDLibrary
                             if ( thisBoneNode == null )
                             {
                                 // Find parent that does exist
-                                var curOtherBoneNode = otherBoneNode;
-                                while ( thisBoneNode == null )
+                                var curOtherBoneNode = otherBoneNode.Parent;
+                                while ( thisBoneNode == null && curOtherBoneNode != null )
                                 {
-                                    thisBoneNode = Nodes.FirstOrDefault( x => x.Name == curOtherBoneNode.Parent.Name );
+                                    thisBoneNode = Nodes.FirstOrDefault( x => x.Name == curOtherBoneNode.Name );
                                     curOtherBoneNode = curOtherBoneNode.Parent;
                                 }
+
+                                if ( thisBoneNode == null )
+                                    thisBoneNode = RootNode;
                             }
 
                             var boneTransform = thisBoneNode.WorldTransform;
