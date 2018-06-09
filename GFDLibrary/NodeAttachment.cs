@@ -41,11 +41,9 @@ namespace GFDLibrary
             }
         }
 
-        internal static NodeAttachment Read( ResourceReader reader, uint version, out bool skipProperties )
+        internal static NodeAttachment Read( ResourceReader reader, uint version )
         {
             NodeAttachmentType type = ( NodeAttachmentType )reader.ReadInt32();
-
-            skipProperties = false;
 
             switch ( type )
             {
@@ -64,7 +62,7 @@ namespace GFDLibrary
                 case NodeAttachmentType.Light:
                     return new NodeLightAttachment( reader.ReadResource<Light>( version ) );
                 case NodeAttachmentType.Epl:
-                    return new NodeEplAttachment( Epl.Read(reader, version, out skipProperties) );
+                    return new NodeEplAttachment( reader.ReadResource<Epl>( version ) );
                 //case NodeAttachmentType.EplLeaf:
                 //    return new NodeEplLeafAttachment( ReadEplLeaf( version ) );
                 case NodeAttachmentType.Morph:

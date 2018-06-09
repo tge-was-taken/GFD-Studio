@@ -101,7 +101,7 @@ namespace GFDStudio.GUI.ViewModels
                     {
                         var resource = Resource.Load( dialog.FileName );
                         AttachmentListViewModel.Nodes.Add( TreeNodeViewModelFactory.Create( resource.ResourceType.ToString(), resource ) );
-                        HasPendingChanges = true;
+                        AttachmentListViewModel.HasPendingChanges = true;
                     }
                     catch ( Exception e )
                     {

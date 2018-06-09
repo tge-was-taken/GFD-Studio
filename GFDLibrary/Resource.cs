@@ -145,7 +145,14 @@ namespace GFDLibrary
                         res = new Camera( header.Version );
                         break;
                     case ResourceType.Epl:
-                        return Epl.Read( reader, header.Version, out _ );
+                        {
+                            return new Epl
+                            {
+                                // Make sure to also read the extra boolean we wrote to the file to keep track of this.
+                                IncludesProperties = reader.ReadBoolean(),
+                                RawData = reader.ReadBytes( ( int ) ( stream.Length - stream.Position ) )
+                            };
+                        }
                     case ResourceType.EplLeaf:
                         res = new EplLeaf( header.Version );
                         break;
@@ -182,6 +189,15 @@ namespace GFDLibrary
             using ( var writer = new ResourceWriter( stream, leaveOpen ) )
             {
                 writer.WriteFileHeader( ResourceFileIdentifier.Model, Version, ResourceType );
+
+                switch ( ResourceType )
+                {
+                    case ResourceType.Epl:
+                        // We have to write this to the file so we can remember it when we load it.
+                        writer.WriteBoolean( ( ( Epl ) this ).IncludesProperties );
+                        break;
+                }
+
                 Write( writer );
             }
         }

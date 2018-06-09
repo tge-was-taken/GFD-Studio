@@ -138,7 +138,7 @@ namespace GFDStudio.GUI.ViewModels
         /// <summary>
         /// Gets or sets if the tree node is dirty and its resource needs to be rebuilt.
         /// </summary>
-        protected bool HasPendingChanges
+        internal bool HasPendingChanges
         {
             get => mHasPendingChanges;
             set

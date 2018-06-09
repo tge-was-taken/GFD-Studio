@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Numerics;
 using GFDLibrary.IO;
 
@@ -298,26 +299,28 @@ namespace GFDLibrary
             var skipProperties = false;
             for ( int i = 0; i < attachmentCount; i++ )
             {
-                var attachment = NodeAttachment.Read( reader, Version, out var _skipProperties );
-                if ( _skipProperties )
-                    skipProperties = true;
-
+                var attachment = NodeAttachment.Read( reader, Version );
                 Attachments.Add( attachment );
+
+                if ( attachment.Type == NodeAttachmentType.Epl && attachment.GetValue<Epl>().IncludesProperties )
+                {
+                    // If we read an EPL attachment that includes node property data, we can't continue.
+                    // We must also remember to skip reading the properties, as they are contained in the EPL data.
+                    skipProperties = true;
+                    break;
+                }
             }
 
+            // Don't read properties if we read an EPL that contains the data
             if ( Version > 0x1060000 && !skipProperties )
             {
                 var hasProperties = reader.ReadBoolean();
                 if ( hasProperties )
-                {
                     Properties = reader.ReadResource<UserPropertyCollection>( Version );
-                }
             }
 
             if ( Version > 0x1104230 )
-            {
                 FieldE0 = reader.ReadSingle();
-            }
         }
 
         internal override void Write( ResourceWriter writer )
@@ -332,23 +335,18 @@ namespace GFDLibrary
 
             writer.WriteInt32( AttachmentCount );
             foreach ( var attachment in Attachments )
-            {
                 attachment.Write( writer );
-            }
 
-            if ( Version > 0x1060000 )
+            // Dont read properties if we have an EPL attachment that contains our property data
+            if ( Version > 0x1060000 && !Attachments.Any( x => x.Type == NodeAttachmentType.Epl && x.GetValue<Epl>().IncludesProperties ) )
             {
                 writer.WriteBoolean( HasProperties );
                 if ( HasProperties )
-                {
                     writer.WriteResource( Properties );
-                }
             }
 
             if ( Version > 0x1104230 )
-            {
                 writer.WriteSingle( FieldE0 );
-            }
         }
     }
 }
