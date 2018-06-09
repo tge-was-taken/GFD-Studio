@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.ExceptionServices;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
@@ -142,11 +143,20 @@ namespace GFDStudio.GUI.Controls.ModelView
             GC.SuppressFinalize( this );
         }
 
+        [HandleProcessCorruptedStateExceptions]
         protected virtual void Dispose( bool disposing )
         {
             if ( !mDisposed )
             {
-                GL.DeleteProgram( ShaderProgramId );
+                try
+                {
+                    GL.DeleteProgram( ShaderProgramId );
+                }
+                catch ( Exception e )
+                {
+                    Console.WriteLine( e );
+                }
+
                 mDisposed = true;
             }
         }
