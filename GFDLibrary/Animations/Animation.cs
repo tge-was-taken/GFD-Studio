@@ -14,7 +14,7 @@ namespace GFDLibrary
         private BoundingBox? mBoundingBox;
         private AnimationFlag80000000Data mField1C;
         private UserPropertyCollection mProperties;
-        private float? mField24;
+        private float? mSpeed;
 
         public override ResourceType ResourceType => ResourceType.Animation;
 
@@ -87,13 +87,13 @@ namespace GFDLibrary
         }
 
         // 24
-        public float? Field24
+        public float? Speed
         {
-            get => mField24;
+            get => mSpeed;
             set
             {
-                Flags = FlagsHelper.ClearOrSet( Flags, AnimationFlags.Flag2000000, value );
-                mField24 = value;
+                Flags = FlagsHelper.ClearOrSet( Flags, AnimationFlags.HasSpeed, value );
+                mSpeed = value;
             }
         }
 
@@ -196,8 +196,8 @@ namespace GFDLibrary
             if ( Flags.HasFlag( AnimationFlags.HasBoundingBox ) )
                 BoundingBox = reader.ReadBoundingBox();
 
-            if ( Flags.HasFlag( AnimationFlags.Flag2000000 ) )
-                Field24 = reader.ReadSingle();
+            if ( Flags.HasFlag( AnimationFlags.HasSpeed ) )
+                Speed = reader.ReadSingle();
 
             if ( Flags.HasFlag( AnimationFlags.HasProperties ) )
                 Properties = reader.ReadResource<UserPropertyCollection>( Version );
@@ -242,8 +242,8 @@ namespace GFDLibrary
             if ( Flags.HasFlag( AnimationFlags.HasBoundingBox ) )
                 writer.WriteBoundingBox( BoundingBox.Value );
 
-            if ( Flags.HasFlag( AnimationFlags.Flag2000000 ) )
-                writer.WriteSingle( Field24.Value );
+            if ( Flags.HasFlag( AnimationFlags.HasSpeed ) )
+                writer.WriteSingle( Speed.Value );
 
             if ( Flags.HasFlag( AnimationFlags.HasProperties ) )
                 writer.WriteResource( Properties );

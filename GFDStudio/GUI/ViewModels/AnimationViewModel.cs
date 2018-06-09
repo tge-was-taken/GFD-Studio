@@ -53,9 +53,9 @@ namespace GFDStudio.GUI.ViewModels
             set => SetModelProperty( value );
         }
 
-        public float? Field24
+        public float? Speed
         {
-            get => Model.Field24;
+            get => Model.Speed;
             set => SetModelProperty( value );
         }
 
