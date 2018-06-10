@@ -54,5 +54,13 @@ namespace GFDLibrary
             writer.WriteResource( Field0C );
             writer.WriteSingle( Field1C );
         }
+
+        public void FixTargetIds( Scene scene )
+        {
+            Field00.FixTargetIds( scene );
+            Field04.FixTargetIds( scene );
+            Field08.FixTargetIds( scene );
+            Field0C.FixTargetIds( scene );
+        }
     }
 }

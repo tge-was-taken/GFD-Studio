@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using GFDLibrary.IO;
 
 namespace GFDLibrary
@@ -48,6 +49,29 @@ namespace GFDLibrary
             writer.WriteInt32( TargetId );
             writer.WriteStringWithHash( Version, TargetName );
             writer.WriteResourceList( Tracks );
+        }
+
+        public void FixTargetIds( Scene scene )
+        {
+            if ( TargetKind != TargetKind.Node )
+                return;
+
+            int targetId = 0;
+            foreach ( var node in scene.Nodes )
+            {
+                if ( node.Name == TargetName )
+                    break;
+
+                ++targetId;
+            }
+
+            if ( targetId < scene.Nodes.Count )
+            {
+                //Trace.Assert( targetId < scene.Nodes.Count );
+                Trace.Assert( targetId == TargetId );
+
+                TargetId = targetId;
+            }
         }
     }
 }

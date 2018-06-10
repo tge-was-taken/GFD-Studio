@@ -54,7 +54,7 @@ namespace GFDStudio.GUI.ViewModels
         }
 
         [Browsable(false)]
-        public ListViewModel<Resource> AttachmentListViewModel { get; set; }
+        public AttachmentListViewModel AttachmentListViewModel { get; set; }
 
         [ Browsable( true ) ]
         [ TypeConverter( typeof( UserPropertyDictionaryTypeConverter ) ) ]
@@ -80,34 +80,10 @@ namespace GFDStudio.GUI.ViewModels
 
         protected override void InitializeCore()
         {
+            TextChanged += ( o, s ) => Text = Name = s.Label;
+
             RegisterExportHandler<Node>( path => Model.Save( path ) );
             RegisterReplaceHandler<Node>( Resource.Load<Node> );
-            RegisterCustomHandler( "Add Attachment", () =>
-            {
-                using ( var dialog = new OpenFileDialog() )
-                {
-                    dialog.Filter = ModuleFilterGenerator.GenerateFilterForAllSupportedImportFormats();
-                    dialog.AutoUpgradeEnabled = true;
-                    dialog.CheckPathExists = true;
-                    dialog.FileName = Text;
-                    dialog.Title = "Select a file to open.";
-                    dialog.ValidateNames = true;
-                    dialog.AddExtension = true;
-
-                    if ( dialog.ShowDialog() != DialogResult.OK )
-                        return;
-
-                    try
-                    {
-                        var resource = Resource.Load( dialog.FileName );
-                        AttachmentListViewModel.Nodes.Add( TreeNodeViewModelFactory.Create( resource.ResourceType.ToString(), resource ) );
-                        AttachmentListViewModel.HasPendingChanges = true;
-                    }
-                    catch ( Exception e )
-                    {
-                    }
-                }
-            } );
             RegisterModelUpdateHandler( () =>
             {
                 var node = new Node();
@@ -132,7 +108,7 @@ namespace GFDStudio.GUI.ViewModels
 
         protected override void InitializeViewCore()
         {
-            AttachmentListViewModel = ( ListViewModel<Resource> )TreeNodeViewModelFactory.Create(
+            AttachmentListViewModel = ( AttachmentListViewModel )TreeNodeViewModelFactory.Create(
                 "Attachments",
                 Model.Attachments == null ? new List<Resource>() : Model.Attachments.Select( x => x.GetValue() ).ToList(),
                 new object[] { new ListItemNameProvider<Resource>( ( value, index ) => value.ResourceType.ToString() ) } );
@@ -147,6 +123,35 @@ namespace GFDStudio.GUI.ViewModels
                 new object[] { new ListItemNameProvider<Node>( ( value, index ) => value.Name ) } );
 
             Nodes.Add( ChildrenListViewModel );
+        }
+    }
+
+    public class AttachmentListViewModel : ListViewModel<Resource>
+    {
+        public AttachmentListViewModel( string text, List<Resource> resource, ListItemNameProvider<Resource> nameProvider ) : base( text, resource, nameProvider )
+        {
+        }
+
+        public AttachmentListViewModel( string text, List<Resource> resource, IList<string> itemNames ) : base( text, resource, itemNames )
+        {
+        }
+
+        protected override void InitializeCore()
+        {
+            RegisterAddHandler<Resource>( file =>
+            {
+                var resource = Resource.Load( file );
+                if ( NodeAttachment.IsOfCompatibleType( resource ) )
+                {
+                    Model.Add( resource );
+                }
+                else
+                {
+                    MessageBox.Show( "This resource type is not supported as an attachment", "Error", MessageBoxButtons.OK );
+                }
+            } );
+
+            base.InitializeCore();
         }
     }
 }

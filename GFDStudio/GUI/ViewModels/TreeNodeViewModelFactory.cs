@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
+using GFDLibrary;
 using GFDStudio.FormatModules;
 
 namespace GFDStudio.GUI.ViewModels
@@ -52,6 +53,7 @@ namespace GFDStudio.GUI.ViewModels
             Register<SceneViewModel>();
             Register<BonePaletteViewModel>();
             Register<NodeViewModel>();
+            Register( typeof( AttachmentListViewModel ), typeof( List<Resource> ) );
             Register<GeometryViewModel>();
             Register<CameraViewModel>();
             Register<LightViewModel>();
@@ -69,6 +71,7 @@ namespace GFDStudio.GUI.ViewModels
             // gfd animation view models
             Register<AnimationPackViewModel>();
             Register<AnimationViewModel>();
+            Register( typeof( AnimationListViewModel ), typeof( List<Animation> ) );
         }
 
         /// <summary>

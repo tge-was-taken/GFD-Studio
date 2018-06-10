@@ -122,5 +122,16 @@ namespace GFDLibrary
             if ( Flags.HasFlag( AnimationPackFlags.Flag4 ) )
                 writer.WriteResource( ExtraData );
         }
+
+        public void FixTargetIds( Scene scene )
+        {
+            foreach ( var animation in Animations )
+                animation.FixTargetIds( scene );
+
+            foreach ( var animation in BlendAnimations )
+                animation.FixTargetIds( scene );
+
+            ExtraData?.FixTargetIds( scene );
+        }
     }
 }

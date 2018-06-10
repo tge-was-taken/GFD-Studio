@@ -109,6 +109,9 @@
     <Reference Include="Microsoft.IO.RecyclableMemoryStream, Version=1.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.IO.RecyclableMemoryStream.1.2.2\lib\net45\Microsoft.IO.RecyclableMemoryStream.dll</HintPath>
     </Reference>
+    <Reference Include="Ookii.Dialogs, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0c15020868fd6249, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ookii.Dialogs.WindowsForms.1.0\lib\net35\Ookii.Dialogs.dll</HintPath>
+    </Reference>
     <Reference Include="OpenTK, Version=3.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Dependencies\OpenTK\OpenTK.dll</HintPath>

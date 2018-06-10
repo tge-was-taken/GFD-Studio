@@ -1,4 +1,8 @@
+using System;
+using System.Windows.Forms;
 using GFDLibrary;
+using GFDLibrary.Processing.Models;
+using GFDStudio.FormatModules;
 
 namespace GFDStudio.GUI.ViewModels
 {
@@ -67,6 +71,50 @@ namespace GFDStudio.GUI.ViewModels
         {
             RegisterExportHandler<Animation>( path => Model.Save( path ) );
             RegisterReplaceHandler<Animation>( Resource.Load<Animation> );
+            RegisterReplaceHandler<Assimp.Scene>( file =>
+            {
+                var animation = AnimationConverter.ConvertFromAssimpScene( file, new AnimationConverterOptions() );
+                var modelViewModel = Parent?.Parent as ModelViewModel;
+
+                if ( modelViewModel?.Scene != null )
+                {
+                    animation.FixTargetIds( modelViewModel.Scene.Model );
+                }
+                else
+                {
+                    ImportModelAndFixTargetIds( animation );
+                }
+
+                return animation;
+            } );
+            RegisterCustomHandler( "Fix IDs", () => ImportModelAndFixTargetIds( Model ) );
+        }
+
+        private static void ImportModelAndFixTargetIds( Animation animation )
+        {
+            using ( var dialog = new OpenFileDialog() )
+            {
+                dialog.Filter = ModuleFilterGenerator.GenerateFilter( new[] { FormatModuleUsageFlags.Import }, typeof( Model ) );
+                dialog.AutoUpgradeEnabled = true;
+                dialog.CheckPathExists = true;
+                dialog.Title = "Select a model file.";
+                dialog.ValidateNames = true;
+                dialog.AddExtension = true;
+
+                if ( dialog.ShowDialog() != DialogResult.OK )
+                    return;
+
+                try
+                {
+                    var model = Resource.Load<Model>( dialog.FileName );
+                    if ( model.Scene != null )
+                        animation.FixTargetIds( model.Scene );
+                }
+                catch ( Exception e )
+                {
+                    Console.WriteLine( e );
+                }
+            }
         }
     }
 }

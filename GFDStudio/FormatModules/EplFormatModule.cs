@@ -16,7 +16,7 @@ namespace GFDStudio.FormatModules
 
         protected override bool CanImportCore( Stream stream, string filename = null )
         {
-            return Resource.GetResourceType( stream ) == ResourceType.Light;
+            return Resource.GetResourceType( stream ) == ResourceType.Epl;
         }
 
         protected override void ExportCore( Epl obj, Stream stream, string filename = null )

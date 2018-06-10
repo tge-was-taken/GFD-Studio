@@ -6,7 +6,7 @@ namespace GFDStudio.GUI.ViewModels
     public class ChunkType000100F9Entry3ViewModel : TreeNodeViewModel<ChunkType000100F9Entry3>
     {
         public override TreeNodeViewModelMenuFlags ContextMenuFlags =>
-            TreeNodeViewModelMenuFlags.Move | TreeNodeViewModelMenuFlags.Rename | TreeNodeViewModelMenuFlags.Delete;
+            TreeNodeViewModelMenuFlags.Move | TreeNodeViewModelMenuFlags.Delete;
 
         public override TreeNodeViewModelFlags NodeFlags =>
             TreeNodeViewModelFlags.Leaf;

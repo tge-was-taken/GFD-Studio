@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.IO;
 using GFDLibrary.IO.Assimp;
+using GFDLibrary.Processing.Models;
 using Ai = Assimp;
 
 namespace GFDLibrary
@@ -38,11 +39,6 @@ namespace GFDLibrary
             model.Scene = SceneConverter.ConvertFromAssimpScene( aiScene, sceneConverterOptions );
 
             return model;
-        }
-
-        private static string UnescapeName( string name )
-        {
-            return name.Replace( "___", " " );
         }
 
         private static Material ConvertMaterialAndTextures( Ai.Material aiMaterial, ModelConverterOptions options, string baseDirectoryPath, TextureDictionary textureDictionary )
@@ -90,7 +86,7 @@ namespace GFDLibrary
 
             // Convert material
             Material material = null;
-            string materialName = UnescapeName( aiMaterial.Name );
+            string materialName = AssimpConverterCommon.UnescapeName( aiMaterial.Name );
 
             switch ( options.MaterialPreset )
             {
@@ -154,7 +150,7 @@ namespace GFDLibrary
         {
             var relativeFilePath = aiTextureSlot.FilePath;
             var fullFilePath = Path.GetFullPath( Path.Combine( baseDirectoryPath, relativeFilePath ) );
-            var textureName = UnescapeName( Path.GetFileNameWithoutExtension( relativeFilePath ) + ".dds" );
+            var textureName = AssimpConverterCommon.UnescapeName( Path.GetFileNameWithoutExtension( relativeFilePath ) + ".dds" );
 
             Texture texture;
             if ( !File.Exists( fullFilePath ) )

@@ -6,7 +6,7 @@ namespace GFDStudio.GUI.ViewModels
     public class AnimationExtraDataViewModel : TreeNodeViewModel<AnimationExtraData>
     {
         public override TreeNodeViewModelMenuFlags ContextMenuFlags =>
-            TreeNodeViewModelMenuFlags.Delete | TreeNodeViewModelMenuFlags.Export | TreeNodeViewModelMenuFlags.Move | TreeNodeViewModelMenuFlags.Replace;
+            TreeNodeViewModelMenuFlags.Delete | TreeNodeViewModelMenuFlags.Export | TreeNodeViewModelMenuFlags.Replace;
 
         public override TreeNodeViewModelFlags NodeFlags => TreeNodeViewModelFlags.Branch;
 

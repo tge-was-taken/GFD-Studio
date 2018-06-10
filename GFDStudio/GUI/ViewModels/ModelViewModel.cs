@@ -9,7 +9,7 @@ namespace GFDStudio.GUI.ViewModels
     {
         public override TreeNodeViewModelMenuFlags ContextMenuFlags =>
             TreeNodeViewModelMenuFlags.Export | TreeNodeViewModelMenuFlags.Replace |
-            TreeNodeViewModelMenuFlags.Move | TreeNodeViewModelMenuFlags.Rename | TreeNodeViewModelMenuFlags.Delete;
+            TreeNodeViewModelMenuFlags.Move | TreeNodeViewModelMenuFlags.Delete;
 
         public override TreeNodeViewModelFlags NodeFlags => TreeNodeViewModelFlags.Branch;
 
@@ -79,6 +79,21 @@ namespace GFDStudio.GUI.ViewModels
                     model.AnimationPack = AnimationPack.Model;
 
                 return model;
+            } );
+            RegisterCustomHandler( "Add New Animation Pack", () =>
+            {
+                Model.AnimationPack = new AnimationPack( Model.Version );
+                InitializeView( true );
+            } );
+            RegisterCustomHandler( "Add New Chunk Type 000100F9", () =>
+            {
+                Model.ChunkType000100F9 = new ChunkType000100F9( Model.Version );
+                InitializeView( true );
+            } );
+            RegisterCustomHandler( "Add New Chunk Type 000100F8", () =>
+            {
+                Model.ChunkType000100F8 = new ChunkType000100F8( Model.Version );
+                InitializeView( true );
             } );
         }
 

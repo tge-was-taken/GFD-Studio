@@ -4,6 +4,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text.RegularExpressions;
 using GFDLibrary.IO.Assimp;
+using GFDLibrary.Processing.Models;
 using Ai = Assimp;
 
 namespace GFDLibrary
@@ -13,8 +14,6 @@ namespace GFDLibrary
         private static readonly Matrix4x4 YToZUpMatrix = new Matrix4x4( 1, 0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1 );
 
         private static readonly Matrix4x4 ZToYUpMatrix = new Matrix4x4( 1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1 );
-
-        private static readonly Regex MeshAttachmentNameRegex = new Regex( "_Mesh([0-9]+)", RegexOptions.Compiled );
 
         public static Scene ConvertFromAssimpScene( string filePath, SceneConverterOptions options )
         {
@@ -50,11 +49,6 @@ namespace GFDLibrary
             scene.BoundingSphere = BoundingSphere.Calculate( scene.BoundingBox.Value, transformedVertices );
 
             return scene;
-        }
-
-        private static string UnescapeName( string name )
-        {
-            return name.Replace( "___", " " );
         }
 
         private static Ai.Matrix4x4 GetWorldTransform( Ai.Node aiNode )
@@ -106,7 +100,7 @@ namespace GFDLibrary
         {
             bool isMeshAttachmentNode = node.Parent != null &&                                                          // definitely not a mesh attachment if it doesnt have a parent -> RootNode
                                         node.Parent.Name != "RootNode" &&                                               // probably not a mesh attachment if its part of the scene root
-                                        MeshAttachmentNameRegex.IsMatch( node.Name ) &&                                 // match name regex
+                                        AssimpConverterCommon.MeshAttachmentNameRegex.IsMatch( node.Name ) &&                                 // match name regex
                                         NearlyEquals( GetWorldTransform( node ), GetWorldTransform( node.Parent ) );    // world transforms of both the node and the parent must match
 
             return isMeshAttachmentNode;
@@ -117,7 +111,7 @@ namespace GFDLibrary
             aiNode.Transform.Decompose( out var scale, out var rotation, out var translation );
 
             // Create node
-            var node = new Node( UnescapeName( aiNode.Name ),
+            var node = new Node( AssimpConverterCommon.UnescapeName( aiNode.Name ),
                                  new Vector3( translation.X, translation.Y, translation.Z ),
                                  new Quaternion( rotation.X, rotation.Y, rotation.Z, rotation.W ),
                                  new Vector3( scale.X, scale.Y, scale.Z ) );
@@ -303,7 +297,7 @@ namespace GFDLibrary
         {
             if ( aiNode.HasMeshes )
             {
-                var nodeInfo = nodeLookup[ UnescapeName( aiNode.Name ) ];
+                var nodeInfo = nodeLookup[ AssimpConverterCommon.UnescapeName( aiNode.Name ) ];
                 var node = nodeInfo.Node;
                 var nodeWorldTransform = node.WorldTransform;
                 Matrix4x4.Invert( nodeWorldTransform, out var nodeInverseWorldTransform );
@@ -421,7 +415,7 @@ namespace GFDLibrary
                     var aiMeshBone = aiMesh.Bones[i];
 
                     // Find node index for the bone
-                    var boneLookupData = nodeLookup[ UnescapeName( aiMeshBone.Name ) ];
+                    var boneLookupData = nodeLookup[ AssimpConverterCommon.UnescapeName( aiMeshBone.Name ) ];
                     int nodeIndex = boneLookupData.Index;
 
                     // Calculate inverse bind matrix
@@ -472,7 +466,7 @@ namespace GFDLibrary
                 }
             }
 
-            geometry.MaterialName = UnescapeName( material.Name );
+            geometry.MaterialName = AssimpConverterCommon.UnescapeName( material.Name );
             geometry.BoundingBox = BoundingBox.Calculate( geometry.Vertices );
             geometry.BoundingSphere = BoundingSphere.Calculate( geometry.BoundingBox.Value, geometry.Vertices );
             geometry.Flags |= GeometryFlags.Flag80000000;

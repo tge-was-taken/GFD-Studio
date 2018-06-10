@@ -5,7 +5,7 @@ namespace GFDStudio.GUI.ViewModels
     public class ChunkType000100F8ViewModel : ResourceViewModel<ChunkType000100F8>
     {
         public override TreeNodeViewModelMenuFlags ContextMenuFlags =>
-            TreeNodeViewModelMenuFlags.Delete | TreeNodeViewModelMenuFlags.Export;
+            TreeNodeViewModelMenuFlags.Delete | TreeNodeViewModelMenuFlags.Export | TreeNodeViewModelMenuFlags.Move;
 
         public override TreeNodeViewModelFlags NodeFlags =>
             TreeNodeViewModelFlags.Leaf;

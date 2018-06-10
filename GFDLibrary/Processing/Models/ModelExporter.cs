@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using GFDLibrary.Processing.Models;
 using Ai = Assimp;
 using Matrix4x4 = System.Numerics.Matrix4x4;
 
@@ -60,7 +61,7 @@ namespace GFDLibrary.IO.Assimp
 
             foreach ( var texture in textureDictionary.Textures )
             {
-                var texturePath = Path.Combine( mTextureBaseDirectoryPath, EscapeName(texture.Name) );
+                var texturePath = Path.Combine( mTextureBaseDirectoryPath, AssimpConverterCommon.EscapeName(texture.Name) );
 
                 File.WriteAllBytes( texturePath, texture.Data );
             }
@@ -78,7 +79,7 @@ namespace GFDLibrary.IO.Assimp
         {
             var aiMaterial = new Ai.Material
             {
-                Name = EscapeName(material.Name),
+                Name = AssimpConverterCommon.EscapeName(material.Name),
                 ColorAmbient = new Ai.Color4D( material.Ambient.X, material.Ambient.Y, material.Ambient.Z, material.Ambient.W ),
                 ColorDiffuse = new Ai.Color4D( material.Diffuse.X, material.Diffuse.Y, material.Diffuse.Z, material.Diffuse.W ),
                 ColorSpecular = new Ai.Color4D( material.Specular.X, material.Specular.Y, material.Specular.Z, material.Specular.W ),
@@ -88,28 +89,28 @@ namespace GFDLibrary.IO.Assimp
             if ( material.Flags.HasFlag( MaterialFlags.HasDiffuseMap ) )
             {
                 aiMaterial.TextureDiffuse = new Ai.TextureSlot( 
-                    Path.Combine( mTextureBaseRelativeDirectoryPath, EscapeName(material.DiffuseMap.Name) ),
+                    Path.Combine( mTextureBaseRelativeDirectoryPath, AssimpConverterCommon.EscapeName(material.DiffuseMap.Name) ),
                     Ai.TextureType.Diffuse, 0, Ai.TextureMapping.FromUV, 0, 0, Ai.TextureOperation.Add, Ai.TextureWrapMode.Wrap, Ai.TextureWrapMode.Wrap, 0 );
             }
 
             if ( material.Flags.HasFlag( MaterialFlags.HasNormalMap ) )
             {
                 aiMaterial.TextureNormal = new Ai.TextureSlot( 
-                    Path.Combine( mTextureBaseRelativeDirectoryPath, EscapeName(material.NormalMap.Name) ), 
+                    Path.Combine( mTextureBaseRelativeDirectoryPath, AssimpConverterCommon.EscapeName(material.NormalMap.Name) ), 
                     Ai.TextureType.Normals, 1, Ai.TextureMapping.FromUV, 0, 0, Ai.TextureOperation.Add, Ai.TextureWrapMode.Wrap, Ai.TextureWrapMode.Wrap, 0 );
             }
 
             if ( material.Flags.HasFlag( MaterialFlags.HasSpecularMap ) )
             {
                 aiMaterial.TextureSpecular = new Ai.TextureSlot( 
-                    Path.Combine( mTextureBaseRelativeDirectoryPath, EscapeName(material.SpecularMap.Name) ), 
+                    Path.Combine( mTextureBaseRelativeDirectoryPath, AssimpConverterCommon.EscapeName(material.SpecularMap.Name) ), 
                     Ai.TextureType.Specular, 2, Ai.TextureMapping.FromUV, 0, 0, Ai.TextureOperation.Add, Ai.TextureWrapMode.Wrap, Ai.TextureWrapMode.Wrap, 0 );
             }
 
             if ( material.Flags.HasFlag( MaterialFlags.HasReflectionMap ) )
             {
                 aiMaterial.TextureReflection = new Ai.TextureSlot( 
-                    Path.Combine( mTextureBaseRelativeDirectoryPath, EscapeName(material.ReflectionMap.Name) ), 
+                    Path.Combine( mTextureBaseRelativeDirectoryPath, AssimpConverterCommon.EscapeName(material.ReflectionMap.Name) ), 
                     Ai.TextureType.Reflection, 3, Ai.TextureMapping.FromUV, 0, 0, Ai.TextureOperation.Add, Ai.TextureWrapMode.Wrap, Ai.TextureWrapMode.Wrap, 0 );
             }
 
@@ -123,14 +124,9 @@ namespace GFDLibrary.IO.Assimp
             mAiScene.RootNode = ConvertNode( scene, scene.RootNode, null );
         }
 
-        private string EscapeName( string name )
-        {
-            return name.Replace( " ", "___" );
-        }
-
         private Ai.Node ConvertNode( Scene scene, Node node, Ai.Node aiParent )
         {
-            var aiNode = new Ai.Node( EscapeName( node.Name ), aiParent )
+            var aiNode = new Ai.Node( AssimpConverterCommon.EscapeName( node.Name ), aiParent )
             {
                 Transform = new Ai.Matrix4x4( node.LocalTransform.M11, node.LocalTransform.M21, node.LocalTransform.M31, node.LocalTransform.M41,
                                               node.LocalTransform.M12, node.LocalTransform.M22, node.LocalTransform.M32, node.LocalTransform.M42,
@@ -184,7 +180,7 @@ namespace GFDLibrary.IO.Assimp
                         {
                             var mesh = ConvertGeometry( scene, node, attachment.GetValue<Geometry>() );
 
-                            mesh.Name = $"{EscapeName(node.Name)}_Attachment{i}_Geometry";
+                            mesh.Name = $"{AssimpConverterCommon.EscapeName(node.Name)}_Attachment{i}_Geometry";
                             aiNode.MeshIndices.Add( mAiScene.Meshes.Count );
                             mAiScene.Meshes.Add( mesh );
                         }
@@ -201,7 +197,7 @@ namespace GFDLibrary.IO.Assimp
             var aiMesh = new Ai.Mesh( Ai.PrimitiveType.Triangle );
 
             if ( geometry.Flags.HasFlag( GeometryFlags.HasMaterial ) )
-                aiMesh.MaterialIndex = mAiScene.Materials.FindIndex( x => x.Name == EscapeName(geometry.MaterialName) );
+                aiMesh.MaterialIndex = mAiScene.Materials.FindIndex( x => x.Name == AssimpConverterCommon.EscapeName(geometry.MaterialName) );
 
             if ( geometry.Flags.HasFlag( GeometryFlags.HasTriangles ) )
             {
@@ -303,7 +299,7 @@ namespace GFDLibrary.IO.Assimp
                             var aiBone = new Ai.Bone();
                             var boneNode = scene.Nodes[nodeIndex];
 
-                            aiBone.Name = EscapeName( boneNode.Name );
+                            aiBone.Name = AssimpConverterCommon.EscapeName( boneNode.Name );
                             aiBone.VertexWeights.Add( new Ai.VertexWeight( i, boneWeight ) );
 
                             Matrix4x4.Invert( geometryNode.WorldTransform, out Matrix4x4 invGeometryNodeWorldTransform );

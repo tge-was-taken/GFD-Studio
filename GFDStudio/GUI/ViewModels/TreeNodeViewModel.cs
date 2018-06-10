@@ -666,7 +666,15 @@ namespace GFDStudio.GUI.ViewModels
             else
                 extension = extension.Substring( 1 );
 
+            bool isBaseType = false;
+
             var modulesWithType = FormatModuleRegistry.Modules.Where( x => types.Contains( x.ModelType ) );
+            if ( !modulesWithType.Any() )
+            {
+                modulesWithType = FormatModuleRegistry.Modules.Where( x => types.Any( y => x.ModelType.IsSubclassOf( y ) ) );
+                isBaseType = true;
+            }
+
             List<IFormatModule> modules;
             if ( extension.Length > 0 )
             {
@@ -691,12 +699,17 @@ namespace GFDStudio.GUI.ViewModels
             }
 
             if ( modules.Count == 0 )
-                throw new Exception( "No suitable modules found" );
+            {
+                throw new Exception( "No suitable modules for format found." );
+            }
 
             if ( modules.Count != 1 )
                 throw new Exception( "Ambigious module match. Multiple suitable modules format found." );
 
-            return modules[0].ModelType;
+            if ( !isBaseType )
+                return modules[0].ModelType;
+            else
+                return modules[0].ModelType.BaseType;
         }
 
         private EventHandler CreateEventHandler( Action action )

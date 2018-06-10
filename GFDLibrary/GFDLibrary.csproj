@@ -85,6 +85,8 @@
     <Compile Include="FieldTexturePS3.cs" />
     <Compile Include="GNFTexture.cs" />
     <Compile Include="IO\Common\FileUtils.cs" />
+    <Compile Include="Processing\Models\AnimationConverter.cs" />
+    <Compile Include="Processing\Models\AssimpConverterCommon.cs" />
     <Compile Include="Processing\Models\AssimpSceneImporter.cs" />
     <Compile Include="Processing\Textures\Utilities\BitmapUtilities.cs" />
     <Compile Include="Animations\AnimationFlag10000000DataEntry.cs" />

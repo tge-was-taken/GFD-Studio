@@ -41,6 +41,24 @@ namespace GFDLibrary
             }
         }
 
+        public static bool IsOfCompatibleType( Resource resource )
+        {
+            switch ( resource.ResourceType )
+            {
+                case ResourceType.Scene:
+                case ResourceType.Node:
+                case ResourceType.Geometry:
+                case ResourceType.Camera:
+                case ResourceType.Light:
+                case ResourceType.Epl:
+                case ResourceType.EplLeaf:
+                case ResourceType.Morph:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
         internal static NodeAttachment Read( ResourceReader reader, uint version )
         {
             NodeAttachmentType type = ( NodeAttachmentType )reader.ReadInt32();

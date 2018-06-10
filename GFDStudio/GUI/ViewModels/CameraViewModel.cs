@@ -6,7 +6,7 @@ namespace GFDStudio.GUI.ViewModels
     public class CameraViewModel : TreeNodeViewModel<Camera>
     {
         public override TreeNodeViewModelMenuFlags ContextMenuFlags
-            => TreeNodeViewModelMenuFlags.Delete | TreeNodeViewModelMenuFlags.Move | TreeNodeViewModelMenuFlags.Export;
+            => TreeNodeViewModelMenuFlags.Delete | TreeNodeViewModelMenuFlags.Move | TreeNodeViewModelMenuFlags.Export | TreeNodeViewModelMenuFlags.Move;
 
         public override TreeNodeViewModelFlags NodeFlags
             => TreeNodeViewModelFlags.Leaf;

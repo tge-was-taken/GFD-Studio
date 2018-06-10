@@ -1,9 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using GFDLibrary.IO;
-using Generic.Math;
 using System.Linq;
-using System.Text;
 
 namespace GFDLibrary
 {
@@ -247,6 +244,12 @@ namespace GFDLibrary
 
             if ( Flags.HasFlag( AnimationFlags.HasProperties ) )
                 writer.WriteResource( Properties );
+        }
+
+        public void FixTargetIds( Scene scene )
+        {
+            foreach ( var controller in Controllers )
+                controller.FixTargetIds( scene );
         }
     }
 

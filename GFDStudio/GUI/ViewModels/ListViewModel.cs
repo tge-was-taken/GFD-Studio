@@ -10,7 +10,7 @@ namespace GFDStudio.GUI.ViewModels
         private readonly IList<string> mItemNames;
 
         public override TreeNodeViewModelMenuFlags ContextMenuFlags
-            => TreeNodeViewModelMenuFlags.Add | TreeNodeViewModelMenuFlags.Delete | TreeNodeViewModelMenuFlags.Move | TreeNodeViewModelMenuFlags.Rename;
+            => TreeNodeViewModelMenuFlags.Add | TreeNodeViewModelMenuFlags.Delete;
 
         public override TreeNodeViewModelFlags NodeFlags
         {

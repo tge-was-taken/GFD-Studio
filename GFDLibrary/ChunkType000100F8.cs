@@ -22,7 +22,8 @@ namespace GFDLibrary
 
         internal override void Write( ResourceWriter writer )
         {
-            writer.WriteBytes( RawData );
+            if ( RawData != null )
+                writer.WriteBytes( RawData );
         }
     }
 }
