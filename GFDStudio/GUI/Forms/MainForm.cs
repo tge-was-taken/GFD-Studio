@@ -39,22 +39,57 @@ namespace GFDStudio.GUI.Forms
 #endif
 
             mRecentlyOpenedFilesList = new RecentlyOpenedFilesList( RECENTLY_OPENED_FILES_LIST_FILEPATH, 10, mOpenToolStripMenuItem.DropDown.Items,
-                                                                    OpenToolStripRecentlyOpenedFileClickEventHandler );
+                                                                    HandleOpenToolStripRecentlyOpenedFileClick );
             TreeView.LabelEdit = true;
             AllowDrop = true;
         }
 
         private void InitializeEvents()
         {
-            TreeView.AfterSelect += TreeViewAfterSelectEventHandler;
-            TreeView.UserPropertyChanged += TreeViewUserPropertyChangedEventHandler;
-            mContentPanel.ControlAdded += ContentPanelControlAddedEventHandler;
-            mContentPanel.Resize += ContentPanelResizeEventHandler;
-            DragDrop += DragDropEventHandler;
-            DragEnter += DragEnterEventHandler;
+            TreeView.AfterSelect += HandleTreeViewAfterSelect;
+            TreeView.UserPropertyChanged += HandleTreeViewUserPropertyChanged;
+            TreeView.KeyDown += HandleKeyDown;
+            mContentPanel.ControlAdded += HandleContentPanelControlAdded;
+            mContentPanel.Resize += HandleContentPanelResize;
+            DragDrop += HandleDragDrop;
+            DragEnter += HandleDragEnter;
         }
 
-        private void DragDropEventHandler( object sender, DragEventArgs e )
+        private void HandleKeyDown( object sender, KeyEventArgs e )
+        {
+            if ( e.Control )
+                HandleControlShortcuts( e.KeyData );
+        }
+
+        private void HandleControlShortcuts( Keys keys )
+        {
+            var handled = false;
+
+            // Check main menu strip shortcuts first
+            foreach ( var item in MainMenuStrip.Items )
+            {
+                var menuItem = item as ToolStripMenuItem;
+                if ( menuItem?.ShortcutKeys == keys )
+                {
+                    menuItem.PerformClick();
+                    handled = true;
+                }
+            }
+
+            if ( handled || TreeView.SelectedNode?.ContextMenuStrip == null )
+                return;
+
+            // If it's not a main menu shortcut, try checking if its a shortcut to one of the selected
+            // node's context menu actions.
+            foreach ( var item in TreeView.SelectedNode.ContextMenuStrip.Items )
+            {
+                var menuItem = item as ToolStripMenuItem;
+                if ( menuItem?.ShortcutKeys == keys )
+                    menuItem.PerformClick();
+            }
+        }
+
+        private void HandleDragDrop( object sender, DragEventArgs e )
         {
             var data = e.Data.GetData( DataFormats.FileDrop );
             if ( data == null )
@@ -71,23 +106,19 @@ namespace GFDStudio.GUI.Forms
             OpenFile( path );
         }
 
-
-        private void DragEnterEventHandler( object sender, DragEventArgs e )
+        private static void HandleDragEnter( object sender, DragEventArgs e )
         {
-            if ( e.Data.GetDataPresent( DataFormats.FileDrop ) )
-                e.Effect = DragDropEffects.Copy;
-            else
-                e.Effect = DragDropEffects.None;
+            e.Effect = e.Data.GetDataPresent( DataFormats.FileDrop ) ? DragDropEffects.Copy : DragDropEffects.None;
         }
 
-        private void TreeViewUserPropertyChangedEventHandler( object sender, TreeNodeViewModelPropertyChangedEventArgs args )
+        private void HandleTreeViewUserPropertyChanged( object sender, TreeNodeViewModelPropertyChangedEventArgs args )
         {
             var controls = mContentPanel.Controls.Find( nameof( ModelViewControl ), true );
 
             if ( controls.Length == 1 )
             {
                 var modelViewControl = ( ModelViewControl )controls[ 0 ];
-                modelViewControl.LoadModel( ( Model ) ( ( TreeNodeViewModel ) TreeView.Nodes[ 0 ] ).Model );
+                modelViewControl.LoadModel( ( Model ) TreeView.TopNode.Model );
             }
         }
 
@@ -160,13 +191,13 @@ namespace GFDStudio.GUI.Forms
         public void SaveFile( string filePath )
         {
             if ( TreeView.Nodes.Count > 0 )
-                ( ( TreeNodeViewModel )TreeView.Nodes[0] ).Export( filePath );
+                TreeView.TopNode.Export( filePath );
         }
 
         public string SelectFileAndSave()
         {
             if ( TreeView.Nodes.Count > 0 )
-                return ( ( TreeNodeViewModel )TreeView.Nodes[0] ).Export();
+                return TreeView.TopNode.Export();
 
             return null;
         }
@@ -192,7 +223,7 @@ namespace GFDStudio.GUI.Forms
             Application.Exit();
         }
 
-        private void TreeViewAfterSelectEventHandler(object sender, TreeViewEventArgs e)
+        private void HandleTreeViewAfterSelect(object sender, TreeViewEventArgs e)
         {
             var viewModel = ( TreeNodeViewModel )e.Node;
             OnTreeNodeViewModelSelected( viewModel );
@@ -231,26 +262,26 @@ namespace GFDStudio.GUI.Forms
             }
         }
 
-        private void OpenToolStripMenuItemClickEventHandler(object sender, EventArgs e)
+        private void HandleOpenToolStripMenuItemClick(object sender, EventArgs e)
         {
             mFileToolStripMenuItem.DropDown.Close();
             SelectAndOpenSelectedFile();
         }
 
-        private void OpenToolStripRecentlyOpenedFileClickEventHandler( object sender, EventArgs e )
+        private void HandleOpenToolStripRecentlyOpenedFileClick( object sender, EventArgs e )
         {
             mFileToolStripMenuItem.DropDown.Close();
             OpenFile( (( ToolStripMenuItem )sender).Text );
         }
 
-        private void ContentPanelControlAddedEventHandler( object sender, ControlEventArgs e )
+        private void HandleContentPanelControlAdded( object sender, ControlEventArgs e )
         {
             e.Control.Left = ( mContentPanel.Width - e.Control.Width ) / 2;
             e.Control.Top = ( mContentPanel.Height - e.Control.Height ) / 2;
             e.Control.Visible = true;
         }
 
-        private void ContentPanelResizeEventHandler( object sender, EventArgs e )
+        private void HandleContentPanelResize( object sender, EventArgs e )
         {
             foreach ( Control control in mContentPanel.Controls )
             {
@@ -261,7 +292,7 @@ namespace GFDStudio.GUI.Forms
             }
         }
 
-        private void SaveToolStripMenuItemClickEventHandler( object sender, EventArgs e )
+        private void HandleSaveToolStripMenuItemClick( object sender, EventArgs e )
         {
             if ( LastOpenedFilePath != null )
             {
@@ -277,7 +308,7 @@ namespace GFDStudio.GUI.Forms
             }
         }
 
-        private void SaveAsToolStripMenuItemClickEventHandler( object sender, EventArgs e )
+        private void HandleSaveAsToolStripMenuItemClick( object sender, EventArgs e )
         {
             if ( TreeView.TopNode == null )
             {
@@ -292,7 +323,7 @@ namespace GFDStudio.GUI.Forms
             }
         }
 
-        private void NewModelToolStripMenuItemClickEventHandler( object sender, EventArgs e )
+        private void HandleNewModelToolStripMenuItemClick( object sender, EventArgs e )
         {
             var model = ModelConverterUtility.ConvertAssimpModel();
             if ( model != null )
@@ -302,5 +333,6 @@ namespace GFDStudio.GUI.Forms
                 LastOpenedFilePath = null;
             }
         }
+
     }
 }

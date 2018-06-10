@@ -81,7 +81,7 @@ namespace GFDStudio.GUI.Forms
             this.modelToolStripMenuItem.Name = "modelToolStripMenuItem";
             this.modelToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
             this.modelToolStripMenuItem.Text = "Model";
-            this.modelToolStripMenuItem.Click += new System.EventHandler(this.NewModelToolStripMenuItemClickEventHandler);
+            this.modelToolStripMenuItem.Click += new System.EventHandler(this.HandleNewModelToolStripMenuItemClick);
             // 
             // mOpenToolStripMenuItem
             // 
@@ -89,7 +89,7 @@ namespace GFDStudio.GUI.Forms
             this.mOpenToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
             this.mOpenToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
             this.mOpenToolStripMenuItem.Text = "Open";
-            this.mOpenToolStripMenuItem.Click += new System.EventHandler(this.OpenToolStripMenuItemClickEventHandler);
+            this.mOpenToolStripMenuItem.Click += new System.EventHandler(this.HandleOpenToolStripMenuItemClick);
             // 
             // saveToolStripMenuItem
             // 
@@ -97,7 +97,7 @@ namespace GFDStudio.GUI.Forms
             this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
             this.saveToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
             this.saveToolStripMenuItem.Text = "Save";
-            this.saveToolStripMenuItem.Click += new System.EventHandler(this.SaveToolStripMenuItemClickEventHandler);
+            this.saveToolStripMenuItem.Click += new System.EventHandler(this.HandleSaveToolStripMenuItemClick);
             // 
             // saveAsToolStripMenuItem
             // 
@@ -106,7 +106,7 @@ namespace GFDStudio.GUI.Forms
             | System.Windows.Forms.Keys.S)));
             this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
             this.saveAsToolStripMenuItem.Text = "Save as...";
-            this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.SaveAsToolStripMenuItemClickEventHandler);
+            this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.HandleSaveAsToolStripMenuItemClick);
             // 
             // mEditToolStripMenuItem
             // 
@@ -165,7 +165,7 @@ namespace GFDStudio.GUI.Forms
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.mMainMenuStrip;
             this.Name = "MainForm";
-            this.Text = "Atlus GFD Model Editor";
+            this.Text = "GFD Studio";
             this.mMainMenuStrip.ResumeLayout(false);
             this.mMainMenuStrip.PerformLayout();
             this.ResumeLayout(false);

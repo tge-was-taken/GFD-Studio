@@ -10,8 +10,14 @@ namespace GFDStudio.GUI.ViewModels
 
         public new TreeNodeViewModel TopNode
         {
-            get => ( TreeNodeViewModel )base.TopNode;
-            set => base.TopNode = value;
+            get => ( TreeNodeViewModel )Nodes[ 0 ];
+            set
+            {
+                if ( Nodes.Count > 0 )
+                    Nodes[ 0 ] = value;
+                else if ( value != null )
+                    Nodes.Add( value );
+            }
         }
 
         /// <summary>
@@ -41,7 +47,7 @@ namespace GFDStudio.GUI.ViewModels
         public void ExpandNode( TreeNodeViewModel viewModel )
         {
             // check if the first child node is a dummy node
-            if ( viewModel.Nodes.Count > 0 && viewModel.Nodes[0].Text == string.Empty )
+            if ( viewModel.Nodes.Count > 0 && viewModel.Nodes[0].Text.Length == 0 )
             {
                 // initialize the view so the user doesn't get to see the dummy node
                 viewModel.InitializeView(true);
