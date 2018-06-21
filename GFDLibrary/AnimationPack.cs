@@ -140,6 +140,9 @@ namespace GFDLibrary
             foreach ( var animation in Animations )
                 animation.MakeTransformsRelative( originalScene, newScene, fixArms );
 
+            foreach ( var animation in BlendAnimations )
+                animation.FixTargetIds( newScene ); // blend animations are already relative, they only need their ids fixed
+
             ExtraData?.MakeTransformsRelative( originalScene, newScene, fixArms );
         }
     }
