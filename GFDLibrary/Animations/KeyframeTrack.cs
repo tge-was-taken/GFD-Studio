@@ -22,20 +22,21 @@ namespace GFDLibrary
         public List<float> KeyframeTimings { get; set; }
 
         // 10
-        public Vector3 BasePosition { get; set; }
+        public Vector3 PositionScale { get; set; }
 
         // 1C
-        public Vector3 BaseScale { get; set; }
+        public Vector3 ScaleScale { get; set; }
 
         public KeyframeTrack(uint version) : base(version)
         {
             KeyframeTimings = new List< float >();
             Keyframes = new List< Keyframe >();
+            PositionScale = Vector3.One;
+            ScaleScale = Vector3.One;
         }
 
         public KeyframeTrack() : this(ResourceVersion.Persona5)
-        {
-            
+        {         
         }
 
         internal override void Read( ResourceReader reader )
@@ -112,10 +113,10 @@ namespace GFDLibrary
                 Keyframes.Add( keyframe );
             }
 
-            if ( HasBasePositionAndScale( KeyframeType ) )
+            if ( UsesScaleVectors() )
             {
-                BasePosition = reader.ReadVector3();
-                BaseScale = reader.ReadVector3();
+                PositionScale = reader.ReadVector3();
+                ScaleScale = reader.ReadVector3();
             }
         }
 
@@ -126,18 +127,18 @@ namespace GFDLibrary
             KeyframeTimings.ForEach( writer.WriteSingle );
             Keyframes.ForEach( x => x.Write( writer ) );
 
-            if ( HasBasePositionAndScale( KeyframeType ) )
+            if ( UsesScaleVectors() )
             {
-                writer.WriteVector3( BasePosition );
-                writer.WriteVector3( BaseScale );
+                writer.WriteVector3( PositionScale );
+                writer.WriteVector3( ScaleScale );
             }
         }
 
-        internal static bool HasBasePositionAndScale( KeyframeType type )
+        public bool UsesScaleVectors()
         {
-            return type == KeyframeType.NodePRHalf   || type == KeyframeType.NodePRSHalf ||
-                   type == KeyframeType.NodePRHalf_2 || type == KeyframeType.NodePHalf ||
-                   type == KeyframeType.NodeRHalf    || type == KeyframeType.NodeSHalf;
+            return KeyframeType == KeyframeType.NodePRHalf   || KeyframeType == KeyframeType.NodePRSHalf ||
+                   KeyframeType == KeyframeType.NodePRHalf_2 || KeyframeType == KeyframeType.NodePHalf ||
+                   KeyframeType == KeyframeType.NodeRHalf    || KeyframeType == KeyframeType.NodeSHalf;
         }
     }
 }

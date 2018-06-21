@@ -1,11 +1,20 @@
 ﻿using System.Collections.Generic;
 using GFDLibrary.IO;
 using System.Linq;
+using System.Numerics;
 
 namespace GFDLibrary
 {
     public sealed class Animation : Resource
     {
+        private static readonly HashSet<string> sArmsFixNodeNameBlacklist = new HashSet<string>
+        {
+            "Bip01 L UpperArm",
+            "Bip01 R UpperArm",
+            "Bip01 L Clavicle",
+            "Bip01 R Clavicle",
+        };
+
         private List<AnimationFlag10000000DataEntry> mField10;
         private AnimationExtraData mField14;
         private BoundingBox? mBoundingBox;
@@ -250,6 +259,46 @@ namespace GFDLibrary
         {
             foreach ( var controller in Controllers )
                 controller.FixTargetIds( scene );
+        }
+
+        public void MakeTransformsRelative( Scene originalScene, Scene newScene, bool fixArms )
+        {
+            FixTargetIds( newScene );
+
+            foreach ( var controller in Controllers )
+            {
+                var originalNode = originalScene.Nodes.FirstOrDefault( x => x.Name == controller.TargetName );
+                var newNode = newScene.Nodes.FirstOrDefault( x => x.Name == controller.TargetName );
+                if ( newNode == null || originalNode == null )
+                    continue;
+
+                var nodeName = originalNode.Name;
+
+                foreach ( var track in controller.Tracks )
+                {
+                    var positionScale = track.PositionScale;
+
+                    foreach ( var keyframe in track.Keyframes )
+                    {
+                        if ( !( keyframe is KeyframePRS prsKeyframe ) )
+                            continue;
+
+                        // Make position relative
+                        var position = prsKeyframe.Position * positionScale;
+                        var relativePosition = position - originalNode.Translation;
+                        var newPosition = newNode.Translation + relativePosition;
+                        prsKeyframe.Position = newPosition / positionScale;
+
+                        // Don't make rotation relative if we're attempting to fix the arms
+                        if ( !fixArms || !sArmsFixNodeNameBlacklist.Contains( nodeName ) )
+                        {
+                            // Make rotation relative
+                            var relativeRotation = Quaternion.Inverse( originalNode.Rotation ) * prsKeyframe.Rotation;
+                            prsKeyframe.Rotation = newNode.Rotation * relativeRotation;
+                        }
+                    }
+                }
+            }
         }
     }
 

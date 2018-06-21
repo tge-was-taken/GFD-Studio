@@ -62,5 +62,13 @@ namespace GFDLibrary
             Field08.FixTargetIds( scene );
             Field0C.FixTargetIds( scene );
         }
+
+        public void MakeTransformsRelative( Scene originalScene, Scene newScene, bool fixArms )
+        {
+            Field00.MakeTransformsRelative( originalScene, newScene, fixArms );
+            Field04.MakeTransformsRelative( originalScene, newScene, fixArms );
+            Field08.MakeTransformsRelative( originalScene, newScene, fixArms );
+            Field0C.MakeTransformsRelative( originalScene, newScene, fixArms );
+        }
     }
 }

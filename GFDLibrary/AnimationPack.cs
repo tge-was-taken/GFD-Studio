@@ -20,11 +20,11 @@ namespace GFDLibrary
 
         public AnimationExtraData ExtraData { get; set; }
 
-        public AnimationPack(uint version)
-            : base(version)
+        public AnimationPack( uint version )
+            : base( version )
         {
-            Animations = new List< Animation >();
-            BlendAnimations = new List< Animation >();
+            Animations = new List<Animation>();
+            BlendAnimations = new List<Animation>();
         }
 
         public AnimationPack()
@@ -61,7 +61,6 @@ namespace GFDLibrary
                 else
                 {
                     // We tried
-                    Console.WriteLine( e );
                     return;
                 }
             }
@@ -76,7 +75,6 @@ namespace GFDLibrary
             {
                 // Make sure to clear the flag for the extra data so we don't crash during writing
                 Flags &= ~AnimationPackFlags.Flag4;
-                Console.WriteLine( e );
                 ErrorsOccuredDuringLoad = true;
             }
         }
@@ -96,8 +94,11 @@ namespace GFDLibrary
                 }
                 catch ( Exception e )
                 {
-                    Console.WriteLine( e );
                     ErrorsOccuredDuringLoad = true;
+
+                    while ( i++ < count )
+                        list.Add( new Animation() );
+
                     break;
                 }
             }
@@ -114,7 +115,7 @@ namespace GFDLibrary
             }
 
             if ( Version > 0x1104950 )
-                writer.WriteInt32( ( int ) Flags );
+                writer.WriteInt32( ( int )Flags );
 
             writer.WriteResourceList( Animations );
             writer.WriteResourceList( BlendAnimations );
@@ -132,6 +133,14 @@ namespace GFDLibrary
                 animation.FixTargetIds( scene );
 
             ExtraData?.FixTargetIds( scene );
+        }
+
+        public void MakeTransformsRelative( Scene originalScene, Scene newScene, bool fixArms )
+        {
+            foreach ( var animation in Animations )
+                animation.MakeTransformsRelative( originalScene, newScene, fixArms );
+
+            ExtraData?.MakeTransformsRelative( originalScene, newScene, fixArms );
         }
     }
 }
