@@ -22,16 +22,14 @@ namespace GFDStudio.FormatModules
 
         protected override void ExportCore( AnimationPack obj, Stream stream, string filename = null )
         {
-            // Wrap it in a model and save it
-            var model = new Model( obj.Version ) { AnimationPack = obj };
-            model.Save( stream, true );
+            obj.Save( stream, true );
         }
 
         protected override AnimationPack ImportCore( Stream stream, string filename = null )
         {
-            var pack = Resource.Load<Model>( stream ).AnimationPack;
+            var pack = Resource.Load<AnimationPack>( stream );
             if ( pack != null && pack.ErrorsOccuredDuringLoad )
-                MessageBox.Show( "One or more error(s) occured while loading the animation pack. The data may be truncated, or otherwise incorrect",
+                MessageBox.Show( "One or more error(s) occured while loading the animation pack. The data may be truncated, or otherwise corrupted",
                                  "Warning", MessageBoxButtons.OK );
 
             return pack;

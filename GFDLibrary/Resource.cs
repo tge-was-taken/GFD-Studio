@@ -174,6 +174,17 @@ namespace GFDLibrary
 
                 res.Read( reader );
 
+                if ( res.ResourceType == ResourceType.Model )
+                {
+                    // Identifier AnimationPack from a file with a model resource header
+                    var model = ( Model )res;
+                    if ( model.AnimationPack != null && model.ChunkType000100F8 == null && model.ChunkType000100F9 == null &&
+                         model.Materials == null && model.Scene == null && model.Textures == null )
+                    {
+                        res = model.AnimationPack;
+                    }
+                }
+
                 return res;
             }
         }
@@ -188,6 +199,14 @@ namespace GFDLibrary
         {
             using ( var writer = new ResourceWriter( stream, leaveOpen ) )
             {
+                if ( ResourceType == ResourceType.AnimationPack )
+                {
+                    // For AnimationPacks we write a model file header, and then a chunk containing the pack data.
+                    writer.WriteFileHeader( ResourceFileIdentifier.Model, Version, ResourceType.Model );
+                    writer.WriteResourceChunk( this );
+                    return;
+                }
+
                 writer.WriteFileHeader( ResourceFileIdentifier.Model, Version, ResourceType );
 
                 switch ( ResourceType )

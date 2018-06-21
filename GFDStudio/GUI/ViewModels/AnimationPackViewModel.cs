@@ -38,12 +38,8 @@ namespace GFDStudio.GUI.ViewModels
 
         protected override void InitializeCore()
         {
-            RegisterExportHandler<AnimationPack>( path =>
-            {
-                var model = new Model( Version ) { AnimationPack = Model };
-                model.Save( path );
-            } );
-            RegisterReplaceHandler<AnimationPack>( path => Resource.Load<Model>( path ).AnimationPack );
+            RegisterExportHandler<AnimationPack>( path => Model.Save( path ) );
+            RegisterReplaceHandler<AnimationPack>( Resource.Load<AnimationPack> );
             RegisterModelUpdateHandler( () =>
             {
                 var model = new AnimationPack( Version );
@@ -55,27 +51,40 @@ namespace GFDStudio.GUI.ViewModels
 
                 return model;
             });
-            RegisterCustomHandler( "Fix IDs", () =>
+            RegisterCustomHandler( "Make Relative", () =>
             {
-                using ( var dialog = new OpenFileDialog() )
-                {
-                    dialog.Filter = ModuleFilterGenerator.GenerateFilter( new[] { FormatModuleUsageFlags.Import }, typeof( Model ) );
-                    dialog.AutoUpgradeEnabled = true;
-                    dialog.CheckPathExists = true;
-                    dialog.Title = "Select a model file.";
-                    dialog.ValidateNames = true;
-                    dialog.AddExtension = true;
+                var originalScene = ( Parent as ModelViewModel )?.Scene?.Model ?? SelectModelFile( "Select the new model file." )?.Scene;
+                if ( originalScene == null )
+                    return;
 
-                    if ( dialog.ShowDialog() != DialogResult.OK )
-                        return;
+                var newScene = SelectModelFile( "Select the original model file." )?.Scene;
+                if ( newScene == null )
+                    return;    
 
-                    var model = Resource.Load<Model>( dialog.FileName );
-                    if ( model.Scene == null )
-                        return;
+                bool fixArms = MessageBox.Show( "Fix arms? If unsure, select No.", "Question", MessageBoxButtons.YesNo,
+                                                MessageBoxIcon.Question, MessageBoxDefaultButton.Button2 ) == DialogResult.Yes;
 
-                    Model.FixTargetIds( model.Scene );
-                }
+                Model.MakeTransformsRelative( originalScene, newScene, fixArms );
             } );
+        }
+
+        private static Model SelectModelFile(string title)
+        {
+            using ( var dialog = new OpenFileDialog() )
+            {
+                dialog.Filter             = ModuleFilterGenerator.GenerateFilter( new[] { FormatModuleUsageFlags.Import }, typeof( Model ) );
+                dialog.AutoUpgradeEnabled = true;
+                dialog.CheckPathExists    = true;
+                dialog.Title              = title;
+                dialog.ValidateNames      = true;
+                dialog.AddExtension       = true;
+
+                if ( dialog.ShowDialog() != DialogResult.OK )
+                    return null;
+
+                var model = Resource.Load<Model>( dialog.FileName );
+                return model;
+            }
         }
 
         protected override void InitializeViewCore()
