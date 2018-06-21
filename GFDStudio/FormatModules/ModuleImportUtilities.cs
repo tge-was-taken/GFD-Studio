@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Windows.Forms;
 
 namespace GFDStudio.FormatModules
 {
@@ -64,6 +65,44 @@ namespace GFDStudio.FormatModules
 
             // simplicity is nice sometimes c:
             return module != null;
+        }
+
+        /// <summary>
+        /// Imports a file from a given path using a registered module associated with type <typeparamref name="T"/>. Returns null on failure.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
+        public static T ImportFile<T>( string filePath ) where T : class
+        {
+            if ( !TryGetModuleForImport( filePath, out var module ) )
+                return null;
+
+            return module.Import( filePath ) as T;
+        }
+
+        /// <summary>
+        /// Selects a file to import using a registered module associated with type <typeparamref name="T"/>. Returns null on failure.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="title"></param>
+        /// <returns></returns>
+        public static T SelectImportFile<T>( string title = "Select file to import" ) where T : class
+        {
+            using ( var dialog = new OpenFileDialog() )
+            {
+                dialog.Filter             = ModuleFilterGenerator.GenerateFilter( new[] { FormatModuleUsageFlags.Import }, typeof( T ) );
+                dialog.AutoUpgradeEnabled = true;
+                dialog.CheckPathExists    = true;
+                dialog.Title              = title;
+                dialog.ValidateNames      = true;
+                dialog.AddExtension       = true;
+
+                if ( dialog.ShowDialog() != DialogResult.OK )
+                    return null;
+
+                return ImportFile<T>( dialog.FileName );
+            }
         }
     }
 }
