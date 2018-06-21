@@ -68,7 +68,15 @@ namespace GFDLibrary
         }
 
         private List<Node> mNodeList;
-        public ReadOnlyCollection<Node> Nodes => mNodeList.AsReadOnly();
+
+        public ReadOnlyCollection<Node> Nodes
+        {
+            get
+            {
+                PopulateNodeList();
+                return mNodeList.AsReadOnly();
+            }
+        }
 
         public Scene()
         {         
