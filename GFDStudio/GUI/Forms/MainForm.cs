@@ -1,11 +1,15 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using GFDLibrary;
 using GFDStudio.FormatModules;
 using GFDStudio.GUI.Controls;
 using GFDStudio.GUI.ViewModels;
 using GFDStudio.IO;
+using Ookii.Dialogs;
 
 namespace GFDStudio.GUI.Forms
 {
@@ -335,6 +339,70 @@ namespace GFDStudio.GUI.Forms
                 var viewModel = TreeNodeViewModelFactory.Create( "Model", model );
                 TreeView.SetTopNode( viewModel );
                 LastOpenedFilePath = null;
+            }
+        }
+
+        private void HandleMakeAnimationsRelativeToolStripMenuItemClick( object sender, EventArgs e )
+        {
+            var originalScene = ModuleImportUtilities.SelectImportFile<Model>( "Select the original model file." )?.Scene;
+            if ( originalScene == null )
+                return;
+
+            var newScene = ModuleImportUtilities.SelectImportFile<Model>( "Select the new model file." )?.Scene;
+            if ( newScene == null )
+                return;
+
+            bool fixArms = MessageBox.Show( "Fix arms? If unsure, select No.", "Question", MessageBoxButtons.YesNo,
+                                            MessageBoxIcon.Question, MessageBoxDefaultButton.Button2 ) == DialogResult.Yes;
+
+            string directoryPath;
+            using ( var dialog = new VistaFolderBrowserDialog() )
+            {
+                dialog.Description =
+                    "Select a directory containing GAP files, or subdirectories containing GAP files to make relative to the new model.\n" +
+                    "Note that this will replace the original files.";
+
+                if ( dialog.ShowDialog() != DialogResult.OK )
+                    return;
+
+                directoryPath = dialog.SelectedPath;
+            }
+
+            using ( var dialog = new ProgressDialog() )
+            {
+                dialog.DoWork += ( o, progress ) =>
+                {
+                    var filePaths = Directory.EnumerateFiles( directoryPath, "*.GAP", SearchOption.AllDirectories ).ToList();
+                    var processedFileCount = 0;
+
+                    Parallel.ForEach( filePaths, ( filePath, state ) =>
+                    {
+                        lock ( dialog )
+                        {
+                            if ( dialog.CancellationPending )
+                            {
+                                state.Stop();
+                                return;
+                            }
+
+                            dialog.ReportProgress( ( int ) ( ( float ) ++processedFileCount / filePaths.Count * 100 ),
+                                                   $"Processing {Path.GetFileName( filePath )}", null );
+                        }
+
+                        try
+                        {
+                            var animationPack = Resource.Load<AnimationPack>( filePath );
+                            animationPack.MakeTransformsRelative( originalScene, newScene, fixArms );
+                            animationPack.Save( filePath );
+                        }
+                        catch ( Exception )
+                        {
+                            // Oh well.
+                        }
+                    } );
+                };
+
+                dialog.ShowDialog();
             }
         }
 

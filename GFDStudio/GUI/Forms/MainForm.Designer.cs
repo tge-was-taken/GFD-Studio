@@ -38,11 +38,11 @@ namespace GFDStudio.GUI.Forms
             this.mOpenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.mEditToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.mOptionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mPropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.mContentPanel = new System.Windows.Forms.Panel();
-            this.mTreeView = new TreeNodeViewModelView();
+            this.mTreeView = new GFDStudio.GUI.ViewModels.TreeNodeViewModelView();
+            this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.makeRelativeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mMainMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -50,7 +50,7 @@ namespace GFDStudio.GUI.Forms
             // 
             this.mMainMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.mFileToolStripMenuItem,
-            this.mEditToolStripMenuItem});
+            this.toolsToolStripMenuItem});
             this.mMainMenuStrip.Location = new System.Drawing.Point(0, 0);
             this.mMainMenuStrip.Name = "mMainMenuStrip";
             this.mMainMenuStrip.Size = new System.Drawing.Size(1222, 24);
@@ -108,21 +108,6 @@ namespace GFDStudio.GUI.Forms
             this.saveAsToolStripMenuItem.Text = "Save as...";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.HandleSaveAsToolStripMenuItemClick);
             // 
-            // mEditToolStripMenuItem
-            // 
-            this.mEditToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mOptionsToolStripMenuItem});
-            this.mEditToolStripMenuItem.Name = "mEditToolStripMenuItem";
-            this.mEditToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
-            this.mEditToolStripMenuItem.Text = "Edit";
-            this.mEditToolStripMenuItem.Visible = false;
-            // 
-            // mOptionsToolStripMenuItem
-            // 
-            this.mOptionsToolStripMenuItem.Name = "mOptionsToolStripMenuItem";
-            this.mOptionsToolStripMenuItem.Size = new System.Drawing.Size(116, 22);
-            this.mOptionsToolStripMenuItem.Text = "Options";
-            // 
             // mPropertyGrid
             // 
             this.mPropertyGrid.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -148,10 +133,25 @@ namespace GFDStudio.GUI.Forms
             // 
             this.mTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.mTreeView.Location = new System.Drawing.Point(713, 27);
-            this.mTreeView.Name = "TreeView";
+            this.mTreeView.Name = "mTreeView";
             this.mTreeView.Size = new System.Drawing.Size(497, 380);
             this.mTreeView.TabIndex = 1;
             this.mTreeView.TopNode = null;
+            // 
+            // toolsToolStripMenuItem
+            // 
+            this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.makeRelativeToolStripMenuItem} );
+            this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
+            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
+            this.toolsToolStripMenuItem.Text = "Tools";
+            // 
+            // makeRelativeToolStripMenuItem
+            // 
+            this.makeRelativeToolStripMenuItem.Name = "makeRelativeToolStripMenuItem";
+            this.makeRelativeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.makeRelativeToolStripMenuItem.Text = "Make Animations Relative";
+            this.makeRelativeToolStripMenuItem.Click += new System.EventHandler(this.HandleMakeAnimationsRelativeToolStripMenuItemClick);
             // 
             // MainForm
             // 
@@ -159,7 +159,7 @@ namespace GFDStudio.GUI.Forms
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1222, 839);
             this.Controls.Add(this.mPropertyGrid);
-            this.Controls.Add(this.mTreeView );
+            this.Controls.Add(this.mTreeView);
             this.Controls.Add(this.mMainMenuStrip);
             this.Controls.Add(this.mContentPanel);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -179,13 +179,13 @@ namespace GFDStudio.GUI.Forms
         private System.Windows.Forms.ToolStripMenuItem mFileToolStripMenuItem;
         private System.Windows.Forms.PropertyGrid mPropertyGrid;
         private System.Windows.Forms.ToolStripMenuItem mOpenToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem mEditToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem mOptionsToolStripMenuItem;
         private System.Windows.Forms.Panel mContentPanel;
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem newToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem modelToolStripMenuItem;
         private TreeNodeViewModelView mTreeView;
+        private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem makeRelativeToolStripMenuItem;
     }
 }
