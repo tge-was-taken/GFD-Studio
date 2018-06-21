@@ -15,7 +15,11 @@ namespace GFDStudio.GUI.Forms
 
         private RecentlyOpenedFilesList mRecentlyOpenedFilesList;
 
-        public TreeNodeViewModelView TreeView { get; private set; }
+        public TreeNodeViewModelView TreeView
+        {
+            get => mTreeView;
+            private set => mTreeView = value;
+        }
 
         public string LastOpenedFilePath { get; private set; }
 

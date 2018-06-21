@@ -10,7 +10,17 @@ namespace GFDStudio.GUI.ViewModels
 
         public new TreeNodeViewModel TopNode
         {
-            get => ( TreeNodeViewModel )Nodes[ 0 ];
+            get
+            {
+                if ( !DesignMode )
+                {
+                    return Nodes.Count > 0 ? ( TreeNodeViewModel ) Nodes[ 0 ] : null;
+                }
+                else
+                {
+                    return null;
+                }
+            }
             set
             {
                 if ( Nodes.Count > 0 )
