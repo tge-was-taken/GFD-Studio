@@ -1,4 +1,4 @@
-﻿using GFDStudio.GUI.ViewModels;
+﻿using GFDStudio.GUI.DataViewNodes;
 
 namespace GFDStudio.GUI.Forms
 {
@@ -40,7 +40,7 @@ namespace GFDStudio.GUI.Forms
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mPropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.mContentPanel = new System.Windows.Forms.Panel();
-            this.mTreeView = new GFDStudio.GUI.ViewModels.TreeNodeViewModelView();
+            this.mDataTreeView = new GFDStudio.GUI.DataViewNodes.DataTreeView();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.makeRelativeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mMainMenuStrip.SuspendLayout();
@@ -117,6 +117,7 @@ namespace GFDStudio.GUI.Forms
             this.mPropertyGrid.Name = "mPropertyGrid";
             this.mPropertyGrid.Size = new System.Drawing.Size(497, 414);
             this.mPropertyGrid.TabIndex = 2;
+            this.mPropertyGrid.PropertySort = System.Windows.Forms.PropertySort.NoSort;
             // 
             // mContentPanel
             // 
@@ -129,14 +130,14 @@ namespace GFDStudio.GUI.Forms
             this.mContentPanel.Size = new System.Drawing.Size(695, 800);
             this.mContentPanel.TabIndex = 3;
             // 
-            // mTreeView
+            // mDataTreeView
             // 
-            this.mTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.mTreeView.Location = new System.Drawing.Point(713, 27);
-            this.mTreeView.Name = "mTreeView";
-            this.mTreeView.Size = new System.Drawing.Size(497, 380);
-            this.mTreeView.TabIndex = 1;
-            this.mTreeView.TopNode = null;
+            this.mDataTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.mDataTreeView.Location = new System.Drawing.Point(713, 27);
+            this.mDataTreeView.Name = "mDataTreeView";
+            this.mDataTreeView.Size = new System.Drawing.Size(497, 380);
+            this.mDataTreeView.TabIndex = 1;
+            this.mDataTreeView.TopNode = null;
             // 
             // toolsToolStripMenuItem
             // 
@@ -159,7 +160,7 @@ namespace GFDStudio.GUI.Forms
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1222, 839);
             this.Controls.Add(this.mPropertyGrid);
-            this.Controls.Add(this.mTreeView);
+            this.Controls.Add(this.mDataTreeView);
             this.Controls.Add(this.mMainMenuStrip);
             this.Controls.Add(this.mContentPanel);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -184,7 +185,7 @@ namespace GFDStudio.GUI.Forms
         private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem newToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem modelToolStripMenuItem;
-        private TreeNodeViewModelView mTreeView;
+        private DataTreeView mDataTreeView;
         private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem makeRelativeToolStripMenuItem;
     }

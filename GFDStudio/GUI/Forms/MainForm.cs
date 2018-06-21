@@ -7,7 +7,7 @@ using System.Windows.Forms;
 using GFDLibrary;
 using GFDStudio.FormatModules;
 using GFDStudio.GUI.Controls;
-using GFDStudio.GUI.ViewModels;
+using GFDStudio.GUI.DataViewNodes;
 using GFDStudio.IO;
 using Ookii.Dialogs;
 
@@ -19,10 +19,10 @@ namespace GFDStudio.GUI.Forms
 
         private RecentlyOpenedFilesList mRecentlyOpenedFilesList;
 
-        public TreeNodeViewModelView TreeView
+        public DataTreeView DataTreeView
         {
-            get => mTreeView;
-            private set => mTreeView = value;
+            get => mDataTreeView;
+            private set => mDataTreeView = value;
         }
 
         public string LastOpenedFilePath { get; private set; }
@@ -48,15 +48,15 @@ namespace GFDStudio.GUI.Forms
 
             mRecentlyOpenedFilesList = new RecentlyOpenedFilesList( RECENTLY_OPENED_FILES_LIST_FILEPATH, 10, mOpenToolStripMenuItem.DropDown.Items,
                                                                     HandleOpenToolStripRecentlyOpenedFileClick );
-            TreeView.LabelEdit = true;
+            DataTreeView.LabelEdit = true;
             AllowDrop = true;
         }
 
         private void InitializeEvents()
         {
-            TreeView.AfterSelect += HandleTreeViewAfterSelect;
-            TreeView.UserPropertyChanged += HandleTreeViewUserPropertyChanged;
-            TreeView.KeyDown += HandleKeyDown;
+            DataTreeView.AfterSelect += HandleTreeViewAfterSelect;
+            DataTreeView.UserPropertyChanged += HandleTreeViewUserPropertyChanged;
+            DataTreeView.KeyDown += HandleKeyDown;
             mContentPanel.ControlAdded += HandleContentPanelControlAdded;
             mContentPanel.Resize += HandleContentPanelResize;
             DragDrop += HandleDragDrop;
@@ -84,12 +84,12 @@ namespace GFDStudio.GUI.Forms
                 }
             }
 
-            if ( handled || TreeView.SelectedNode?.ContextMenuStrip == null )
+            if ( handled || DataTreeView.SelectedNode?.ContextMenuStrip == null )
                 return;
 
             // If it's not a main menu shortcut, try checking if its a shortcut to one of the selected
             // node's context menu actions.
-            foreach ( var item in TreeView.SelectedNode.ContextMenuStrip.Items )
+            foreach ( var item in DataTreeView.SelectedNode.ContextMenuStrip.Items )
             {
                 var menuItem = item as ToolStripMenuItem;
                 if ( menuItem?.ShortcutKeys == keys )
@@ -119,14 +119,14 @@ namespace GFDStudio.GUI.Forms
             e.Effect = e.Data.GetDataPresent( DataFormats.FileDrop ) ? DragDropEffects.Copy : DragDropEffects.None;
         }
 
-        private void HandleTreeViewUserPropertyChanged( object sender, TreeNodeViewModelPropertyChangedEventArgs args )
+        private void HandleTreeViewUserPropertyChanged( object sender, DataViewNodePropertyChangedEventArgs args )
         {
             var controls = mContentPanel.Controls.Find( nameof( ModelViewControl ), true );
 
             if ( controls.Length == 1 )
             {
                 var modelViewControl = ( ModelViewControl )controls[ 0 ];
-                modelViewControl.LoadModel( ( Model ) TreeView.TopNode.Model );
+                modelViewControl.LoadModel( ( Model ) DataTreeView.TopNode.Data );
             }
         }
 
@@ -173,14 +173,14 @@ namespace GFDStudio.GUI.Forms
 
         public void OpenFile( string filePath )
         {
-            if ( !TreeNodeViewModelFactory.TryCreate( filePath, out var viewModel ) )
+            if ( !DataViewNodeFactory.TryCreate( filePath, out var viewModel ) )
             {
                 MessageBox.Show( "Hee file could not be loaded, ho.", "Error", MessageBoxButtons.OK );
                 return;
             }
 
             RecordOpenedFile( filePath );
-            TreeView.SetTopNode( viewModel );
+            DataTreeView.SetTopNode( viewModel );
             OnTreeNodeViewModelSelected( viewModel );
         }
 
@@ -198,14 +198,14 @@ namespace GFDStudio.GUI.Forms
 
         public void SaveFile( string filePath )
         {
-            if ( TreeView.Nodes.Count > 0 )
-                TreeView.TopNode.Export( filePath );
+            if ( DataTreeView.Nodes.Count > 0 )
+                DataTreeView.TopNode.Export( filePath );
         }
 
         public string SelectFileAndSave()
         {
-            if ( TreeView.Nodes.Count > 0 )
-                return TreeView.TopNode.Export();
+            if ( DataTreeView.Nodes.Count > 0 )
+                return DataTreeView.TopNode.Export();
 
             return null;
         }
@@ -233,22 +233,22 @@ namespace GFDStudio.GUI.Forms
 
         private void HandleTreeViewAfterSelect(object sender, TreeViewEventArgs e)
         {
-            var viewModel = ( TreeNodeViewModel )e.Node;
+            var viewModel = ( DataViewNode )e.Node;
             OnTreeNodeViewModelSelected( viewModel );
         }
 
-        private void OnTreeNodeViewModelSelected( TreeNodeViewModel viewModel )
+        private void OnTreeNodeViewModelSelected( DataViewNode viewModel )
         {
             // Set property grid to display properties of the currently selected node
             mPropertyGrid.SelectedObject = viewModel;
 
             Control control = null;
 
-            if ( FormatModuleRegistry.ModuleByType.TryGetValue( viewModel.ModelType, out var module ) )
+            if ( FormatModuleRegistry.ModuleByType.TryGetValue( viewModel.DataType, out var module ) )
             {
                 if ( module.UsageFlags.HasFlag( FormatModuleUsageFlags.Bitmap ) )
                 {
-                    control = new BitmapViewControl( module.GetBitmap( viewModel.Model ) );
+                    control = new BitmapViewControl( module.GetBitmap( viewModel.Data ) );
                     control.Visible = false;
                 }
                 else if ( module.ModelType == typeof( Model ) )
@@ -257,7 +257,7 @@ namespace GFDStudio.GUI.Forms
                     var modelViewControl = new ModelViewControl();
                     modelViewControl.Name = nameof( ModelViewControl );
                     modelViewControl.Visible = false;
-                    modelViewControl.LoadModel( ( Model )viewModel.Model );
+                    modelViewControl.LoadModel( ( Model )viewModel.Data );
                     control = modelViewControl;
                 }
             }
@@ -306,7 +306,7 @@ namespace GFDStudio.GUI.Forms
             {
                 SaveFile( LastOpenedFilePath );
             }
-            else if ( TreeView.TopNode != null )
+            else if ( DataTreeView.TopNode != null )
             {
                 MessageBox.Show( "No hee file opened, ho! Use the 'Save as...' option instead.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error );
             }
@@ -318,7 +318,7 @@ namespace GFDStudio.GUI.Forms
 
         private void HandleSaveAsToolStripMenuItemClick( object sender, EventArgs e )
         {
-            if ( TreeView.TopNode == null )
+            if ( DataTreeView.TopNode == null )
             {
                 MessageBox.Show( "Nothing to save, hee ho!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error );
                 return;
@@ -336,8 +336,8 @@ namespace GFDStudio.GUI.Forms
             var model = ModelConverterUtility.ConvertAssimpModel();
             if ( model != null )
             {
-                var viewModel = TreeNodeViewModelFactory.Create( "Model", model );
-                TreeView.SetTopNode( viewModel );
+                var viewModel = DataViewNodeFactory.Create( "Model", model );
+                DataTreeView.SetTopNode( viewModel );
                 LastOpenedFilePath = null;
             }
         }
