@@ -297,7 +297,7 @@ namespace GFDLibrary.IO.Assimp
                         if ( !boneMap.ContainsKey( nodeIndex ) )
                         {
                             var aiBone = new Ai.Bone();
-                            var boneNode = scene.Nodes[nodeIndex];
+                            var boneNode = scene.GetNode( nodeIndex );
 
                             aiBone.Name = AssimpConverterCommon.EscapeName( boneNode.Name );
                             aiBone.VertexWeights.Add( new Ai.VertexWeight( i, boneWeight ) );

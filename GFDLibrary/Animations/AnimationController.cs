@@ -58,13 +58,9 @@ namespace GFDLibrary
                 return true;
 
             var nodes = scene.Nodes.ToList();
-            int targetId = nodes.FindIndex( x => x.Name == TargetName );
-            if ( targetId == -1 )
-                return false;
+            TargetId = nodes.FindIndex( x => x.Name == TargetName );
 
-            TargetId = targetId;
-
-            return true;
+            return TargetId != -1;
         }
     }
 }

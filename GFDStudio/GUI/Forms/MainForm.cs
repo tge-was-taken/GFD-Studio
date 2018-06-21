@@ -385,7 +385,7 @@ namespace GFDStudio.GUI.Forms
                                 return;
                             }
 
-                            dialog.ReportProgress( ( int ) ( ( float ) ++processedFileCount / filePaths.Count * 100 ),
+                            dialog.ReportProgress( ( int ) ( ( ( float ) ++processedFileCount / filePaths.Count ) * 100 ),
                                                    $"Processing {Path.GetFileName( filePath )}", null );
                         }
 
@@ -395,7 +395,7 @@ namespace GFDStudio.GUI.Forms
                             animationPack.MakeTransformsRelative( originalScene, newScene, fixArms );
                             animationPack.Save( filePath );
                         }
-                        catch ( Exception )
+                        catch ( Exception ex )
                         {
                             // Oh well.
                         }

@@ -257,8 +257,11 @@ namespace GFDLibrary
 
         public void FixTargetIds( Scene scene )
         {
-            foreach ( var controller in Controllers )
-                controller.FixTargetIds( scene );
+            foreach ( var controller in Controllers.ToList() )
+            {
+                if ( !controller.FixTargetIds( scene ) )
+                    Controllers.Remove( controller );
+            }
         }
 
         public void MakeTransformsRelative( Scene originalScene, Scene newScene, bool fixArms )

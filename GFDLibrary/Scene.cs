@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
@@ -56,25 +55,23 @@ namespace GFDLibrary
             }
         }
 
-        private Node mRootNode;
-        public Node RootNode
-        {
-            get => mRootNode;
-            set
-            {
-                mRootNode = value;
-                PopulateNodeList();
-            }
-        }
+        public Node RootNode { get; set; }
 
-        private List<Node> mNodeList;
-
-        public ReadOnlyCollection<Node> Nodes
+        public IEnumerable<Node> Nodes
         {
             get
             {
-                PopulateNodeList();
-                return mNodeList.AsReadOnly();
+                IEnumerable<Node> RecursivelyAddToList( Node node )
+                {
+                    yield return node;
+                    foreach ( var childNode in node.Children )
+                    {
+                        foreach ( var childChildNode in RecursivelyAddToList( childNode ) )
+                            yield return childChildNode;
+                    }
+                }
+
+                return RecursivelyAddToList( RootNode );
             }
         }
 
@@ -136,6 +133,12 @@ namespace GFDLibrary
             Node.WriteRecursive( writer, RootNode );
         }
 
+        public Node GetNode( int nodeIndex )
+        {
+            var i = 0;
+            return Nodes.FirstOrDefault( node => i++ == nodeIndex );
+        }
+
         public void ReplaceWith( Scene other )
         {
             // Remove geometries from this scene
@@ -160,7 +163,6 @@ namespace GFDLibrary
                 RootNode.AddChildNode( uniqueNode );
 
             // Rebuild matrix palette
-            PopulateNodeList();
             RebuildBonePalette( other.Nodes.ToList() );
         }
 
@@ -240,9 +242,10 @@ namespace GFDLibrary
 
                     // Find the bone index of this node
                     int lastUniqueNodeIndex = -1;
-                    for ( int i = 0; i < other.Nodes.Count; i++ )
+                    var otherNodes = other.Nodes.ToList();
+                    for ( int i = 0; i < otherNodes.Count; i++ )
                     {
-                        if ( other.Nodes[i].Name == lastUniqueNode.Parent.Name )
+                        if ( otherNodes[i].Name == lastUniqueNode.Parent.Name )
                         {
                             lastUniqueNodeIndex = i;
                             break;
@@ -298,7 +301,8 @@ namespace GFDLibrary
             var uniqueBones = new List<Bone>();
 
             // Recalculate inverse bind matrices & update bone indices
-            foreach ( var node in Nodes )
+            var nodes = Nodes.ToList();
+            foreach ( var node in nodes )
             {
                 if ( !node.HasAttachments )
                     continue;
@@ -320,14 +324,14 @@ namespace GFDLibrary
                             var otherNodeIndex = BonePalette.BoneToNodeIndices[boneIndex];
                             var otherBoneNode = otherNodes[otherNodeIndex];
 
-                            var thisBoneNode = Nodes.FirstOrDefault( x => x.Name == otherBoneNode.Name );
+                            var thisBoneNode = nodes.FirstOrDefault( x => x.Name == otherBoneNode.Name );
                             if ( thisBoneNode == null )
                             {
                                 // Find parent that does exist
                                 var curOtherBoneNode = otherBoneNode.Parent;
                                 while ( thisBoneNode == null && curOtherBoneNode != null )
                                 {
-                                    thisBoneNode = Nodes.FirstOrDefault( x => x.Name == curOtherBoneNode.Name );
+                                    thisBoneNode = nodes.FirstOrDefault( x => x.Name == curOtherBoneNode.Name );
                                     curOtherBoneNode = curOtherBoneNode.Parent;
                                 }
 
@@ -342,7 +346,7 @@ namespace GFDLibrary
                             //     thisBoneNode.Name.Contains( "hand" ) )
                             //    boneTransform = otherBoneNode.WorldTransform;
 
-                            var thisNodeIndex = Nodes.IndexOf( thisBoneNode );
+                            var thisNodeIndex = nodes.IndexOf( thisBoneNode );
                             Trace.Assert( thisNodeIndex != -1 );
                             var bindMatrix = boneTransform * nodeInvWorldTransform;
                             Matrix4x4.Invert( bindMatrix, out var inverseBindMatrix );
@@ -376,22 +380,6 @@ namespace GFDLibrary
                     foreach ( var geometryAttachment in node.Attachments.Where( x => x.Type == NodeAttachmentType.Geometry ).ToList() )
                         node.Attachments.Remove( geometryAttachment );
             }
-        }
-
-        private void PopulateNodeList()
-        {
-            mNodeList = new List<Node>();
-
-            void RecursivelyAddToList(Node node)
-            {
-                mNodeList.Add( node );
-                foreach ( var childNode in node.Children )
-                {
-                    RecursivelyAddToList( childNode );
-                }
-            }
-
-            RecursivelyAddToList( RootNode );
         }
 
         private void ValidateFlags()
