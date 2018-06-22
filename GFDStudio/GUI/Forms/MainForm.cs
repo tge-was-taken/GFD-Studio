@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -173,15 +174,15 @@ namespace GFDStudio.GUI.Forms
 
         public void OpenFile( string filePath )
         {
-            if ( !DataViewNodeFactory.TryCreate( filePath, out var viewModel ) )
+            if ( !DataViewNodeFactory.TryCreate( filePath, out var node ) )
             {
                 MessageBox.Show( "Hee file could not be loaded, ho.", "Error", MessageBoxButtons.OK );
                 return;
             }
 
             RecordOpenedFile( filePath );
-            DataTreeView.SetTopNode( viewModel );
-            OnTreeNodeViewModelSelected( viewModel );
+            DataTreeView.SetTopNode( node );
+            OnDataViewNodeSelected( node );
         }
 
         public string SelectFileToSaveTo()
@@ -233,22 +234,22 @@ namespace GFDStudio.GUI.Forms
 
         private void HandleTreeViewAfterSelect(object sender, TreeViewEventArgs e)
         {
-            var viewModel = ( DataViewNode )e.Node;
-            OnTreeNodeViewModelSelected( viewModel );
+            var node = ( DataViewNode )e.Node;
+            OnDataViewNodeSelected( node );
         }
 
-        private void OnTreeNodeViewModelSelected( DataViewNode viewModel )
+        private void OnDataViewNodeSelected( DataViewNode node )
         {
             // Set property grid to display properties of the currently selected node
-            mPropertyGrid.SelectedObject = viewModel;
+            mPropertyGrid.SelectedObject = node;
 
             Control control = null;
 
-            if ( FormatModuleRegistry.ModuleByType.TryGetValue( viewModel.DataType, out var module ) )
+            if ( FormatModuleRegistry.ModuleByType.TryGetValue( node.DataType, out var module ) )
             {
                 if ( module.UsageFlags.HasFlag( FormatModuleUsageFlags.Bitmap ) )
                 {
-                    control = new BitmapViewControl( module.GetBitmap( viewModel.Data ) );
+                    control = new BitmapViewControl( module.GetBitmap( node.Data ) );
                     control.Visible = false;
                 }
                 else if ( module.ModelType == typeof( Model ) )
@@ -257,7 +258,7 @@ namespace GFDStudio.GUI.Forms
                     var modelViewControl = new ModelViewControl();
                     modelViewControl.Name = nameof( ModelViewControl );
                     modelViewControl.Visible = false;
-                    modelViewControl.LoadModel( ( Model )viewModel.Data );
+                    modelViewControl.LoadModel( ( Model )node.Data );
                     control = modelViewControl;
                 }
             }
@@ -336,8 +337,8 @@ namespace GFDStudio.GUI.Forms
             var model = ModelConverterUtility.ConvertAssimpModel();
             if ( model != null )
             {
-                var viewModel = DataViewNodeFactory.Create( "Model", model );
-                DataTreeView.SetTopNode( viewModel );
+                var node = DataViewNodeFactory.Create( "Model", model );
+                DataTreeView.SetTopNode( node );
                 LastOpenedFilePath = null;
             }
         }
@@ -368,6 +369,8 @@ namespace GFDStudio.GUI.Forms
                 directoryPath = dialog.SelectedPath;
             }
 
+            var failures = new ConcurrentBag<string>();
+
             using ( var dialog = new ProgressDialog() )
             {
                 dialog.DoWork += ( o, progress ) =>
@@ -397,12 +400,17 @@ namespace GFDStudio.GUI.Forms
                         }
                         catch ( Exception ex )
                         {
-                            // Oh well.
+                            failures.Add( filePath );
                         }
                     } );
                 };
 
                 dialog.ShowDialog();
+            }
+
+            if ( failures.Count > 0 )
+            {
+                MessageBox.Show( "An error occured while processing the following files:\n" + string.Join( "\n", failures ) );
             }
         }
 
