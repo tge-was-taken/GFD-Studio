@@ -50,7 +50,14 @@ namespace GFDLibrary
         public static Resource Load( string path )
         {
             using ( var stream = File.OpenRead( path ) )
-                return Load( stream, false );
+            {
+                // Copy file to memory for faster reading
+                var memoryStream = new MemoryStream( (int)stream.Length );
+                stream.CopyTo( memoryStream );
+                memoryStream.Position = 0;
+
+                return Load( memoryStream, false );
+            }
         }
 
         public static Resource Load( Stream stream, bool leaveOpen )
@@ -192,7 +199,13 @@ namespace GFDLibrary
         public void Save( string path )
         {
             using ( var stream = FileUtils.Create( path ) )
-                Save( stream, false );
+            using ( var memoryStream = new MemoryStream() )
+            {
+                // Write to memory and then flush to the file
+                Save( memoryStream, true );
+                memoryStream.Position = 0;
+                memoryStream.CopyTo( stream );
+            }
         }
 
         public void Save( Stream stream, bool leaveOpen )
