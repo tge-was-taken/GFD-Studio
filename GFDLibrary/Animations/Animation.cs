@@ -257,46 +257,57 @@ namespace GFDLibrary
 
         public void FixTargetIds( Scene scene )
         {
+            FixTargetIds( scene.Nodes );
+        }
+
+        internal void FixTargetIds( IEnumerable<Node> nodes )
+        {
             foreach ( var controller in Controllers.ToList() )
             {
-                if ( !controller.FixTargetIds( scene ) )
+                if ( !controller.FixTargetIds( nodes ) )
                     Controllers.Remove( controller );
             }
         }
 
         public void MakeTransformsRelative( Scene originalScene, Scene newScene, bool fixArms )
         {
-            FixTargetIds( newScene );
+            MakeTransformsRelative( originalScene.Nodes.ToDictionary( x => x.Name ), newScene.Nodes.ToDictionary( x => x.Name ), fixArms );
+        }
+
+        internal void MakeTransformsRelative( Dictionary<string, Node> originalNodeLookup, Dictionary<string, Node> newNodeLookup, bool fixArms )
+        {
+            FixTargetIds( newNodeLookup.Values );
 
             foreach ( var controller in Controllers )
             {
-                var originalNode = originalScene.Nodes.FirstOrDefault( x => x.Name == controller.TargetName );
-                var newNode = newScene.Nodes.FirstOrDefault( x => x.Name == controller.TargetName );
-                if ( newNode == null || originalNode == null )
+                if ( !originalNodeLookup.TryGetValue( controller.TargetName, out var originalNode ) || !newNodeLookup.TryGetValue( controller.TargetName, out var newNode ) )
                     continue;
 
-                var nodeName = originalNode.Name;
+                var nodeName                = originalNode.Name;
+                var originalNodeInvRotation = Quaternion.Inverse( originalNode.Rotation );
 
                 foreach ( var track in controller.Tracks )
                 {
+                    if ( !track.HasPRSKeyFrames() )
+                        continue;
+
                     var positionScale = track.PositionScale;
 
                     foreach ( var keyframe in track.Keyframes )
                     {
-                        if ( !( keyframe is KeyframePRS prsKeyframe ) )
-                            continue;
+                        var prsKeyframe = ( KeyframePRS )keyframe;
 
                         // Make position relative
-                        var position = prsKeyframe.Position * positionScale;
+                        var position         = prsKeyframe.Position * positionScale;
                         var relativePosition = position - originalNode.Translation;
-                        var newPosition = newNode.Translation + relativePosition;
+                        var newPosition      = newNode.Translation + relativePosition;
                         prsKeyframe.Position = newPosition / positionScale;
 
                         // Don't make rotation relative if we're attempting to fix the arms
                         if ( !fixArms || !sArmsFixNodeNameBlacklist.Contains( nodeName ) )
                         {
                             // Make rotation relative
-                            var relativeRotation = Quaternion.Inverse( originalNode.Rotation ) * prsKeyframe.Rotation;
+                            var relativeRotation = originalNodeInvRotation * prsKeyframe.Rotation;
                             prsKeyframe.Rotation = newNode.Rotation * relativeRotation;
                         }
                     }

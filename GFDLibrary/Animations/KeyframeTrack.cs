@@ -140,5 +140,23 @@ namespace GFDLibrary
                    KeyframeType == KeyframeType.NodePRHalf_2 || KeyframeType == KeyframeType.NodePHalf ||
                    KeyframeType == KeyframeType.NodeRHalf    || KeyframeType == KeyframeType.NodeSHalf;
         }
+
+        public bool HasPRSKeyFrames()
+        {
+            switch ( KeyframeType )
+            {
+                case KeyframeType.NodePR:
+                case KeyframeType.NodePRS:
+                case KeyframeType.NodePRHalf:
+                case KeyframeType.NodePRSHalf:
+                case KeyframeType.NodePRHalf_2:
+                case KeyframeType.NodePHalf:
+                case KeyframeType.NodeRHalf:
+                case KeyframeType.NodeSHalf:
+                    return true;
+            }
+
+            return false;
+        }
     }
 }

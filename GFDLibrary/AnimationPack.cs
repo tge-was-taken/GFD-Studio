@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using GFDLibrary.IO;
 
 namespace GFDLibrary
@@ -137,13 +138,16 @@ namespace GFDLibrary
 
         public void MakeTransformsRelative( Scene originalScene, Scene newScene, bool fixArms )
         {
+            var originalNodeLookup = originalScene.Nodes.ToDictionary( x => x.Name );
+            var newNodeLookup = newScene.Nodes.ToDictionary( x => x.Name );
+
             foreach ( var animation in Animations )
-                animation.MakeTransformsRelative( originalScene, newScene, fixArms );
+                animation.MakeTransformsRelative( originalNodeLookup, newNodeLookup, fixArms );
 
             foreach ( var animation in BlendAnimations )
-                animation.FixTargetIds( newScene ); // blend animations are already relative, they only need their ids fixed
+                animation.FixTargetIds( newScene.Nodes ); // blend animations are already relative, they only need their ids fixed
 
-            ExtraData?.MakeTransformsRelative( originalScene, newScene, fixArms );
+            ExtraData?.MakeTransformsRelative( originalNodeLookup, newNodeLookup, fixArms );
         }
     }
 }

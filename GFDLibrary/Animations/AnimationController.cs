@@ -54,11 +54,26 @@ namespace GFDLibrary
 
         public bool FixTargetIds( Scene scene )
         {
+            return FixTargetIds( scene.Nodes.ToList() );
+        }
+
+        internal bool FixTargetIds( IEnumerable<Node> nodes )
+        {
             if ( TargetKind != TargetKind.Node )
                 return true;
 
-            var nodes = scene.Nodes.ToList();
-            TargetId = nodes.FindIndex( x => x.Name == TargetName );
+            TargetId = -1;
+            int index = 0;
+            foreach ( var node in nodes )
+            {
+                if ( node.Name == TargetName )
+                {
+                    TargetId = index;
+                    break;
+                }
+
+                ++index;
+            }
 
             return TargetId != -1;
         }

@@ -1,4 +1,5 @@
-﻿using GFDLibrary.IO;
+﻿using System.Collections.Generic;
+using GFDLibrary.IO;
 
 namespace GFDLibrary
 {
@@ -69,6 +70,14 @@ namespace GFDLibrary
             Field04.MakeTransformsRelative( originalScene, newScene, fixArms );
             Field08.MakeTransformsRelative( originalScene, newScene, fixArms );
             Field0C.MakeTransformsRelative( originalScene, newScene, fixArms );
+        }
+
+        internal void MakeTransformsRelative( Dictionary<string, Node> originalNodeLookup, Dictionary<string, Node> newNodeLookup, bool fixArms )
+        {
+            Field00.MakeTransformsRelative( originalNodeLookup, newNodeLookup, fixArms );
+            Field04.MakeTransformsRelative( originalNodeLookup, newNodeLookup, fixArms );
+            Field08.MakeTransformsRelative( originalNodeLookup, newNodeLookup, fixArms );
+            Field0C.MakeTransformsRelative( originalNodeLookup, newNodeLookup, fixArms );
         }
     }
 }
