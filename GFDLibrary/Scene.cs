@@ -253,6 +253,10 @@ namespace GFDLibrary
                     }
 
                     Trace.Assert( lastUniqueNodeIndex != -1 );
+
+                    if ( BonePalette == null )
+                        BonePalette = new BonePalette( 0 );
+
                     int boneIndex = Array.IndexOf( BonePalette.BoneToNodeIndices,
                                                    lastUniqueNodeIndex );
 
