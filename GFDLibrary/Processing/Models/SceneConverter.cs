@@ -100,8 +100,8 @@ namespace GFDLibrary
         {
             bool isMeshAttachmentNode = node.Parent != null &&                                                          // definitely not a mesh attachment if it doesnt have a parent -> RootNode
                                         node.Parent.Name != "RootNode" &&                                               // probably not a mesh attachment if its part of the scene root
-                                        AssimpConverterCommon.MeshAttachmentNameRegex.IsMatch( node.Name ) &&                                 // match name regex
-                                        NearlyEquals( GetWorldTransform( node ), GetWorldTransform( node.Parent ) );    // world transforms of both the node and the parent must match
+                                        AssimpConverterCommon.MeshAttachmentNameRegex.IsMatch( node.Name ) &&           // match name regex
+                                        NearlyEquals( node.Transform, Ai.Matrix4x4.Identity );                          // transform must be identity
 
             return isMeshAttachmentNode;
         }
