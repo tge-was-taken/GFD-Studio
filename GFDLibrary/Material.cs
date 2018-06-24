@@ -203,6 +203,7 @@ namespace GFDLibrary
             : this()
         {
             Name = name;
+            IsPresetMaterial = true;
         }
 
         public Material()
