@@ -149,21 +149,23 @@ namespace GFDLibrary
             BoundingSphere = other.BoundingSphere;
             Flags = other.Flags;
 
+            var otherNodes = other.Nodes.ToList();
+
             // Replace common nodes and get the unique nodes
-            var uniqueNodes = ReplaceCommonNodesAndGetUniqueNodes( other.Nodes );
+            var uniqueNodes = ReplaceCommonNodesAndGetUniqueNodes( otherNodes );
 
             // Remove nodes that dont have attachments
             uniqueNodes.RemoveAll( x => !x.HasAttachments );
 
             // Fix unique nodes
-            FixUniqueNodes( other, uniqueNodes );
+            FixUniqueNodes( other.RootNode, otherNodes, uniqueNodes );
 
             // Add unique nodes to root.
             foreach ( var uniqueNode in uniqueNodes )
                 RootNode.AddChildNode( uniqueNode );
 
             // Rebuild matrix palette
-            RebuildBonePalette( other.Nodes.ToList() );
+            RebuildBonePalette( otherNodes );
         }
 
         private List<Node> ReplaceCommonNodesAndGetUniqueNodes( IEnumerable<Node> otherNodes )
@@ -211,11 +213,11 @@ namespace GFDLibrary
             return uniqueNodes;
         }
 
-        private void FixUniqueNodes( Scene other, List<Node> uniqueNodes )
+        private void FixUniqueNodes( Node otherRootNode, List<Node> otherNodes, List<Node> uniqueNodes )
         {
             foreach ( var uniqueNode in uniqueNodes.ToList() )
             {
-                if ( uniqueNode.Parent == other.RootNode )
+                if ( uniqueNode.Parent == otherRootNode )
                     continue;
 
                 // Find the last unique node in the hierarchy chain (going up the hierarchy)
@@ -223,7 +225,7 @@ namespace GFDLibrary
                 while ( true )
                 {
                     var parent = lastUniqueNode.Parent;
-                    if ( parent == null || parent == other.RootNode || Nodes.SingleOrDefault( x => x.Name.Equals( parent.Name ) ) != null )
+                    if ( parent == null || parent == otherRootNode || Nodes.SingleOrDefault( x => x.Name.Equals( parent.Name ) ) != null )
                         break;
 
                     lastUniqueNode = parent;
@@ -242,7 +244,6 @@ namespace GFDLibrary
 
                     // Find the bone index of this node
                     int lastUniqueNodeIndex = -1;
-                    var otherNodes = other.Nodes.ToList();
                     for ( int i = 0; i < otherNodes.Count; i++ )
                     {
                         if ( otherNodes[i].Name == lastUniqueNode.Parent.Name )
@@ -255,7 +256,10 @@ namespace GFDLibrary
                     Trace.Assert( lastUniqueNodeIndex != -1 );
 
                     if ( BonePalette == null )
+                    {
                         BonePalette = new BonePalette( 0 );
+                        BonePalette.BoneToNodeIndices[0] = ushort.MaxValue;
+                    }
 
                     int boneIndex = Array.IndexOf( BonePalette.BoneToNodeIndices,
                                                    lastUniqueNodeIndex );
