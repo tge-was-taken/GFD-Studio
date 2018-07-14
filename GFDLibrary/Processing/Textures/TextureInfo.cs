@@ -46,6 +46,9 @@ namespace GFDLibrary
                 case ImageEngineFormat.DDS_DXT5:
                     format = TexturePixelFormat.DXT5;
                     break;
+                case ImageEngineFormat.DDS_ARGB_8:
+                    format = TexturePixelFormat.ARGB;
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
