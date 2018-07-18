@@ -4,6 +4,7 @@ namespace GFDLibrary
     {
         DXT1,
         DXT3,
-        DXT5
+        DXT5,
+        ARGB
     }
 }
