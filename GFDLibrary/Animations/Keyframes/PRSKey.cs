@@ -1,0 +1,91 @@
+﻿using System;
+using System.Numerics;
+using GFDLibrary.IO;
+
+namespace GFDLibrary.Animations
+{
+    public class PRSKey : Key
+    {
+        public override KeyType Type { get; internal set; }
+
+        public Vector3 Position { get; set; }
+
+        public Quaternion Rotation { get; set; }
+
+        public Vector3 Scale { get; set; }
+
+        public PRSKey( KeyType type )
+        {
+            Type = type;
+            Position = Vector3.Zero;
+            Rotation = Quaternion.Identity;
+            Scale = Vector3.One;
+        }
+
+        public PRSKey() : this( KeyType.NodePRS ) { }
+
+        internal override void Read( ResourceReader reader )
+        {
+            switch ( Type )
+            {
+                case KeyType.NodePR:
+                case KeyType.NodePRS:
+                    Position = reader.ReadVector3();
+                    Rotation = reader.ReadQuaternion();
+                    Scale = Type == KeyType.NodePRS ? reader.ReadVector3() : Vector3.One;
+                    break;
+                case KeyType.NodePRHalf:
+                case KeyType.NodePRSHalf:
+                case KeyType.NodePRHalf_2:
+                    Position = reader.ReadVector3Half();
+                    Rotation = reader.ReadQuaternionHalf();
+                    Scale = Type == KeyType.NodePRSHalf ? reader.ReadVector3Half() : Vector3.One;
+                    break;
+                case KeyType.NodePHalf:
+                    Position = reader.ReadVector3Half();
+                    break;
+                case KeyType.NodeRHalf:
+                    Rotation = reader.ReadQuaternionHalf();
+                    break;
+                case KeyType.NodeSHalf:
+                    Scale = reader.ReadVector3Half();
+                    break;
+                default:
+                    throw new InvalidOperationException(nameof(Type));
+            }
+        }
+
+        internal override void Write( ResourceWriter writer )
+        {
+            switch ( Type )
+            {
+                case KeyType.NodePR:
+                case KeyType.NodePRS:
+                    writer.WriteVector3( Position );
+                    writer.WriteQuaternion( Rotation );
+                    if ( Type == KeyType.NodePRS )
+                        writer.WriteVector3( Scale );
+                    break;
+                case KeyType.NodePRHalf:
+                case KeyType.NodePRSHalf:
+                case KeyType.NodePRHalf_2:
+                    writer.WriteVector3Half( Position );
+                    writer.WriteQuaternionHalf( Rotation );
+                    if ( Type == KeyType.NodePRSHalf )
+                        writer.WriteVector3Half( Scale );
+                    break;
+                case KeyType.NodePHalf:
+                    writer.WriteVector3Half( Position );
+                    break;
+                case KeyType.NodeRHalf:
+                    writer.WriteQuaternionHalf( Rotation );
+                    break;
+                case KeyType.NodeSHalf:
+                    writer.WriteVector3Half( Scale );
+                    break;
+                default:
+                    throw new InvalidOperationException( nameof( Type ) );
+            }
+        }
+    }
+}

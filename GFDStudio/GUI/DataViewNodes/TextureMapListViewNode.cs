@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
-using GFDLibrary;
+using GFDLibrary.Models;
 using GFDStudio.GUI.Forms;
 
 namespace GFDStudio.GUI.DataViewNodes

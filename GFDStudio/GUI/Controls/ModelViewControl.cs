@@ -8,6 +8,10 @@ using System.Windows.Forms;
 using GFDLibrary;
 using CSharpImageLibrary;
 using CSharpImageLibrary.Headers;
+using GFDLibrary.Common;
+using GFDLibrary.Materials;
+using GFDLibrary.Models;
+using GFDLibrary.Textures;
 using GFDStudio.GUI.Controls.ModelView;
 using OpenTK;
 using OpenTK.Graphics;
@@ -18,9 +22,9 @@ namespace GFDStudio.GUI.Controls
 {
     public partial class ModelViewControl : GLControl
     {
-        private Model mModel;
+        private ModelPack mModelPack;
         private GLShaderProgram mShaderProgram;
-        private readonly List<GLGeometry> mGeometries = new List<GLGeometry>();
+        private readonly List<GLMesh> mMeshes = new List<GLMesh>();
         private GLPerspectiveCamera mCamera;
         private bool mCanRender = true;
         private bool mIsModelLoaded;
@@ -61,13 +65,13 @@ namespace GFDStudio.GUI.Controls
         /// <summary>
         /// Load a model for displaying in the control.
         /// </summary>
-        /// <param name="model"></param>
-        public void LoadModel( Model model )
+        /// <param name="modelPack"></param>
+        public void LoadModel( ModelPack modelPack )
         {
             if ( !mCanRender )
                 return;
 
-            mModel = model;
+            mModelPack = modelPack;
             DeleteModel();
             LoadModel();
         }
@@ -116,7 +120,7 @@ namespace GFDStudio.GUI.Controls
 
             if ( mIsModelLoaded )
             {
-                foreach ( var geometry in mGeometries )
+                foreach ( var geometry in mMeshes )
                 {
                     if ( !geometry.IsVisible )
                         continue;
@@ -257,12 +261,12 @@ namespace GFDStudio.GUI.Controls
 
         private void LoadModel()
         {
-            if ( !mCanRender || mModel.Scene == null )
+            if ( !mCanRender || mModelPack.Model == null )
                 return;
 
             InitializeCamera();
 
-            foreach ( var node in mModel.Scene.Nodes )
+            foreach ( var node in mModelPack.Model.Nodes )
             {
                 if ( !node.HasAttachments )
                     continue;
@@ -272,11 +276,11 @@ namespace GFDStudio.GUI.Controls
                     if ( attachment.Type != NodeAttachmentType.Geometry )
                         continue;
 
-                    var geometry = CreateGLGeometry( attachment.GetValue<Geometry>() );
+                    var geometry = CreateGLMesh( attachment.GetValue<Mesh>() );
                     var transform = node.WorldTransform;
                     geometry.ModelMatrix = ToMatrix4( ref transform );
 
-                    mGeometries.Add( geometry );
+                    mMeshes.Add( geometry );
                 }
             }
 
@@ -297,7 +301,7 @@ namespace GFDStudio.GUI.Controls
             GL.BindBuffer( BufferTarget.ElementArrayBuffer, 0 );
             GL.BindTexture( TextureTarget.Texture2D, 0 );
 
-            foreach ( var geometry in mGeometries )
+            foreach ( var geometry in mMeshes )
             {
                 GL.DeleteVertexArray( geometry.VertexArrayId );
                 GL.DeleteBuffer( geometry.PositionBufferId );
@@ -311,7 +315,7 @@ namespace GFDStudio.GUI.Controls
                 }
             }
 
-            mGeometries.Clear();
+            mMeshes.Clear();
         }
 
         private void InitializeCamera()
@@ -319,11 +323,11 @@ namespace GFDStudio.GUI.Controls
             var cameraFov = 45f;
 
             BoundingSphere bSphere;
-            if ( !mModel.Scene.BoundingSphere.HasValue )
+            if ( !mModelPack.Model.BoundingSphere.HasValue )
             {
-                if ( mModel.Scene.BoundingBox.HasValue )
+                if ( mModelPack.Model.BoundingBox.HasValue )
                 {
-                    bSphere = BoundingSphere.Calculate( mModel.Scene.BoundingBox.Value );
+                    bSphere = BoundingSphere.Calculate( mModelPack.Model.BoundingBox.Value );
                 }
                 else
                 {
@@ -332,7 +336,7 @@ namespace GFDStudio.GUI.Controls
             }
             else
             {
-                bSphere = mModel.Scene.BoundingSphere.Value;
+                bSphere = mModelPack.Model.BoundingSphere.Value;
             }
 
             mCamera = new GLPerspectiveFreeCamera( CalculateCameraTranslation( cameraFov, bSphere), 1f, 100000f, cameraFov, ( float )Width / ( float )Height, Quaternion.Identity );
@@ -478,46 +482,46 @@ namespace GFDStudio.GUI.Controls
         // Model stuff
         //
 
-        private GLGeometry CreateGLGeometry( Geometry geometry )
+        private GLMesh CreateGLMesh( Mesh mesh )
         {
-            var glGeometry = new GLGeometry();
+            var glMesh = new GLMesh();
 
             // vertex array
-            glGeometry.VertexArrayId = GL.GenVertexArray();
-            GL.BindVertexArray( glGeometry.VertexArrayId );
+            glMesh.VertexArrayId = GL.GenVertexArray();
+            GL.BindVertexArray( glMesh.VertexArrayId );
 
             // positions
-            glGeometry.PositionBufferId = CreateGLVertexAttributeBuffer( geometry.Vertices.Length * Vector3.SizeInBytes, geometry.Vertices, 0, 3 );
+            glMesh.PositionBufferId = CreateGLVertexAttributeBuffer( mesh.Vertices.Length * Vector3.SizeInBytes, mesh.Vertices, 0, 3 );
 
             // normals
-            glGeometry.NormalBufferId = CreateGLVertexAttributeBuffer( geometry.Normals.Length * Vector3.SizeInBytes, geometry.Normals, 1, 3 );
+            glMesh.NormalBufferId = CreateGLVertexAttributeBuffer( mesh.Normals.Length * Vector3.SizeInBytes, mesh.Normals, 1, 3 );
 
-            if ( geometry.TexCoordsChannel0 != null )
+            if ( mesh.TexCoordsChannel0 != null )
             {
                 // texture coordinate channel 0
-                glGeometry.TextureCoordinateChannel0BufferId = CreateGLVertexAttributeBuffer( geometry.TexCoordsChannel0.Length * Vector2.SizeInBytes, geometry.TexCoordsChannel0, 2, 2 );
+                glMesh.TextureCoordinateChannel0BufferId = CreateGLVertexAttributeBuffer( mesh.TexCoordsChannel0.Length * Vector2.SizeInBytes, mesh.TexCoordsChannel0, 2, 2 );
             }
 
             // element index buffer
-            glGeometry.ElementBufferId = CreateGLBuffer( BufferTarget.ElementArrayBuffer, geometry.Triangles.Length * Triangle.SizeInBytes, geometry.Triangles );
-            glGeometry.ElementIndexCount = geometry.Triangles.Length * 3;
+            glMesh.ElementBufferId = CreateGLBuffer( BufferTarget.ElementArrayBuffer, mesh.Triangles.Length * Triangle.SizeInBytes, mesh.Triangles );
+            glMesh.ElementIndexCount = mesh.Triangles.Length * 3;
 
             // material
-            if ( geometry.MaterialName != null && mModel.Materials != null )
+            if ( mesh.MaterialName != null && mModelPack.Materials != null )
             {
-                if ( mModel.Materials.TryGetMaterial( geometry.MaterialName, out var material ) )
+                if ( mModelPack.Materials.TryGetMaterial( mesh.MaterialName, out var material ) )
                 {
-                    glGeometry.Material = CreateGLMaterial( material );
+                    glMesh.Material = CreateGLMaterial( material );
                 }
                 else
                 {
-                    Trace.TraceError( $"Geometry referenced material \"{geometry.MaterialName}\" which does not exist in the model" );
+                    Trace.TraceError( $"Mesh referenced material \"{mesh.MaterialName}\" which does not exist in the model" );
                 }
             }
 
-            glGeometry.IsVisible = true;
+            glMesh.IsVisible = true;
 
-            return glGeometry;
+            return glMesh;
         }
 
         private static int CreateGLBuffer<T>( BufferTarget target, int size, T[] data ) where T : struct
@@ -580,7 +584,7 @@ namespace GFDStudio.GUI.Controls
                         glMaterial.DiffuseTextureId = CreateGLTexture( texture );
                     }
                 }
-                else if ( mModel.Textures.TryGetTexture( material.DiffuseMap.Name, out var texture ) )
+                else if ( mModelPack.Textures.TryGetTexture( material.DiffuseMap.Name, out var texture ) )
                 {
                     glMaterial.DiffuseTextureId = CreateGLTexture( texture );
                 }
@@ -630,9 +634,9 @@ namespace GFDStudio.GUI.Controls
                 {
                     // Orbit around model
 
-                    if ( mModel.Scene.BoundingSphere.HasValue )
+                    if ( mModelPack.Model.BoundingSphere.HasValue )
                     {
-                        var bSphere = mModel.Scene.BoundingSphere.Value;
+                        var bSphere = mModelPack.Model.BoundingSphere.Value;
                         var camera = new GLPerspectiveTargetCamera( mCamera.Translation, mCamera.ZNear, mCamera.ZFar, mCamera.FieldOfView, mCamera.AspectRatio, new Vector3( bSphere.Center.X, bSphere.Center.Y, bSphere.Center.Z ) );
                         camera.Rotate( -locationDelta.Y / 100f, -locationDelta.X / 100f );
                         mCamera = camera;
@@ -643,7 +647,7 @@ namespace GFDStudio.GUI.Controls
                     // Move camera
                     var translation = mCamera.Translation;
                     if ( !( mCamera is GLPerspectiveFreeCamera ) )
-                        translation = CalculateCameraTranslation( mCamera.FieldOfView, mModel.Scene.BoundingSphere.Value );
+                        translation = CalculateCameraTranslation( mCamera.FieldOfView, mModelPack.Model.BoundingSphere.Value );
 
                     mCamera = new GLPerspectiveFreeCamera( translation, mCamera.ZNear, mCamera.ZFar, mCamera.FieldOfView, mCamera.AspectRatio, Quaternion.Identity );
                     mCamera.Translation = new Vector3(
@@ -682,7 +686,7 @@ namespace GFDStudio.GUI.Controls
             Invalidate();
         }
 
-        private struct GLGeometry
+        private struct GLMesh
         {
             public int VertexArrayId;
             public int PositionBufferId;

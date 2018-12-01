@@ -1,5 +1,6 @@
 ﻿using System.Windows.Forms;
 using GFDLibrary;
+using GFDLibrary.Models.Conversion;
 using GFDStudio.FormatModules;
 using GFDStudio.GUI.Forms;
 
@@ -7,7 +8,7 @@ namespace GFDStudio.IO
 {
     public static class ModelConverterUtility
     {
-        public static Model ConvertAssimpModel()
+        public static ModelPack ConvertAssimpModel()
         {
             using ( var dialog = new OpenFileDialog() )
             {
@@ -29,14 +30,14 @@ namespace GFDStudio.IO
             }
         }
 
-        public static Model ConvertAssimpModel( string path )
+        public static ModelPack ConvertAssimpModel( string path )
         {
             using ( var dialog = new ModelConverterOptionsDialog( false ) )
             {
                 if ( dialog.ShowDialog() != DialogResult.OK )
                     return null;
 
-                ModelConverterOptions options = new ModelConverterOptions()
+                ModelPackConverterOptions options = new ModelPackConverterOptions()
                 {
                     MaterialPreset = dialog.MaterialPreset,
                     Version = dialog.Version,
@@ -44,7 +45,7 @@ namespace GFDStudio.IO
                     GenerateVertexColors = dialog.GenerateVertexColors
                 };
 
-                return ModelConverter.ConvertFromAssimpScene( path, options );
+                return ModelPackConverter.ConvertFromAssimpScene( path, options );
             }
         }
     }

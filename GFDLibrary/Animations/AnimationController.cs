@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using GFDLibrary.IO;
+using GFDLibrary.Models;
 
-namespace GFDLibrary
+namespace GFDLibrary.Animations
 {
     public sealed class AnimationController : Resource
     {
@@ -19,11 +19,11 @@ namespace GFDLibrary
         public string TargetName { get; set; }
 
         // 1C
-        public List<KeyframeTrack> Tracks { get; set; }
+        public List<AnimationLayer> Layers { get; set; }
 
         public AnimationController(uint version) : base(version)
         {
-            Tracks = new List<KeyframeTrack>();
+            Layers = new List<AnimationLayer>();
         }
 
         public AnimationController() : this(ResourceVersion.Persona5)
@@ -41,7 +41,7 @@ namespace GFDLibrary
             TargetKind = ( TargetKind )reader.ReadInt16();
             TargetId = reader.ReadInt32();
             TargetName = reader.ReadStringWithHash( Version );
-            Tracks = reader.ReadResourceList<KeyframeTrack>( Version );
+            Layers = reader.ReadResourceList<AnimationLayer>( Version );
         }
 
         internal override void Write( ResourceWriter writer )
@@ -49,12 +49,12 @@ namespace GFDLibrary
             writer.WriteInt16( ( short ) TargetKind );
             writer.WriteInt32( TargetId );
             writer.WriteStringWithHash( Version, TargetName );
-            writer.WriteResourceList( Tracks );
+            writer.WriteResourceList( Layers );
         }
 
-        public bool FixTargetIds( Scene scene )
+        public bool FixTargetIds( Model model )
         {
-            return FixTargetIds( scene.Nodes.ToList() );
+            return FixTargetIds( model.Nodes.ToList() );
         }
 
         internal bool FixTargetIds( IEnumerable<Node> nodes )

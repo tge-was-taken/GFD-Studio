@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 using GFDLibrary;
+using GFDLibrary.Animations;
 using GFDStudio.FormatModules;
 
 namespace GFDStudio.GUI.DataViewNodes
@@ -29,7 +30,7 @@ namespace GFDStudio.GUI.DataViewNodes
             Register<ArchiveViewNode>();
 
             // gfd resource view models
-            Register<ModelViewNode>();
+            Register<ModelPackViewNode>();
 
             // gfd texture resource view models
             Register<TextureDictionaryViewNode>();
@@ -49,12 +50,12 @@ namespace GFDStudio.GUI.DataViewNodes
             Register<MaterialAttributeType6ViewNode>();
             Register<MaterialAttributeType7ViewNode>();
 
-            // gfd scene view models
-            Register<SceneViewNode>();
+            // gfd model view models
+            Register<ModelViewNode>();
             Register<BonePaletteViewNode>();
             Register<NodeViewNode>();
             Register( typeof( AttachmentListViewNode ), typeof( List<Resource> ) );
-            Register<GeometryViewNode>();
+            Register<MeshViewNode>();
             Register<CameraViewNode>();
             Register<LightViewNode>();
             Register<EplViewNode>();

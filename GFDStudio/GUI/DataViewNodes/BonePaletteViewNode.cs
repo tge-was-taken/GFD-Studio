@@ -1,6 +1,6 @@
 using System.ComponentModel;
 using System.Numerics;
-using GFDLibrary;
+using GFDLibrary.Models;
 
 namespace GFDStudio.GUI.DataViewNodes
 {

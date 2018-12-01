@@ -145,11 +145,11 @@
     <Compile Include="FormatModules\ChunkType000100F8FormatModule.cs" />
     <Compile Include="FormatModules\ChunkType000100F9FormatModule.cs" />
     <Compile Include="FormatModules\EplFormatModule.cs" />
-    <Compile Include="FormatModules\GeometryFormatModule.cs" />
+    <Compile Include="FormatModules\MeshFormatModule.cs" />
     <Compile Include="FormatModules\LightFormatModule.cs" />
     <Compile Include="FormatModules\MorphFormatModule.cs" />
     <Compile Include="FormatModules\NodeFormatModule.cs" />
-    <Compile Include="FormatModules\SceneFormatModule.cs" />
+    <Compile Include="FormatModules\ModelFormatModule.cs" />
     <Compile Include="GUI\Forms\CreateTextureMapDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -182,7 +182,7 @@
     <Compile Include="GUI\DataViewNodes\ChunkType000100F9Entry3ViewNode.cs" />
     <Compile Include="GUI\DataViewNodes\ChunkType000100F9ViewNode.cs" />
     <Compile Include="GUI\DataViewNodes\EplViewNode.cs" />
-    <Compile Include="GUI\DataViewNodes\GeometryViewNode.cs" />
+    <Compile Include="GUI\DataViewNodes\MeshViewNode.cs" />
     <Compile Include="GUI\DataViewNodes\LightViewNode.cs" />
     <Compile Include="GUI\DataViewNodes\ListViewNode.cs" />
     <Compile Include="GUI\DataViewNodes\MaterialAttributeType0ViewNode.cs" />
@@ -197,11 +197,11 @@
     <Compile Include="GUI\DataViewNodes\MaterialViewNode.cs" />
     <Compile Include="GUI\DataViewNodes\MaterialDictionaryViewNode.cs" />
     <Compile Include="GUI\DataViewNodes\BonePaletteViewNode.cs" />
-    <Compile Include="GUI\DataViewNodes\ModelViewNode.cs" />
+    <Compile Include="GUI\DataViewNodes\ModelPackViewNode.cs" />
     <Compile Include="GUI\DataViewNodes\MorphViewNode.cs" />
     <Compile Include="GUI\DataViewNodes\NodeViewNode.cs" />
     <Compile Include="GUI\DataViewNodes\ResourceViewNode.cs" />
-    <Compile Include="GUI\DataViewNodes\SceneViewNode.cs" />
+    <Compile Include="GUI\DataViewNodes\ModelViewNode.cs" />
     <Compile Include="GUI\DataViewNodes\StreamViewNode.cs" />
     <Compile Include="GUI\DataViewNodes\TextureMapListViewNode.cs" />
     <Compile Include="GUI\DataViewNodes\TextureViewNode.cs" />
@@ -247,7 +247,7 @@
     <Compile Include="FormatModules\StreamFormatModule.cs" />
     <Compile Include="FormatModules\FormatModule.cs" />
     <Compile Include="FormatModules\IFormatModule.cs" />
-    <Compile Include="FormatModules\ModelFormatModule.cs" />
+    <Compile Include="FormatModules\ModelPackFormatModule.cs" />
     <Compile Include="FormatModules\ModuleExportUtilities.cs" />
     <Compile Include="FormatModules\ModuleFilterGenerator.cs" />
     <Compile Include="FormatModules\ModuleImportUtilities.cs" />

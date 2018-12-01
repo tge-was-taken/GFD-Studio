@@ -3,9 +3,18 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using GFDLibrary;
+using GFDLibrary.Animations;
+using GFDLibrary.Cameras;
+using GFDLibrary.Common;
+using GFDLibrary.Effects;
+using GFDLibrary.Lights;
+using GFDLibrary.Materials;
+using GFDLibrary.Models;
+using GFDLibrary.Shaders;
+using GFDLibrary.Textures;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace AtlusGfdLibraryRegressionTests
+namespace GFDLibraryTests
 {
     [TestClass()]
     public class ResourceTests
@@ -30,21 +39,21 @@ namespace AtlusGfdLibraryRegressionTests
         {
             using ( var fileStream = File.OpenRead( Model_P5PlayerModel_Path ) )
             {
-                var res = Resource.Load<Model>( fileStream );
+                var res = Resource.Load<ModelPack>( fileStream );
             }
         }
 
         [TestMethod()]
         public void LoadFromFile_Model_P5PlayerModel_ShouldNotThrow()
         {
-            var res = Resource.Load<Model>( Model_P5PlayerModel_Path );
+            var res = Resource.Load<ModelPack>( Model_P5PlayerModel_Path );
         }
 
         [TestMethod()]
         public void LoadAndSaveToFile_Model_P5PlayerModel_OutputSizeShouldBeEqualToInputSize()
         {
             var originalSize = new FileInfo( Model_P5PlayerModel_Path ).Length;
-            var model = Resource.Load<Model>( Model_P5PlayerModel_Path );
+            var model = Resource.Load<ModelPack>( Model_P5PlayerModel_Path );
             model.Save( GetNewPath( Model_P5PlayerModel_Path ) );
             var newSize = new FileInfo( GetNewPath( Model_P5PlayerModel_Path ) ).Length;
 
@@ -54,9 +63,9 @@ namespace AtlusGfdLibraryRegressionTests
         [TestMethod()]
         public void LoadAndSaveToFile_Model_P5PlayerModel_OutputShouldBeEqualToInput()
         {
-            var originalModel = Resource.Load<Model>( Model_P5PlayerModel_Path );
+            var originalModel = Resource.Load<ModelPack>( Model_P5PlayerModel_Path );
             originalModel.Save( GetNewPath( Model_P5PlayerModel_Path ) );
-            var newModel = Resource.Load<Model>( GetNewPath( Model_P5PlayerModel_Path ) );
+            var newModel = Resource.Load<ModelPack>( GetNewPath( Model_P5PlayerModel_Path ) );
 
             CompareModels( originalModel, newModel );
         }
@@ -68,21 +77,21 @@ namespace AtlusGfdLibraryRegressionTests
         {
             using ( var fileStream = File.OpenRead( Model_P4DFaceModel_Path ) )
             {
-                var res = Resource.Load<Model>( fileStream );
+                var res = Resource.Load<ModelPack>( fileStream );
             }
         }
 
         [TestMethod()]
         public void LoadFromFile_Model_P4DMorphFaceModel_ShouldNotThrow()
         {
-            var res = Resource.Load<Model>( Model_P4DFaceModel_Path );
+            var res = Resource.Load<ModelPack>( Model_P4DFaceModel_Path );
         }
 
         [TestMethod()]
         public void LoadAndSaveToFile_Model_P4DMorphFaceModel_OutputSizeShouldBeEqualToInputSize()
         {
             var originalSize = new FileInfo( Model_P4DFaceModel_Path ).Length;
-            var model = Resource.Load<Model>( Model_P4DFaceModel_Path );
+            var model = Resource.Load<ModelPack>( Model_P4DFaceModel_Path );
             model.Save( GetNewPath( Model_P4DFaceModel_Path ) );
             var newSize = new FileInfo( GetNewPath( Model_P4DFaceModel_Path ) ).Length;
 
@@ -92,9 +101,9 @@ namespace AtlusGfdLibraryRegressionTests
         [TestMethod()]
         public void LoadAndSaveToFile_Model_P4DMorphFaceModel_OutputShouldBeEqualToInput()
         {
-            var originalModel = Resource.Load<Model>( Model_P4DFaceModel_Path );
+            var originalModel = Resource.Load<ModelPack>( Model_P4DFaceModel_Path );
             originalModel.Save( GetNewPath( Model_P4DFaceModel_Path ) );
-            var newModel = Resource.Load<Model>( GetNewPath( Model_P4DFaceModel_Path ) );
+            var newModel = Resource.Load<ModelPack>( GetNewPath( Model_P4DFaceModel_Path ) );
 
             CompareModels( originalModel, newModel );
         }
@@ -106,21 +115,21 @@ namespace AtlusGfdLibraryRegressionTests
         {
             using ( var fileStream = File.OpenRead( Model_P5FieldLevelModel_Path ) )
             {
-                var res = Resource.Load<Model>( fileStream );
+                var res = Resource.Load<ModelPack>( fileStream );
             }
         }
 
         [TestMethod()]
         public void LoadFromFile_Model_P5FieldLevelModel_ShouldNotThrow()
         {
-            var res = Resource.Load<Model>( Model_P5FieldLevelModel_Path );
+            var res = Resource.Load<ModelPack>( Model_P5FieldLevelModel_Path );
         }
 
         [TestMethod()]
         public void LoadAndSaveToFile_Model_P5FieldLevelModel_OutputSizeShouldBeEqualToInputSize()
         {
             var originalSize = new FileInfo( Model_P5FieldLevelModel_Path ).Length;
-            var model = Resource.Load<Model>( Model_P5FieldLevelModel_Path );
+            var model = Resource.Load<ModelPack>( Model_P5FieldLevelModel_Path );
             model.Save( GetNewPath( Model_P5FieldLevelModel_Path ) );
             var newSize = new FileInfo( GetNewPath( Model_P5FieldLevelModel_Path ) ).Length;
 
@@ -130,9 +139,9 @@ namespace AtlusGfdLibraryRegressionTests
         [TestMethod()]
         public void LoadAndSaveToFile_Model_P5FieldLevelModel_OutputShouldBeEqualToInput()
         {
-            var originalModel = Resource.Load<Model>( Model_P5FieldLevelModel_Path );
+            var originalModel = Resource.Load<ModelPack>( Model_P5FieldLevelModel_Path );
             originalModel.Save( GetNewPath( Model_P5FieldLevelModel_Path ) );
-            var newModel = Resource.Load<Model>( GetNewPath( Model_P5FieldLevelModel_Path ) );
+            var newModel = Resource.Load<ModelPack>( GetNewPath( Model_P5FieldLevelModel_Path ) );
 
             CompareModels( originalModel, newModel );
         }
@@ -223,7 +232,7 @@ namespace AtlusGfdLibraryRegressionTests
 
         // Comparison methods
 
-        private void CompareModels(Model a, Model b)
+        private void CompareModels(ModelPack a, ModelPack b)
         {
             if ( a == null || b == null )
             {
@@ -236,7 +245,7 @@ namespace AtlusGfdLibraryRegressionTests
 
             CompareTextureDictionaries( a.Textures, a.Textures );
             CompareMaterialDictionaries( a.Materials, b.Materials );
-            CompareScenes( a.Scene, b.Scene );
+            CompareScenes( a.Model, b.Model );
             CompareAnimationPackage( a.AnimationPack, b.AnimationPack );
         }
 
@@ -502,7 +511,7 @@ namespace AtlusGfdLibraryRegressionTests
             }
         }
 
-        private void CompareScenes( Scene a, Scene b )
+        private void CompareScenes( Model a, Model b )
         {
             if ( a == null || b == null )
             {
@@ -623,7 +632,7 @@ namespace AtlusGfdLibraryRegressionTests
             switch ( a.Type )
             {
                 case NodeAttachmentType.Invalid:
-                case NodeAttachmentType.Scene:
+                case NodeAttachmentType.Model:
                 case NodeAttachmentType.Mesh:
                     throw new InvalidDataException();
 
@@ -631,7 +640,7 @@ namespace AtlusGfdLibraryRegressionTests
                     CompareNodes( a.GetValue<Node>(), b.GetValue<Node>() );
                     break;
                 case NodeAttachmentType.Geometry:
-                    CompareGeometries( a.GetValue<Geometry>(), b.GetValue<Geometry>() );
+                    CompareGeometries( a.GetValue<Mesh>(), b.GetValue<Mesh>() );
                     break;
                 case NodeAttachmentType.Camera:
                     CompareCameras( a.GetValue<Camera>(), b.GetValue<Camera>() );
@@ -751,7 +760,7 @@ namespace AtlusGfdLibraryRegressionTests
             Assert.AreEqual( a.Field190, b.Field190 );
         }
 
-        private void CompareGeometries( Geometry a, Geometry b )
+        private void CompareGeometries( Mesh a, Mesh b )
         {
             if ( a == null || b == null )
             {

@@ -3,7 +3,7 @@
     public enum ResourceType
     {
         Invalid,
-        Model,
+        ModelPack,
         ShaderCachePS3,
         ShaderCachePSP2 = 4,
         ShaderCachePS4 = 6,
@@ -15,7 +15,7 @@
         ShaderPS3,
         ShaderPSP2,
         ShaderPS4,
-        Scene,
+        Model,
         Node,
         UserPropertyCollection,
         Morph,
@@ -28,13 +28,13 @@
         MaterialAttribute,
         Material,
         Light,
-        Geometry,
+        Mesh,
         Camera,
         Epl,
         EplLeaf,
         Animation,
         AnimationExtraData,
-        KeyframeTrack,
+        AnimationLayer,
         AnimationController
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GFDLibrary
+namespace GFDLibrary.Common
 {
     /// <summary>
     /// Represents a vector consisting out of 3 byte components.

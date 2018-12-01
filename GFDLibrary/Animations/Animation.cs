@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
-using GFDLibrary.IO;
 using System.Linq;
 using System.Numerics;
+using GFDLibrary.Common;
+using GFDLibrary.IO;
+using GFDLibrary.Models;
 
-namespace GFDLibrary
+namespace GFDLibrary.Animations
 {
     public sealed class Animation : Resource
     {
@@ -195,7 +197,7 @@ namespace GFDLibrary
                 {
                     Field00 = reader.ReadInt32(),
                     Field04 = reader.ReadStringWithHash( Version ),
-                    Field20 = reader.ReadResource<KeyframeTrack>( Version )
+                    Field20 = reader.ReadResource<AnimationLayer>( Version )
                 };
             }
 
@@ -255,9 +257,9 @@ namespace GFDLibrary
                 writer.WriteResource( Properties );
         }
 
-        public void FixTargetIds( Scene scene )
+        public void FixTargetIds( Model model )
         {
-            FixTargetIds( scene.Nodes );
+            FixTargetIds( model.Nodes );
         }
 
         internal void FixTargetIds( IEnumerable<Node> nodes )
@@ -269,9 +271,9 @@ namespace GFDLibrary
             }
         }
 
-        public void MakeTransformsRelative( Scene originalScene, Scene newScene, bool fixArms )
+        public void MakeTransformsRelative( Model originalModel, Model newModel, bool fixArms )
         {
-            MakeTransformsRelative( originalScene.Nodes.ToDictionary( x => x.Name ), newScene.Nodes.ToDictionary( x => x.Name ), fixArms );
+            MakeTransformsRelative( originalModel.Nodes.ToDictionary( x => x.Name ), newModel.Nodes.ToDictionary( x => x.Name ), fixArms );
         }
 
         internal void MakeTransformsRelative( Dictionary<string, Node> originalNodeLookup, Dictionary<string, Node> newNodeLookup, bool fixArms )
@@ -286,7 +288,7 @@ namespace GFDLibrary
                 var nodeName                = originalNode.Name;
                 var originalNodeInvRotation = Quaternion.Inverse( originalNode.Rotation );
 
-                foreach ( var track in controller.Tracks )
+                foreach ( var track in controller.Layers )
                 {
                     if ( !track.HasPRSKeyFrames() )
                         continue;
@@ -295,7 +297,7 @@ namespace GFDLibrary
 
                     foreach ( var keyframe in track.Keyframes )
                     {
-                        var prsKeyframe = ( KeyframePRS )keyframe;
+                        var prsKeyframe = ( PRSKey )keyframe;
 
                         // Make position relative
                         var position         = prsKeyframe.Position * positionScale;

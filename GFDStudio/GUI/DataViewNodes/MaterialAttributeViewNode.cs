@@ -1,5 +1,5 @@
 using System.ComponentModel;
-using GFDLibrary;
+using GFDLibrary.Materials;
 using GFDStudio.GUI.TypeConverters;
 
 namespace GFDStudio.GUI.DataViewNodes

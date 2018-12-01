@@ -1,7 +1,7 @@
 ﻿using System.Numerics;
 using System.Text;
 
-namespace GFDLibrary
+namespace GFDLibrary.Common
 {
     public abstract class UserProperty
     {

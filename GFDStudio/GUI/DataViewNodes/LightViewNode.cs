@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Numerics;
 using GFDLibrary;
+using GFDLibrary.Lights;
 using GFDStudio.GUI.TypeConverters;
 
 namespace GFDStudio.GUI.DataViewNodes

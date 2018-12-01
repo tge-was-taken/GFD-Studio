@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Drawing;
 using System.IO;
-using GFDLibrary;
 using GFDLibrary.Textures;
 using GFDLibrary.Textures.Utilities;
 using GFDStudio.GUI.TypeConverters;

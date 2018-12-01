@@ -2,10 +2,10 @@
 using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using GFDLibrary;
+using GFDLibrary.Animations;
 using GFDStudio.FormatModules;
 using GFDStudio.GUI.Controls;
 using GFDStudio.GUI.DataViewNodes;
@@ -127,7 +127,7 @@ namespace GFDStudio.GUI.Forms
             if ( controls.Length == 1 )
             {
                 var modelViewControl = ( ModelViewControl )controls[ 0 ];
-                modelViewControl.LoadModel( ( Model ) DataTreeView.TopNode.Data );
+                modelViewControl.LoadModel( ( ModelPack ) DataTreeView.TopNode.Data );
             }
         }
 
@@ -252,13 +252,13 @@ namespace GFDStudio.GUI.Forms
                     control = new BitmapViewControl( module.GetBitmap( node.Data ) );
                     control.Visible = false;
                 }
-                else if ( module.ModelType == typeof( Model ) )
+                else if ( module.ModelType == typeof( ModelPack ) )
                 {
                     ClearContentPanel();
                     var modelViewControl = new ModelViewControl();
                     modelViewControl.Name = nameof( ModelViewControl );
                     modelViewControl.Visible = false;
-                    modelViewControl.LoadModel( ( Model )node.Data );
+                    modelViewControl.LoadModel( ( ModelPack )node.Data );
                     control = modelViewControl;
                 }
             }
@@ -345,11 +345,11 @@ namespace GFDStudio.GUI.Forms
 
         private void HandleMakeAnimationsRelativeToolStripMenuItemClick( object sender, EventArgs e )
         {
-            var originalScene = ModuleImportUtilities.SelectImportFile<Model>( "Select the original model file." )?.Scene;
+            var originalScene = ModuleImportUtilities.SelectImportFile<ModelPack>( "Select the original model file." )?.Model;
             if ( originalScene == null )
                 return;
 
-            var newScene = ModuleImportUtilities.SelectImportFile<Model>( "Select the new model file." )?.Scene;
+            var newScene = ModuleImportUtilities.SelectImportFile<ModelPack>( "Select the new model file." )?.Model;
             if ( newScene == null )
                 return;
 

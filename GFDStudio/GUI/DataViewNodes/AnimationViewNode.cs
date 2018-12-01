@@ -1,7 +1,9 @@
 using System;
 using System.Windows.Forms;
 using GFDLibrary;
-using GFDLibrary.Processing.Models;
+using GFDLibrary.Animations;
+using GFDLibrary.Common;
+using GFDLibrary.Models.Conversion;
 using GFDStudio.FormatModules;
 
 namespace GFDStudio.GUI.DataViewNodes
@@ -74,11 +76,11 @@ namespace GFDStudio.GUI.DataViewNodes
             RegisterReplaceHandler<Assimp.Scene>( file =>
             {
                 var animation = AnimationConverter.ConvertFromAssimpScene( file, new AnimationConverterOptions() );
-                var modelViewModel = Parent?.Parent as ModelViewNode;
+                var modelViewModel = Parent?.Parent as ModelPackViewNode;
 
-                if ( modelViewModel?.Scene != null )
+                if ( modelViewModel?.Model != null )
                 {
-                    animation.FixTargetIds( modelViewModel.Scene.Data );
+                    animation.FixTargetIds( modelViewModel.Model.Data );
                 }
                 else
                 {
@@ -94,7 +96,7 @@ namespace GFDStudio.GUI.DataViewNodes
         {
             using ( var dialog = new OpenFileDialog() )
             {
-                dialog.Filter = ModuleFilterGenerator.GenerateFilter( new[] { FormatModuleUsageFlags.Import }, typeof( Model ) );
+                dialog.Filter = ModuleFilterGenerator.GenerateFilter( new[] { FormatModuleUsageFlags.Import }, typeof( ModelPack ) );
                 dialog.AutoUpgradeEnabled = true;
                 dialog.CheckPathExists = true;
                 dialog.Title = "Select a model file.";
@@ -106,9 +108,9 @@ namespace GFDStudio.GUI.DataViewNodes
 
                 try
                 {
-                    var model = Resource.Load<Model>( dialog.FileName );
-                    if ( model.Scene != null )
-                        animation.FixTargetIds( model.Scene );
+                    var model = Resource.Load<ModelPack>( dialog.FileName );
+                    if ( model.Model != null )
+                        animation.FixTargetIds( model.Model );
                 }
                 catch ( Exception e )
                 {

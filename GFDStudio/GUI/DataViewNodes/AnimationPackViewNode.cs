@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Windows.Forms;
 using GFDLibrary;
+using GFDLibrary.Animations;
 using GFDStudio.FormatModules;
 using Ookii.Dialogs;
 
@@ -53,13 +53,13 @@ namespace GFDStudio.GUI.DataViewNodes
             });
             RegisterCustomHandler( "Make Relative", () =>
             {
-                var originalScene = ( Parent as ModelViewNode )?.Scene?.Data ??
-                                    ModuleImportUtilities.SelectImportFile<Model>( "Select the original model file." )?.Scene;
+                var originalScene = ( Parent as ModelPackViewNode )?.Model?.Data ??
+                                    ModuleImportUtilities.SelectImportFile<ModelPack>( "Select the original model file." )?.Model;
 
                 if ( originalScene == null )
                     return;
 
-                var newScene = ModuleImportUtilities.SelectImportFile<Model>( "Select the new model file." )?.Scene;
+                var newScene = ModuleImportUtilities.SelectImportFile<ModelPack>( "Select the new model file." )?.Model;
                 if ( newScene == null )
                     return;    
 

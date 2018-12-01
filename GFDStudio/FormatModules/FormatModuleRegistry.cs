@@ -37,7 +37,7 @@ namespace GFDStudio.FormatModules
                 new ArchiveFormatModule(),
 
                 // gfd resource modules
-                new ModelFormatModule(),
+                new ModelPackFormatModule(),
 
                 // gfd texture resource modules 
                 new TextureDictionaryFormatModule(),
@@ -54,9 +54,9 @@ namespace GFDStudio.FormatModules
                 // gfd misc modules
                 new ChunkType000100F8FormatModule(),
                 new ChunkType000100F9FormatModule(),
-                new SceneFormatModule(),
+                new ModelFormatModule(),
                 new NodeFormatModule(),
-                new GeometryFormatModule(),
+                new MeshFormatModule(),
                 new CameraFormatModule(),
                 new LightFormatModule(),
                 new EplFormatModule(),

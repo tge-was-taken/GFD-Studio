@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GFDLibrary
+namespace GFDLibrary.Animations
 {
     [Flags]
     public enum AnimationFlags

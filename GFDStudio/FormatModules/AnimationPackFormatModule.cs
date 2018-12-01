@@ -1,6 +1,7 @@
 using System.IO;
 using System.Windows.Forms;
 using GFDLibrary;
+using GFDLibrary.Animations;
 
 namespace GFDStudio.FormatModules
 {
@@ -17,7 +18,7 @@ namespace GFDStudio.FormatModules
 
         protected override bool CanImportCore( Stream stream, string filename = null )
         {
-            return Resource.GetResourceType( stream ) == ResourceType.Model;
+            return Resource.GetResourceType( stream ) == ResourceType.ModelPack;
         }
 
         protected override void ExportCore( AnimationPack obj, Stream stream, string filename = null )

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using GFDLibrary.IO.Common;
 
-namespace GFDLibrary
+namespace GFDLibrary.Common
 {
     public class Archive : IDisposable, IEnumerable<string>
     {

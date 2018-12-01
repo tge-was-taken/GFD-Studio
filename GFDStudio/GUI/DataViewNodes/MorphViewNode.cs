@@ -1,4 +1,5 @@
 using GFDLibrary;
+using GFDLibrary.Models;
 
 namespace GFDStudio.GUI.DataViewNodes
 {

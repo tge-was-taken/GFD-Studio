@@ -1,11 +1,11 @@
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Numerics;
 using System.Windows.Forms;
 using GFDLibrary;
-using GFDStudio.FormatModules;
+using GFDLibrary.Common;
+using GFDLibrary.Models;
 using GFDStudio.GUI.TypeConverters;
 
 namespace GFDStudio.GUI.DataViewNodes

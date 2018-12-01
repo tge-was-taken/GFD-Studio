@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
 using System.Text;
+using GFDLibrary.Common;
 using GFDLibrary.IO.Common;
 
 namespace GFDLibrary.IO
@@ -199,8 +200,8 @@ namespace GFDLibrary.IO
                 case ResourceType.MaterialDictionary:
                     type = ResourceChunkType.MaterialDictionary;
                     break;
-                case ResourceType.Scene:
-                    type = ResourceChunkType.Scene;
+                case ResourceType.Model:
+                    type = ResourceChunkType.Model;
                     break;
                 case ResourceType.ChunkType000100F9:
                     type = ResourceChunkType.ChunkType000100F9;

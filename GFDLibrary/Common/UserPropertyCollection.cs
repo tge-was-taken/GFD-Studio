@@ -5,7 +5,7 @@ using System.IO;
 using System.Numerics;
 using GFDLibrary.IO;
 
-namespace GFDLibrary
+namespace GFDLibrary.Common
 {
     public class UserPropertyCollection : Resource, IDictionary<string, UserProperty>
     {

@@ -1,4 +1,4 @@
-﻿namespace GFDLibrary
+﻿namespace GFDLibrary.Common
 {
     public static class StringHasher
     {

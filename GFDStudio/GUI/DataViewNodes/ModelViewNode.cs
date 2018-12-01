@@ -1,139 +1,108 @@
 ﻿using System.ComponentModel;
 using GFDLibrary;
-using GFDLibrary.IO.Assimp;
-using GFDStudio.IO;
+using GFDLibrary.Common;
+using GFDLibrary.Models;
+using GFDLibrary.Models.Conversion;
+using GFDStudio.GUI.Forms;
+using GFDStudio.GUI.TypeConverters;
 
 namespace GFDStudio.GUI.DataViewNodes
 {
     public class ModelViewNode : ResourceViewNode<Model>
     {
-        public override DataViewNodeMenuFlags ContextMenuFlags =>
-            DataViewNodeMenuFlags.Export | DataViewNodeMenuFlags.Replace |
-            DataViewNodeMenuFlags.Move | DataViewNodeMenuFlags.Delete;
+        public override DataViewNodeMenuFlags ContextMenuFlags
+            => DataViewNodeMenuFlags.Delete | DataViewNodeMenuFlags.Export | DataViewNodeMenuFlags.Move | DataViewNodeMenuFlags.Replace;
 
-        public override DataViewNodeFlags NodeFlags => DataViewNodeFlags.Branch;
+        public override DataViewNodeFlags NodeFlags
+            => DataViewNodeFlags.Branch;
 
-        [Browsable( false )]
-        public TextureDictionaryViewNode Textures { get; set; }
+        [ Browsable( true ) ]
+        [TypeConverter(typeof(EnumTypeConverter<ModelFlags>))]
+        public ModelFlags Flags
+        {
+            get => GetDataProperty< ModelFlags >();
+            set => SetDataProperty( value );
+        }
 
-        [Browsable( false )]
-        public MaterialDictionaryViewNode Materials { get; set; }
+        [ Browsable( false ) ]
+        public BonePaletteViewNode BonePaletteViewNode { get; set; }
 
-        [Browsable( false )]
-        public SceneViewNode Scene { get; set; }
+        [ Browsable( true ) ]
+        public BoundingBox? BoundingBox
+        {
+            get => GetDataProperty< BoundingBox? >();
+        }
 
-        [Browsable( false )]
-        public ChunkType000100F9ViewNode ChunkType000100F9 { get; set; }
+        [Browsable( true )]
+        public BoundingSphere? BoundingSphere
+        {
+            get => GetDataProperty<BoundingSphere?>();
+        }
 
-        [Browsable( false )]
-        public ChunkType000100F8ViewNode ChunkType000100F8 { get; set; }
+        [ Browsable( false ) ]
+        public NodeViewNode RootNodeViewNode { get; set; }
 
-        [Browsable( false )]
-        public AnimationPackViewNode AnimationPack { get; set; }
-
-        protected internal ModelViewNode( string text, Model data ) : base( text, data )
+        public ModelViewNode( string text, Model model ) : base( text, model )
         {
         }
 
         protected override void InitializeCore()
         {
-            RegisterExportHandler< Model >( ( path ) => Data.Save(  path ) );
-            RegisterExportHandler< Assimp.Scene >( path => ModelExporter.ExportFile( Data, path ) );
-
-            RegisterReplaceHandler<Model>( path =>
+            RegisterExportHandler< Model >( path => Data.Save(  path ) );
+            RegisterReplaceHandler<Model>( Resource.Load< Model > );
+            RegisterReplaceHandler<Assimp.Scene>( path =>
             {
-                var model = Resource.Load<Model>( path );
-                if ( model != null )
-                    Data.ReplaceWith( model );
+                using ( var dialog = new ModelConverterOptionsDialog( true ) )
+                {
+                    if ( dialog.ShowDialog() != System.Windows.Forms.DialogResult.OK )
+                        return Data;
 
-                return Data;
-            });
-            RegisterReplaceHandler< Assimp.Scene >( path =>
-            {
-                var model = ModelConverterUtility.ConvertAssimpModel( path );
-                if ( model != null )
-                    Data.ReplaceWith( model );
+                    ModelConverterOptions options = new ModelConverterOptions()
+                    {
+                        Version = dialog.Version,
+                        ConvertSkinToZUp = dialog.ConvertSkinToZUp,
+                        GenerateVertexColors = dialog.GenerateVertexColors
+                    };
 
-                return Data;
-            });
+                    var scene = ModelConverter.ConvertFromAssimpScene( path, options );
+                    if ( scene != null )
+                        Data.ReplaceWith( scene );
+
+                    return Data;
+                }
+            } );
 
             RegisterModelUpdateHandler( () =>
             {
-                var model = new Model( Version );
-                if ( Textures != null && Nodes.Contains( Textures ) )
-                    model.Textures = Textures.Data;
+                var scene = new Model( Data.Version );
+                scene.BoundingBox = Data.BoundingBox;
+                scene.BoundingSphere = Data.BoundingSphere;
+                scene.Flags = Data.Flags;
 
-                if ( Materials != null && Nodes.Contains( Materials ) )
-                    model.Materials = Materials.Data;
+                if ( BonePaletteViewNode != null && Nodes.Contains(BonePaletteViewNode) )
+                    scene.BonePalette = BonePaletteViewNode.Data;
+                else
+                    scene.BonePalette = null;
 
-                if ( Scene != null && Nodes.Contains( Scene ) )
-                    model.Scene = Scene.Data;
+                if ( RootNodeViewNode != null && Nodes.Contains( RootNodeViewNode ) )
+                    scene.RootNode = RootNodeViewNode.Data;
+                else
+                    scene.RootNode = null;
 
-                if ( ChunkType000100F9 != null && Nodes.Contains( ChunkType000100F9 ) )
-                    model.ChunkType000100F9 = ChunkType000100F9.Data;
-
-                if ( ChunkType000100F8 != null && Nodes.Contains( ChunkType000100F8 ) )
-                    model.ChunkType000100F8 = ChunkType000100F8.Data;
-
-                if ( AnimationPack != null && Nodes.Contains( AnimationPack ) )
-                    model.AnimationPack = AnimationPack.Data;
-
-                return model;
-            } );
-            RegisterCustomHandler( "Add New Animation Pack", () =>
-            {
-                Data.AnimationPack = new AnimationPack( Data.Version );
-                InitializeView( true );
-            } );
-            RegisterCustomHandler( "Add New Chunk Type 000100F9", () =>
-            {
-                Data.ChunkType000100F9 = new ChunkType000100F9( Data.Version );
-                InitializeView( true );
-            } );
-            RegisterCustomHandler( "Add New Chunk Type 000100F8", () =>
-            {
-                Data.ChunkType000100F8 = new ChunkType000100F8( Data.Version );
-                InitializeView( true );
-            } );
+                return scene;
+            });
         }
 
         protected override void InitializeViewCore()
         {
-            if ( Data.Textures != null )
+            if ( Data.BonePalette != null )
             {
-                Textures = ( TextureDictionaryViewNode )DataViewNodeFactory.Create( "Textures", Data.Textures );
-                Nodes.Add( Textures );
+                BonePaletteViewNode = ( BonePaletteViewNode )DataViewNodeFactory.Create( "Bone Palette", Data.BonePalette );
+                Nodes.Add( BonePaletteViewNode );
             }
 
-            if ( Data.Materials != null )
-            {
-                Materials = ( MaterialDictionaryViewNode )DataViewNodeFactory.Create( "Materials", Data.Materials );
-                Nodes.Add( Materials );
-            }
-
-            if ( Data.Scene != null )
-            {
-                Scene = ( SceneViewNode ) DataViewNodeFactory.Create( "Scene", Data.Scene );
-                Nodes.Add( Scene );
-            }
-
-            if ( Data.ChunkType000100F9 != null )
-            {
-                ChunkType000100F9 = ( ChunkType000100F9ViewNode )DataViewNodeFactory.Create( "Chunk Type 000100F9", Data.ChunkType000100F9 );
-                Nodes.Add( ChunkType000100F9 );
-            }
-
-            if ( Data.ChunkType000100F8 != null )
-            {
-                ChunkType000100F8 = ( ChunkType000100F8ViewNode )DataViewNodeFactory.Create( "Chunk Type 000100F8", Data.ChunkType000100F8 );
-                Nodes.Add( ChunkType000100F8 );
-            }
-
-            if ( Data.AnimationPack != null )
-            {
-                AnimationPack = ( AnimationPackViewNode )DataViewNodeFactory.Create( "Animations", Data.AnimationPack );
-                Nodes.Add( AnimationPack );
-            }
+            RootNodeViewNode = ( NodeViewNode ) DataViewNodeFactory.Create( Data.RootNode.Name, Data.RootNode );
+            Nodes.Add( RootNodeViewNode );
         }
     }
 }

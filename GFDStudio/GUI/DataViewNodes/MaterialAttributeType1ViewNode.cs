@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Numerics;
 using GFDLibrary;
+using GFDLibrary.Materials;
 using GFDStudio.GUI.TypeConverters;
 
 namespace GFDStudio.GUI.DataViewNodes

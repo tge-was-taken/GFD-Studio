@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Numerics;
 
-namespace GFDLibrary
+namespace GFDLibrary.Common
 {
     /// <summary>
     /// Represents a box consisting of a minimum and maximum bounds vector used for calculation.

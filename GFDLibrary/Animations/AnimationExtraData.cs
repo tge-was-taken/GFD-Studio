@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using GFDLibrary.IO;
+using GFDLibrary.Models;
 
-namespace GFDLibrary
+namespace GFDLibrary.Animations
 {
     public sealed class AnimationExtraData : Resource
     {
@@ -56,20 +57,20 @@ namespace GFDLibrary
             writer.WriteSingle( Field1C );
         }
 
-        public void FixTargetIds( Scene scene )
+        public void FixTargetIds( Model model )
         {
-            Field00.FixTargetIds( scene );
-            Field04.FixTargetIds( scene );
-            Field08.FixTargetIds( scene );
-            Field0C.FixTargetIds( scene );
+            Field00.FixTargetIds( model );
+            Field04.FixTargetIds( model );
+            Field08.FixTargetIds( model );
+            Field0C.FixTargetIds( model );
         }
 
-        public void MakeTransformsRelative( Scene originalScene, Scene newScene, bool fixArms )
+        public void MakeTransformsRelative( Model originalModel, Model newModel, bool fixArms )
         {
-            Field00.MakeTransformsRelative( originalScene, newScene, fixArms );
-            Field04.MakeTransformsRelative( originalScene, newScene, fixArms );
-            Field08.MakeTransformsRelative( originalScene, newScene, fixArms );
-            Field0C.MakeTransformsRelative( originalScene, newScene, fixArms );
+            Field00.MakeTransformsRelative( originalModel, newModel, fixArms );
+            Field04.MakeTransformsRelative( originalModel, newModel, fixArms );
+            Field08.MakeTransformsRelative( originalModel, newModel, fixArms );
+            Field0C.MakeTransformsRelative( originalModel, newModel, fixArms );
         }
 
         internal void MakeTransformsRelative( Dictionary<string, Node> originalNodeLookup, Dictionary<string, Node> newNodeLookup, bool fixArms )

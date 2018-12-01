@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Numerics;
+using GFDLibrary.Models;
 
-namespace GFDLibrary
+namespace GFDLibrary.Materials
 {
     public static class MaterialFactory
     {

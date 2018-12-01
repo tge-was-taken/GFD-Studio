@@ -1,5 +1,6 @@
 using System.Numerics;
 using GFDLibrary;
+using GFDLibrary.Cameras;
 
 namespace GFDStudio.GUI.DataViewNodes
 {

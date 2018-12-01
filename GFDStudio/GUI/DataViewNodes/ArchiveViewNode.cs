@@ -1,5 +1,5 @@
 ﻿using System.IO;
-using GFDLibrary;
+using GFDLibrary.Common;
 using GFDStudio.FormatModules;
 
 namespace GFDStudio.GUI.DataViewNodes
