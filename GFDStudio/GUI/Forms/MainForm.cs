@@ -343,7 +343,7 @@ namespace GFDStudio.GUI.Forms
             }
         }
 
-        private void HandleMakeAnimationsRelativeToolStripMenuItemClick( object sender, EventArgs e )
+        private void HandleMakeRetargetAnimationsToolStripMenuItemClick( object sender, EventArgs e )
         {
             var originalScene = ModuleImportUtilities.SelectImportFile<ModelPack>( "Select the original model file." )?.Model;
             if ( originalScene == null )
@@ -360,7 +360,7 @@ namespace GFDStudio.GUI.Forms
             using ( var dialog = new VistaFolderBrowserDialog() )
             {
                 dialog.Description =
-                    "Select a directory containing GAP files, or subdirectories containing GAP files to make relative to the new model.\n" +
+                    "Select a directory containing GAP files, or subdirectories containing GAP files to retarget to the new model.\n" +
                     "Note that this will replace the original files.";
 
                 if ( dialog.ShowDialog() != DialogResult.OK )
@@ -395,7 +395,7 @@ namespace GFDStudio.GUI.Forms
                         try
                         {
                             var animationPack = Resource.Load<AnimationPack>( filePath );
-                            animationPack.MakeTransformsRelative( originalScene, newScene, fixArms );
+                            animationPack.Retarget( originalScene, newScene, fixArms );
                             animationPack.Save( filePath );
                         }
                         catch ( Exception ex )

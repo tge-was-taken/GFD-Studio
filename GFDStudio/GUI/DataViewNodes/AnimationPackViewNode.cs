@@ -51,7 +51,7 @@ namespace GFDStudio.GUI.DataViewNodes
 
                 return model;
             });
-            RegisterCustomHandler( "Make Relative", () =>
+            RegisterCustomHandler( "Retarget", () =>
             {
                 var originalScene = ( Parent as ModelPackViewNode )?.Model?.Data ??
                                     ModuleImportUtilities.SelectImportFile<ModelPack>( "Select the original model file." )?.Model;
@@ -66,7 +66,7 @@ namespace GFDStudio.GUI.DataViewNodes
                 bool fixArms = MessageBox.Show( "Fix arms? If unsure, select No.", "Question", MessageBoxButtons.YesNo,
                                                 MessageBoxIcon.Question, MessageBoxDefaultButton.Button2 ) == DialogResult.Yes;
 
-                Data.MakeTransformsRelative( originalScene, newScene, fixArms );
+                Data.Retarget( originalScene, newScene, fixArms );
             } );
         }
 

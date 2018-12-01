@@ -65,20 +65,20 @@ namespace GFDLibrary.Animations
             Field0C.FixTargetIds( model );
         }
 
-        public void MakeTransformsRelative( Model originalModel, Model newModel, bool fixArms )
+        public void Retarget( Model originalModel, Model newModel, bool fixArms )
         {
-            Field00.MakeTransformsRelative( originalModel, newModel, fixArms );
-            Field04.MakeTransformsRelative( originalModel, newModel, fixArms );
-            Field08.MakeTransformsRelative( originalModel, newModel, fixArms );
-            Field0C.MakeTransformsRelative( originalModel, newModel, fixArms );
+            Field00.Retarget( originalModel, newModel, fixArms );
+            Field04.Retarget( originalModel, newModel, fixArms );
+            Field08.Retarget( originalModel, newModel, fixArms );
+            Field0C.Retarget( originalModel, newModel, fixArms );
         }
 
-        internal void MakeTransformsRelative( Dictionary<string, Node> originalNodeLookup, Dictionary<string, Node> newNodeLookup, bool fixArms )
+        internal void Retarget( Dictionary<string, Node> originalNodeLookup, Dictionary<string, Node> newNodeLookup, bool fixArms )
         {
-            Field00.MakeTransformsRelative( originalNodeLookup, newNodeLookup, fixArms );
-            Field04.MakeTransformsRelative( originalNodeLookup, newNodeLookup, fixArms );
-            Field08.MakeTransformsRelative( originalNodeLookup, newNodeLookup, fixArms );
-            Field0C.MakeTransformsRelative( originalNodeLookup, newNodeLookup, fixArms );
+            Field00.Retarget( originalNodeLookup, newNodeLookup, fixArms );
+            Field04.Retarget( originalNodeLookup, newNodeLookup, fixArms );
+            Field08.Retarget( originalNodeLookup, newNodeLookup, fixArms );
+            Field0C.Retarget( originalNodeLookup, newNodeLookup, fixArms );
         }
     }
 }

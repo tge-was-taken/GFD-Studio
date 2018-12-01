@@ -271,12 +271,12 @@ namespace GFDLibrary.Animations
             }
         }
 
-        public void MakeTransformsRelative( Model originalModel, Model newModel, bool fixArms )
+        public void Retarget( Model originalModel, Model newModel, bool fixArms )
         {
-            MakeTransformsRelative( originalModel.Nodes.ToDictionary( x => x.Name ), newModel.Nodes.ToDictionary( x => x.Name ), fixArms );
+            Retarget( originalModel.Nodes.ToDictionary( x => x.Name ), newModel.Nodes.ToDictionary( x => x.Name ), fixArms );
         }
 
-        internal void MakeTransformsRelative( Dictionary<string, Node> originalNodeLookup, Dictionary<string, Node> newNodeLookup, bool fixArms )
+        internal void Retarget( Dictionary<string, Node> originalNodeLookup, Dictionary<string, Node> newNodeLookup, bool fixArms )
         {
             FixTargetIds( newNodeLookup.Values );
 
@@ -295,22 +295,22 @@ namespace GFDLibrary.Animations
 
                     var positionScale = track.PositionScale;
 
-                    foreach ( var keyframe in track.Keyframes )
+                    foreach ( var key in track.Keys )
                     {
-                        var prsKeyframe = ( PRSKey )keyframe;
+                        var prsKey = ( PRSKey )key;
 
                         // Make position relative
-                        var position         = prsKeyframe.Position * positionScale;
+                        var position         = prsKey.Position * positionScale;
                         var relativePosition = position - originalNode.Translation;
                         var newPosition      = newNode.Translation + relativePosition;
-                        prsKeyframe.Position = newPosition / positionScale;
+                        prsKey.Position = newPosition / positionScale;
 
                         // Don't make rotation relative if we're attempting to fix the arms
                         if ( !fixArms || !sArmsFixNodeNameBlacklist.Contains( nodeName ) )
                         {
                             // Make rotation relative
-                            var relativeRotation = originalNodeInvRotation * prsKeyframe.Rotation;
-                            prsKeyframe.Rotation = newNode.Rotation * relativeRotation;
+                            var relativeRotation = originalNodeInvRotation * prsKey.Rotation;
+                            prsKey.Rotation = newNode.Rotation * relativeRotation;
                         }
                     }
                 }

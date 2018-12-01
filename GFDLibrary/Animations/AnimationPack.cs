@@ -137,18 +137,18 @@ namespace GFDLibrary.Animations
             ExtraData?.FixTargetIds( model );
         }
 
-        public void MakeTransformsRelative( Model originalModel, Model newModel, bool fixArms )
+        public void Retarget( Model originalModel, Model newModel, bool fixArms )
         {
             var originalNodeLookup = originalModel.Nodes.ToDictionary( x => x.Name );
             var newNodeLookup = newModel.Nodes.ToDictionary( x => x.Name );
 
             foreach ( var animation in Animations )
-                animation.MakeTransformsRelative( originalNodeLookup, newNodeLookup, fixArms );
+                animation.Retarget( originalNodeLookup, newNodeLookup, fixArms );
 
             foreach ( var animation in BlendAnimations )
                 animation.FixTargetIds( newModel.Nodes ); // blend animations are already relative, they only need their ids fixed
 
-            ExtraData?.MakeTransformsRelative( originalNodeLookup, newNodeLookup, fixArms );
+            ExtraData?.Retarget( originalNodeLookup, newNodeLookup, fixArms );
         }
     }
 }

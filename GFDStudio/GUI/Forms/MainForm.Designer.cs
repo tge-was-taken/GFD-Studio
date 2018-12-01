@@ -151,8 +151,8 @@ namespace GFDStudio.GUI.Forms
             // 
             this.makeRelativeToolStripMenuItem.Name = "makeRelativeToolStripMenuItem";
             this.makeRelativeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.makeRelativeToolStripMenuItem.Text = "Make animation packs relative";
-            this.makeRelativeToolStripMenuItem.Click += new System.EventHandler(this.HandleMakeAnimationsRelativeToolStripMenuItemClick);
+            this.makeRelativeToolStripMenuItem.Text = "Retarget animation packs in directory";
+            this.makeRelativeToolStripMenuItem.Click += new System.EventHandler(this.HandleMakeRetargetAnimationsToolStripMenuItemClick);
             // 
             // MainForm
             // 

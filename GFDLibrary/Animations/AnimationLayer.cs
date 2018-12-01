@@ -15,10 +15,10 @@ namespace GFDLibrary.Animations
         // 04 = Keyframe count
 
         // 08
-        public List<Key> Keyframes { get; set; }
+        public List<Key> Keys { get; set; }
 
         // 0C
-        public List<float> KeyframeTimings { get; set; }
+        public List<float> KeyTimings { get; set; }
 
         // 10
         public Vector3 PositionScale { get; set; }
@@ -28,8 +28,8 @@ namespace GFDLibrary.Animations
 
         public AnimationLayer(uint version) : base(version)
         {
-            KeyframeTimings = new List< float >();
-            Keyframes = new List< Key >();
+            KeyTimings = new List< float >();
+            Keys = new List< Key >();
             PositionScale = Vector3.One;
             ScaleScale = Vector3.One;
         }
@@ -45,7 +45,7 @@ namespace GFDLibrary.Animations
             int keyframeCount = reader.ReadInt32();
 
             for ( int i = 0; i < keyframeCount; i++ )
-                KeyframeTimings.Add( reader.ReadSingle() );
+                KeyTimings.Add( reader.ReadSingle() );
 
             for ( int i = 0; i < keyframeCount; i++ )
             {
@@ -109,7 +109,7 @@ namespace GFDLibrary.Animations
                 }
 
                 key.Read( reader );
-                Keyframes.Add( key );
+                Keys.Add( key );
             }
 
             if ( UsesScaleVectors() )
@@ -122,9 +122,9 @@ namespace GFDLibrary.Animations
         internal override void Write( ResourceWriter writer )
         {
             writer.WriteInt32( ( int ) KeyType );
-            writer.WriteInt32( Keyframes.Count );
-            KeyframeTimings.ForEach( writer.WriteSingle );
-            Keyframes.ForEach( x => x.Write( writer ) );
+            writer.WriteInt32( Keys.Count );
+            KeyTimings.ForEach( writer.WriteSingle );
+            Keys.ForEach( x => x.Write( writer ) );
 
             if ( UsesScaleVectors() )
             {

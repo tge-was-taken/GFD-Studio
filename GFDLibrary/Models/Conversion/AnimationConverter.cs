@@ -52,7 +52,7 @@ namespace GFDLibrary.Models.Conversion
                                                .OrderBy( x => x );
 
                 // Convert the times to our scale and save them.
-                track.KeyframeTimings = keyframeTimings
+                track.KeyTimings = keyframeTimings
                     .Select( x => ConvertTime( x, aiAnimation.TicksPerSecond ) )
                     .ToList();
 
@@ -99,7 +99,7 @@ namespace GFDLibrary.Models.Conversion
                         lastScale = aiScaleKey.Value;
                     }
 
-                    track.Keyframes.Add( keyframe );
+                    track.Keys.Add( keyframe );
                 }
 
                 controller.Layers.Add( track );
