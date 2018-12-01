@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Globalization;
 using System.Numerics;
 
 namespace GFDStudio.GUI.TypeConverters
@@ -34,7 +35,7 @@ namespace GFDStudio.GUI.TypeConverters
         {
             if ( destinationType == typeof( string ) && value is Quaternion vector )
             {
-                return $"[{vector.X}, {vector.Y}, {vector.Z}, {vector.W}]";
+                return $"[{vector.X.ToString( CultureInfo.InvariantCulture )}, {vector.Y.ToString( CultureInfo.InvariantCulture )}, {vector.Z.ToString( CultureInfo.InvariantCulture )}, {vector.W.ToString( CultureInfo.InvariantCulture )}]";
             }
             else
             {
@@ -49,10 +50,10 @@ namespace GFDStudio.GUI.TypeConverters
                 var floatValueStrings = input.Trim( '[', ']' )
                                              .Split( new[] { "," }, StringSplitOptions.RemoveEmptyEntries );
 
-                var x = float.Parse( floatValueStrings[0] );
-                var y = float.Parse( floatValueStrings[1] );
-                var z = float.Parse( floatValueStrings[2] );
-                var w = float.Parse( floatValueStrings[3] );
+                var x = float.Parse( floatValueStrings[0], CultureInfo.InvariantCulture );
+                var y = float.Parse( floatValueStrings[1], CultureInfo.InvariantCulture );
+                var z = float.Parse( floatValueStrings[2], CultureInfo.InvariantCulture );
+                var w = float.Parse( floatValueStrings[3], CultureInfo.InvariantCulture );
                 return new Quaternion( x, y, z, w );
             }
             else

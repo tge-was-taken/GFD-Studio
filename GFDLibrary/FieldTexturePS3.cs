@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text;
 using GFDLibrary.IO.Common;
+using GFDLibrary.Textures;
 
 namespace GFDLibrary
 {
@@ -44,11 +45,11 @@ namespace GFDLibrary
             Field0C = 0x00000000;
             Flags = FieldTextureFlags.Flag2 | FieldTextureFlags.Flag4 | FieldTextureFlags.Flag80;
 
-            if ( format == TexturePixelFormat.DXT3 )
+            if ( format == TexturePixelFormat.BC2 )
             {
                 Flags |= FieldTextureFlags.DXT3;
             }
-            else if ( format == TexturePixelFormat.DXT5 )
+            else if ( format == TexturePixelFormat.BC3 )
             {
                 Flags |= FieldTextureFlags.DXT5;
             }

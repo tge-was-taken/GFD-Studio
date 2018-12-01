@@ -283,6 +283,7 @@ namespace GFDStudio.GUI.DataViewNodes
             Trace.TraceInformation( $"{nameof( DataViewNode )} [{Text}]: {nameof( Add )} {type} from {filepath}" );
 
             addAction.Invoke( filepath );
+            HasPendingChanges = true;
         }
 
         // 

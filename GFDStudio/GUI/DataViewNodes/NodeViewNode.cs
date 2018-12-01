@@ -143,7 +143,7 @@ namespace GFDStudio.GUI.DataViewNodes
                 var resource = Resource.Load( file );
                 if ( NodeAttachment.IsOfCompatibleType( resource ) )
                 {
-                    Data.Add( resource );
+                    Nodes.Add( DataViewNodeFactory.Create( resource.ResourceType.ToString(), resource ) );
                 }
                 else
                 {

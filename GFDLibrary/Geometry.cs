@@ -254,7 +254,7 @@ namespace GFDLibrary
 
         public Geometry()
         {
-            
+            TriangleIndexType = TriangleIndexType.UInt16;
         }
 
         public Geometry(uint version):base(version)

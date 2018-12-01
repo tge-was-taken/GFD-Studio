@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Globalization;
 using System.Numerics;
 
 namespace GFDStudio.GUI.TypeConverters
@@ -34,7 +35,8 @@ namespace GFDStudio.GUI.TypeConverters
         {
             if ( destinationType == typeof( string ) && value is Vector3 vector )
             {
-                return $"[{vector.X}, {vector.Y}, {vector.Z}]";
+                return
+                    $"[{vector.X.ToString( CultureInfo.InvariantCulture )}, {vector.Y.ToString( CultureInfo.InvariantCulture )}, {vector.Z.ToString( CultureInfo.InvariantCulture )}]";
             }
             else
             {
@@ -49,9 +51,9 @@ namespace GFDStudio.GUI.TypeConverters
                 var floatValueStrings = input.Trim( '[', ']' )
                                              .Split( new[] { "," }, StringSplitOptions.RemoveEmptyEntries );
 
-                var x = float.Parse( floatValueStrings[0] );
-                var y = float.Parse( floatValueStrings[1] );
-                var z = float.Parse( floatValueStrings[2] );
+                var x = float.Parse( floatValueStrings[0], CultureInfo.InvariantCulture );
+                var y = float.Parse( floatValueStrings[1], CultureInfo.InvariantCulture );
+                var z = float.Parse( floatValueStrings[2], CultureInfo.InvariantCulture );
                 return new Vector3( x, y, z );
             }
             else

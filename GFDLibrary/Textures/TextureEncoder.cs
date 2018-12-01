@@ -3,9 +3,9 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using CSharpImageLibrary;
-using GFDLibrary.IO.Utilities;
+using GFDLibrary.Textures.Utilities;
 
-namespace GFDLibrary
+namespace GFDLibrary.Textures
 {
     public static class TextureEncoder
     {
@@ -45,9 +45,9 @@ namespace GFDLibrary
         private static ImageEngineFormat DetermineBestDDSFormat( Bitmap bitmap )
         {
             var ddsFormat = ImageEngineFormat.DDS_DXT1;
-            if ( BitmapUtilities.HasTransparency( bitmap ) )
+            if ( BitmapHelper.HasTransparency( bitmap ) )
             {
-                ddsFormat = ImageEngineFormat.DDS_DXT3;
+                ddsFormat = ImageEngineFormat.DDS_DXT5;
             }
 
             return ddsFormat;

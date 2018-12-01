@@ -3,6 +3,7 @@ using System.Drawing;
 using System.IO;
 using GFDLibrary.IO.Assimp;
 using GFDLibrary.Processing.Models;
+using GFDLibrary.Textures;
 using Ai = Assimp;
 
 namespace GFDLibrary
@@ -173,7 +174,7 @@ namespace GFDLibrary
 
         private static bool HasAlpha( TexturePixelFormat pixelFormat )
         {
-            return pixelFormat == TexturePixelFormat.DXT3 || pixelFormat == TexturePixelFormat.DXT5;
+            return pixelFormat == TexturePixelFormat.BC2 || pixelFormat == TexturePixelFormat.BC3;
         }
     }
 

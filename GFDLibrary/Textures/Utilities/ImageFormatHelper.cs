@@ -2,7 +2,7 @@
 using System.Drawing.Imaging;
 using System.IO;
 
-namespace GFDLibrary.IO.Utilities
+namespace GFDLibrary.Textures.Utilities
 {
     public static class ImageFormatHelper
     {

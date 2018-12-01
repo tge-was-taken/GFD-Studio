@@ -2,6 +2,7 @@
 using System.IO;
 using System.Windows.Forms;
 using GFDLibrary;
+using GFDLibrary.Textures;
 using Ookii.Dialogs;
 
 namespace GFDStudio.GUI.DataViewNodes

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using GFDLibrary.IO;
+using GFDLibrary.Textures;
+using GFDLibrary.Textures.GNF;
 
 namespace GFDLibrary
 {
@@ -47,7 +49,7 @@ namespace GFDLibrary
             foreach ( var texture in textureDictionary.Textures )
             {
                 var textureInfo = TextureInfo.GetTextureInfo( texture );
-                var texturePixelData = TextureUtilities.GetRawPixelData( texture );
+                var texturePixelData = TextureUtilities.GetPixelData( texture );
 
                 // Create field texture & save it
                 Stream textureStream = new MemoryStream();
@@ -60,7 +62,7 @@ namespace GFDLibrary
                 else
                 {
                     var fieldTexture = new GNFTexture( textureInfo.PixelFormat, ( byte )textureInfo.MipMapCount, ( short )textureInfo.Width,
-                                                            ( short )textureInfo.Height, texturePixelData );
+                                                            ( short )textureInfo.Height, texturePixelData, false );
                     fieldTexture.Save( textureStream );
                 }
 

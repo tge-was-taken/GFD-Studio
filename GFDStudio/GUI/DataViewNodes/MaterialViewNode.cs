@@ -30,7 +30,7 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         [Browsable( true )]
-        [TypeConverter( typeof( Vector4TypeConverter ) )]
+        [TypeConverter( typeof( Vector4ColorTypeConverter ) )]
         public Vector4 Ambient
         {
             get => GetDataProperty< Vector4 >();
@@ -38,7 +38,7 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         [Browsable( true )]
-        [TypeConverter( typeof( Vector4TypeConverter ) )]
+        [TypeConverter( typeof( Vector4ColorTypeConverter ) )]
         public Vector4 Diffuse
         {
             get => GetDataProperty<Vector4>();
@@ -46,7 +46,7 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         [Browsable( true )]
-        [TypeConverter( typeof( Vector4TypeConverter ) )]
+        [TypeConverter( typeof( Vector4ColorTypeConverter ) )]
         public Vector4 Specular
         {
             get => GetDataProperty<Vector4>();
@@ -54,7 +54,7 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         [Browsable( true )]
-        [TypeConverter( typeof( Vector4TypeConverter ) )]
+        [TypeConverter( typeof( Vector4ColorTypeConverter ) )]
         public Vector4 Emissive
         {
             get => GetDataProperty<Vector4>();
