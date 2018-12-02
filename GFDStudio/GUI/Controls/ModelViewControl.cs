@@ -272,14 +272,14 @@ namespace GFDStudio.GUI.Controls
 
                 foreach ( var attachment in node.Attachments )
                 {
-                    if ( attachment.Type != NodeAttachmentType.Geometry )
+                    if ( attachment.Type != NodeAttachmentType.Mesh )
                         continue;
 
-                    var geometry = CreateGLMesh( attachment.GetValue<Mesh>(), node, nodes, mModelPack.Model.BonePalette );
+                    var glMesh = CreateGLMesh( attachment.GetValue<Mesh>(), node, nodes, mModelPack.Model.BonePalette );
                     var transform = node.WorldTransform;
-                    geometry.ModelMatrix = ToMatrix4( ref transform );
+                    glMesh.ModelMatrix = ToMatrix4( ref transform );
 
-                    mMeshes.Add( geometry );
+                    mMeshes.Add( glMesh );
                 }
             }
 

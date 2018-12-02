@@ -308,11 +308,11 @@ namespace GFDLibrary.Models.Conversion
 
                     if ( !nodeInfo.IsMeshAttachment )
                     {
-                        node.Attachments.Add( new NodeGeometryAttachment( geometry ) );
+                        node.Attachments.Add( new NodeMeshAttachment( geometry ) );
                     }
                     else
                     {
-                        node.Parent.Attachments.Add( new NodeGeometryAttachment( geometry ) );
+                        node.Parent.Attachments.Add( new NodeMeshAttachment( geometry ) );
                         node.Parent.RemoveChildNode( node );
                     }
                 }

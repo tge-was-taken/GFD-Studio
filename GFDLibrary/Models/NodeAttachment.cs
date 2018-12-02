@@ -28,7 +28,7 @@ namespace GFDLibrary.Models
                 case ResourceType.Node:
                     return new NodeNodeAttachment( ( Node ) resource );
                 case ResourceType.Mesh:
-                    return new NodeGeometryAttachment( ( Mesh )resource );
+                    return new NodeMeshAttachment( ( Mesh )resource );
                 case ResourceType.Camera:
                     return new NodeCameraAttachment( ( Camera )resource );
                 case ResourceType.Light:
@@ -76,8 +76,8 @@ namespace GFDLibrary.Models
                 //  return new NodeMeshAttachment( ReadMesh( version ) );
                 case NodeAttachmentType.Node:
                     return new NodeNodeAttachment( reader.ReadResource<Node>(version) );
-                case NodeAttachmentType.Geometry:
-                    return new NodeGeometryAttachment( reader.ReadResource<Mesh>( version ) );
+                case NodeAttachmentType.Mesh:
+                    return new NodeMeshAttachment( reader.ReadResource<Mesh>( version ) );
                 case NodeAttachmentType.Camera:
                     return new NodeCameraAttachment( reader.ReadResource<Camera>( version ) );
                 case NodeAttachmentType.Light:
@@ -144,13 +144,13 @@ namespace GFDLibrary.Models
         }
     }
 
-    public sealed class NodeGeometryAttachment : NodeAttachment
+    public sealed class NodeMeshAttachment : NodeAttachment
     {
         public Mesh Mesh { get; set; }
 
-        public NodeGeometryAttachment() : base( NodeAttachmentType.Geometry ) { }
+        public NodeMeshAttachment() : base( NodeAttachmentType.Mesh ) { }
 
-        public NodeGeometryAttachment( Mesh mesh ) : base( NodeAttachmentType.Geometry ) => Mesh = mesh;
+        public NodeMeshAttachment( Mesh mesh ) : base( NodeAttachmentType.Mesh ) => Mesh = mesh;
 
         public override Resource GetValue()
         {
@@ -231,9 +231,9 @@ namespace GFDLibrary.Models
     {
         Invalid = 0,
         Model = 1,
-        Mesh = 2,
+        Unknown = 2,
         Node = 3,
-        Geometry = 4,
+        Mesh = 4,
         Camera = 5,
         Light = 6,
         Epl = 7,

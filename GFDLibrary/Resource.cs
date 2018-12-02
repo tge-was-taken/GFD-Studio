@@ -141,8 +141,7 @@ namespace GFDLibrary
                         res = new ChunkType000100F9( header.Version );
                         break;
                     case ResourceType.ChunkType000100F8:
-                        res = new ChunkType000100F8( header.Version );
-                        break;
+                        return new ChunkType000100F8( header.Version ) { Data = reader.ReadBytes( reader.ReadInt32() ) };
                     case ResourceType.AnimationPack:
                         res = new AnimationPack( header.Version );
                         break;
@@ -240,7 +239,15 @@ namespace GFDLibrary
 
                     case ResourceType.Node:
                         Node.WriteRecursive( writer, ( Node ) this );
-                        break;
+                        return;
+
+                    case ResourceType.ChunkType000100F8:
+                        {
+                            var chunk = ( ChunkType000100F8 )this;
+                            writer.WriteInt32( chunk.Data.Length );
+                            writer.WriteBytes( chunk.Data );
+                            return;
+                        }
                 }
 
                 Write( writer );

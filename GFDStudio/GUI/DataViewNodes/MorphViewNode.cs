@@ -19,9 +19,9 @@ namespace GFDStudio.GUI.DataViewNodes
             set => SetDataProperty( value );
         }
 
-        public string MaterialName
+        public string NodeName
         {
-            get => Data.MaterialName;
+            get => Data.NodeName;
             set => SetDataProperty( value );
         }
 

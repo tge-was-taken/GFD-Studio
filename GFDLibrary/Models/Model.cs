@@ -204,7 +204,24 @@ namespace GFDLibrary.Models
 
                 // Merge attachments
                 if ( otherNode.HasAttachments )
+                {
+                    // Offset mesh attachments
+                    Matrix4x4.Invert( thisNode.WorldTransform, out var thisNodeWorldTransformInv );
+                    var offsetMatrix = otherNode.WorldTransform * thisNodeWorldTransformInv;
+                    foreach ( var mesh in otherNode.Attachments.Where( x => x.Type == NodeAttachmentType.Mesh ).Select( x => x.GetValue<Mesh>() ) )
+                    {
+                        for ( int i = 0; i < mesh.Vertices.Length; i++ )
+                            mesh.Vertices[ i ] = Vector3.Transform( mesh.Vertices[ i ], offsetMatrix );
+
+                        if ( mesh.Normals != null )
+                        {
+                            for ( int i = 0; i < mesh.Normals.Length; i++ )
+                                mesh.Normals[ i ] = Vector3.TransformNormal( mesh.Normals[ i ], offsetMatrix );
+                        }
+                    }
+
                     thisNode.Attachments.AddRange( otherNode.Attachments.Where( x => x.Type != NodeAttachmentType.Epl ) );
+                }
 
                 // Replace properties
                 foreach ( var property in otherNode.Properties )
@@ -233,7 +250,7 @@ namespace GFDLibrary.Models
                 }
 
                 // Get unweighted geometries
-                var unweightedGeometries = uniqueNode.Attachments.Where( x => x.Type == NodeAttachmentType.Geometry )
+                var unweightedGeometries = uniqueNode.Attachments.Where( x => x.Type == NodeAttachmentType.Mesh )
                                                      .Select( x => x.GetValue<Mesh>() ).Where( x => x.VertexWeights == null );
 
                 if ( unweightedGeometries.Any() )
@@ -259,7 +276,6 @@ namespace GFDLibrary.Models
                     if ( BonePalette == null )
                     {
                         BonePalette = new BonePalette( 0 );
-                        BonePalette.BoneToNodeIndices[0] = ushort.MaxValue;
                     }
 
                     int boneIndex = Array.IndexOf( BonePalette.BoneToNodeIndices,
@@ -318,7 +334,7 @@ namespace GFDLibrary.Models
 
                 Matrix4x4.Invert( node.WorldTransform, out var nodeInvWorldTransform );
 
-                foreach ( var geometry in node.Attachments.Where( x => x.Type == NodeAttachmentType.Geometry ).Select( x => x.GetValue<Mesh>() )
+                foreach ( var geometry in node.Attachments.Where( x => x.Type == NodeAttachmentType.Mesh ).Select( x => x.GetValue<Mesh>() )
                                               .Where( x => x.VertexWeights != null ) )
                 {
                     foreach ( var weight in geometry.VertexWeights )
@@ -386,7 +402,7 @@ namespace GFDLibrary.Models
             foreach ( var node in Nodes )
             {
                 if ( node.HasAttachments )
-                    foreach ( var geometryAttachment in node.Attachments.Where( x => x.Type == NodeAttachmentType.Geometry ).ToList() )
+                    foreach ( var geometryAttachment in node.Attachments.Where( x => x.Type == NodeAttachmentType.Mesh ).ToList() )
                         node.Attachments.Remove( geometryAttachment );
             }
         }

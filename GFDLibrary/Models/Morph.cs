@@ -10,7 +10,7 @@ namespace GFDLibrary.Models
 
         public int[] TargetInts { get; set; }
 
-        public string MaterialName { get; set; }
+        public string NodeName { get; set; }
 
         public Morph()
         {
@@ -30,7 +30,7 @@ namespace GFDLibrary.Models
             for ( int i = 0; i < TargetInts.Length; i++ )
                 TargetInts[i] = reader.ReadInt32();
 
-            MaterialName = reader.ReadStringWithHash( Version );
+            NodeName = reader.ReadStringWithHash( Version );
         }
 
         internal override void Write( ResourceWriter writer )
@@ -40,7 +40,7 @@ namespace GFDLibrary.Models
             foreach ( int t in TargetInts )
                 writer.WriteInt32( t );
 
-            writer.WriteStringWithHash( Version, MaterialName );
+            writer.WriteStringWithHash( Version, NodeName );
         }
     }
 }

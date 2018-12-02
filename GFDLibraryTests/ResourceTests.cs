@@ -633,13 +633,13 @@ namespace GFDLibraryTests
             {
                 case NodeAttachmentType.Invalid:
                 case NodeAttachmentType.Model:
-                case NodeAttachmentType.Mesh:
+                case NodeAttachmentType.Unknown:
                     throw new InvalidDataException();
 
                 case NodeAttachmentType.Node:
                     CompareNodes( a.GetValue<Node>(), b.GetValue<Node>() );
                     break;
-                case NodeAttachmentType.Geometry:
+                case NodeAttachmentType.Mesh:
                     CompareGeometries( a.GetValue<Mesh>(), b.GetValue<Mesh>() );
                     break;
                 case NodeAttachmentType.Camera:
@@ -672,7 +672,7 @@ namespace GFDLibraryTests
 
             Assert.AreEqual( a.TargetCount, b.TargetCount );
             CollectionAssert.AreEqual( a.TargetInts, b.TargetInts );
-            Assert.AreEqual( a.MaterialName, b.MaterialName );
+            Assert.AreEqual( a.NodeName, b.NodeName );
         }
 
         private void CompareEplLeafs( EplLeaf a, EplLeaf b )
