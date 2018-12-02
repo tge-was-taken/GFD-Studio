@@ -98,11 +98,11 @@ namespace GFDStudio.GUI.DataViewNodes
             if ( Data.BonePalette != null )
             {
                 BonePaletteViewNode = ( BonePaletteViewNode )DataViewNodeFactory.Create( "Bone Palette", Data.BonePalette );
-                Nodes.Add( BonePaletteViewNode );
+                AddChildNode( BonePaletteViewNode );
             }
 
             RootNodeViewNode = ( NodeViewNode ) DataViewNodeFactory.Create( Data.RootNode.Name, Data.RootNode );
-            Nodes.Add( RootNodeViewNode );
+            AddChildNode( RootNodeViewNode );
         }
     }
 }

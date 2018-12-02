@@ -20,7 +20,7 @@ namespace GFDStudio.GUI.DataViewNodes
         {
             RegisterExportHandler<Archive>( ( path ) => Data.Save( path ) );
             RegisterReplaceHandler<Archive>( ( path ) => new Archive( path ) );
-            RegisterAddHandler<Stream>( ( path ) => Nodes.Add( DataViewNodeFactory.Create( path ) ) );
+            RegisterAddHandler<Stream>( ( path ) => AddChildNode( DataViewNodeFactory.Create( path ) ) );
             RegisterModelUpdateHandler( () =>
             {
                 var builder = new ArchiveBuilder();
@@ -39,7 +39,7 @@ namespace GFDStudio.GUI.DataViewNodes
             foreach ( var entryName in Data )
             {
                 var node = DataViewNodeFactory.Create( entryName, Data.OpenFile( entryName ) );
-                Nodes.Add( node );
+                AddChildNode( node );
             }
         }
     }

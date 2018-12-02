@@ -1,15 +1,20 @@
 using System;
+using System.ComponentModel;
+using System.Linq;
 using System.Windows.Forms;
 using GFDLibrary;
 using GFDLibrary.Animations;
 using GFDLibrary.Common;
 using GFDLibrary.Models.Conversion;
 using GFDStudio.FormatModules;
+using GFDStudio.GUI.TypeConverters;
 
 namespace GFDStudio.GUI.DataViewNodes
 {
     public class AnimationViewNode : DataViewNode<Animation>
     {
+        private VariantUserPropertyList mProperties;
+
         public override DataViewNodeMenuFlags ContextMenuFlags => 
             DataViewNodeMenuFlags.Delete | DataViewNodeMenuFlags.Export | DataViewNodeMenuFlags.Move | DataViewNodeMenuFlags.Replace;
 
@@ -53,10 +58,16 @@ namespace GFDStudio.GUI.DataViewNodes
         //    set => SetDataProperty( value );
         //}
 
-        public UserPropertyCollection Properties
+        [Browsable( true )]
+        [TypeConverter( typeof( ExpandableObjectConverter ) )]
+        public VariantUserPropertyList Properties
         {
-            get => Data.Properties;
-            set => SetDataProperty( value );
+            get => mProperties;
+            set
+            {
+                mProperties     = value;
+                Data.Properties = new UserPropertyDictionary( Properties.Select( x => x.ToTypedUserProperty() ) );
+            }
         }
 
         public float? Speed
@@ -90,6 +101,11 @@ namespace GFDStudio.GUI.DataViewNodes
                 return animation;
             } );
             RegisterCustomHandler( "Fix IDs", () => ImportModelAndFixTargetIds( Data ) );
+        }
+
+        protected override void InitializeViewCore()
+        {
+            Properties = new VariantUserPropertyList( Data.Properties, () => Properties = mProperties );
         }
 
         private static void ImportModelAndFixTargetIds( Animation animation )

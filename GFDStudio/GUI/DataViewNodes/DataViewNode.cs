@@ -144,6 +144,19 @@ namespace GFDStudio.GUI.DataViewNodes
             mCustomHandlers = new List< ToolStripMenuItem >();
         }
 
+        public void AddChildNode( TreeNode node )
+        {
+            Nodes.Add( node );
+
+            if ( !mIsInitializingView )
+            {
+                HasPendingChanges = true;
+
+                if ( node is DataViewNode dataViewNode )
+                    dataViewNode.InitializeView();
+            }
+        }
+
         //
         // Export methods
         //

@@ -42,7 +42,7 @@ namespace GFDStudio.GUI.DataViewNodes
 
         protected override void UpdateData()
         {
-            if ( mDataUpdateHandler == null )
+            if ( mDataUpdateHandler == null || !IsViewInitialized )
                 return;
 
             Trace.TraceInformation( $"{nameof( DataViewNode<T> )} [{Text}]: {nameof( UpdateData )}" );

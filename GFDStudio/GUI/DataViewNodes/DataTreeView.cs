@@ -69,7 +69,7 @@ namespace GFDStudio.GUI.DataViewNodes
                 {
                     // HACK: add a dummy node for each branch
                     // so the expand icon shows up even when a node hasn't initialized yet
-                    childNode.Nodes.Add( new TreeNode() );
+                    childNode.AddChildNode( new TreeNode() );
                 }
             }
         }

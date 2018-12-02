@@ -82,11 +82,11 @@ namespace GFDStudio.GUI.DataViewNodes
             if ( ExtraData != null )
             {
                 ExtraData = ( AnimationExtraDataViewNode ) DataViewNodeFactory.Create( "Extra Data", Data.ExtraData );
-                Nodes.Add( ExtraData );
+                AddChildNode( ExtraData );
             }
 
-            Nodes.Add( Animations );
-            Nodes.Add( BlendAnimations );
+            AddChildNode( Animations );
+            AddChildNode( BlendAnimations );
         }
     }
 

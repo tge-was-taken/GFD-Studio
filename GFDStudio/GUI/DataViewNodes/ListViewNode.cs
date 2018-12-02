@@ -51,7 +51,7 @@ namespace GFDStudio.GUI.DataViewNodes
             for ( int i = 0; i < Data.Count; i++ )
             {
                 string itemName = mItemNameProvider != null ? mItemNameProvider( Data[i], i ) : mItemNames[i];
-                Nodes.Add( DataViewNodeFactory.Create( itemName, Data[i] ) );
+                AddChildNode( DataViewNodeFactory.Create( itemName, Data[i] ) );
             }
         }
     }

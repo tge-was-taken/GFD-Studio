@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Numerics;
@@ -261,6 +262,56 @@ namespace GFDLibrary.Models
         public Mesh(uint version):base(version)
         {
             
+        }
+
+        /// <summary>
+        /// Transforms the vertices using the bone weights while utilizing the inverse bind matrices from the bone palette.
+        /// </summary>
+        /// <param name="parentNode"></param>
+        /// <param name="nodes"></param>
+        /// <param name="bonePalette"></param>
+        /// <returns></returns>
+        public (Vector3[] Vertices, Vector3[] Normals) Transform( Node parentNode, List<Node> nodes, BonePalette bonePalette )
+        {
+            var vertices = new Vector3[VertexCount];
+            Vector3[] normals = null;
+
+            if ( Normals != null )
+                normals = new Vector3[VertexCount];
+
+            Matrix4x4.Invert( parentNode.WorldTransform, out var parentNodeWorldTransformInv );
+
+            for ( int i = 0; i < VertexCount; i++ )
+            {
+                var position = Vertices[i];
+                var normal = Normals?[i] ?? Vector3.Zero;
+
+                var newPosition = Vector3.Zero;
+                var newNormal = Vector3.Zero;
+
+                for ( int j = 0; j < 4; j++ )
+                {
+                    var weight = VertexWeights[i].Weights[j];
+                    if ( weight == 0 )
+                        continue;
+
+                    var boneIndex = VertexWeights[i].Indices[j];
+                    var boneNodeIndex = bonePalette.BoneToNodeIndices[boneIndex];
+                    var boneNode = nodes[boneNodeIndex];
+                    var inverseBindMatrix = bonePalette.InverseBindMatrices[boneIndex];
+                    var bindMatrix = boneNode.WorldTransform;
+                    newPosition += Vector3.Transform( Vector3.Transform( position, inverseBindMatrix ), bindMatrix * weight );
+                    newNormal += Vector3.TransformNormal( Vector3.TransformNormal( normal, inverseBindMatrix ), bindMatrix * weight );
+                }
+
+                vertices[i] = Vector3.Transform( newPosition, parentNodeWorldTransformInv );
+
+                if ( normals != null )
+                    normals[i] =
+                        Vector3.Normalize( Vector3.TransformNormal( newNormal, parentNodeWorldTransformInv ) );
+            }
+
+            return (vertices, normals);
         }
 
         internal override void Read( ResourceReader reader )

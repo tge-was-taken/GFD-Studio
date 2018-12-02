@@ -7,20 +7,28 @@ using GFDLibrary.IO;
 
 namespace GFDLibrary.Common
 {
-    public class UserPropertyCollection : Resource, IDictionary<string, UserProperty>
+    public class UserPropertyDictionary : Resource, IDictionary<string, UserProperty>
     {
         private readonly Dictionary<string, UserProperty> mDictionary;
 
-        public override ResourceType ResourceType => ResourceType.UserPropertyCollection;
+        public override ResourceType ResourceType => ResourceType.UserPropertyDictionary;
 
-        public UserPropertyCollection()
+        public UserPropertyDictionary()
         {
             mDictionary = new Dictionary< string, UserProperty >();
         }
 
-        public UserPropertyCollection( uint version ) : base(version)
+        public UserPropertyDictionary( uint version ) : base(version)
         {
             mDictionary = new Dictionary<string, UserProperty>();
+        }
+
+        public UserPropertyDictionary( IEnumerable<UserProperty> properties ) : this()
+        {
+            foreach ( var userProperty in properties )
+            {
+                Add( userProperty );
+            }
         }
 
         public void Add( UserProperty property )

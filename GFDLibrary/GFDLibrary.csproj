@@ -182,7 +182,7 @@
     <Compile Include="IO\Common\Endianness.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Models\Triangle.cs" />
-    <Compile Include="Common\UserPropertyCollection.cs" />
+    <Compile Include="Common\UserPropertyDictionary.cs" />
     <Compile Include="Models\VertexWeight.cs" />
   </ItemGroup>
   <ItemGroup>

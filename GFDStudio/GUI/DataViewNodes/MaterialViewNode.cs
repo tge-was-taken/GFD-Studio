@@ -296,14 +296,14 @@ namespace GFDStudio.GUI.DataViewNodes
         protected override void InitializeViewCore()
         {
             TextureMapsViewNode = ( TextureMapListViewNode)DataViewNodeFactory.Create( "Texture Maps", CreateTextureMapInfo() );
-            Nodes.Add( TextureMapsViewNode );
+            AddChildNode( TextureMapsViewNode );
 
             AttributesViewNode =
                 ( ListViewNode< MaterialAttribute > ) DataViewNodeFactory.Create(
                     "Attributes", 
                     Data.Attributes == null ? new List< MaterialAttribute >() : Data.Attributes,
                     new object[] { new ListItemNameProvider< MaterialAttribute >( ( value, index ) => value.AttributeType.ToString() ) } );
-            Nodes.Add( AttributesViewNode );
+            AddChildNode( AttributesViewNode );
         }
     }
 }

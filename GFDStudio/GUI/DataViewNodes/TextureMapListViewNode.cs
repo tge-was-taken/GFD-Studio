@@ -89,55 +89,55 @@ namespace GFDStudio.GUI.DataViewNodes
             if ( Data[ 0 ] != null )
             {
                 DiffuseMap = ( TextureMapViewNode ) DataViewNodeFactory.Create( "Diffuse Map", Data[ 0 ] );
-                Nodes.Add( DiffuseMap );
+                AddChildNode( DiffuseMap );
             }
 
             if ( Data[1] != null )
             {
                 NormalMap = ( TextureMapViewNode )DataViewNodeFactory.Create( "Normal Map", Data[1] );
-                Nodes.Add( NormalMap );
+                AddChildNode( NormalMap );
             }
 
             if ( Data[2] != null )
             {
                 SpecularMap = ( TextureMapViewNode )DataViewNodeFactory.Create( "Specular Map", Data[2] );
-                Nodes.Add( SpecularMap );
+                AddChildNode( SpecularMap );
             }
 
             if ( Data[3] != null )
             {
                 ReflectionMap = ( TextureMapViewNode )DataViewNodeFactory.Create( "Reflection Map", Data[3] );
-                Nodes.Add( ReflectionMap );
+                AddChildNode( ReflectionMap );
             }
 
             if ( Data[4] != null )
             {
                 HighlightMap = ( TextureMapViewNode )DataViewNodeFactory.Create( "Highlight Map", Data[4] );
-                Nodes.Add( HighlightMap );
+                AddChildNode( HighlightMap );
             }
 
             if ( Data[5] != null )
             {
                 GlowMap = ( TextureMapViewNode )DataViewNodeFactory.Create( "Glow Map", Data[5] );
-                Nodes.Add( GlowMap );
+                AddChildNode( GlowMap );
             }
 
             if ( Data[6] != null )
             {
                 NightMap = ( TextureMapViewNode )DataViewNodeFactory.Create( "Night Map", Data[6] );
-                Nodes.Add( NightMap );
+                AddChildNode( NightMap );
             }
 
             if ( Data[7] != null )
             {
                 DetailMap = ( TextureMapViewNode )DataViewNodeFactory.Create( "Detail Map", Data[7] );
-                Nodes.Add( DetailMap );
+                AddChildNode( DetailMap );
             }
 
             if ( Data[8] != null )
             {
                 ShadowMap = ( TextureMapViewNode )DataViewNodeFactory.Create( "Shadow Map", Data[8] );
-                Nodes.Add( ShadowMap );
+                AddChildNode( ShadowMap );
             }
         }
 
