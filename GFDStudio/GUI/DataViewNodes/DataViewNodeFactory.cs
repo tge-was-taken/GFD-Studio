@@ -6,6 +6,7 @@ using System.IO;
 using System.Reflection;
 using GFDLibrary;
 using GFDLibrary.Animations;
+using GFDLibrary.Models;
 using GFDStudio.FormatModules;
 
 namespace GFDStudio.GUI.DataViewNodes
@@ -55,6 +56,7 @@ namespace GFDStudio.GUI.DataViewNodes
             Register<BonePaletteViewNode>();
             Register<NodeViewNode>();
             Register( typeof( AttachmentListViewNode ), typeof( List<Resource> ) );
+            Register( typeof( NodeListViewNode ), typeof( List<Node> ) );
             Register<MeshViewNode>();
             Register<CameraViewNode>();
             Register<LightViewNode>();

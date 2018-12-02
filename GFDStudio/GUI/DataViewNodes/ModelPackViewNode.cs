@@ -104,37 +104,37 @@ namespace GFDStudio.GUI.DataViewNodes
             if ( Data.Textures != null )
             {
                 Textures = ( TextureDictionaryViewNode )DataViewNodeFactory.Create( "Textures", Data.Textures );
-                Nodes.Add( Textures );
+                AddChildNode( Textures );
             }
 
             if ( Data.Materials != null )
             {
                 Materials = ( MaterialDictionaryViewNode )DataViewNodeFactory.Create( "Materials", Data.Materials );
-                Nodes.Add( Materials );
+                AddChildNode( Materials );
             }
 
             if ( Data.Model != null )
             {
                 Model = ( ModelViewNode ) DataViewNodeFactory.Create( "Model", Data.Model );
-                Nodes.Add( Model );
+                AddChildNode( Model );
             }
 
             if ( Data.ChunkType000100F9 != null )
             {
                 ChunkType000100F9 = ( ChunkType000100F9ViewNode )DataViewNodeFactory.Create( "Chunk Type 000100F9", Data.ChunkType000100F9 );
-                Nodes.Add( ChunkType000100F9 );
+                AddChildNode( ChunkType000100F9 );
             }
 
             if ( Data.ChunkType000100F8 != null )
             {
                 ChunkType000100F8 = ( ChunkType000100F8ViewNode )DataViewNodeFactory.Create( "Chunk Type 000100F8", Data.ChunkType000100F8 );
-                Nodes.Add( ChunkType000100F8 );
+                AddChildNode( ChunkType000100F8 );
             }
 
             if ( Data.AnimationPack != null )
             {
                 Animations = ( AnimationPackViewNode )DataViewNodeFactory.Create( "Animations", Data.AnimationPack );
-                Nodes.Add( Animations );
+                AddChildNode( Animations );
             }
         }
     }

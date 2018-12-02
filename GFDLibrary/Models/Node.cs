@@ -104,7 +104,7 @@ namespace GFDLibrary.Models
         public int AttachmentCount => HasAttachments ? Attachments.Count : 0;
 
         // EC
-        public UserPropertyCollection Properties { get; set; }
+        public UserPropertyDictionary Properties { get; set; }
 
         public bool HasProperties => Properties != null && Properties.Count > 0;
 
@@ -140,7 +140,7 @@ namespace GFDLibrary.Models
         public Node()
         {
             Attachments = new List<NodeAttachment>();
-            Properties = new UserPropertyCollection();
+            Properties = new UserPropertyDictionary();
             mChildren = new List<Node>();
             FieldE0 = 1.0f;
         }
@@ -148,7 +148,7 @@ namespace GFDLibrary.Models
         public Node( uint version ) : base(version)
         {
             Attachments = new List<NodeAttachment>();
-            Properties = new UserPropertyCollection();
+            Properties = new UserPropertyDictionary();
             mChildren = new List<Node>();
             FieldE0 = 1.0f;
         }
@@ -317,7 +317,7 @@ namespace GFDLibrary.Models
             {
                 var hasProperties = reader.ReadBoolean();
                 if ( hasProperties )
-                    Properties = reader.ReadResource<UserPropertyCollection>( Version );
+                    Properties = reader.ReadResource<UserPropertyDictionary>( Version );
             }
 
             if ( Version > 0x1104230 )

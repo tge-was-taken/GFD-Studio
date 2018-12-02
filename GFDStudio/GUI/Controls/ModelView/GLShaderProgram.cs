@@ -114,6 +114,15 @@ namespace GFDStudio.GUI.Controls.ModelView
             GL.UniformMatrix4( uniform.Location, false, ref value );
         }
 
+        public unsafe void SetUniform( string name, Matrix4[] value )
+        {
+            var uniform = GetUniform( name );
+            DebugSetUniformAssignedFlag( uniform, value );
+
+            fixed ( Matrix4* pValue = value )
+                GL.UniformMatrix4( uniform.Location, value.Length, false, ( float* ) pValue );
+        }
+
         public void SetUniform( string name, bool value )
         {
             var uniform = GetUniform( name );

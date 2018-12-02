@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Numerics;
 using System.Text;
 using GFDLibrary.Common;
@@ -157,7 +158,7 @@ namespace GFDLibrary.Models.Conversion
             return aiNode;
         }
 
-        private static void ConvertNodeProperties( UserPropertyCollection properties, Ai.Node aiNode )
+        private static void ConvertNodeProperties( UserPropertyDictionary properties, Ai.Node aiNode )
         {
             var stringBuilder = new StringBuilder();
 
@@ -213,9 +214,15 @@ namespace GFDLibrary.Models.Conversion
                 }
             }
 
+            var vertices = mesh.Vertices;
+            var normals = mesh.Normals;
+
+            if ( mesh.VertexWeights != null )
+                ( vertices, normals ) = mesh.Transform( geometryNode, model.Nodes.ToList(), model.BonePalette );
+
             if ( mesh.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Position ) )
             {
-                foreach ( var vertex in mesh.Vertices )
+                foreach ( var vertex in vertices )
                 {
                     aiMesh.Vertices.Add( new Ai.Vector3D( vertex.X, vertex.Y, vertex.Z ) );
                 }
@@ -223,7 +230,7 @@ namespace GFDLibrary.Models.Conversion
 
             if ( mesh.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Normal ) )
             {
-                foreach ( var normal in mesh.Normals )
+                foreach ( var normal in normals )
                 {
                     aiMesh.Normals.Add( new Ai.Vector3D( normal.X, normal.Y, normal.Z ) );
                 }

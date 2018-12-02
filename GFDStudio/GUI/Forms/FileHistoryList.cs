@@ -2,14 +2,16 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
+using GFDStudio.DataManagement;
 
 namespace GFDStudio.GUI.Forms
 {
-    public class RecentlyOpenedFilesList
+    public class FileHistoryList
     {
         private readonly List<string> mFiles = new List<string>();
         private readonly ToolStripItemCollection mCollection;
         private readonly EventHandler mClickHandler;
+        private readonly string mPath;
 
         public IEnumerable<string> Files => mFiles;
 
@@ -19,15 +21,16 @@ namespace GFDStudio.GUI.Forms
 
         public string Last => mFiles[mFiles.Count - 1];
 
-        public RecentlyOpenedFilesList( string path, int maxFileCount, ToolStripItemCollection collection, EventHandler clickHandler )
+        public FileHistoryList( string path, int maxFileCount, ToolStripItemCollection collection, EventHandler clickHandler )
         {
+            mPath = DataStore.GetPath( path );
             MaxFileCount = maxFileCount;
             mCollection = collection;
             mClickHandler = clickHandler;
 
-            if ( File.Exists( path ) )
+            if ( File.Exists( mPath ) )
             {
-                foreach ( string line in File.ReadAllLines( path ) )
+                foreach ( string line in File.ReadAllLines( mPath ) )
                     Add( line );
             }
         }
@@ -53,9 +56,9 @@ namespace GFDStudio.GUI.Forms
             mCollection.Insert( 0, item );
         }
 
-        public void Save( string path )
+        public void Save()
         {
-            using ( var writer = File.CreateText( path ) )
+            using ( var writer = File.CreateText( mPath ) )
             {
                 // Write list of files backwards from least recent to most recent
                 foreach ( var filePath in mFiles )

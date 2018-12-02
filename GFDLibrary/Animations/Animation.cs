@@ -21,7 +21,7 @@ namespace GFDLibrary.Animations
         private AnimationExtraData mField14;
         private BoundingBox? mBoundingBox;
         private AnimationFlag80000000Data mField1C;
-        private UserPropertyCollection mProperties;
+        private UserPropertyDictionary mProperties;
         private float? mSpeed;
 
         public override ResourceType ResourceType => ResourceType.Animation;
@@ -84,7 +84,7 @@ namespace GFDLibrary.Animations
         }
 
         // 20
-        public UserPropertyCollection Properties
+        public UserPropertyDictionary Properties
         {
             get => mProperties;
             set
@@ -208,7 +208,7 @@ namespace GFDLibrary.Animations
                 Speed = reader.ReadSingle();
 
             if ( Flags.HasFlag( AnimationFlags.HasProperties ) )
-                Properties = reader.ReadResource<UserPropertyCollection>( Version );
+                Properties = reader.ReadResource<UserPropertyDictionary>( Version );
         }
 
         internal override void Write( ResourceWriter writer )

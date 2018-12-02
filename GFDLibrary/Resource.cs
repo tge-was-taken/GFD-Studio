@@ -121,10 +121,9 @@ namespace GFDLibrary
                         res = new Model( header.Version );
                         break;
                     case ResourceType.Node:
-                        res = new Node( header.Version );
-                        break;
-                    case ResourceType.UserPropertyCollection:
-                        res = new UserPropertyCollection( header.Version );
+                        return Node.ReadRecursive( reader, header.Version );
+                    case ResourceType.UserPropertyDictionary:
+                        res = new UserPropertyDictionary( header.Version );
                         break;
                     case ResourceType.Morph:
                         res = new Morph( header.Version );
@@ -237,6 +236,10 @@ namespace GFDLibrary
                     case ResourceType.Epl:
                         // We have to write this to the file so we can remember it when we load it.
                         writer.WriteBoolean( ( ( Epl ) this ).IncludesProperties );
+                        break;
+
+                    case ResourceType.Node:
+                        Node.WriteRecursive( writer, ( Node ) this );
                         break;
                 }
 

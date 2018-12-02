@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using GFDLibrary;
 using GFDLibrary.Animations;
+using GFDStudio.DataManagement;
 using GFDStudio.FormatModules;
 using GFDStudio.GUI.Controls;
 using GFDStudio.GUI.DataViewNodes;
@@ -16,9 +17,21 @@ namespace GFDStudio.GUI.Forms
 {
     public partial class MainForm : Form
     {
-        private const string RECENTLY_OPENED_FILES_LIST_FILEPATH = "RecentlyOpenedFiles.txt";
+        private static MainForm sInstance;
+        public static MainForm Instance
+        {
+            get => sInstance;
+            set
+            {
+                if ( sInstance == null )
+                    sInstance = value;
+                else
+                    throw new InvalidOperationException();
+            }
+        }
 
-        private RecentlyOpenedFilesList mRecentlyOpenedFilesList;
+
+        private FileHistoryList mFileHistoryList;
 
         public DataTreeView DataTreeView
         {
@@ -40,6 +53,7 @@ namespace GFDStudio.GUI.Forms
 
         private void InitializeState()
         {
+            Instance = this;
 
 #if DEBUG
             Text = $"{Program.Name} {Program.Version.Major}.{Program.Version.Minor}.{Program.Version.Revision} [DEBUG]";
@@ -47,8 +61,8 @@ namespace GFDStudio.GUI.Forms
             Text = $"{Program.Name} {Program.Version.Major}.{Program.Version.Minor}.{Program.Version.Revision}";
 #endif
 
-            mRecentlyOpenedFilesList = new RecentlyOpenedFilesList( RECENTLY_OPENED_FILES_LIST_FILEPATH, 10, mOpenToolStripMenuItem.DropDown.Items,
-                                                                    HandleOpenToolStripRecentlyOpenedFileClick );
+            mFileHistoryList = new FileHistoryList( "file_history.txt", 10, mOpenToolStripMenuItem.DropDown.Items,
+                                                    HandleOpenToolStripRecentlyOpenedFileClick );
             DataTreeView.LabelEdit = true;
             AllowDrop = true;
         }
@@ -127,7 +141,8 @@ namespace GFDStudio.GUI.Forms
             if ( controls.Length == 1 )
             {
                 var modelViewControl = ( ModelViewControl )controls[ 0 ];
-                modelViewControl.LoadModel( ( ModelPack ) DataTreeView.TopNode.Data );
+                if ( DataTreeView.TopNode.Data is ModelPack modelPack )
+                    modelViewControl.LoadModel( modelPack );
             }
         }
 
@@ -136,7 +151,7 @@ namespace GFDStudio.GUI.Forms
         //
         private void DeInitialize()
         {
-            mRecentlyOpenedFilesList.Save( RECENTLY_OPENED_FILES_LIST_FILEPATH );
+            mFileHistoryList.Save();
         }
 
         //
@@ -145,7 +160,7 @@ namespace GFDStudio.GUI.Forms
         private void RecordOpenedFile( string filePath )
         {
             LastOpenedFilePath = filePath;
-            mRecentlyOpenedFilesList.Add( filePath );
+            mFileHistoryList.Add( filePath );
         }
 
         //
@@ -230,6 +245,13 @@ namespace GFDStudio.GUI.Forms
 
             // exit application when the main form is closed
             Application.Exit();
+        }
+
+        public void UpdateSelection()
+        {
+            var selectedNode = ( DataViewNode )mPropertyGrid.SelectedObject;
+            if ( selectedNode != null )
+                OnDataViewNodeSelected( selectedNode );
         }
 
         private void HandleTreeViewAfterSelect(object sender, TreeViewEventArgs e)

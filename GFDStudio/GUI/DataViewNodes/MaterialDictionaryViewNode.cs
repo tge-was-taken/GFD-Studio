@@ -49,7 +49,7 @@ namespace GFDStudio.GUI.DataViewNodes
         {
             foreach ( var texture in Data.Materials )
             {
-                Nodes.Add( DataViewNodeFactory.Create( texture.Name, texture ) );
+                AddChildNode( DataViewNodeFactory.Create( texture.Name, texture ) );
             }
         }
     }

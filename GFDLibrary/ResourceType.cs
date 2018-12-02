@@ -17,7 +17,7 @@
         ShaderPS4,
         Model,
         Node,
-        UserPropertyCollection,
+        UserPropertyDictionary,
         Morph,
         MorphTarget,
         MorphTargetList,

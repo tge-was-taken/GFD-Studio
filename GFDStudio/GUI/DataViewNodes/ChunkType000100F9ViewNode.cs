@@ -89,21 +89,21 @@ namespace GFDStudio.GUI.DataViewNodes
                     "Entry Type 1 List", Data.Entry1List,
                     new object[] { new ListItemNameProvider<ChunkType000100F9Entry1>( ( item, index ) => item.NodeName == null ? index.ToString() : item.NodeName ) } );
 
-            Nodes.Add( Entry1ListViewNode );
+            AddChildNode( Entry1ListViewNode );
 
             Entry2ListViewNode =
                 ( ListViewNode<ChunkType000100F9Entry2> )DataViewNodeFactory.Create(
                     "Entry Type 2 List", Data.Entry2List,
                     new object[] { new ListItemNameProvider<ChunkType000100F9Entry2>( ( item, index ) => item.NodeName == null ? index.ToString() : item.NodeName ) } );
 
-            Nodes.Add( Entry2ListViewNode );
+            AddChildNode( Entry2ListViewNode );
 
             Entry3ListViewNode =
                 ( ListViewNode<ChunkType000100F9Entry3> )DataViewNodeFactory.Create(
                     "Entry Type 3 List", Data.Entry3List,
                     new object[] { new ListItemNameProvider<ChunkType000100F9Entry3>( ( item, index ) => index.ToString() ) } );
 
-            Nodes.Add( Entry3ListViewNode );
+            AddChildNode( Entry3ListViewNode );
         }
     }
 }

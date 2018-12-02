@@ -96,7 +96,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Icon.ico</ApplicationIcon>
+    <ApplicationIcon>app_data\icons\main_icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AssimpNet, Version=3.3.1.0, Culture=neutral, PublicKeyToken=0d51b391f59f42a6, processorArchitecture=MSIL">
@@ -122,6 +122,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Design" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
@@ -138,6 +139,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DataManagement\DataStore.cs" />
     <Compile Include="FormatModules\AnimationFormatModule.cs" />
     <Compile Include="FormatModules\AnimationPackFormatModule.cs" />
     <Compile Include="FormatModules\AssimpSceneFormatModule.cs" />
@@ -162,12 +164,16 @@
     <Compile Include="GUI\Forms\ModelConverterOptionsDialog.Designer.cs">
       <DependentUpon>ModelConverterOptionsDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Forms\RecentlyOpenedFilesList.cs" />
+    <Compile Include="GUI\Forms\FileHistoryList.cs" />
     <Compile Include="GUI\TypeConverters\EnumTypeConverter.cs" />
     <Compile Include="GUI\TypeConverters\Int16HexTypeConverter.cs" />
     <Compile Include="GUI\TypeConverters\Int32HexTypeConverter.cs" />
-    <Compile Include="GUI\TypeConverters\DictionaryTypeConverter.cs" />
+    <Compile Include="GUI\TypeConverters\VariantUserPropertyList.cs" />
     <Compile Include="GUI\TypeConverters\QuaternionTypeConverter.cs" />
+    <Compile Include="GUI\TypeConverters\VariantUserProperty.cs" />
+    <Compile Include="GUI\TypeConverters\VariantUserPropertyListPropertyDescriptor.cs" />
+    <Compile Include="GUI\TypeConverters\VariantUserPropertyTypeConverter.cs" />
+    <Compile Include="GUI\TypeConverters\VariantUserPropertyValueTypeConverter.cs" />
     <Compile Include="GUI\TypeConverters\Vector3TypeConverter.cs" />
     <Compile Include="GUI\TypeConverters\Vector4TypeConverter.cs" />
     <Compile Include="GUI\DataViewNodes\AnimationExtraDataViewNode.cs" />
@@ -284,12 +290,6 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="GUI\DataViewNodes\DataViewNode.HideInheritedProperties.cs" />
-    <None Include="GUI\Controls\ModelView\Shaders\FragmentShader.glsl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="GUI\Controls\ModelView\Shaders\FragmentShaderBasic.glsl">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -300,12 +300,18 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <None Include="GUI\Controls\ModelView\Shaders\VertexShader.glsl">
+    <Content Include="app_data\shaders\basic.glsl.fs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="GUI\Controls\ModelView\Shaders\VertexShaderBasic.glsl">
+    </Content>
+    <Content Include="app_data\shaders\basic.glsl.vs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    </Content>
+    <Content Include="app_data\shaders\default.glsl.fs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="app_data\shaders\default.glsl.vs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -318,8 +324,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Icon.ico" />
-    <Content Include="Todo.txt" />
+    <Content Include="app_data\icons\main_icon.ico" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GFDLibrary\GFDLibrary.csproj">

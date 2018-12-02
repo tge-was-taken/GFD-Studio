@@ -12,11 +12,13 @@ using GFDLibrary.Common;
 using GFDLibrary.Materials;
 using GFDLibrary.Models;
 using GFDLibrary.Textures;
+using GFDStudio.DataManagement;
 using GFDStudio.GUI.Controls.ModelView;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
+using System.Linq;
 
 namespace GFDStudio.GUI.Controls
 {
@@ -128,26 +130,22 @@ namespace GFDStudio.GUI.Controls
                     mShaderProgram.Use();
 
                     // set up model view projection matrix uniforms
-                    var modelViewProj = geometry.ModelMatrix * mCamera.CalculateViewMatrix();
-                    var projection = mCamera.CalculateProjectionMatrix();
+                    mShaderProgram.SetUniform( "model", geometry.ModelMatrix );
+                    mShaderProgram.SetUniform( "view", mCamera.CalculateViewMatrix() );
+                    mShaderProgram.SetUniform( "projection", mCamera.CalculateProjectionMatrix() );
 
-                    //mShaderProgram.SetUniform( "modelViewProj", modelViewProj );
-                    mShaderProgram.SetUniform( "modelView", modelViewProj );
-                    mShaderProgram.SetUniform( "projection", projection );
 
                     // set material uniforms
-                    mShaderProgram.SetUniform( "hasDiffuse", geometry.Material.HasDiffuse );
+                    mShaderProgram.SetUniform( "matHasDiffuse", geometry.Material.HasDiffuse );
 
                     if ( geometry.Material.HasDiffuse )
-                    {
-                        mShaderProgram.SetUniform( "hasDiffuse", true );
                         GL.BindTexture( TextureTarget.Texture2D, geometry.Material.DiffuseTextureId );
-                    }
 
                     mShaderProgram.SetUniform( "matAmbient", geometry.Material.Ambient );
                     mShaderProgram.SetUniform( "matDiffuse", geometry.Material.Diffuse );
                     mShaderProgram.SetUniform( "matSpecular", geometry.Material.Specular );
                     mShaderProgram.SetUniform( "matEmissive", geometry.Material.Emissive );
+                    mShaderProgram.SetUniform( "matHasAlphaTransparency", geometry.Material.HasAlphaTransparency );
 
                     // checks if all uniforms were assigned
                     mShaderProgram.Check();
@@ -226,16 +224,14 @@ namespace GFDStudio.GUI.Controls
         /// </summary>
         private bool InitializeGLShaders()
         {
-            if ( !GLShaderProgram.TryCreate(
-                Path.Combine( AppDomain.CurrentDomain.BaseDirectory, "GUI\\Controls\\ModelView\\Shaders\\VertexShader.glsl" ),
-                Path.Combine( AppDomain.CurrentDomain.BaseDirectory, "GUI\\Controls\\ModelView\\Shaders\\FragmentShader.glsl" ),
+            if ( !GLShaderProgram.TryCreate( DataStore.GetPath( "shaders/default.glsl.vs" ),
+                                             DataStore.GetPath( "shaders/default.glsl.fs" ),
                 out mShaderProgram ) )
             {
                 Trace.TraceWarning( "Failed to compile shaders. Trying to use basic shaders.." );
 
-                if ( !GLShaderProgram.TryCreate(
-                    Path.Combine( AppDomain.CurrentDomain.BaseDirectory, "GUI\\Controls\\ModelView\\Shaders\\VertexShaderBasic.glsl" ),
-                    Path.Combine( AppDomain.CurrentDomain.BaseDirectory, "GUI\\Controls\\ModelView\\Shaders\\FragmentShaderBasic.glsl" ),
+                if ( !GLShaderProgram.TryCreate( DataStore.GetPath( "shaders/basic.glsl.vs" ),
+                                                 DataStore.GetPath( "shaders/basic.glsl.fs" ),
                     out mShaderProgram ) )
                 {
                     Trace.TraceError( "Failed to compile basic shaders. Disabling GL rendering." );
@@ -244,14 +240,15 @@ namespace GFDStudio.GUI.Controls
             }
 
             // register shader uniforms
-            //mShaderProgram.RegisterUniform<Matrix4>( "modelViewProj" );
-            mShaderProgram.RegisterUniform<Matrix4>( "modelView" );
+            mShaderProgram.RegisterUniform<Matrix4>( "model" );
+            mShaderProgram.RegisterUniform<Matrix4>( "view" );
             mShaderProgram.RegisterUniform<Matrix4>( "projection" );
-            mShaderProgram.RegisterUniform<bool>( "hasDiffuse" );
+            mShaderProgram.RegisterUniform<bool>( "matHasDiffuse" );
             mShaderProgram.RegisterUniform<Vector4>( "matAmbient" );
             mShaderProgram.RegisterUniform<Vector4>( "matDiffuse" );
             mShaderProgram.RegisterUniform<Vector4>( "matSpecular" );
             mShaderProgram.RegisterUniform<Vector4>( "matEmissive" );
+            mShaderProgram.RegisterUniform<bool>( "matHasAlphaTransparency" );
             return true;
         }
 
@@ -266,6 +263,8 @@ namespace GFDStudio.GUI.Controls
 
             InitializeCamera();
 
+            var nodes = mModelPack.Model.Nodes.ToList();
+
             foreach ( var node in mModelPack.Model.Nodes )
             {
                 if ( !node.HasAttachments )
@@ -276,7 +275,7 @@ namespace GFDStudio.GUI.Controls
                     if ( attachment.Type != NodeAttachmentType.Geometry )
                         continue;
 
-                    var geometry = CreateGLMesh( attachment.GetValue<Mesh>() );
+                    var geometry = CreateGLMesh( attachment.GetValue<Mesh>(), node, nodes, mModelPack.Model.BonePalette );
                     var transform = node.WorldTransform;
                     geometry.ModelMatrix = ToMatrix4( ref transform );
 
@@ -357,6 +356,14 @@ namespace GFDStudio.GUI.Controls
             {
                 fixed ( System.Numerics.Matrix4x4* pMatrix = &matrix )
                     return *( Matrix4* )pMatrix;
+            }
+        }
+
+        private static Matrix4 ToMatrix4( System.Numerics.Matrix4x4 matrix )
+        {
+            unsafe
+            {
+                return *( Matrix4* )&matrix;
             }
         }
 
@@ -482,19 +489,26 @@ namespace GFDStudio.GUI.Controls
         // Model stuff
         //
 
-        private GLMesh CreateGLMesh( Mesh mesh )
+        private GLMesh CreateGLMesh( Mesh mesh, Node parentNode, List<Node> nodes, BonePalette bonePalette )
         {
             var glMesh = new GLMesh();
+
+            var vertices = mesh.Vertices;
+            var normals = mesh.Normals;
+
+            if ( mesh.VertexWeights != null )
+                ( vertices, normals ) = mesh.Transform( parentNode, nodes, bonePalette );
 
             // vertex array
             glMesh.VertexArrayId = GL.GenVertexArray();
             GL.BindVertexArray( glMesh.VertexArrayId );
 
             // positions
-            glMesh.PositionBufferId = CreateGLVertexAttributeBuffer( mesh.Vertices.Length * Vector3.SizeInBytes, mesh.Vertices, 0, 3 );
+            glMesh.PositionBufferId = CreateGLVertexAttributeBuffer( vertices.Length * Vector3.SizeInBytes, vertices, 0, 3 );
 
             // normals
-            glMesh.NormalBufferId = CreateGLVertexAttributeBuffer( mesh.Normals.Length * Vector3.SizeInBytes, mesh.Normals, 1, 3 );
+            if ( normals != null )
+                glMesh.NormalBufferId = CreateGLVertexAttributeBuffer( normals.Length * Vector3.SizeInBytes, normals, 1, 3 );
 
             if ( mesh.TexCoordsChannel0 != null )
             {
@@ -549,13 +563,13 @@ namespace GFDStudio.GUI.Controls
             return buffer;
         }
 
-        private static int CreateGLVertexAttributeBuffer<T>( int size, T[] vertexData, int attributeIndex, int attributeSize ) where T : struct
+        private static int CreateGLVertexAttributeBuffer<T>( int size, T[] vertexData, int attributeIndex, int attributeSize, VertexAttribPointerType type = VertexAttribPointerType.Float ) where T : struct
         {
             // create buffer for vertex data store
             int buffer = CreateGLBuffer( BufferTarget.ArrayBuffer, size, vertexData );
 
             // configure vertex attribute
-            GL.VertexAttribPointer( attributeIndex, attributeSize, VertexAttribPointerType.Float, false, 0, 0 );
+            GL.VertexAttribPointer( attributeIndex, attributeSize, type, false, 0, 0 );
 
             // enable vertex attribute
             GL.EnableVertexAttribArray( attributeIndex );
@@ -576,25 +590,33 @@ namespace GFDStudio.GUI.Controls
             // texture
             if ( material.DiffuseMap != null )
             {
-                if ( mIsFieldModel && mFieldTextures.TryOpenFile( material.DiffuseMap.Name, out var textureStream ) )
-                {
-                    using ( textureStream )
-                    {
-                        var texture = new FieldTexturePS3( textureStream );
-                        glMaterial.DiffuseTextureId = CreateGLTexture( texture );
-                    }
-                }
-                else if ( mModelPack.Textures.TryGetTexture( material.DiffuseMap.Name, out var texture ) )
-                {
-                    glMaterial.DiffuseTextureId = CreateGLTexture( texture );
-                }
-                else
-                {
-                    Trace.TraceWarning( $"Diffuse map texture '{ material.DiffuseMap.Name }' used by material '{ material.Name }' is missing" );
-                }
+                glMaterial.DiffuseTextureId = CreateGLTextureMap( material, material.DiffuseMap.Name );
+                glMaterial.HasAlphaTransparency = material.DrawOrder != MaterialDrawOrder.Front; // && material.Field4D == 1 && material.Field90 == 0x0080;
             }
 
             return glMaterial;
+        }
+
+        private int CreateGLTextureMap( Material material, string name )
+        {
+            if ( mIsFieldModel && mFieldTextures.TryOpenFile( name, out var textureStream ) )
+            {
+                using ( textureStream )
+                {
+                    var texture = new FieldTexturePS3( textureStream );
+                    return CreateGLTexture( texture );
+                }
+            }
+            else if ( mModelPack.Textures.TryGetTexture( name, out var texture ) )
+            {
+                return CreateGLTexture( texture );
+            }
+            else
+            {
+                Trace.TraceWarning( $"tTexture '{ name }' used by material '{ material.Name }' is missing" );
+            }
+
+            return 0;
         }
 
         //
@@ -706,6 +728,7 @@ namespace GFDStudio.GUI.Controls
             public Vector4 Specular;
             public Vector4 Emissive;
             public int DiffuseTextureId;
+            public bool HasAlphaTransparency;
 
             public bool HasDiffuse => DiffuseTextureId != 0;
         }
