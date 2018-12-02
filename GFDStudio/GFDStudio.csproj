@@ -150,8 +150,12 @@
     <Compile Include="FormatModules\MeshFormatModule.cs" />
     <Compile Include="FormatModules\LightFormatModule.cs" />
     <Compile Include="FormatModules\MorphFormatModule.cs" />
+    <Compile Include="FormatModules\MorphTargetFormatModule.cs" />
+    <Compile Include="FormatModules\MorphTargetListFormatModule.cs" />
     <Compile Include="FormatModules\NodeFormatModule.cs" />
     <Compile Include="FormatModules\ModelFormatModule.cs" />
+    <Compile Include="GUI\DataViewNodes\MorphTargetListViewNode.cs" />
+    <Compile Include="GUI\DataViewNodes\MorphTargetViewNode.cs" />
     <Compile Include="GUI\Forms\CreateTextureMapDialog.cs">
       <SubType>Form</SubType>
     </Compile>

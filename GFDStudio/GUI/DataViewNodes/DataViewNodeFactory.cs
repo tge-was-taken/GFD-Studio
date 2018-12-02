@@ -62,6 +62,8 @@ namespace GFDStudio.GUI.DataViewNodes
             Register<LightViewNode>();
             Register<EplViewNode>();
             Register<MorphViewNode>();
+            Register<MorphTargetListViewNode>();
+            Register<MorphTargetViewNode>();
 
             // gfd chunk type 000100F9 view models
             Register<ChunkType000100F9ViewNode>();

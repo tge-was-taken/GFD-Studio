@@ -205,22 +205,34 @@ namespace GFDLibrary.Models
                 // Merge attachments
                 if ( otherNode.HasAttachments )
                 {
-                    // Offset mesh attachments
                     Matrix4x4.Invert( thisNode.WorldTransform, out var thisNodeWorldTransformInv );
                     var offsetMatrix = otherNode.WorldTransform * thisNodeWorldTransformInv;
-                    foreach ( var mesh in otherNode.Attachments.Where( x => x.Type == NodeAttachmentType.Mesh ).Select( x => x.GetValue<Mesh>() ) )
+
+                    foreach ( var attachment in otherNode.Attachments )
                     {
-                        for ( int i = 0; i < mesh.Vertices.Length; i++ )
-                            mesh.Vertices[ i ] = Vector3.Transform( mesh.Vertices[ i ], offsetMatrix );
-
-                        if ( mesh.Normals != null )
+                        switch ( attachment.Type )
                         {
-                            for ( int i = 0; i < mesh.Normals.Length; i++ )
-                                mesh.Normals[ i ] = Vector3.TransformNormal( mesh.Normals[ i ], offsetMatrix );
-                        }
-                    }
+                            case NodeAttachmentType.Mesh:
+                                {
+                                    var mesh = attachment.GetValue<Mesh>();
 
-                    thisNode.Attachments.AddRange( otherNode.Attachments.Where( x => x.Type != NodeAttachmentType.Epl ) );
+                                    for ( int i = 0; i < mesh.Vertices.Length; i++ )
+                                        mesh.Vertices[i] = Vector3.Transform( mesh.Vertices[i], offsetMatrix );
+
+                                    if ( mesh.Normals != null )
+                                    {
+                                        for ( int i = 0; i < mesh.Normals.Length; i++ )
+                                            mesh.Normals[i] = Vector3.TransformNormal( mesh.Normals[i], offsetMatrix );
+                                    }
+                                }
+                                break;
+
+                            case NodeAttachmentType.Epl:
+                                continue;
+                        }
+
+                        thisNode.Attachments.Add( attachment );
+                    }
                 }
 
                 // Replace properties
@@ -251,7 +263,7 @@ namespace GFDLibrary.Models
 
                 // Get unweighted geometries
                 var unweightedGeometries = uniqueNode.Attachments.Where( x => x.Type == NodeAttachmentType.Mesh )
-                                                     .Select( x => x.GetValue<Mesh>() ).Where( x => x.VertexWeights == null );
+                                                     .Select( x => x.GetValue<Mesh>() ).Where( x => x.VertexWeights == null ).ToList();
 
                 if ( unweightedGeometries.Any() )
                 {
@@ -313,6 +325,14 @@ namespace GFDLibrary.Models
                         }
                     }
                 }
+
+                //// Fix morphs
+                //var morphs = uniqueNode.Attachments.Where( x => x.Type == NodeAttachmentType.Morph ).Select( x => x.GetValue<Morph>() );
+                //foreach ( var morph in morphs )
+                //{
+                //    // All unique nodes get assigned to the root node
+                //    morph.NodeName = "RootNode";
+                //}
 
                 // Fix transform for the node
                 var worldTransform = uniqueNode.WorldTransform;

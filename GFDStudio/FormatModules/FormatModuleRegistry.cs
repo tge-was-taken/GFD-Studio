@@ -60,7 +60,9 @@ namespace GFDStudio.FormatModules
                 new CameraFormatModule(),
                 new LightFormatModule(),
                 new EplFormatModule(),
-                new MorphFormatModule()
+                new MorphFormatModule(),
+                new MorphTargetListFormatModule(),
+                new MorphTargetFormatModule()
             );
         }
 

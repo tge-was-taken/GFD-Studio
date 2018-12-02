@@ -7,7 +7,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GFDStudio", "GFDStudio\GFDS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GFDLibrary", "GFDLibrary\GFDLibrary.csproj", "{A41AC644-A107-4788-8E4F-E10CCA64F3B6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GFDLibraryTests", "GFDLibraryTests\GFDLibraryTests.csproj", "{B8FD6F26-3B3B-43C5-AE25-DAF1D5F554BE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GFDLibrary.Tests", "GFDLibraryTests\GFDLibrary.Tests.csproj", "{B8FD6F26-3B3B-43C5-AE25-DAF1D5F554BE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GFDLibrary.Playground", "GFDLibrary.Playground\GFDLibrary.Playground.csproj", "{4B77AC8E-B257-47F5-8802-2E023EFEB879}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,6 +57,18 @@ Global
 		{B8FD6F26-3B3B-43C5-AE25-DAF1D5F554BE}.Release|x64.Build.0 = Release|Any CPU
 		{B8FD6F26-3B3B-43C5-AE25-DAF1D5F554BE}.Release|x86.ActiveCfg = Release|Any CPU
 		{B8FD6F26-3B3B-43C5-AE25-DAF1D5F554BE}.Release|x86.Build.0 = Release|Any CPU
+		{4B77AC8E-B257-47F5-8802-2E023EFEB879}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B77AC8E-B257-47F5-8802-2E023EFEB879}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B77AC8E-B257-47F5-8802-2E023EFEB879}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{4B77AC8E-B257-47F5-8802-2E023EFEB879}.Debug|x64.Build.0 = Debug|Any CPU
+		{4B77AC8E-B257-47F5-8802-2E023EFEB879}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4B77AC8E-B257-47F5-8802-2E023EFEB879}.Debug|x86.Build.0 = Debug|Any CPU
+		{4B77AC8E-B257-47F5-8802-2E023EFEB879}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B77AC8E-B257-47F5-8802-2E023EFEB879}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4B77AC8E-B257-47F5-8802-2E023EFEB879}.Release|x64.ActiveCfg = Release|Any CPU
+		{4B77AC8E-B257-47F5-8802-2E023EFEB879}.Release|x64.Build.0 = Release|Any CPU
+		{4B77AC8E-B257-47F5-8802-2E023EFEB879}.Release|x86.ActiveCfg = Release|Any CPU
+		{4B77AC8E-B257-47F5-8802-2E023EFEB879}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

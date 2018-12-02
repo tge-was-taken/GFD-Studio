@@ -14,7 +14,7 @@ using GFDLibrary.Shaders;
 using GFDLibrary.Textures;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace GFDLibraryTests
+namespace GFDLibrary.Tests
 {
     [TestClass()]
     public class ResourceTests

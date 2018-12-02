@@ -10,6 +10,8 @@ namespace GFDLibrary.Models
 
         public override ResourceType ResourceType => ResourceType.MorphTargetList;
 
+        public int Flags { get; set; }
+
         public MorphTargetList()
         {
             mList = new List<MorphTarget>();
@@ -44,8 +46,6 @@ namespace GFDLibrary.Models
 
         #region IList
         public MorphTarget this[int index] { get => mList[index]; set => mList[index] = value; }
-
-        public int Flags { get; set; }
 
         public int Count => mList.Count;
 

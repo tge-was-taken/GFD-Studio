@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using GFDLibrary;
 using GFDLibrary.Models;
 
@@ -6,10 +7,10 @@ namespace GFDStudio.GUI.DataViewNodes
     public class MeshViewNode : DataViewNode<Mesh>
     {
         public override DataViewNodeMenuFlags ContextMenuFlags
-            => DataViewNodeMenuFlags.Delete | DataViewNodeMenuFlags.Move | DataViewNodeMenuFlags.Export;
+            => DataViewNodeMenuFlags.Delete | DataViewNodeMenuFlags.Move | DataViewNodeMenuFlags.Export | DataViewNodeMenuFlags.Replace;
 
         public override DataViewNodeFlags NodeFlags
-            => DataViewNodeFlags.Leaf;
+            => Data.MorphTargets == null ? DataViewNodeFlags.Leaf : DataViewNodeFlags.Branch;
 
         public GeometryFlags Flags
         {
@@ -56,6 +57,9 @@ namespace GFDStudio.GUI.DataViewNodes
             set => SetDataProperty( value );
         }
 
+        [Browsable(false)]
+        public MorphTargetListViewNode MorphTargets { get; set; }
+
         public MeshViewNode( string text, Mesh data ) : base( text, data )
         {
         }
@@ -64,10 +68,23 @@ namespace GFDStudio.GUI.DataViewNodes
         {
             RegisterExportHandler<Mesh>( path => Data.Save( path ) );
             RegisterReplaceHandler<Mesh>( Resource.Load<Mesh> );
+            RegisterModelUpdateHandler( () =>
+            {
+                var mesh = Data;
+                mesh.MorphTargets = MorphTargets.Data;
+                return mesh;
+            });
+            RegisterCustomHandler( "Add morph target list", () =>
+            {
+                Data.MorphTargets = new MorphTargetList { Flags = 2 };
+                InitializeView( true );
+            });
         }
 
         protected override void InitializeViewCore()
         {
+            MorphTargets = ( MorphTargetListViewNode ) DataViewNodeFactory.Create( "Morph Targets", Data.MorphTargets );
+            AddChildNode( MorphTargets );
         }
     }
 }
