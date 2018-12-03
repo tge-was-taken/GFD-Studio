@@ -103,6 +103,9 @@ namespace GFDLibrary.Models
 
         public int AttachmentCount => HasAttachments ? Attachments.Count : 0;
 
+        public IEnumerable<Mesh> Meshes => Attachments.Where( x => x.Type == NodeAttachmentType.Mesh )
+                                                      .Select( x => x.GetValue<Mesh>() );
+
         // EC
         public UserPropertyDictionary Properties { get; set; }
 

@@ -275,7 +275,7 @@ namespace GFDStudio.GUI.Controls
                     if ( attachment.Type != NodeAttachmentType.Mesh )
                         continue;
 
-                    var glMesh = CreateGLMesh( attachment.GetValue<Mesh>(), node, nodes, mModelPack.Model.BonePalette );
+                    var glMesh = CreateGLMesh( attachment.GetValue<Mesh>(), node, nodes, mModelPack.Model.Bones );
                     var transform = node.WorldTransform;
                     glMesh.ModelMatrix = ToMatrix4( ref transform );
 
@@ -489,7 +489,7 @@ namespace GFDStudio.GUI.Controls
         // Model stuff
         //
 
-        private GLMesh CreateGLMesh( Mesh mesh, Node parentNode, List<Node> nodes, BonePalette bonePalette )
+        private GLMesh CreateGLMesh( Mesh mesh, Node parentNode, List<Node> nodes, List<Bone> bones )
         {
             var glMesh = new GLMesh();
 
@@ -497,7 +497,7 @@ namespace GFDStudio.GUI.Controls
             var normals = mesh.Normals;
 
             if ( mesh.VertexWeights != null )
-                ( vertices, normals ) = mesh.Transform( parentNode, nodes, bonePalette );
+                ( vertices, normals ) = mesh.Transform( parentNode, nodes, bones );
 
             // vertex array
             glMesh.VertexArrayId = GL.GenVertexArray();

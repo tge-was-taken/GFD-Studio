@@ -23,13 +23,13 @@ namespace GFDLibrary.Models
             }
         }
 
-        private BonePalette mBonePalette;
-        public BonePalette BonePalette
+        private List<Bone> mBones;
+        public List<Bone> Bones
         {
-            get => mBonePalette;
+            get => mBones;
             set
             {
-                mBonePalette = value;
+                mBones = value;
                 ValidateFlags();
             }
         }
@@ -90,14 +90,19 @@ namespace GFDLibrary.Models
 
             if ( flags.HasFlag( ModelFlags.HasSkinning ) )
             {
-                int matrixCount = reader.ReadInt32();
-                BonePalette = new BonePalette( matrixCount );
+                int boneCount = reader.ReadInt32();
 
-                for ( int i = 0; i < BonePalette.InverseBindMatrices.Length; i++ )
-                    BonePalette.InverseBindMatrices[i] = reader.ReadMatrix4x4();
+                var inverseBindMatrices = new Matrix4x4[boneCount];
+                var boneToNodeIndices = new ushort[boneCount];
+                for ( int i = 0; i < boneCount; i++ )
+                    inverseBindMatrices[i] = reader.ReadMatrix4x4();
 
-                for ( int i = 0; i < BonePalette.BoneToNodeIndices.Length; i++ )
-                    BonePalette.BoneToNodeIndices[i] = reader.ReadUInt16();
+                for ( int i = 0; i < boneCount; i++ )
+                    boneToNodeIndices[i] = reader.ReadUInt16();
+
+                Bones = new List<Bone>( boneCount );
+                for ( int i = 0; i < boneCount; i++ )
+                    Bones.Add( new Bone( boneToNodeIndices[ i ], inverseBindMatrices[ i ] ) );
             }
 
             if ( flags.HasFlag( ModelFlags.HasBoundingBox ) )
@@ -116,13 +121,13 @@ namespace GFDLibrary.Models
 
             if ( Flags.HasFlag( ModelFlags.HasSkinning ) )
             {
-                writer.WriteInt32( BonePalette.BoneCount );
+                writer.WriteInt32( Bones.Count );
 
-                foreach ( var t in BonePalette.InverseBindMatrices )
-                    writer.WriteMatrix4x4( t );
+                foreach ( var bone in Bones )
+                    writer.WriteMatrix4x4( bone.InverseBindMatrix );
 
-                foreach ( var index in BonePalette.BoneToNodeIndices )
-                    writer.WriteUInt16( index );
+                foreach ( var bone in Bones )
+                    writer.WriteUInt16( bone.NodeIndex );
             }
 
             if ( Flags.HasFlag( ModelFlags.HasBoundingBox ) )
@@ -145,7 +150,7 @@ namespace GFDLibrary.Models
             // Remove geometries from this scene
             RemoveGeometryAttachments();
 
-            BonePalette = other.BonePalette;
+            Bones = other.Bones;
             BoundingBox = other.BoundingBox;
             BoundingSphere = other.BoundingSphere;
             Flags = other.Flags;
@@ -285,30 +290,21 @@ namespace GFDLibrary.Models
 
                     Trace.Assert( lastUniqueNodeIndex != -1 );
 
-                    if ( BonePalette == null )
+                    if ( Bones == null )
                     {
-                        BonePalette = new BonePalette( 0 );
+                        Bones = new List<Bone>();
                     }
 
-                    int boneIndex = Array.IndexOf( BonePalette.BoneToNodeIndices,
-                                                   lastUniqueNodeIndex );
+                    int boneIndex = Bones.FindIndex( x => x.NodeIndex == lastUniqueNodeIndex );
 
                     if ( boneIndex == -1 )
                     {
-                        Trace.Assert( BonePalette.BoneCount < 255 );
+                        Trace.Assert( Bones.Count < 255 );
 
                         // Node wasn't used as a bone, so we add it
-                        // TODO: This is a lazy hack. This should be done during the BonePalette fixup
-                        var boneToNodeIndices = BonePalette.BoneToNodeIndices;
-                        Array.Resize( ref boneToNodeIndices, BonePalette.BoneToNodeIndices.Length + 1 );
-                        boneToNodeIndices[boneToNodeIndices.Length - 1] = ( ushort )lastUniqueNodeIndex;
-                        BonePalette.BoneToNodeIndices = boneToNodeIndices;
-
-                        var inverseBindMatrices = BonePalette.InverseBindMatrices;
-                        Array.Resize( ref inverseBindMatrices, inverseBindMatrices.Length + 1 );
-                        BonePalette.InverseBindMatrices = inverseBindMatrices;
-
-                        boneIndex = BonePalette.BoneToNodeIndices.Length - 1;
+                        // TODO: This is a lazy hack. This should be done during the Bones fixup
+                        boneIndex = Bones.Count;
+                        Bones.Add( new Bone( ( ushort ) lastUniqueNodeIndex, Matrix4x4.Identity ) );
                     }
 
                     // Set vertex weights
@@ -366,7 +362,7 @@ namespace GFDLibrary.Models
                             if ( boneWeight == 0 )
                                 continue;
 
-                            var otherNodeIndex = BonePalette.BoneToNodeIndices[boneIndex];
+                            var otherNodeIndex = Bones[boneIndex].NodeIndex;
                             var otherBoneNode = otherNodes[otherNodeIndex];
 
                             var thisBoneNode = nodes.FirstOrDefault( x => x.Name == otherBoneNode.Name );
@@ -414,7 +410,7 @@ namespace GFDLibrary.Models
                 }
             }
 
-            BonePalette = new BonePalette( uniqueBones );
+            Bones = uniqueBones;
         }
 
         private void RemoveGeometryAttachments()
@@ -429,7 +425,7 @@ namespace GFDLibrary.Models
 
         private void ValidateFlags()
         {
-            if ( BonePalette == null )
+            if ( Bones == null )
                 mFlags &= ~ModelFlags.HasSkinning;
             else
                 mFlags |= ModelFlags.HasSkinning;

@@ -187,6 +187,22 @@ namespace GFDLibrary.Materials
             }
         }
 
+        public IEnumerable<TextureMap> TextureMaps
+        {
+            get
+            {
+                yield return DiffuseMap;
+                yield return NormalMap;
+                yield return SpecularMap;
+                yield return ReflectionMap;
+                yield return HighlightMap;
+                yield return GlowMap;
+                yield return NightMap;
+                yield return DetailMap;
+                yield return ShadowMap;
+            }
+        }
+
         private List<MaterialAttribute> mAttributes;
         public List<MaterialAttribute> Attributes
         {

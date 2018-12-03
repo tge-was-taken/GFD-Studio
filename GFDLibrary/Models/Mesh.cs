@@ -269,9 +269,9 @@ namespace GFDLibrary.Models
         /// </summary>
         /// <param name="parentNode"></param>
         /// <param name="nodes"></param>
-        /// <param name="bonePalette"></param>
+        /// <param name="usedBones"></param>
         /// <returns></returns>
-        public (Vector3[] Vertices, Vector3[] Normals) Transform( Node parentNode, List<Node> nodes, BonePalette bonePalette )
+        public (Vector3[] Vertices, Vector3[] Normals) Transform( Node parentNode, List<Node> nodes, List<Bone> usedBones )
         {
             var vertices = new Vector3[VertexCount];
             Vector3[] normals = null;
@@ -296,9 +296,9 @@ namespace GFDLibrary.Models
                         continue;
 
                     var boneIndex = VertexWeights[i].Indices[j];
-                    var boneNodeIndex = bonePalette.BoneToNodeIndices[boneIndex];
+                    var boneNodeIndex = usedBones[boneIndex].NodeIndex;
                     var boneNode = nodes[boneNodeIndex];
-                    var inverseBindMatrix = bonePalette.InverseBindMatrices[boneIndex];
+                    var inverseBindMatrix = usedBones[boneIndex].InverseBindMatrix;
                     var bindMatrix = boneNode.WorldTransform;
                     newPosition += Vector3.Transform( Vector3.Transform( position, inverseBindMatrix ), bindMatrix * weight );
                     newNormal += Vector3.TransformNormal( Vector3.TransformNormal( normal, inverseBindMatrix ), bindMatrix * weight );

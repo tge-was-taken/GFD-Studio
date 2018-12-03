@@ -154,6 +154,7 @@
     <Compile Include="FormatModules\MorphTargetListFormatModule.cs" />
     <Compile Include="FormatModules\NodeFormatModule.cs" />
     <Compile Include="FormatModules\ModelFormatModule.cs" />
+    <Compile Include="GUI\DataViewNodes\BoneViewNode.cs" />
     <Compile Include="GUI\DataViewNodes\MorphTargetListViewNode.cs" />
     <Compile Include="GUI\DataViewNodes\MorphTargetViewNode.cs" />
     <Compile Include="GUI\Forms\CreateTextureMapDialog.cs">
@@ -161,6 +162,9 @@
     </Compile>
     <Compile Include="GUI\Forms\CreateTextureMapDialog.Designer.cs">
       <DependentUpon>CreateTextureMapDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Forms\MainForm.Events.cs">
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="GUI\Forms\ModelConverterOptionsDialog.cs">
       <SubType>Form</SubType>
@@ -206,7 +210,7 @@
     <Compile Include="GUI\DataViewNodes\MaterialAttributeViewNode.cs" />
     <Compile Include="GUI\DataViewNodes\MaterialViewNode.cs" />
     <Compile Include="GUI\DataViewNodes\MaterialDictionaryViewNode.cs" />
-    <Compile Include="GUI\DataViewNodes\BonePaletteViewNode.cs" />
+    <Compile Include="GUI\DataViewNodes\BoneListViewNode.cs" />
     <Compile Include="GUI\DataViewNodes\ModelPackViewNode.cs" />
     <Compile Include="GUI\DataViewNodes\MorphViewNode.cs" />
     <Compile Include="GUI\DataViewNodes\NodeViewNode.cs" />

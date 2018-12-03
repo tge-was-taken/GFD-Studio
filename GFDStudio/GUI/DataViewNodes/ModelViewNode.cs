@@ -25,7 +25,7 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         [ Browsable( false ) ]
-        public BonePaletteViewNode BonePaletteViewNode { get; set; }
+        public BoneListViewNode Bones { get; set; }
 
         [ Browsable( true ) ]
         public BoundingBox? BoundingBox
@@ -79,10 +79,10 @@ namespace GFDStudio.GUI.DataViewNodes
                 scene.BoundingSphere = Data.BoundingSphere;
                 scene.Flags = Data.Flags;
 
-                if ( BonePaletteViewNode != null && Nodes.Contains(BonePaletteViewNode) )
-                    scene.BonePalette = BonePaletteViewNode.Data;
+                if ( Bones != null && Nodes.Contains(Bones) )
+                    scene.Bones = Bones.Data;
                 else
-                    scene.BonePalette = null;
+                    scene.Bones = null;
 
                 if ( RootNodeViewNode != null && Nodes.Contains( RootNodeViewNode ) )
                     scene.RootNode = RootNodeViewNode.Data;
@@ -95,10 +95,10 @@ namespace GFDStudio.GUI.DataViewNodes
 
         protected override void InitializeViewCore()
         {
-            if ( Data.BonePalette != null )
+            if ( Data.Bones != null )
             {
-                BonePaletteViewNode = ( BonePaletteViewNode )DataViewNodeFactory.Create( "Bone Palette", Data.BonePalette );
-                AddChildNode( BonePaletteViewNode );
+                Bones = ( BoneListViewNode )DataViewNodeFactory.Create( "Bones", Data.Bones );
+                AddChildNode( Bones );
             }
 
             RootNodeViewNode = ( NodeViewNode ) DataViewNodeFactory.Create( Data.RootNode.Name, Data.RootNode );

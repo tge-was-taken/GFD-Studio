@@ -40,7 +40,7 @@ namespace GFDStudio.GUI.Forms
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mPropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.mContentPanel = new System.Windows.Forms.Panel();
-            this.mDataTreeView = new GFDStudio.GUI.DataViewNodes.DataTreeView();
+            this.DataTreeView = new GFDStudio.GUI.DataViewNodes.DataTreeView();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.makeRelativeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mMainMenuStrip.SuspendLayout();
@@ -132,12 +132,12 @@ namespace GFDStudio.GUI.Forms
             // 
             // mDataTreeView
             // 
-            this.mDataTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.mDataTreeView.Location = new System.Drawing.Point(713, 27);
-            this.mDataTreeView.Name = "mDataTreeView";
-            this.mDataTreeView.Size = new System.Drawing.Size(497, 380);
-            this.mDataTreeView.TabIndex = 1;
-            this.mDataTreeView.TopNode = null;
+            this.DataTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.DataTreeView.Location = new System.Drawing.Point(713, 27);
+            this.DataTreeView.Name = "DataTreeView";
+            this.DataTreeView.Size = new System.Drawing.Size(497, 380);
+            this.DataTreeView.TabIndex = 1;
+            this.DataTreeView.TopNode = null;
             // 
             // toolsToolStripMenuItem
             // 
@@ -152,7 +152,7 @@ namespace GFDStudio.GUI.Forms
             this.makeRelativeToolStripMenuItem.Name = "makeRelativeToolStripMenuItem";
             this.makeRelativeToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.makeRelativeToolStripMenuItem.Text = "Retarget animation packs in directory";
-            this.makeRelativeToolStripMenuItem.Click += new System.EventHandler(this.HandleMakeRetargetAnimationsToolStripMenuItemClick);
+            this.makeRelativeToolStripMenuItem.Click += new System.EventHandler(this.HandleRetargetAnimationsToolStripMenuItemClick);
             // 
             // MainForm
             // 
@@ -160,7 +160,7 @@ namespace GFDStudio.GUI.Forms
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1222, 839);
             this.Controls.Add(this.mPropertyGrid);
-            this.Controls.Add(this.mDataTreeView);
+            this.Controls.Add(this.DataTreeView);
             this.Controls.Add(this.mMainMenuStrip);
             this.Controls.Add(this.mContentPanel);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -185,7 +185,6 @@ namespace GFDStudio.GUI.Forms
         private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem newToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem modelToolStripMenuItem;
-        private DataTreeView mDataTreeView;
         private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem makeRelativeToolStripMenuItem;
     }

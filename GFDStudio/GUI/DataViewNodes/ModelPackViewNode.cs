@@ -1,4 +1,6 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows.Forms;
 using GFDLibrary;
 using GFDLibrary.Animations;
 using GFDLibrary.Misc;
@@ -39,7 +41,41 @@ namespace GFDStudio.GUI.DataViewNodes
 
         protected override void InitializeCore()
         {
-            RegisterExportHandler< ModelPack >( ( path ) => Data.Save(  path ) );
+            RegisterExportHandler< ModelPack >( ( path ) =>
+            {
+                var modelPack = Data;
+
+                // Check if a material's texture is missing
+                foreach ( var material in modelPack.Materials.Values )
+                {
+                    var missingTextures = new List<string>();
+
+                    foreach ( var textureMap in material.TextureMaps )
+                    {
+                        if ( textureMap == null )
+                            continue;
+
+                        if ( !modelPack.Textures.ContainsTexture( textureMap.Name ) )
+                            missingTextures.Add( textureMap.Name );
+                    }
+
+                    if ( missingTextures.Count > 0 )
+                        MessageBox.Show( $"Material \"{material.Name}\" references one or more textures that cannot be found:\n{string.Join( "\n", missingTextures.ToArray() )}" +
+                                         $"\n\nThis will lead to an inevitable crash in-game.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Exclamation );
+                }
+
+                // Check if a mesh's material is missing
+                foreach ( var node in modelPack.Model.Nodes )
+                {
+                    foreach ( var mesh in node.Meshes )
+                    {
+                        if ( !modelPack.Materials.ContainsKey( mesh.MaterialName ) )
+                            MessageBox.Show( $"Scene Geometry under \"{node.Name}\" references a Material that cannot be found:\n{mesh.MaterialName}", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Exclamation );
+                    }
+                }
+
+                modelPack.Save( path );
+            });
             RegisterExportHandler< Assimp.Scene >( path => ModelPackExporter.ExportFile( Data, path ) );
 
             RegisterReplaceHandler<ModelPack>( path =>

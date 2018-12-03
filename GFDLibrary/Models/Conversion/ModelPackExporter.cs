@@ -218,7 +218,7 @@ namespace GFDLibrary.Models.Conversion
             var normals = mesh.Normals;
 
             if ( mesh.VertexWeights != null )
-                ( vertices, normals ) = mesh.Transform( geometryNode, model.Nodes.ToList(), model.BonePalette );
+                ( vertices, normals ) = mesh.Transform( geometryNode, model.Nodes.ToList(), model.Bones );
 
             if ( mesh.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Position ) )
             {
@@ -301,7 +301,7 @@ namespace GFDLibrary.Models.Conversion
                             continue;
 
                         var boneIndex = vertexWeight.Indices[j];
-                        var nodeIndex = model.BonePalette.BoneToNodeIndices[boneIndex];
+                        var nodeIndex = model.Bones[boneIndex].NodeIndex;
 
                         if ( !boneMap.ContainsKey( nodeIndex ) )
                         {

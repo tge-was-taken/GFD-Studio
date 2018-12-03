@@ -39,7 +39,7 @@ namespace GFDLibrary.Models.Conversion
             if ( boneInverseBindMatrices.Count > 0 )
             {
                 // Build bone palette for skinning
-                scene.BonePalette = BuildBonePalette( boneInverseBindMatrices, nodeToBoneIndices );
+                scene.Bones = BuildBonePalette( boneInverseBindMatrices, nodeToBoneIndices );
             }
 
             // Build bounding box & sphere
@@ -472,23 +472,23 @@ namespace GFDLibrary.Models.Conversion
             return geometry;
         }
 
-        private static BonePalette BuildBonePalette( List<Matrix4x4> boneInverseBindMatrices, Dictionary<int, List<int>> nodeToBoneIndices )
+        private static List<Bone> BuildBonePalette( List<Matrix4x4> boneInverseBindMatrices, Dictionary<int, List<int>> nodeToBoneIndices )
         {
-            var matrixPalette = new BonePalette( boneInverseBindMatrices.Count );
+            var usedBones = new List<Bone>();
 
-            for ( int i = 0; i < matrixPalette.BoneToNodeIndices.Length; i++ )
+            for ( int i = 0; i < boneInverseBindMatrices.Count; i++ )
             {
                 // Reverse dictionary search
-                matrixPalette.BoneToNodeIndices[i] = ( ushort )nodeToBoneIndices
-                    .Where( x => x.Value.Contains( i ) )
-                    .Select( x => x.Key )
-                    .Single();
+                var boneToNodeIndex = ( ushort ) nodeToBoneIndices
+                                                 .Where( x => x.Value.Contains( i ) )
+                                                 .Select( x => x.Key )
+                                                 .Single();
+
+                var inverseBindMatrix = boneInverseBindMatrices[ i ];
+                usedBones.Add( new Bone( boneToNodeIndex, inverseBindMatrix ) );
             }
 
-            // Inverse bind matrices are already ordered correctly
-            matrixPalette.InverseBindMatrices = boneInverseBindMatrices.ToArray();
-
-            return matrixPalette;
+            return usedBones;
         }
 
         private struct NodeInfo

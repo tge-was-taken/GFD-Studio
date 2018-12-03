@@ -53,7 +53,8 @@ namespace GFDStudio.GUI.DataViewNodes
 
             // gfd model view models
             Register<ModelViewNode>();
-            Register<BonePaletteViewNode>();
+            Register( typeof( BoneListViewNode ), typeof( List<Bone> ) );
+            Register<BoneViewNode>();
             Register<NodeViewNode>();
             Register( typeof( AttachmentListViewNode ), typeof( List<Resource> ) );
             Register( typeof( NodeListViewNode ), typeof( List<Node> ) );

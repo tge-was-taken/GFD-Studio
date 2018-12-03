@@ -145,7 +145,6 @@
     <Compile Include="Models\MorphTargetList.cs" />
     <Compile Include="Models\MorphTarget.cs" />
     <Compile Include="Models\Conversion\ModelPackExporter.cs" />
-    <Compile Include="Models\BonePalette.cs" />
     <Compile Include="IO\Common\EndianBinaryWriter.cs" />
     <Compile Include="IO\Common\StringBinaryFormat.cs" />
     <Compile Include="IO\Common\UnsafeUtilities.cs" />

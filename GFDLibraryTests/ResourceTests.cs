@@ -522,39 +522,10 @@ namespace GFDLibrary.Tests
             Assert.AreEqual( a.Version, b.Version );
 
             Assert.AreEqual( a.Flags, b.Flags );
-            CompareBoneMap( a.BonePalette, b.BonePalette );
+            CollectionAssert.AreEqual( a.Bones, b.Bones );
             Assert.AreEqual( a.BoundingBox, b.BoundingBox );
             Assert.AreEqual( a.BoundingSphere, b.BoundingSphere );
             CompareNodes( a.RootNode, b.RootNode );
-        }
-
-        private void CompareBoneMap( BonePalette a, BonePalette b )
-        {
-            if ( a == null || b == null )
-            {
-                Assert.IsTrue( a == null ? ( b == null ) : ( b != null ) );
-                return;
-            }
-
-            Assert.AreEqual( a.BoneCount, b.BoneCount );
-
-            if ( a.InverseBindMatrices == null || b.InverseBindMatrices == null )
-            {
-                Assert.IsTrue( a.InverseBindMatrices == null ? ( b.InverseBindMatrices == null ) : ( b.InverseBindMatrices != null ) );
-                return;
-            }
-
-            if( a.BoneToNodeIndices == null || b.BoneToNodeIndices == null )
-            {
-                Assert.IsTrue( a.BoneToNodeIndices == null ? ( b.BoneToNodeIndices == null ) : ( b.BoneToNodeIndices != null ) );
-                return;
-            }
-
-            for ( int i = 0; i < a.BoneCount; i++ )
-            {
-                Assert.AreEqual( a.InverseBindMatrices[i], b.InverseBindMatrices[i] );
-                Assert.AreEqual( a.BoneToNodeIndices[i], b.BoneToNodeIndices[i] );
-            }
         }
 
         private void CompareNodes( Node a, Node b )
