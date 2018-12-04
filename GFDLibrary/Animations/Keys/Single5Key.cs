@@ -2,14 +2,8 @@
 
 namespace GFDLibrary.Animations
 {
-    public class Single4ByteKey : Key
+    public class Single5Key : Key
     {
-        public override KeyType Type
-        {
-            get => KeyType.Single4Byte;
-            internal set { }
-        }
-
         public float Field00 { get; set; }
 
         public float Field04 { get; set; }
@@ -18,9 +12,13 @@ namespace GFDLibrary.Animations
 
         public float Field0C { get; set; }
 
-        public byte Byte { get; set; }
+        public float Field10 { get; set; }
 
-        public Single4ByteKey() { }
+        public Single5Key() : this( KeyType.Single5 ) { }
+
+        public Single5Key( KeyType type ) : base( type )
+        {
+        }
 
         internal override void Read( ResourceReader reader )
         {
@@ -28,7 +26,7 @@ namespace GFDLibrary.Animations
             Field04 = reader.ReadSingle();
             Field08 = reader.ReadSingle();
             Field0C = reader.ReadSingle();
-            Byte = reader.ReadByte();
+            Field10 = reader.ReadSingle();
         }
 
         internal override void Write( ResourceWriter writer )
@@ -37,7 +35,7 @@ namespace GFDLibrary.Animations
             writer.WriteSingle( Field04 );
             writer.WriteSingle( Field08 );
             writer.WriteSingle( Field0C );
-            writer.WriteByte( Byte );
+            writer.WriteSingle( Field10 );
         }
     }
 }

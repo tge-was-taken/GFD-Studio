@@ -4,17 +4,14 @@ namespace GFDLibrary.Animations
 {
     public class SingleByteKey : Key
     {
-        public override KeyType Type
-        {
-            get => KeyType.SingleByte;
-            internal set { }
-        }
-
         public float Field00 { get; set; }
 
         public byte Byte { get; set; }
 
-        public SingleByteKey() { }
+        public SingleByteKey() : base( KeyType.SingleByte )
+        {
+
+        }
 
         internal override void Read( ResourceReader reader )
         {

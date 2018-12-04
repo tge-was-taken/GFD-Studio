@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -37,12 +38,12 @@ namespace GFDStudio.GUI.Forms
                 }
             }
 
-            if ( handled || DataTreeView.SelectedNode?.ContextMenuStrip == null )
+            if ( handled || ModelEditorTreeView.SelectedNode?.ContextMenuStrip == null )
                 return;
 
             // If it's not a main menu shortcut, try checking if its a shortcut to one of the selected
             // node's context menu actions.
-            foreach ( var item in DataTreeView.SelectedNode.ContextMenuStrip.Items )
+            foreach ( var item in ModelEditorTreeView.SelectedNode.ContextMenuStrip.Items )
             {
                 var menuItem = item as ToolStripMenuItem;
                 if ( menuItem?.ShortcutKeys == keys )
@@ -79,7 +80,7 @@ namespace GFDStudio.GUI.Forms
             if ( controls.Length == 1 )
             {
                 var modelViewControl = ( ModelViewControl )controls[0];
-                if ( DataTreeView.TopNode.Data is ModelPack modelPack )
+                if ( ModelEditorTreeView.TopNode.Data is ModelPack modelPack )
                     modelViewControl.LoadModel( modelPack );
             }
         }
@@ -127,7 +128,7 @@ namespace GFDStudio.GUI.Forms
             {
                 SaveFile( LastOpenedFilePath );
             }
-            else if ( DataTreeView.TopNode != null )
+            else if ( ModelEditorTreeView.TopNode != null )
             {
                 MessageBox.Show( "No hee file opened, ho! Use the 'Save as...' option instead.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error );
             }
@@ -139,7 +140,7 @@ namespace GFDStudio.GUI.Forms
 
         private void HandleSaveAsToolStripMenuItemClick( object sender, EventArgs e )
         {
-            if ( DataTreeView.TopNode == null )
+            if ( ModelEditorTreeView.TopNode == null )
             {
                 MessageBox.Show( "Nothing to save, hee ho!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error );
                 return;
@@ -158,7 +159,7 @@ namespace GFDStudio.GUI.Forms
             if ( model != null )
             {
                 var node = DataViewNodeFactory.Create( "Model", model );
-                DataTreeView.SetTopNode( node );
+                ModelEditorTreeView.SetTopNode( node );
                 LastOpenedFilePath = null;
             }
         }
@@ -232,6 +233,123 @@ namespace GFDStudio.GUI.Forms
             {
                 MessageBox.Show( "An error occured while processing the following files:\n" + string.Join( "\n", failures ) );
             }
+        }
+
+        private void HandleAnimationLoadExternalToolStripMenuItemClick( object sender, EventArgs e )
+        {
+            var filePath = SelectFileToOpen( ModuleFilterGenerator.GenerateFilter( FormatModuleUsageFlags.Import, typeof( AnimationPack ),
+                                                                                   typeof( Animation ) ) );
+            if ( filePath == null )
+                return;
+
+            if ( !DataViewNodeFactory.TryCreate( filePath, out var node ) )
+            {
+                MessageBox.Show( "Hee file could not be loaded, ho.", "Error", MessageBoxButtons.OK );
+                return;
+            }
+
+            if ( node.DataType == typeof(Animation) )
+            {
+                ModelViewControl.Instance.LoadAnimation( ( Animation )node.Data );
+            }
+            else if ( node.DataType == typeof(AnimationPack) )
+            {
+                var animationPack = ( AnimationPack ) node.Data;
+                var animation     = animationPack.Animations.FirstOrDefault();
+                if ( animation != null )
+                    ModelViewControl.Instance.LoadAnimation( animation );
+            }
+            else
+            {
+                MessageBox.Show( "Not a support animation file.", "Error", MessageBoxButtons.OK );
+                return;
+            }
+
+            mAnimationListTreeView.SetTopNode( node );
+        }
+
+        private void HandleModelAnimationLoaded( object sender, Animation e )
+        {
+            mAnimationTrackBar.Minimum = -1;
+            mAnimationTrackBar.Maximum = ( int ) ( e.Duration * 1000 );
+        }
+
+        private void HandleModelAnimationPlaybackStateChanged( object sender, AnimationPlaybackState e )
+        {
+            switch ( e )
+            {
+                case AnimationPlaybackState.Stopped:
+                case AnimationPlaybackState.Paused:
+                    mAnimationPlaybackButton.Text = "Play";
+                    break;
+            
+                case AnimationPlaybackState.Playing:
+                    mAnimationPlaybackButton.Text = "Pause";
+                    break;
+            }
+        }
+
+        private double mLastAnimationTime;
+        private bool mIgnoreNextTrackBarChange;
+        private void HandleModelAnimationTimeChanged( object sender, double e )
+        {
+            if ( !ModelViewControl.Instance.IsAnimationLoaded )
+                return;
+
+            mLastAnimationTime = e;
+            var value = e * 1000;
+            mIgnoreNextTrackBarChange = true;
+            mAnimationTrackBar.Value = ( int ) value;
+        }
+
+
+        private void HandleAnimationPlaybackButtonClick( object sender, EventArgs e )
+        {
+            if ( !ModelViewControl.Instance.IsAnimationLoaded )
+                return;
+
+            switch ( ModelViewControl.Instance.AnimationPlayback )
+            {
+                case AnimationPlaybackState.Stopped:
+                case AnimationPlaybackState.Paused:
+                    ModelViewControl.Instance.AnimationPlayback = AnimationPlaybackState.Playing;
+                    break;
+
+                case AnimationPlaybackState.Playing:
+                    ModelViewControl.Instance.AnimationPlayback = AnimationPlaybackState.Paused;
+                    break;
+            }
+        }
+
+        private void HandleTrackbarValueChanged( object sender, EventArgs e )
+        {
+            if ( !mIgnoreNextTrackBarChange )
+            {
+                ModelViewControl.Instance.AnimationTime = mAnimationTrackBar.Value / 1000d;
+                ModelViewControl.Instance.Invalidate();
+            }
+            else
+            {
+                mIgnoreNextTrackBarChange = false;
+            }
+        }
+
+        private void HandleAnimationTreeViewAfterSelect( object sender, TreeViewEventArgs e )
+        {
+            var node = ( DataViewNode )e.Node;
+            if ( node.DataType == typeof(Animation) )
+                ModelViewControl.Instance.LoadAnimation( ( Animation ) node.Data );
+
+            mPropertyGrid.SelectedObject = node;
+        }
+
+        private void HandleAnimationStopButtonClick( object sender, EventArgs e )
+        {
+            if ( !ModelViewControl.Instance.IsAnimationLoaded )
+                return;
+
+            ModelViewControl.Instance.AnimationPlayback = AnimationPlaybackState.Stopped;
+            ModelViewControl.Instance.Invalidate();
         }
     }
 }

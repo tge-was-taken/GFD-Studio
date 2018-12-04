@@ -2,34 +2,33 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Runtime.ExceptionServices;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
-namespace GFDStudio.GUI.Controls.ModelView
+namespace GFDLibrary.Rendering.OpenGL
 {
-    public class GLShaderProgram : IDisposable
+    public abstract class GLShaderProgram : IDisposable
     {
-        public static bool TryCreate( string vertexShaderFilepath, string fragmentShaderFilepath, out GLShaderProgram program )
+        public static bool TryCreate( string vertexShaderFilepath, string fragmentShaderFilepath, out int id )
         {
-            var vertexShaderSource = File.ReadAllText( vertexShaderFilepath );
+            var vertexShaderSource   = File.ReadAllText( vertexShaderFilepath );
             var fragmentShaderSource = File.ReadAllText( fragmentShaderFilepath );
 
             using ( var builder = new GLShaderProgramBuilder() )
             {
                 if ( !builder.TryAttachShader( ShaderType.VertexShader, vertexShaderSource ) )
                 {
-                    program = null;
+                    id = 0;
                     return false;
                 }
 
                 if ( !builder.TryAttachShader( ShaderType.FragmentShader, fragmentShaderSource ) )
                 {
-                    program = null;
+                    id = 0;
                     return false;
                 }
 
-                if ( !builder.TryBuild( out program ) )
+                if ( !builder.TryBuild( out id ) )
                 {
                     return false;
                 }
@@ -38,19 +37,7 @@ namespace GFDStudio.GUI.Controls.ModelView
             }
         }
 
-        public static GLShaderProgram Create( string vertexShaderFilepath, string fragmentShaderFilepath )
-        {
-            if ( !TryCreate( vertexShaderFilepath, fragmentShaderFilepath, out var program ) )
-            {
-                throw new Exception( "Failed to create shader program" );
-            }
-            else
-            {
-                return program;
-            }
-        }
-
-        class Uniform
+        private class Uniform
         {
             public string Name;
             public Type Type;
@@ -59,19 +46,14 @@ namespace GFDStudio.GUI.Controls.ModelView
         }
 
         private bool mDisposed;
-        private Dictionary<string, Uniform> mUniforms;
+        private readonly Dictionary<string, Uniform> mUniforms;
 
-        public int ShaderProgramId { get; }
+        public int Id { get; }
 
-        public GLShaderProgram( int shaderProgramId )
+        protected GLShaderProgram( int id )
         {
-            ShaderProgramId = shaderProgramId;
+            Id = id;
             mUniforms = new Dictionary<string, Uniform>();
-        }
-
-        ~GLShaderProgram()
-        {
-            Dispose( false );
         }
 
         public void RegisterUniform<T>( string name )
@@ -83,7 +65,7 @@ namespace GFDStudio.GUI.Controls.ModelView
             }
 
             // get the location of the uniform isn't invalid
-            int location = GL.GetUniformLocation( ShaderProgramId, name );
+            int location = GL.GetUniformLocation( Id, name );
             if ( location == -1 )
             {
                 Trace.TraceWarning( $"Attempted to register uniform \"{name}\" which does not exist in the shader program" );
@@ -123,6 +105,20 @@ namespace GFDStudio.GUI.Controls.ModelView
                 GL.UniformMatrix4( uniform.Location, value.Length, false, ( float* ) pValue );
         }
 
+        public void SetUniform( string name, int value )
+        {
+            var uniform = GetUniform( name );
+            DebugSetUniformAssignedFlag( uniform, value );
+            GL.Uniform1( uniform.Location, value );
+        }
+
+        public void SetUniform( string name, float value )
+        {
+            var uniform = GetUniform( name );
+            DebugSetUniformAssignedFlag( uniform, value );
+            GL.Uniform1( uniform.Location, value );
+        }
+
         public void SetUniform( string name, bool value )
         {
             var uniform = GetUniform( name );
@@ -133,7 +129,7 @@ namespace GFDStudio.GUI.Controls.ModelView
 
         public void Use()
         {
-            GL.UseProgram( ShaderProgramId );
+            GL.UseProgram( Id );
         }
 
         [Conditional( "DEBUG" )]
@@ -149,21 +145,15 @@ namespace GFDStudio.GUI.Controls.ModelView
         public void Dispose()
         {
             Dispose( true );
-            GC.SuppressFinalize( this );
         }
 
-        [HandleProcessCorruptedStateExceptions]
         protected virtual void Dispose( bool disposing )
         {
             if ( !mDisposed )
             {
-                try
+                if ( disposing )
                 {
-                    GL.DeleteProgram( ShaderProgramId );
-                }
-                catch ( Exception e )
-                {
-                    Console.WriteLine( e );
+                    GL.DeleteProgram( Id );
                 }
 
                 mDisposed = true;

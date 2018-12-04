@@ -1,9 +1,9 @@
 ﻿using System.Linq;
 using System.Numerics;
-using GFDLibrary.Animations;
+using GFDLibrary.Models.Conversion;
 using Ai = Assimp;
 
-namespace GFDLibrary.Models.Conversion
+namespace GFDLibrary.Animations.Conversion
 {
     public static class AnimationConverter
     {
@@ -38,23 +38,19 @@ namespace GFDLibrary.Models.Conversion
                     TargetId = GetTargetIdForNode( aiScene.RootNode, nodeName )
                 };
 
-                var track = new AnimationLayer( options.Version );
+                var layer = new AnimationLayer( options.Version );
 
                 // NodePRS only for now
-                track.KeyType = KeyType.NodePRS;
+                layer.KeyType = KeyType.NodePRS;
 
                 // Fetch the unique key frame timings from all position, rotation and scale keys.
-                var keyframeTimings = aiChannel.PositionKeys
+                var aiKeyTimings = aiChannel.PositionKeys
                                                .Select( x => x.Time )
                                                .Concat( aiChannel.RotationKeys.Select( x => x.Time ) )
                                                .Concat( aiChannel.ScalingKeys.Select( x => x.Time ) )
                                                .Distinct()
-                                               .OrderBy( x => x );
-
-                // Convert the times to our scale and save them.
-                track.KeyTimings = keyframeTimings
-                    .Select( x => ConvertTime( x, aiAnimation.TicksPerSecond ) )
-                    .ToList();
+                                               .OrderBy( x => x )
+                                               .ToList();
 
                 // Decompose the local transform of the affected node so we can use them as the base values for our keyframes
                 aiScene.RootNode.FindNode( nodeName ).Transform
@@ -65,44 +61,47 @@ namespace GFDLibrary.Models.Conversion
                 var lastRotation = nodeBaseRotation;
                 var lastScale = nodeBaseScale;
 
-                foreach ( var time in keyframeTimings )
+                for ( var i = 0; i < aiKeyTimings.Count; i++ )
                 {
+                    var aiTime = aiKeyTimings[ i ];
+
                     // Start building the keyframe
-                    var keyframe = new PRSKey( track.KeyType )
+                    var key = new PRSKey( layer.KeyType )
                     {
                         Position = new Vector3( lastPosition.X, lastPosition.Y, lastPosition.Z ),
                         Rotation = new Quaternion( lastRotation.X, lastRotation.Y, lastRotation.Z, lastRotation.W ),
-                        Scale = new Vector3( lastScale.X, lastScale.Y, lastScale.Z )
+                        Scale    = new Vector3( lastScale.X, lastScale.Y, lastScale.Z )
                     };
 
                     // Fetch the Assimp keys for this time
-                    var aiPositionKey = aiChannel.PositionKeys.SingleOrDefault( x => x.Time == time );
-                    var aiRotationKey = aiChannel.RotationKeys.SingleOrDefault( x => x.Time == time );
-                    var aiScaleKey = aiChannel.ScalingKeys.SingleOrDefault( x => x.Time == time );
+                    var aiPositionKey = aiChannel.PositionKeys.SingleOrDefault( x => x.Time == aiTime );
+                    var aiRotationKey = aiChannel.RotationKeys.SingleOrDefault( x => x.Time == aiTime );
+                    var aiScaleKey    = aiChannel.ScalingKeys.SingleOrDefault( x => x.Time == aiTime );
 
-                    if ( aiPositionKey != default( Ai.VectorKey ) )
+                    if ( aiPositionKey != default )
                     {
-                        keyframe.Position = new Vector3( aiPositionKey.Value.X, aiPositionKey.Value.Y, aiPositionKey.Value.Z );
+                        key.Position = new Vector3( aiPositionKey.Value.X, aiPositionKey.Value.Y, aiPositionKey.Value.Z );
                         lastPosition = aiPositionKey.Value;
                     }
 
-                    if ( aiRotationKey != default( Ai.QuaternionKey ) )
+                    if ( aiRotationKey != default )
                     {
-                        keyframe.Rotation = new Quaternion( aiRotationKey.Value.X, aiRotationKey.Value.Y, aiRotationKey.Value.Z,
-                                                            aiRotationKey.Value.W );
+                        key.Rotation = new Quaternion( aiRotationKey.Value.X, aiRotationKey.Value.Y, aiRotationKey.Value.Z,
+                                                       aiRotationKey.Value.W );
                         lastRotation = aiRotationKey.Value;
                     }
 
-                    if ( aiScaleKey != default( Ai.VectorKey ) )
+                    if ( aiScaleKey != default )
                     {
-                        keyframe.Scale = new Vector3( aiScaleKey.Value.X, aiScaleKey.Value.Y, aiScaleKey.Value.Z );
+                        key.Scale = new Vector3( aiScaleKey.Value.X, aiScaleKey.Value.Y, aiScaleKey.Value.Z );
                         lastScale = aiScaleKey.Value;
                     }
 
-                    track.Keys.Add( keyframe );
+                    key.Time = ConvertTime( aiTime, aiAnimation.TicksPerSecond );
+                    layer.Keys.Add( key );
                 }
 
-                controller.Layers.Add( track );
+                controller.Layers.Add( layer );
                 animation.Controllers.Add( controller );
             }
 

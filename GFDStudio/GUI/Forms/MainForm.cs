@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using System.Windows.Forms;
 using GFDLibrary;
+using GFDLibrary.Animations;
 using GFDStudio.FormatModules;
 using GFDStudio.GUI.Controls;
 using GFDStudio.GUI.DataViewNodes;
@@ -25,7 +27,11 @@ namespace GFDStudio.GUI.Forms
 
         private FileHistoryList mFileHistoryList;
 
-        public DataTreeView DataTreeView { get; private set; }
+        public DataTreeView ModelEditorTreeView
+        {
+            get => mModelEditorTreeView;
+            private set => mModelEditorTreeView = value;
+        }
 
         public string LastOpenedFilePath { get; private set; }
 
@@ -37,6 +43,11 @@ namespace GFDStudio.GUI.Forms
             InitializeComponent();
             InitializeState();
             InitializeEvents();
+
+#if DEBUG
+            //ModelViewControl.Instance.LoadAnimation( Resource.Load<AnimationPack>( 
+            //    @"D:\Modding\Persona 5 EU\Main game\ExtractedClean\data\model\character\0001\field\bf0001_002.GAP" ).Animations[2]);
+#endif
         }
 
         private void InitializeState()
@@ -51,27 +62,27 @@ namespace GFDStudio.GUI.Forms
 
             mFileHistoryList = new FileHistoryList( "file_history.txt", 10, mOpenToolStripMenuItem.DropDown.Items,
                                                     HandleOpenToolStripRecentlyOpenedFileClick );
-            DataTreeView.LabelEdit = true;
+            ModelEditorTreeView.LabelEdit = true;
             AllowDrop = true;
         }
 
         private void InitializeEvents()
         {
-            DataTreeView.AfterSelect += HandleTreeViewAfterSelect;
-            DataTreeView.UserPropertyChanged += HandleTreeViewUserPropertyChanged;
-            DataTreeView.KeyDown += HandleKeyDown;
+            ModelEditorTreeView.AfterSelect += HandleTreeViewAfterSelect;
+            ModelEditorTreeView.UserPropertyChanged += HandleTreeViewUserPropertyChanged;
+            ModelEditorTreeView.KeyDown += HandleKeyDown;
+
+            mAnimationListTreeView.AfterSelect += HandleAnimationTreeViewAfterSelect;
+
             mContentPanel.ControlAdded += HandleContentPanelControlAdded;
             mContentPanel.Resize += HandleContentPanelResize;
             DragDrop += HandleDragDrop;
             DragEnter += HandleDragEnter;
-        }
-
-        //
-        // De-initialization
-        //
-        private void DeInitialize()
-        {
-            mFileHistoryList.Save();
+            ModelViewControl.Instance.AnimationLoaded += HandleModelAnimationLoaded;
+            ModelViewControl.Instance.AnimationPlaybackStateChanged += HandleModelAnimationPlaybackStateChanged;
+            ModelViewControl.Instance.AnimationTimeChanged += HandleModelAnimationTimeChanged;
+            mAnimationTrackBar.ValueChanged += HandleTrackbarValueChanged;
+            mAnimationPlaybackButton.Click += HandleAnimationPlaybackButtonClick;
         }
 
         //
@@ -97,9 +108,14 @@ namespace GFDStudio.GUI.Forms
 
         public string SelectFileToOpen()
         {
+            return SelectFileToOpen( ModuleFilterGenerator.GenerateFilterForAllSupportedImportFormats() );
+        }
+
+        public string SelectFileToOpen( string filter )
+        {
             using ( var dialog = new OpenFileDialog() )
             {
-                dialog.Filter = ModuleFilterGenerator.GenerateFilterForAllSupportedImportFormats();
+                dialog.Filter = filter;
                 if ( dialog.ShowDialog() != DialogResult.OK )
                     return null;
 
@@ -116,7 +132,7 @@ namespace GFDStudio.GUI.Forms
             }
 
             RecordOpenedFile( filePath );
-            DataTreeView.SetTopNode( node );
+            ModelEditorTreeView.SetTopNode( node );
             UpdateSelection( node );
         }
 
@@ -134,24 +150,24 @@ namespace GFDStudio.GUI.Forms
 
         public void SaveFile( string filePath )
         {
-            if ( DataTreeView.Nodes.Count > 0 )
-                DataTreeView.TopNode.Export( filePath );
+            if ( ModelEditorTreeView.Nodes.Count > 0 )
+                ModelEditorTreeView.TopNode.Export( filePath );
         }
 
         public string SelectFileAndSave()
         {
-            if ( DataTreeView.Nodes.Count > 0 )
-                return DataTreeView.TopNode.Export();
+            if ( ModelEditorTreeView.Nodes.Count > 0 )
+                return ModelEditorTreeView.TopNode.Export();
 
             return null;
         }
 
         private void ClearContentPanel()
         {
-            foreach ( var control in mContentPanel.Controls )
-            {
-                ( control as IDisposable )?.Dispose();
-            }
+            //foreach ( var control in mContentPanel.Controls )
+            //{
+            //    ( control as IDisposable )?.Dispose();
+            //}
 
             mContentPanel.Controls.Clear();
         }
@@ -161,7 +177,7 @@ namespace GFDStudio.GUI.Forms
         //
         protected override void OnClosed( EventArgs e )
         {
-            DeInitialize();
+            mFileHistoryList.Save();
 
             // exit application when the main form is closed
             Application.Exit();
@@ -185,17 +201,19 @@ namespace GFDStudio.GUI.Forms
             {
                 if ( module.UsageFlags.HasFlag( FormatModuleUsageFlags.Bitmap ) )
                 {
-                    control = new BitmapViewControl( module.GetBitmap( node.Data ) );
-                    control.Visible = false;
+                    BitmapViewControl.Instance.LoadBitmap( module.GetBitmap( node.Data ) );
+                    BitmapViewControl.Instance.Visible = false;
+                    control = BitmapViewControl.Instance;
                 }
                 else if ( module.ModelType == typeof( ModelPack ) )
                 {
-                    ClearContentPanel();
-                    var modelViewControl = new ModelViewControl();
-                    modelViewControl.Name = nameof( ModelViewControl );
-                    modelViewControl.Visible = false;
-                    modelViewControl.LoadModel( ( ModelPack )node.Data );
-                    control = modelViewControl;
+                    ModelViewControl.Instance.LoadModel( ( ModelPack )node.Data );
+                    ModelViewControl.Instance.Visible = false;
+                    control = ModelViewControl.Instance;
+                }
+                else if ( node.DataType == typeof( Animation ) )
+                {
+                    ModelViewControl.Instance.LoadAnimation( ( Animation ) node.Data );
                 }
             }
 
@@ -206,6 +224,5 @@ namespace GFDStudio.GUI.Forms
                 mContentPanel.Controls.Add( control );
             }
         }
-
     }
 }

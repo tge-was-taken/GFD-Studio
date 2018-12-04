@@ -22,6 +22,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>7.1</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -31,6 +32,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>7.1</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AssimpNet, Version=3.3.1.0, Culture=neutral, PublicKeyToken=0d51b391f59f42a6, processorArchitecture=MSIL">
@@ -68,15 +70,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Animations\Animation.cs" />
-    <Compile Include="Animations\Keyframes\PRSByteKey.cs" />
-    <Compile Include="Animations\Keyframes\QuaternionKey.cs" />
-    <Compile Include="Animations\Keyframes\Single4ByteKey.cs" />
-    <Compile Include="Animations\Keyframes\Single5Key.cs" />
-    <Compile Include="Animations\Keyframes\SingleByteKey.cs" />
-    <Compile Include="Animations\Keyframes\KeyType22.cs" />
-    <Compile Include="Animations\Keyframes\Vector3Key.cs" />
+    <Compile Include="Animations\Keys\PRSByteKey.cs" />
+    <Compile Include="Animations\Keys\QuaternionKey.cs" />
+    <Compile Include="Animations\Keys\Single4ByteKey.cs" />
+    <Compile Include="Animations\Keys\Single5Key.cs" />
+    <Compile Include="Animations\Keys\SingleByteKey.cs" />
+    <Compile Include="Animations\Keys\KeyType22.cs" />
+    <Compile Include="Animations\Keys\Vector3Key.cs" />
     <Compile Include="Animations\TargetKind.cs" />
-    <Compile Include="Animations\Keyframes\PRSKey.cs" />
+    <Compile Include="Animations\Keys\PRSKey.cs" />
     <Compile Include="Animations\AnimationPack.cs" />
     <Compile Include="Animations\AnimationPackFlags.cs" />
     <Compile Include="Models\Bone.cs" />
@@ -88,7 +90,7 @@
     <Compile Include="Textures\GNF\SurfaceFormat.cs" />
     <Compile Include="Textures\GNF\GNFTexture.cs" />
     <Compile Include="IO\Common\FileUtils.cs" />
-    <Compile Include="Models\Conversion\AnimationConverter.cs" />
+    <Compile Include="Animations\Conversion\AnimationConverter.cs" />
     <Compile Include="Models\Conversion\AssimpConverterCommon.cs" />
     <Compile Include="Models\Conversion\AssimpSceneImporter.cs" />
     <Compile Include="Textures\DDS\DDSCodec.cs" />
@@ -120,7 +122,7 @@
     <Compile Include="Animations\KeyType.cs" />
     <Compile Include="Animations\AnimationExtraData.cs" />
     <Compile Include="Animations\AnimationFlag80000000Data.cs" />
-    <Compile Include="Animations\Keyframes\SingleKey.cs" />
+    <Compile Include="Animations\Keys\SingleKey.cs" />
     <Compile Include="Effects\EplAnimation.cs" />
     <Compile Include="Textures\TextureInfo.cs" />
     <Compile Include="Textures\TexturePixelFormat.cs" />

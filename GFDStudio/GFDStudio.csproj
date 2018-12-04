@@ -41,6 +41,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>7.1</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -51,6 +52,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>7.1</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
@@ -154,6 +156,9 @@
     <Compile Include="FormatModules\MorphTargetListFormatModule.cs" />
     <Compile Include="FormatModules\NodeFormatModule.cs" />
     <Compile Include="FormatModules\ModelFormatModule.cs" />
+    <Compile Include="GUI\Controls\AnimationPlaybackState.cs" />
+    <Compile Include="GUI\Controls\ModelView\DefaultShaderProgram.cs" />
+    <Compile Include="GUI\Controls\ModelView\LineShaderProgram.cs" />
     <Compile Include="GUI\DataViewNodes\BoneViewNode.cs" />
     <Compile Include="GUI\DataViewNodes\MorphTargetListViewNode.cs" />
     <Compile Include="GUI\DataViewNodes\MorphTargetViewNode.cs" />
@@ -240,13 +245,6 @@
     <Compile Include="GUI\Controls\ModelViewControl.Designer.cs">
       <DependentUpon>ModelViewControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Controls\ModelView\GLCamera.cs" />
-    <Compile Include="GUI\Controls\ModelView\GLOrthographicCamera.cs" />
-    <Compile Include="GUI\Controls\ModelView\GLPerspectiveCamera.cs" />
-    <Compile Include="GUI\Controls\ModelView\GLPerspectiveFreeCamera.cs" />
-    <Compile Include="GUI\Controls\ModelView\GLPerspectiveTargetCamera.cs" />
-    <Compile Include="GUI\Controls\ModelView\GLShaderProgram.cs" />
-    <Compile Include="GUI\Controls\ModelView\GLShaderProgramBuilder.cs" />
     <Compile Include="GUI\TypeConverters\UInt32HexTypeConverter.cs" />
     <Compile Include="GUI\Forms\MainForm.cs">
       <SubType>Form</SubType>
@@ -298,6 +296,12 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="GUI\DataViewNodes\DataViewNode.HideInheritedProperties.cs" />
+    <None Include="app_data\shaders\line.glsl.fs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="app_data\shaders\line.glsl.vs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -308,6 +312,15 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Content Include="app_data\icons\folder.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="app_data\icons\node.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="app_data\icons\save_grey.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="app_data\shaders\basic.glsl.fs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -335,6 +348,10 @@
     <Content Include="app_data\icons\main_icon.ico" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\GFDLibrary.Rendering.OpenGL\GFDLibrary.Rendering.OpenGL.csproj">
+      <Project>{d3676cbb-faf8-4d38-bc6d-8f1e539e0b5c}</Project>
+      <Name>GFDLibrary.Rendering.OpenGL</Name>
+    </ProjectReference>
     <ProjectReference Include="..\GFDLibrary\GFDLibrary.csproj">
       <Project>{a41ac644-a107-4788-8e4f-e10cca64f3b6}</Project>
       <Name>GFDLibrary</Name>

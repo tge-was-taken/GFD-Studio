@@ -2,40 +2,107 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
-using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using GFDLibrary;
-using CSharpImageLibrary;
-using CSharpImageLibrary.Headers;
 using GFDLibrary.Common;
-using GFDLibrary.Materials;
-using GFDLibrary.Models;
 using GFDLibrary.Textures;
-using GFDStudio.DataManagement;
 using GFDStudio.GUI.Controls.ModelView;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
-using System.Linq;
+using GFDLibrary.Animations;
+using GFDLibrary.Rendering.OpenGL;
+using Key = OpenTK.Input.Key;
+using Quaternion = OpenTK.Quaternion;
+using Vector3 = OpenTK.Vector3;
 
 namespace GFDStudio.GUI.Controls
 {
     public partial class ModelViewControl : GLControl
     {
-        private ModelPack mModelPack;
-        private GLShaderProgram mShaderProgram;
-        private readonly List<GLMesh> mMeshes = new List<GLMesh>();
+        private static ModelViewControl sInstance;
+
+        public static ModelViewControl Instance => sInstance ?? ( sInstance = new ModelViewControl() );
+
+        private DefaultShaderProgram mDefaultShader;
         private GLPerspectiveCamera mCamera;
-        private bool mCanRender = true;
+        private readonly bool mCanRender = true;
+        private Point mLastMouseLocation;
+
+        // Grid
+        private LineShaderProgram mLineShader;
+        private int mGridVertexArrayID;
+        private GLBuffer<Vector3> mGridVertexBuffer;
+        private int mGridSize = 2000;
+        private int mGridSpacing = 16;
+        private float mGridMinZ;
+
+        // Model
+        private GLModel mModel;
         private bool mIsModelLoaded;
         private bool mIsFieldModel;
         private Archive mFieldTextures;
-        private Point mLastMouseLocation;
 
-        public ModelViewControl() : base( 
-            new GraphicsMode( 32, 24, 0, 4 ),
+        // Animation
+        private Stopwatch mTimeCounter;
+        private double mLastTime;
+        private Timer mUpdateTimer;
+        private AnimationPlaybackState mAnimationPlayback = AnimationPlaybackState.Stopped;
+        private double mAnimationTime;
+
+        public Animation Animation { get; private set; }
+
+        public bool IsAnimationLoaded => Animation != null;
+
+        public AnimationPlaybackState AnimationPlayback
+        {
+            get => mAnimationPlayback;
+            set
+            {
+                if ( mAnimationPlayback == value || !IsAnimationLoaded )
+                    return;
+
+                mAnimationPlayback = value;
+
+                switch ( AnimationPlayback )
+                {
+                    case AnimationPlaybackState.Stopped:
+                        AnimationTime = 0;
+                        mModel?.UnloadAnimation();
+                        break;
+                    case AnimationPlaybackState.Paused:
+                        break;
+                    case AnimationPlaybackState.Playing:
+                        if ( mModel?.Animation == null && IsAnimationLoaded )
+                            mModel?.LoadAnimation( Animation );
+                        break;
+                }
+
+                AnimationPlaybackStateChanged?.Invoke( this, mAnimationPlayback );
+            }
+        }
+
+
+        public double AnimationTime
+        {
+            get => mAnimationTime;
+            set
+            {
+                mAnimationTime = value;
+                AnimationTimeChanged?.Invoke( this, mAnimationTime );
+            }
+        }
+
+        // Events
+        public event EventHandler<Animation> AnimationLoaded;
+        public event EventHandler<AnimationPlaybackState> AnimationPlaybackStateChanged;
+        public event EventHandler<double> AnimationTimeChanged;
+
+        private ModelViewControl() : base( 
+            new GraphicsMode( 32, 24, 0, 0 ),
             3,
             3,
 #if GL_DEBUG
@@ -53,7 +120,7 @@ namespace GFDStudio.GUI.Controls
             MakeCurrent();
             LogGLInfo();
 
-            if ( !InitializeGLShaders() )
+            if ( !InitializeShaders() )
             {
                 Visible = false;
                 mCanRender = false;
@@ -62,6 +129,30 @@ namespace GFDStudio.GUI.Controls
             {
                 InitializeGLRenderState();
             }
+
+            CreateGrid();
+        }
+
+        private void CreateGrid()
+        {
+            // thanks Skyth
+            var vertices = new List<Vector3>();
+            for ( int i = -mGridSize; i <= mGridSize; i += mGridSpacing )
+            {
+                vertices.Add( new Vector3( i,   0, -mGridSize ) );
+                vertices.Add( new Vector3( i,   0, mGridSize ) );
+                vertices.Add( new Vector3( -mGridSize, 0, i ) );
+                vertices.Add( new Vector3( mGridSize,  0, i ) );
+            }
+
+            mGridMinZ = ( int ) vertices.Min( x => x.Z );
+            mGridVertexArrayID = GL.GenVertexArray();
+            GL.BindVertexArray( mGridVertexArrayID );
+
+            mGridVertexBuffer = new GLBuffer<Vector3>( BufferTarget.ArrayBuffer, vertices.ToArray() );
+
+            GL.VertexAttribPointer( 0, 3, VertexAttribPointerType.Float, false, mGridVertexBuffer.Stride, 0 );
+            GL.EnableVertexAttribArray( 0 );
         }
 
         /// <summary>
@@ -70,12 +161,63 @@ namespace GFDStudio.GUI.Controls
         /// <param name="modelPack"></param>
         public void LoadModel( ModelPack modelPack )
         {
-            if ( !mCanRender )
+            if ( !mCanRender || modelPack.Model == null )
                 return;
 
-            mModelPack = modelPack;
-            DeleteModel();
-            LoadModel();
+            if ( mIsModelLoaded )
+            {
+                // Unload previously loaded model to free memory
+                UnloadModel();
+            }
+
+            // Load model into optimized format
+            mModel = new GLModel( modelPack, ( material, textureName ) =>
+            {
+                if ( mIsFieldModel && mFieldTextures.TryOpenFile( textureName, out var textureStream ) )
+                {
+                    using ( textureStream )
+                    {
+                        var texture = new FieldTexturePS3( textureStream );
+                        return new GLTexture( texture );
+                    }
+                }
+                else if ( modelPack.Textures.TryGetTexture( textureName, out var texture ) )
+                {
+                    return new GLTexture( texture );
+                }
+                else
+                {
+                    Trace.TraceWarning( $"tTexture '{ textureName }' used by material '{ material.Name }' is missing" );
+                }
+
+                return null;
+            } );
+            mIsModelLoaded = true;
+
+            // Initialize camera
+            InitializeCamera();
+
+            if ( Animation != null )
+            {
+                // Apply previously loaded animation to new model
+                LoadAnimation( Animation, AnimationPlayback != AnimationPlaybackState.Playing );
+            }
+
+            Invalidate();
+        }
+
+        public void LoadAnimation( Animation animation, bool reset = true )
+        {
+            Animation = animation;
+            mModel?.LoadAnimation( Animation );
+
+            AnimationLoaded?.Invoke( this, animation );
+
+            if ( reset )
+            {
+                AnimationTime = 0;
+                AnimationPlayback = AnimationPlaybackState.Playing;
+            }
         }
 
         /// <summary> 
@@ -86,14 +228,12 @@ namespace GFDStudio.GUI.Controls
         {
             if ( disposing )
             {
-                if ( components != null )
-                    components.Dispose();
+                components?.Dispose();
 
-                if ( mShaderProgram != null )
-                    mShaderProgram.Dispose();
+                mDefaultShader?.Dispose();
 
                 if ( mIsModelLoaded )
-                    DeleteModel();
+                    UnloadModel();
             }
 
             base.Dispose( disposing );
@@ -105,7 +245,41 @@ namespace GFDStudio.GUI.Controls
         /// <param name="e"></param>
         protected override void OnLoad( EventArgs e )
         {
+            mTimeCounter = new Stopwatch();
+            mTimeCounter.Start();
 
+            mUpdateTimer = new Timer();
+            mUpdateTimer.Interval = ( int ) ( ( 1f / 60f ) * 1000 );
+            mUpdateTimer.Tick += ( o, s ) =>
+            {
+                if ( !mCanRender )
+                    return;
+
+                ExecuteTimedCallback( () =>
+                {
+                    if ( AnimationPlayback == AnimationPlaybackState.Playing )
+                        Invalidate();
+                });
+            };
+            mUpdateTimer.Start();
+        }
+
+        private void ExecuteTimedCallback( Action action )
+        {
+            // Update timings
+            var curTime   = mTimeCounter.Elapsed.TotalSeconds;
+            var deltaTime = curTime - mLastTime;
+
+            if ( AnimationPlayback == AnimationPlaybackState.Playing )
+            {
+                var nextAnimationTime = AnimationTime + ( deltaTime * Animation.Speed.GetValueOrDefault( 1f ) );
+                AnimationTime = nextAnimationTime >= Animation.Duration ? 0 : nextAnimationTime;
+            }
+
+            action();
+
+            // Remember current time
+            mLastTime = curTime;
         }
 
         /// <summary>
@@ -117,48 +291,34 @@ namespace GFDStudio.GUI.Controls
             if ( !mCanRender )
                 return;
 
-            // clear the buffers
-            GL.Clear( ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit );
-
-            if ( mIsModelLoaded )
+            ExecuteTimedCallback( () =>
             {
-                foreach ( var geometry in mMeshes )
+                // clear the buffers
+                GL.Clear( ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit );
+
+                DrawGrid( mCamera.View, mCamera.Projection );
+
+                if ( mIsModelLoaded )
                 {
-                    if ( !geometry.IsVisible )
-                        continue;
-
-                    mShaderProgram.Use();
-
-                    // set up model view projection matrix uniforms
-                    mShaderProgram.SetUniform( "model", geometry.ModelMatrix );
-                    mShaderProgram.SetUniform( "view", mCamera.CalculateViewMatrix() );
-                    mShaderProgram.SetUniform( "projection", mCamera.CalculateProjectionMatrix() );
-
-
-                    // set material uniforms
-                    mShaderProgram.SetUniform( "matHasDiffuse", geometry.Material.HasDiffuse );
-
-                    if ( geometry.Material.HasDiffuse )
-                        GL.BindTexture( TextureTarget.Texture2D, geometry.Material.DiffuseTextureId );
-
-                    mShaderProgram.SetUniform( "matAmbient", geometry.Material.Ambient );
-                    mShaderProgram.SetUniform( "matDiffuse", geometry.Material.Diffuse );
-                    mShaderProgram.SetUniform( "matSpecular", geometry.Material.Specular );
-                    mShaderProgram.SetUniform( "matEmissive", geometry.Material.Emissive );
-                    mShaderProgram.SetUniform( "matHasAlphaTransparency", geometry.Material.HasAlphaTransparency );
-
-                    // checks if all uniforms were assigned
-                    mShaderProgram.Check();
-
-                    // use the vertex array
-                    GL.BindVertexArray( geometry.VertexArrayId );
-
-                    // draw the polygon
-                    GL.DrawElements( PrimitiveType.Triangles, geometry.ElementIndexCount, DrawElementsType.UnsignedInt, 0 );
+                    // Draw model
+                    mModel.Draw( mDefaultShader, mCamera, AnimationTime );
                 }
-            }
 
-            SwapBuffers();
+                SwapBuffers();
+            });
+        }
+
+
+        private void DrawGrid( Matrix4 view, Matrix4 projection )
+        {
+            mLineShader.Use();
+            mLineShader.SetUniform( "view", view );
+            mLineShader.SetUniform( "projection", projection );
+            mLineShader.SetUniform( "color", new Vector4( 0.15f, 0.15f, 0.15f, 1f ) );
+            mLineShader.SetUniform( "minZ", mGridMinZ );
+
+            GL.BindVertexArray( mGridVertexArrayID );
+            GL.DrawArrays( PrimitiveType.Lines, 0, mGridVertexBuffer.Count );
         }
 
         /// <summary>
@@ -220,101 +380,26 @@ namespace GFDStudio.GUI.Controls
         }
 
         /// <summary>
-        /// Initializes shaders and links the shader program. Assumes only 1 shader program will be used.
+        /// Initializes shaders and links the shader program.
         /// </summary>
-        private bool InitializeGLShaders()
+        private bool InitializeShaders()
         {
-            if ( !GLShaderProgram.TryCreate( DataStore.GetPath( "shaders/default.glsl.vs" ),
-                                             DataStore.GetPath( "shaders/default.glsl.fs" ),
-                out mShaderProgram ) )
-            {
-                Trace.TraceWarning( "Failed to compile shaders. Trying to use basic shaders.." );
+            if ( !DefaultShaderProgram.TryCreate( out mDefaultShader ) )
+                return false;
 
-                if ( !GLShaderProgram.TryCreate( DataStore.GetPath( "shaders/basic.glsl.vs" ),
-                                                 DataStore.GetPath( "shaders/basic.glsl.fs" ),
-                    out mShaderProgram ) )
-                {
-                    Trace.TraceError( "Failed to compile basic shaders. Disabling GL rendering." );
-                    return false;
-                }
-            }
+            if ( !LineShaderProgram.TryCreate( out mLineShader ) )
+                return false;
 
-            // register shader uniforms
-            mShaderProgram.RegisterUniform<Matrix4>( "model" );
-            mShaderProgram.RegisterUniform<Matrix4>( "view" );
-            mShaderProgram.RegisterUniform<Matrix4>( "projection" );
-            mShaderProgram.RegisterUniform<bool>( "matHasDiffuse" );
-            mShaderProgram.RegisterUniform<Vector4>( "matAmbient" );
-            mShaderProgram.RegisterUniform<Vector4>( "matDiffuse" );
-            mShaderProgram.RegisterUniform<Vector4>( "matSpecular" );
-            mShaderProgram.RegisterUniform<Vector4>( "matEmissive" );
-            mShaderProgram.RegisterUniform<bool>( "matHasAlphaTransparency" );
             return true;
         }
 
-        //
-        // Loading / saving model
-        //
-
-        private void LoadModel()
-        {
-            if ( !mCanRender || mModelPack.Model == null )
-                return;
-
-            InitializeCamera();
-
-            var nodes = mModelPack.Model.Nodes.ToList();
-
-            foreach ( var node in mModelPack.Model.Nodes )
-            {
-                if ( !node.HasAttachments )
-                    continue;
-
-                foreach ( var attachment in node.Attachments )
-                {
-                    if ( attachment.Type != NodeAttachmentType.Mesh )
-                        continue;
-
-                    var glMesh = CreateGLMesh( attachment.GetValue<Mesh>(), node, nodes, mModelPack.Model.Bones );
-                    var transform = node.WorldTransform;
-                    glMesh.ModelMatrix = ToMatrix4( ref transform );
-
-                    mMeshes.Add( glMesh );
-                }
-            }
-
-            mIsModelLoaded = true;
-
-            Invalidate();
-        }
-
-        private void DeleteModel()
+        private void UnloadModel()
         {
             if ( !mIsModelLoaded )
                 return;
 
             mIsModelLoaded = false;
-
-            GL.BindVertexArray( 0 );
-            GL.BindBuffer( BufferTarget.ArrayBuffer, 0 );
-            GL.BindBuffer( BufferTarget.ElementArrayBuffer, 0 );
-            GL.BindTexture( TextureTarget.Texture2D, 0 );
-
-            foreach ( var geometry in mMeshes )
-            {
-                GL.DeleteVertexArray( geometry.VertexArrayId );
-                GL.DeleteBuffer( geometry.PositionBufferId );
-                GL.DeleteBuffer( geometry.NormalBufferId );
-                GL.DeleteBuffer( geometry.TextureCoordinateChannel0BufferId );
-                GL.DeleteBuffer( geometry.ElementBufferId );
-
-                if ( geometry.Material.HasDiffuse )
-                {
-                    GL.DeleteTexture( geometry.Material.DiffuseTextureId );
-                }
-            }
-
-            mMeshes.Clear();
+            mModel.Dispose();
         }
 
         private void InitializeCamera()
@@ -322,11 +407,11 @@ namespace GFDStudio.GUI.Controls
             var cameraFov = 45f;
 
             BoundingSphere bSphere;
-            if ( !mModelPack.Model.BoundingSphere.HasValue )
+            if ( !mModel.ModelPack.Model.BoundingSphere.HasValue )
             {
-                if ( mModelPack.Model.BoundingBox.HasValue )
+                if ( mModel.ModelPack.Model.BoundingBox.HasValue )
                 {
-                    bSphere = BoundingSphere.Calculate( mModelPack.Model.BoundingBox.Value );
+                    bSphere = BoundingSphere.Calculate( mModel.ModelPack.Model.BoundingBox.Value );
                 }
                 else
                 {
@@ -335,7 +420,7 @@ namespace GFDStudio.GUI.Controls
             }
             else
             {
-                bSphere = mModelPack.Model.BoundingSphere.Value;
+                bSphere = mModel.ModelPack.Model.BoundingSphere.Value;
             }
 
             mCamera = new GLPerspectiveFreeCamera( CalculateCameraTranslation( cameraFov, bSphere), 1f, 100000f, cameraFov, ( float )Width / ( float )Height, Quaternion.Identity );
@@ -348,275 +433,6 @@ namespace GFDStudio.GUI.Controls
             var cameraTranslation = new Vector3( bSphere.Center.X, bSphere.Center.Y, bSphere.Center.Z ) + new Vector3( 0, -50, 300 );
 
             return cameraTranslation;
-        }
-
-        private static Matrix4 ToMatrix4( ref System.Numerics.Matrix4x4 matrix )
-        {
-            unsafe
-            {
-                fixed ( System.Numerics.Matrix4x4* pMatrix = &matrix )
-                    return *( Matrix4* )pMatrix;
-            }
-        }
-
-        private static Matrix4 ToMatrix4( System.Numerics.Matrix4x4 matrix )
-        {
-            unsafe
-            {
-                return *( Matrix4* )&matrix;
-            }
-        }
-
-        //
-        // Texture stuff
-        //
-
-        private static int CreateGLTexture( Texture texture )
-        {
-            int textureId = GL.GenTexture();
-            GL.BindTexture( TextureTarget.Texture2D, textureId );
-
-            var ddsHeader = new DDS_Header( new MemoryStream( texture.Data ) );
-
-            // todo: identify and retrieve values from texture
-            // todo: disable mipmaps for now, they often break and show up as black ( eg after replacing a texture )
-            int mipMapCount = ddsHeader.dwMipMapCount;
-            if ( mipMapCount > 0 )
-                --mipMapCount;
-            else
-                mipMapCount = 1;
-
-            SetGLTextureParameters( TextureWrapMode.Repeat, TextureWrapMode.Repeat, TextureMagFilter.Linear, TextureMinFilter.Linear, mipMapCount );
-
-            var format = GetGLTexturePixelInternalFormat( ddsHeader.Format );
-
-            SetGLTextureDDSImageData( ddsHeader.Width, ddsHeader.Height, format, mipMapCount, texture.Data, 0x80 );
-
-            return textureId;
-        }
-
-        private static int CreateGLTexture( FieldTexturePS3 texture )
-        {
-            int textureId = GL.GenTexture();
-            GL.BindTexture( TextureTarget.Texture2D, textureId );
-
-            // todo: identify and retrieve values from texture
-            // todo: disable mipmaps for now, they often break and show up as black ( eg after replacing a texture )
-            SetGLTextureParameters( TextureWrapMode.Repeat, TextureWrapMode.Repeat, TextureMagFilter.Linear, TextureMinFilter.Linear, texture.MipMapCount - 1 );
-
-            var format = GetGLTexturePixelInternalFormat( texture.Flags );
-
-            SetGLTextureDDSImageData( texture.Width, texture.Height, format, texture.MipMapCount, texture.Data );
-
-            return textureId;
-        }
-
-        private static PixelInternalFormat GetGLTexturePixelInternalFormat( ImageEngineFormat format )
-        {
-            switch ( format )
-            {
-                case ImageEngineFormat.DDS_DXT1:
-                    return PixelInternalFormat.CompressedRgbaS3tcDxt1Ext;
-
-                case ImageEngineFormat.DDS_DXT3:
-                    return PixelInternalFormat.CompressedRgbaS3tcDxt3Ext;
-
-                case ImageEngineFormat.DDS_DXT5:
-                    return PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
-
-                case ImageEngineFormat.DDS_ARGB_8:
-                    return PixelInternalFormat.Rgba8;
-
-                default:
-                    throw new NotImplementedException(format.ToString());
-            }
-        }
-
-        private static PixelInternalFormat GetGLTexturePixelInternalFormat( FieldTextureFlags flags )
-        {
-            PixelInternalFormat format = PixelInternalFormat.CompressedRgbaS3tcDxt1Ext;
-            if ( flags.HasFlag( FieldTextureFlags.DXT3 ) )
-            {
-                format = PixelInternalFormat.CompressedRgbaS3tcDxt3Ext;
-            }
-            else if ( flags.HasFlag( FieldTextureFlags.DXT5 ) )
-            {
-                format = PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
-            }
-
-            return format;
-        }
-
-        private static void SetGLTextureParameters( TextureWrapMode wrapS, TextureWrapMode wrapT, TextureMagFilter magFilter, TextureMinFilter minFilter, int maxMipLevel )
-        {
-            GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureWrapS, ( int )wrapS );
-            GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureWrapT, ( int )wrapT );
-            GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, ( int )magFilter );
-            GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, ( int )minFilter );
-            GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, maxMipLevel );
-        }
-
-        private static void SetGLTextureDDSImageData( int width, int height, PixelInternalFormat format, int mipMapCount, byte[] data, int dataOffset = 0 )
-        {
-            var dataHandle = GCHandle.Alloc( data, GCHandleType.Pinned );
-
-            SetGLTextureDDSImageData( width, height, format, mipMapCount, ( dataHandle.AddrOfPinnedObject() + dataOffset ) );
-
-            dataHandle.Free();
-        }
-
-        private static void SetGLTextureDDSImageData( int width, int height, PixelInternalFormat format, int mipMapCount, IntPtr data )
-        {
-            int mipWidth = width;
-            int mipHeight = height;
-            int blockSize = ( format == PixelInternalFormat.CompressedRgbaS3tcDxt1Ext ) ? 8 : 16;
-            int mipOffset = 0;
-
-            for ( int mipLevel = 0; mipLevel < mipMapCount; mipLevel++ )
-            {
-                int mipSize = ( ( mipWidth * mipHeight ) / 16 ) * blockSize;
-
-                if ( mipSize > blockSize )
-                    GL.CompressedTexImage2D( TextureTarget.Texture2D, mipLevel, format, mipWidth, mipHeight, 0, mipSize, data + mipOffset );
-
-                mipOffset += mipSize;
-                mipWidth /= 2;
-                mipHeight /= 2;
-            }
-        }
-
-        //
-        // Model stuff
-        //
-
-        private GLMesh CreateGLMesh( Mesh mesh, Node parentNode, List<Node> nodes, List<Bone> bones )
-        {
-            var glMesh = new GLMesh();
-
-            var vertices = mesh.Vertices;
-            var normals = mesh.Normals;
-
-            if ( mesh.VertexWeights != null )
-                ( vertices, normals ) = mesh.Transform( parentNode, nodes, bones );
-
-            // vertex array
-            glMesh.VertexArrayId = GL.GenVertexArray();
-            GL.BindVertexArray( glMesh.VertexArrayId );
-
-            // positions
-            glMesh.PositionBufferId = CreateGLVertexAttributeBuffer( vertices.Length * Vector3.SizeInBytes, vertices, 0, 3 );
-
-            // normals
-            if ( normals != null )
-                glMesh.NormalBufferId = CreateGLVertexAttributeBuffer( normals.Length * Vector3.SizeInBytes, normals, 1, 3 );
-
-            if ( mesh.TexCoordsChannel0 != null )
-            {
-                // texture coordinate channel 0
-                glMesh.TextureCoordinateChannel0BufferId = CreateGLVertexAttributeBuffer( mesh.TexCoordsChannel0.Length * Vector2.SizeInBytes, mesh.TexCoordsChannel0, 2, 2 );
-            }
-
-            // element index buffer
-            glMesh.ElementBufferId = CreateGLBuffer( BufferTarget.ElementArrayBuffer, mesh.Triangles.Length * Triangle.SizeInBytes, mesh.Triangles );
-            glMesh.ElementIndexCount = mesh.Triangles.Length * 3;
-
-            // material
-            if ( mesh.MaterialName != null && mModelPack.Materials != null )
-            {
-                if ( mModelPack.Materials.TryGetMaterial( mesh.MaterialName, out var material ) )
-                {
-                    glMesh.Material = CreateGLMaterial( material );
-                }
-                else
-                {
-                    Trace.TraceError( $"Mesh referenced material \"{mesh.MaterialName}\" which does not exist in the model" );
-                }
-            }
-
-            glMesh.IsVisible = true;
-
-            return glMesh;
-        }
-
-        private static int CreateGLBuffer<T>( BufferTarget target, int size, T[] data ) where T : struct
-        {
-            // generate buffer id
-            int buffer = GL.GenBuffer();
-
-            // mark buffer as active
-            GL.BindBuffer( target, buffer );
-
-            // upload data to buffer store
-
-#if GL_DEBUG
-            try
-            {
-#endif
-            GL.BufferData( target, size, data, BufferUsageHint.StaticDraw );
-#if GL_DEBUG
-            }
-            catch ( Exception )
-            {
-            }
-#endif
-
-            return buffer;
-        }
-
-        private static int CreateGLVertexAttributeBuffer<T>( int size, T[] vertexData, int attributeIndex, int attributeSize, VertexAttribPointerType type = VertexAttribPointerType.Float ) where T : struct
-        {
-            // create buffer for vertex data store
-            int buffer = CreateGLBuffer( BufferTarget.ArrayBuffer, size, vertexData );
-
-            // configure vertex attribute
-            GL.VertexAttribPointer( attributeIndex, attributeSize, type, false, 0, 0 );
-
-            // enable vertex attribute
-            GL.EnableVertexAttribArray( attributeIndex );
-
-            return buffer;
-        }
-
-        private GLMaterial CreateGLMaterial( Material material )
-        {
-            var glMaterial = new GLMaterial();
-
-            // color parameters
-            glMaterial.Ambient = new Vector4( material.Ambient.X, material.Ambient.Y, material.Ambient.Z, material.Ambient.W );
-            glMaterial.Diffuse = new Vector4( material.Diffuse.X, material.Diffuse.Y, material.Diffuse.Z, material.Diffuse.W );
-            glMaterial.Specular = new Vector4( material.Specular.X, material.Specular.Y, material.Specular.Z, material.Specular.W );
-            glMaterial.Emissive = new Vector4( material.Emissive.X, material.Emissive.Y, material.Emissive.Z, material.Emissive.W );
-
-            // texture
-            if ( material.DiffuseMap != null )
-            {
-                glMaterial.DiffuseTextureId = CreateGLTextureMap( material, material.DiffuseMap.Name );
-                glMaterial.HasAlphaTransparency = material.DrawOrder != MaterialDrawOrder.Front; // && material.Field4D == 1 && material.Field90 == 0x0080;
-            }
-
-            return glMaterial;
-        }
-
-        private int CreateGLTextureMap( Material material, string name )
-        {
-            if ( mIsFieldModel && mFieldTextures.TryOpenFile( name, out var textureStream ) )
-            {
-                using ( textureStream )
-                {
-                    var texture = new FieldTexturePS3( textureStream );
-                    return CreateGLTexture( texture );
-                }
-            }
-            else if ( mModelPack.Textures.TryGetTexture( name, out var texture ) )
-            {
-                return CreateGLTexture( texture );
-            }
-            else
-            {
-                Trace.TraceWarning( $"tTexture '{ name }' used by material '{ material.Name }' is missing" );
-            }
-
-            return 0;
         }
 
         //
@@ -656,9 +472,9 @@ namespace GFDStudio.GUI.Controls
                 {
                     // Orbit around model
 
-                    if ( mModelPack.Model.BoundingSphere.HasValue )
+                    if ( mModel.ModelPack.Model.BoundingSphere.HasValue )
                     {
-                        var bSphere = mModelPack.Model.BoundingSphere.Value;
+                        var bSphere = mModel.ModelPack.Model.BoundingSphere.Value;
                         var camera = new GLPerspectiveTargetCamera( mCamera.Translation, mCamera.ZNear, mCamera.ZFar, mCamera.FieldOfView, mCamera.AspectRatio, new Vector3( bSphere.Center.X, bSphere.Center.Y, bSphere.Center.Z ) );
                         camera.Rotate( -locationDelta.Y / 100f, -locationDelta.X / 100f );
                         mCamera = camera;
@@ -669,7 +485,7 @@ namespace GFDStudio.GUI.Controls
                     // Move camera
                     var translation = mCamera.Translation;
                     if ( !( mCamera is GLPerspectiveFreeCamera ) )
-                        translation = CalculateCameraTranslation( mCamera.FieldOfView, mModelPack.Model.BoundingSphere.Value );
+                        translation = CalculateCameraTranslation( mCamera.FieldOfView, mModel.ModelPack.Model.BoundingSphere.Value );
 
                     mCamera = new GLPerspectiveFreeCamera( translation, mCamera.ZNear, mCamera.ZFar, mCamera.FieldOfView, mCamera.AspectRatio, Quaternion.Identity );
                     mCamera.Translation = new Vector3(
@@ -706,31 +522,6 @@ namespace GFDStudio.GUI.Controls
             mCamera.Translation = translation;
 
             Invalidate();
-        }
-
-        private struct GLMesh
-        {
-            public int VertexArrayId;
-            public int PositionBufferId;
-            public int NormalBufferId;
-            public int TextureCoordinateChannel0BufferId;
-            public int ElementBufferId;
-            public int ElementIndexCount;
-            public GLMaterial Material;
-            public Matrix4 ModelMatrix;
-            public bool IsVisible;
-        }
-
-        private struct GLMaterial
-        {
-            public Vector4 Ambient;
-            public Vector4 Diffuse;
-            public Vector4 Specular;
-            public Vector4 Emissive;
-            public int DiffuseTextureId;
-            public bool HasAlphaTransparency;
-
-            public bool HasDiffuse => DiffuseTextureId != 0;
         }
     }
 }

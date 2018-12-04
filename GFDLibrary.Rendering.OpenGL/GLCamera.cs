@@ -1,6 +1,6 @@
 ﻿using OpenTK;
 
-namespace GFDStudio.GUI.Controls.ModelView
+namespace GFDLibrary.Rendering.OpenGL
 {
     public abstract class GLCamera
     {
@@ -19,23 +19,23 @@ namespace GFDStudio.GUI.Controls.ModelView
         /// </summary>
         public float ZFar { get; set; }
 
-        public GLCamera( Vector3 translation, float zNear, float zFar )
+        protected GLCamera( Vector3 translation, float zNear, float zFar )
         {
             Translation = translation;
             ZNear = zNear;
             ZFar = zFar;
         }
 
-        public abstract Matrix4 CalculateProjectionMatrix();
+        public abstract Matrix4 Projection { get; }
 
-        public abstract Matrix4 CalculateViewMatrix();
+        public abstract Matrix4 View { get; }
 
-        public Matrix4 CalculateViewProjectionMatrix()
+        public Matrix4 ViewProjection => View * Projection;
+
+        public void Bind( GLShaderProgram shaderProgram )
         {
-            var projection = CalculateProjectionMatrix();
-            var view = CalculateViewMatrix();
-
-            return view * projection;
+            shaderProgram.SetUniform( "view",       View);
+            shaderProgram.SetUniform( "projection", Projection);
         }
     }
 }

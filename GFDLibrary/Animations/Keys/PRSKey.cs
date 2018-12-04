@@ -6,17 +6,22 @@ namespace GFDLibrary.Animations
 {
     public class PRSKey : Key
     {
-        public override KeyType Type { get; internal set; }
-
         public Vector3 Position { get; set; }
 
         public Quaternion Rotation { get; set; }
 
         public Vector3 Scale { get; set; }
 
-        public PRSKey( KeyType type )
+        public bool HasPosition => Type != KeyType.NodeRHalf && Type != KeyType.NodeSHalf;
+
+        public bool HasRotation => Type != KeyType.NodePHalf && Type != KeyType.NodeSHalf;
+
+        public bool HasScale => Type == KeyType.NodeSHalf || Type == KeyType.NodePRS || Type == KeyType.NodePRSHalf;
+
+        public bool IsCompressed => Type != KeyType.NodePR && Type != KeyType.NodePRS;
+
+        public PRSKey( KeyType type ) : base( type )
         {
-            Type = type;
             Position = Vector3.Zero;
             Rotation = Quaternion.Identity;
             Scale = Vector3.One;

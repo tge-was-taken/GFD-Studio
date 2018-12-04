@@ -1,6 +1,6 @@
 ﻿using OpenTK;
 
-namespace GFDStudio.GUI.Controls.ModelView
+namespace GFDLibrary.Rendering.OpenGL
 {
     /// <summary>
     /// Represents a perspective target camera.
@@ -18,17 +18,20 @@ namespace GFDStudio.GUI.Controls.ModelView
             Target = target;
         }
 
-        public override Matrix4 CalculateViewMatrix()
+        public override Matrix4 View
         {
-            var eye = Translation;
-            var target = Target;
+            get
+            {
+                var eye = Translation;
+                var target = Target;
 
-            var view = Matrix4.LookAt(
-                eye,
-                target,
-                Vector3.UnitY );
+                var view = Matrix4.LookAt(
+                    eye,
+                    target,
+                    Vector3.UnitY );
 
-            return view;
+                return view;
+            }
         }
 
         public void Rotate( float angleX, float angleY )

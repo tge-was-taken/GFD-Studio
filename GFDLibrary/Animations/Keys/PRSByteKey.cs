@@ -4,8 +4,6 @@ namespace GFDLibrary.Animations
 {
     public class PRSByteKey : PRSKey
     {
-        public override KeyType Type => KeyType.PRSByte;
-
         public byte Byte { get; set; }
 
         public PRSByteKey() : base( KeyType.PRSByte ) { }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using GFDStudio.DataManagement;
 
 namespace GFDStudio.GUI.DataViewNodes
 {
@@ -35,6 +36,7 @@ namespace GFDStudio.GUI.DataViewNodes
 
         protected override void InitializeCore()
         {
+            ImageKey = DataStore.GetPath( "icons/folder.png" );
             RegisterModelUpdateHandler( () =>
             {
                 var list = new List< T >();

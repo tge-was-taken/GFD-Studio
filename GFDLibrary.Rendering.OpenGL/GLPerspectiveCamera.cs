@@ -1,6 +1,6 @@
 ﻿using OpenTK;
 
-namespace GFDStudio.GUI.Controls.ModelView
+namespace GFDLibrary.Rendering.OpenGL
 {
 
     /// <summary>
@@ -18,16 +18,14 @@ namespace GFDStudio.GUI.Controls.ModelView
         /// </summary>
         public float AspectRatio { get; set; }
 
-        public GLPerspectiveCamera( Vector3 translation, float zNear, float zFar, float fieldOfView, float aspectRatio )
+        protected GLPerspectiveCamera( Vector3 translation, float zNear, float zFar, float fieldOfView, float aspectRatio )
             : base( translation, zNear, zFar )
         {
             FieldOfView = fieldOfView;
             AspectRatio = aspectRatio;
         }
 
-        public override Matrix4 CalculateProjectionMatrix()
-        {
-            return Matrix4.CreatePerspectiveFieldOfView( MathHelper.DegreesToRadians( FieldOfView ), AspectRatio, ZNear, ZFar );
-        }
+        public override Matrix4 Projection =>
+            Matrix4.CreatePerspectiveFieldOfView( MathHelper.DegreesToRadians( FieldOfView ), AspectRatio, ZNear, ZFar );
     }
 }

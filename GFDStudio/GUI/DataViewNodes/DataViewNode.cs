@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
+using GFDStudio.DataManagement;
 using GFDStudio.FormatModules;
 
 namespace GFDStudio.GUI.DataViewNodes
@@ -37,6 +39,8 @@ namespace GFDStudio.GUI.DataViewNodes
         private readonly Dictionary<Type, DataViewNodeExportHandler> mExportHandlers;
         private readonly Dictionary<Type, DataViewNodeReplaceHandler> mReplaceHandlers;
         private readonly Dictionary<Type, DataViewNodeAddHandler> mAddHandlers;
+
+        internal static ImageList ImageList { get; } = new ImageList();
 
         /// <summary>
         /// Gets or sets the resource held by the view model.
@@ -137,11 +141,11 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         protected DataViewNode( string text ) : base( text )
-        {
+        {      
             mExportHandlers = new Dictionary<Type, DataViewNodeExportHandler>();
             mReplaceHandlers = new Dictionary<Type, DataViewNodeReplaceHandler>();
             mAddHandlers = new Dictionary<Type, DataViewNodeAddHandler>();
-            mCustomHandlers = new List< ToolStripMenuItem >();
+            mCustomHandlers = new List<ToolStripMenuItem>();
         }
 
         public void AddChildNode( TreeNode node )
@@ -534,11 +538,35 @@ namespace GFDStudio.GUI.DataViewNodes
             // initialize the derived view model
             InitializeCore();
 
+            // Set the icon
+            SetIcon();
+
             // set initialization flag
             IsInitialized = true;
 
             // subscribe to the PropertyChanged event /after/ init
             PropertyChanged += OnPropertyChanged;
+        }
+
+
+        private void SetIcon()
+        {
+            if ( string.IsNullOrWhiteSpace( ImageKey ) )
+            {
+                if ( NodeFlags.HasFlag( DataViewNodeFlags.Branch ) )
+                {
+                    ImageKey = DataStore.GetPath( "icons/folder.png" );
+                }
+                else
+                {
+                    ImageKey = DataStore.GetPath( "icons/node.png" );
+                }
+            }
+
+            if ( !ImageList.Images.ContainsKey( ImageKey ) )
+                ImageList.Images.Add( ImageKey, new Bitmap( ImageKey ) );
+
+            ImageKey = SelectedImageKey = ImageKey;
         }
 
         protected virtual void OnPropertyChanged( object sender, PropertyChangedEventArgs e )

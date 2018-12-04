@@ -5,15 +5,12 @@ namespace GFDLibrary.Animations
 {
     public class QuaternionKey : Key
     {
-        public override KeyType Type { get; internal set; }
-
         public Quaternion Value { get; set; }
 
         public QuaternionKey() : this( KeyType.Quaternion ) { }
 
-        public QuaternionKey( KeyType type )
+        public QuaternionKey( KeyType type ) : base( type )
         {
-            Type = type;
         }
 
         internal override void Read( ResourceReader reader )

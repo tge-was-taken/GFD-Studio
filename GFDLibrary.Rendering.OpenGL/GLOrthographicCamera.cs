@@ -1,6 +1,6 @@
 ﻿using OpenTK;
 
-namespace GFDStudio.GUI.Controls.ModelView
+namespace GFDLibrary.Rendering.OpenGL
 {
     public class GLOrthographicCamera : GLCamera
     {
@@ -21,22 +21,22 @@ namespace GFDStudio.GUI.Controls.ModelView
             Height = height;
         }
 
-        public override Matrix4 CalculateProjectionMatrix()
+        public override Matrix4 Projection => Matrix4.CreateOrthographic( Width, Height, ZNear, ZFar );
+
+        public override Matrix4 View
         {
-            return Matrix4.CreateOrthographic( Width, Height, ZNear, ZFar );
-        }
+            get
+            {
+                var eye = Translation;
+                var up = Vector3.UnitY;
 
-        public override Matrix4 CalculateViewMatrix()
-        {
-            var eye = Translation;
-            var up = Vector3.UnitY;
+                var view = Matrix4.LookAt(
+                    eye,
+                    eye + new Vector3( 0, 0, -1 ),
+                    up );
 
-            var view = Matrix4.LookAt(
-                eye,
-                eye + new Vector3(0, 0, -1),
-                up );
-
-            return view;
+                return view;
+            }
         }
     }
 }

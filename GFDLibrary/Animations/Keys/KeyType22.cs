@@ -4,12 +4,6 @@ namespace GFDLibrary.Animations
 {
     public class KeyType22 : Key
     {
-        public override KeyType Type
-        {
-            get => KeyType.Type22;
-            internal set { }
-        }
-
         public int Field04 { get; set; }
 
         public int Field08 { get; set; }
@@ -34,7 +28,9 @@ namespace GFDLibrary.Animations
 
         public byte Field00 { get; set; }
 
-        public KeyType22() { }
+        public KeyType22() : base( KeyType.Type22 )
+        {
+        }
 
         internal override void Read( ResourceReader reader )
         {

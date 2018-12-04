@@ -12,13 +12,12 @@ namespace GFDLibrary.Animations
         // 00
         public KeyType KeyType { get; set; }
 
-        // 04 = Keyframe count
+        // 04 = key count
 
         // 08
         public List<Key> Keys { get; set; }
 
-        // 0C
-        public List<float> KeyTimings { get; set; }
+        // 0C = key timings list
 
         // 10
         public Vector3 PositionScale { get; set; }
@@ -26,9 +25,33 @@ namespace GFDLibrary.Animations
         // 1C
         public Vector3 ScaleScale { get; set; }
 
+        public bool UsesScaleVectors => KeyType == KeyType.NodePRHalf || KeyType == KeyType.NodePRSHalf ||
+                                        KeyType == KeyType.NodePRHalf_2 || KeyType == KeyType.NodePHalf ||
+                                        KeyType == KeyType.NodeRHalf || KeyType == KeyType.NodeSHalf;
+
+        public bool HasPRSKeyFrames
+        {
+            get
+            {
+                switch ( KeyType )
+                {
+                    case KeyType.NodePR:
+                    case KeyType.NodePRS:
+                    case KeyType.NodePRHalf:
+                    case KeyType.NodePRSHalf:
+                    case KeyType.NodePRHalf_2:
+                    case KeyType.NodePHalf:
+                    case KeyType.NodeRHalf:
+                    case KeyType.NodeSHalf:
+                        return true;
+                }
+
+                return false;
+            }
+        }
+
         public AnimationLayer(uint version) : base(version)
         {
-            KeyTimings = new List< float >();
             Keys = new List< Key >();
             PositionScale = Vector3.One;
             ScaleScale = Vector3.One;
@@ -42,12 +65,10 @@ namespace GFDLibrary.Animations
         {
             KeyType = ( KeyType )reader.ReadInt32();
 
-            int keyframeCount = reader.ReadInt32();
+            var keyCount = reader.ReadInt32();
+            var keyTimings = reader.ReadSingles( keyCount );
 
-            for ( int i = 0; i < keyframeCount; i++ )
-                KeyTimings.Add( reader.ReadSingle() );
-
-            for ( int i = 0; i < keyframeCount; i++ )
+            for ( int i = 0; i < keyCount; i++ )
             {
                 Key key;
 
@@ -108,11 +129,12 @@ namespace GFDLibrary.Animations
                         throw new InvalidDataException( $"Unknown/Invalid Key frame type: {KeyType}" );
                 }
 
+                key.Time = keyTimings[ i ];
                 key.Read( reader );
                 Keys.Add( key );
             }
 
-            if ( UsesScaleVectors() )
+            if ( UsesScaleVectors )
             {
                 PositionScale = reader.ReadVector3();
                 ScaleScale = reader.ReadVector3();
@@ -123,39 +145,14 @@ namespace GFDLibrary.Animations
         {
             writer.WriteInt32( ( int ) KeyType );
             writer.WriteInt32( Keys.Count );
-            KeyTimings.ForEach( writer.WriteSingle );
+            Keys.ForEach( x => writer.WriteSingle( x.Time ) );
             Keys.ForEach( x => x.Write( writer ) );
 
-            if ( UsesScaleVectors() )
+            if ( UsesScaleVectors )
             {
                 writer.WriteVector3( PositionScale );
                 writer.WriteVector3( ScaleScale );
             }
-        }
-
-        public bool UsesScaleVectors()
-        {
-            return KeyType == KeyType.NodePRHalf   || KeyType == KeyType.NodePRSHalf ||
-                   KeyType == KeyType.NodePRHalf_2 || KeyType == KeyType.NodePHalf ||
-                   KeyType == KeyType.NodeRHalf    || KeyType == KeyType.NodeSHalf;
-        }
-
-        public bool HasPRSKeyFrames()
-        {
-            switch ( KeyType )
-            {
-                case KeyType.NodePR:
-                case KeyType.NodePRS:
-                case KeyType.NodePRHalf:
-                case KeyType.NodePRSHalf:
-                case KeyType.NodePRHalf_2:
-                case KeyType.NodePHalf:
-                case KeyType.NodeRHalf:
-                case KeyType.NodeSHalf:
-                    return true;
-            }
-
-            return false;
         }
     }
 }

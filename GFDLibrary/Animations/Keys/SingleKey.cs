@@ -4,15 +4,12 @@ namespace GFDLibrary.Animations
 {
     public class SingleKey : Key
     {
-        public override KeyType Type { get; internal set; }
-
         public float Value { get; set; }
 
         public SingleKey() : this( KeyType.Single ) { }
 
-        public SingleKey(KeyType type)
+        public SingleKey( KeyType type ) : base( type )
         {
-            Type = type;
         }
 
         internal override void Read( ResourceReader reader )

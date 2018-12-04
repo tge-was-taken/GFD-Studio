@@ -290,7 +290,7 @@ namespace GFDLibrary.Animations
 
                 foreach ( var track in controller.Layers )
                 {
-                    if ( !track.HasPRSKeyFrames() )
+                    if ( !track.HasPRSKeyFrames )
                         continue;
 
                     var positionScale = track.PositionScale;

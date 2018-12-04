@@ -1,10 +1,18 @@
-﻿using GFDLibrary.IO;
+﻿using System.Collections.Generic;
+using GFDLibrary.IO;
 
 namespace GFDLibrary.Animations
 {
     public abstract class Key
     {
-        public abstract KeyType Type { get; internal set; }
+        public KeyType Type { get; }
+
+        public float Time { get; set; }
+
+        protected Key( KeyType type )
+        {
+            Type = type;
+        } 
 
         internal abstract void Read( ResourceReader reader );
         internal abstract void Write( ResourceWriter writer );

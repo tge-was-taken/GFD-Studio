@@ -3,18 +3,18 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using OpenTK.Graphics.OpenGL;
 
-namespace GFDStudio.GUI.Controls.ModelView
+namespace GFDLibrary.Rendering.OpenGL
 {
     public class GLShaderProgramBuilder : IDisposable
     {
-        private int mShaderProgramId;
-        private List<int> mAttachedShaders;
+        private int mId;
+        private readonly List<int> mAttachedShaders;
         private bool mDisposed;
         private bool mHasBuilt;
 
         public GLShaderProgramBuilder()
         {
-            mShaderProgramId = GL.CreateProgram();
+            mId = GL.CreateProgram();
             mAttachedShaders = new List<int>();
         }
 
@@ -68,7 +68,7 @@ namespace GFDStudio.GUI.Controls.ModelView
             }
 
             // attach it to the program
-            GL.AttachShader( mShaderProgramId, shader );
+            GL.AttachShader( mId, shader );
 
             // keep it here to delete it later
             mAttachedShaders.Add( shader );
@@ -76,56 +76,56 @@ namespace GFDStudio.GUI.Controls.ModelView
             return true;
         }
 
-        public bool TryBuild( out GLShaderProgram program )
+        public bool TryBuild( out int id )
         {
             if ( mHasBuilt )
             {
                 Trace.TraceError( "Attempted to build shader program twice" );
 
-                program = null;
+                id = 0;
                 return false;
             }
 
             // link program
-            GL.LinkProgram( mShaderProgramId );
+            GL.LinkProgram( mId );
 
             // check for linking errors
-            GL.GetProgram( mShaderProgramId, GetProgramParameterName.LinkStatus, out int linkStatus );
+            GL.GetProgram( mId, GetProgramParameterName.LinkStatus, out int linkStatus );
 
             if ( linkStatus == 0 )
             {
                 Trace.TraceError( "Shader program linking failed" );
 
                 // print info log
-                GL.GetProgram( mShaderProgramId, GetProgramParameterName.InfoLogLength, out int infoLogLength );
+                GL.GetProgram( mId, GetProgramParameterName.InfoLogLength, out int infoLogLength );
                 if ( infoLogLength > 0 )
                 {
-                    GL.GetProgramInfoLog( mShaderProgramId, infoLogLength + 1, out int length, out var log );
+                    GL.GetProgramInfoLog( mId, infoLogLength + 1, out int length, out var log );
 
                     Trace.TraceError( log );
-                    Trace.TraceError( "");
+                    Trace.TraceError( "" );
                 }
 
-                program = null;
+                id = 0;
                 return false;
             }
             else
             {
                 // print info log
-                GL.GetProgram( mShaderProgramId, GetProgramParameterName.InfoLogLength, out int infoLogLength );
+                GL.GetProgram( mId, GetProgramParameterName.InfoLogLength, out int infoLogLength );
                 if ( infoLogLength > 0 )
                 {
-                    GL.GetProgramInfoLog( mShaderProgramId, infoLogLength + 1, out int length, out var log );
+                    GL.GetProgramInfoLog( mId, infoLogLength + 1, out int length, out var log );
 
                     Trace.TraceInformation( $"Shader program info log:" );
                     Trace.TraceInformation( log );
-                    Trace.TraceInformation( "");
+                    Trace.TraceInformation( "" );
                 }
             }
 
             DeleteAttachedShaders();
 
-            program = new GLShaderProgram( mShaderProgramId );
+            id = mId;
             mHasBuilt = true;
 
             return true;
@@ -163,10 +163,10 @@ namespace GFDStudio.GUI.Controls.ModelView
 
         private void DeleteProgram()
         {
-            if ( mShaderProgramId != 0 )
+            if ( mId != 0 )
             {
-                GL.DeleteProgram( mShaderProgramId );
-                mShaderProgramId = 0;
+                GL.DeleteProgram( mId );
+                mId = 0;
             }
         }
     }

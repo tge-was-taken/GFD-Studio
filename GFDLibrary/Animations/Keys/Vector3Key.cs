@@ -5,15 +5,12 @@ namespace GFDLibrary.Animations
 {
     public class Vector3Key : Key
     {
-        public override KeyType Type { get; internal set; }
-
         public Vector3 Value { get; set; }
 
         public Vector3Key() : this( KeyType.Vector3 ) { }
 
-        public Vector3Key( KeyType type )
+        public Vector3Key( KeyType type ) : base( type )
         {
-            Type = type;
         }
 
         internal override void Read( ResourceReader reader )

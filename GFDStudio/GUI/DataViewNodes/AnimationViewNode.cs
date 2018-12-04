@@ -4,8 +4,8 @@ using System.Linq;
 using System.Windows.Forms;
 using GFDLibrary;
 using GFDLibrary.Animations;
+using GFDLibrary.Animations.Conversion;
 using GFDLibrary.Common;
-using GFDLibrary.Models.Conversion;
 using GFDStudio.FormatModules;
 using GFDStudio.GUI.TypeConverters;
 
