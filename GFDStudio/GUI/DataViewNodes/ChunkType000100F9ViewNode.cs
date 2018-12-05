@@ -87,14 +87,14 @@ namespace GFDStudio.GUI.DataViewNodes
             Entry1ListViewNode =
                 ( ListViewNode<ChunkType000100F9Entry1> )DataViewNodeFactory.Create(
                     "Entry Type 1 List", Data.Entry1List,
-                    new object[] { new ListItemNameProvider<ChunkType000100F9Entry1>( ( item, index ) => item.NodeName == null ? index.ToString() : item.NodeName ) } );
+                    new object[] { new ListItemNameProvider<ChunkType000100F9Entry1>( ( item, index ) => item.NodeName ?? index.ToString() ) } );
 
             AddChildNode( Entry1ListViewNode );
 
             Entry2ListViewNode =
                 ( ListViewNode<ChunkType000100F9Entry2> )DataViewNodeFactory.Create(
                     "Entry Type 2 List", Data.Entry2List,
-                    new object[] { new ListItemNameProvider<ChunkType000100F9Entry2>( ( item, index ) => item.NodeName == null ? index.ToString() : item.NodeName ) } );
+                    new object[] { new ListItemNameProvider<ChunkType000100F9Entry2>( ( item, index ) => item.NodeName ?? index.ToString() ) } );
 
             AddChildNode( Entry2ListViewNode );
 

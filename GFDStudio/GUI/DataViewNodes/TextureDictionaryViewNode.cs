@@ -24,11 +24,17 @@ namespace GFDStudio.GUI.DataViewNodes
             RegisterExportHandler<TextureDictionary>( path => Data.Save(  path ) );
             RegisterReplaceHandler<TextureDictionary>( Resource.Load<TextureDictionary> );
 
-            RegisterAddHandler< Bitmap >( path => Data.Add( TextureEncoder.Encode( Path.GetFileNameWithoutExtension( path ) + ".dds", 
-                TextureFormat.DDS, new Bitmap( path ) ) ) );
+            RegisterAddHandler<Bitmap>( path => Data.Add( TextureEncoder.Encode( Path.GetFileNameWithoutExtension( path ) + ".dds",
+                                                                                 TextureFormat.DDS, new Bitmap( path ) ) ) );
 
-            RegisterAddHandler< Stream >( path => Data.Add( new Texture( Path.GetFileNameWithoutExtension( path ) + ".dds", 
-                TextureFormat.DDS, File.ReadAllBytes( path ) ) ) );
+            RegisterAddHandler<Stream>( path => Data.Add( new Texture( Path.GetFileNameWithoutExtension( path ) + ".dds",
+                                                                       TextureFormat.DDS, File.ReadAllBytes( path ) ) ) );
+
+            RegisterCustomHandler( "Add", "New texture", () =>
+            {
+                Data.Add(Texture.CreateDefaultTexture( "New texture.dds" ) );
+                InitializeView( true );
+            });
 
             RegisterModelUpdateHandler( () =>
             {
@@ -41,27 +47,10 @@ namespace GFDStudio.GUI.DataViewNodes
                 return textureDictionary;
             } );
 
-            RegisterCustomHandler( "Convert to field texture archive", () =>
-            {
-                using ( var dialog = new SaveFileDialog() )
-                {
-                    dialog.Filter = "Field Texture Archive (*.bin)|*.bin";
-                    dialog.AutoUpgradeEnabled = true;
-                    dialog.CheckPathExists = true;
-                    dialog.FileName = Text;
-                    dialog.OverwritePrompt = true;
-                    dialog.Title = "Select a file to export to.";
-                    dialog.ValidateNames = true;
-                    dialog.AddExtension = true;
+            RegisterCustomHandler( "Convert to", "Field texture archive (PS3)", () => { ConvertToFieldTextureArchive( false ); } );
+            RegisterCustomHandler( "Convert to", "Field texture archive (PS4)", () => { ConvertToFieldTextureArchive( true ); } );
 
-                    if ( dialog.ShowDialog() != DialogResult.OK )
-                        return;
-
-                    Replace( TextureDictionary.ConvertToFieldTextureArchive( Data, dialog.FileName ) );
-                }
-            } );
-
-            RegisterCustomHandler( "Export All", () =>
+            RegisterCustomHandler( "Export", "All", () =>
             {
                 using ( var dialog = new VistaFolderBrowserDialog() )
                 {
@@ -72,6 +61,26 @@ namespace GFDStudio.GUI.DataViewNodes
                         File.WriteAllBytes( Path.Combine( dialog.SelectedPath, viewModel.Text ), viewModel.Data.Data );
                 }
             } );
+        }
+
+        private void ConvertToFieldTextureArchive( bool usePs4Format )
+        {
+            using ( var dialog = new SaveFileDialog() )
+            {
+                dialog.Filter = "Field Texture Archive (*.bin)|*.bin";
+                dialog.AutoUpgradeEnabled = true;
+                dialog.CheckPathExists = true;
+                dialog.FileName = Text;
+                dialog.OverwritePrompt = true;
+                dialog.Title = "Select a file to export to.";
+                dialog.ValidateNames = true;
+                dialog.AddExtension = true;
+
+                if ( dialog.ShowDialog() != DialogResult.OK )
+                    return;
+
+                Replace( TextureDictionary.ConvertToFieldTextureArchive( Data, dialog.FileName, usePs4Format ) );
+            }
         }
 
         protected override void InitializeViewCore()

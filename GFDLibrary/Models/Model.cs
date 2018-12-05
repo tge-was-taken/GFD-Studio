@@ -222,7 +222,19 @@ namespace GFDLibrary.Models
                                     var mesh = attachment.GetValue<Mesh>();
 
                                     for ( int i = 0; i < mesh.Vertices.Length; i++ )
-                                        mesh.Vertices[i] = Vector3.Transform( mesh.Vertices[i], offsetMatrix );
+                                    {
+                                        var position = mesh.Vertices[ i ];
+                                        var newPosition = mesh.Vertices[ i ] = Vector3.Transform( position, offsetMatrix );
+
+                                        if ( mesh.MorphTargets != null )
+                                        {
+                                            foreach ( var morphTarget in mesh.MorphTargets )
+                                            {
+                                                Trace.Assert( morphTarget.VertexCount == mesh.VertexCount );
+                                                morphTarget.Vertices[ i ] = Vector3.Transform( ( position + morphTarget.Vertices[ i ] ), offsetMatrix ) - newPosition;
+                                            }
+                                        }
+                                    }
 
                                     if ( mesh.Normals != null )
                                     {
@@ -425,7 +437,7 @@ namespace GFDLibrary.Models
 
         private void ValidateFlags()
         {
-            if ( Bones == null )
+            if ( Bones == null || Bones.Count == 0 )
                 mFlags &= ~ModelFlags.HasSkinning;
             else
                 mFlags |= ModelFlags.HasSkinning;

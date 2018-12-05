@@ -180,7 +180,7 @@ namespace GFDStudio.GUI.DataViewNodes
                 var node = Resource.Load<Node>( file );
                 AddChildNode( DataViewNodeFactory.Create( node.Name, node ) );
             } );
-            RegisterCustomHandler( "Add new", () => { AddChildNode( new NodeViewNode( "New node", new Node( "New node" ) ) ); } );
+            RegisterCustomHandler( "Add", "New node", () => { AddChildNode( new NodeViewNode( "New node", new Node( "New node" ) ) ); } );
             base.InitializeCore();
         }
     }

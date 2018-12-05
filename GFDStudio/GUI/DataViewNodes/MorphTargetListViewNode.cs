@@ -27,8 +27,7 @@ namespace GFDStudio.GUI.DataViewNodes
             RegisterAddHandler<MorphTarget>( ( path ) =>
             {
                 Data.Add( Resource.Load<MorphTarget>( path ) );
-                InitializeView( true );
-            } );
+            });
             RegisterModelUpdateHandler( () =>
             {
                 var list = new MorphTargetList { Flags = Flags };
@@ -37,7 +36,7 @@ namespace GFDStudio.GUI.DataViewNodes
 
                 return list;
             } );
-            RegisterCustomHandler( "Add new", () =>
+            RegisterCustomHandler( "Add", "New morph target", () =>
             {
                 Data.Add( new MorphTarget() );
                 InitializeView( true );

@@ -118,17 +118,17 @@ namespace GFDStudio.GUI.DataViewNodes
 
                 return model;
             } );
-            RegisterCustomHandler( "Add New Animation Pack", () =>
+            RegisterCustomHandler( "Add/New", "Animation pack", () =>
             {
                 Data.AnimationPack = new AnimationPack( Data.Version );
                 InitializeView( true );
             } );
-            RegisterCustomHandler( "Add New Chunk Type 000100F9", () =>
+            RegisterCustomHandler( "Add/New", "Chunk Type 000100F9", () =>
             {
                 Data.ChunkType000100F9 = new ChunkType000100F9( Data.Version );
                 InitializeView( true );
             } );
-            RegisterCustomHandler( "Add New Chunk Type 000100F8", () =>
+            RegisterCustomHandler( "Add/New", "Chunk Type 000100F8", () =>
             {
                 Data.ChunkType000100F8 = new ChunkType000100F8( Data.Version );
                 InitializeView( true );

@@ -55,7 +55,7 @@ namespace GFDStudio.GUI.DataViewNodes
 
         protected override void InitializeCore()
         {
-            RegisterCustomHandler( "Add New", () =>
+            RegisterCustomHandler( "Add", "New texture map", () =>
             {
                 var dialog = new CreateTextureMapDialog();
                 if ( dialog.ShowDialog() != DialogResult.OK || dialog.Result.Name.Length == 0 || dialog.Result.Type == -1 )
@@ -64,7 +64,6 @@ namespace GFDStudio.GUI.DataViewNodes
                 var textureMap = new TextureMap( dialog.Result.Name );
                 Data[dialog.Result.Type] = textureMap;
                 InitializeView( true );
-                HasPendingChanges = true;
 
             }, Keys.Control | Keys.A );
 

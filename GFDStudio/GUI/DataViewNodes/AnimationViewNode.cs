@@ -100,7 +100,24 @@ namespace GFDStudio.GUI.DataViewNodes
 
                 return animation;
             } );
-            RegisterCustomHandler( "Fix IDs", () => ImportModelAndFixTargetIds( Data ) );
+            RegisterCustomHandler( "Tools", "Fix IDs", () => ImportModelAndFixTargetIds( Data ) );
+            RegisterCustomHandler( "Tools", "Retarget", () =>
+            {
+                var originalModel = ( Parent as ModelPackViewNode )?.Model?.Data ??
+                                    ModuleImportUtilities.SelectImportFile<ModelPack>( "Select the original model file." )?.Model;
+
+                if ( originalModel == null )
+                    return;
+
+                var newModel = ModuleImportUtilities.SelectImportFile<ModelPack>( "Select the new model file." )?.Model;
+                if ( newModel == null )
+                    return;
+
+                bool fixArms = MessageBox.Show( "Fix arms? If unsure, select No.", "Question", MessageBoxButtons.YesNo,
+                                                MessageBoxIcon.Question, MessageBoxDefaultButton.Button2 ) == DialogResult.Yes;
+
+                Data.Retarget( originalModel, newModel, fixArms );
+            } );
         }
 
         protected override void InitializeViewCore()

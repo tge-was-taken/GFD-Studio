@@ -22,8 +22,13 @@ namespace GFDStudio.GUI.DataViewNodes
         {
             RegisterExportHandler<MaterialDictionary>( path => Data.Save(  path ) );
             RegisterReplaceHandler<MaterialDictionary>( Resource.Load<MaterialDictionary> );
-            RegisterAddHandler< Material >( path => Data.Add( Resource.Load< Material >( path ) ) );
-            RegisterCustomHandler( "Export All", () =>
+            RegisterAddHandler<Material>( path => Data.Add( Resource.Load<Material>( path ) ) );
+            RegisterCustomHandler( "Add", "New material", () =>
+            {
+                Data.Add( new Material( "New material" ) );
+                InitializeView( true );
+            } );
+            RegisterCustomHandler( "Export", "All", () =>
             {
                 using ( var dialog = new VistaFolderBrowserDialog() )
                 {

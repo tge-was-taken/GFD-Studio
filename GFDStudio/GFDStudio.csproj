@@ -159,6 +159,7 @@
     <Compile Include="GUI\Controls\AnimationPlaybackState.cs" />
     <Compile Include="GUI\Controls\ModelView\DefaultShaderProgram.cs" />
     <Compile Include="GUI\Controls\ModelView\LineShaderProgram.cs" />
+    <Compile Include="GUI\DataViewNodes\AnimationListViewNode.cs" />
     <Compile Include="GUI\DataViewNodes\BoneViewNode.cs" />
     <Compile Include="GUI\DataViewNodes\MorphTargetListViewNode.cs" />
     <Compile Include="GUI\DataViewNodes\MorphTargetViewNode.cs" />

@@ -74,7 +74,7 @@ namespace GFDStudio.GUI.DataViewNodes
                 mesh.MorphTargets = MorphTargets.Data;
                 return mesh;
             });
-            RegisterCustomHandler( "Add morph target list", () =>
+            RegisterCustomHandler( "Add", "New morph target list", () =>
             {
                 Data.MorphTargets = new MorphTargetList { Flags = 2 };
                 InitializeView( true );

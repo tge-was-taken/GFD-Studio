@@ -119,7 +119,7 @@ namespace GFDStudio.GUI.DataViewNodes
 
         private bool mHasPendingChanges;
         private bool mIsInitializingView;
-        private readonly List<ToolStripMenuItem> mCustomHandlers;
+        private readonly List<(string Menu, ToolStripMenuItem Item)> mCustomHandlers;
 
         /// <summary>
         /// Gets or sets if the tree node is dirty and its resource needs to be rebuilt.
@@ -145,7 +145,7 @@ namespace GFDStudio.GUI.DataViewNodes
             mExportHandlers = new Dictionary<Type, DataViewNodeExportHandler>();
             mReplaceHandlers = new Dictionary<Type, DataViewNodeReplaceHandler>();
             mAddHandlers = new Dictionary<Type, DataViewNodeAddHandler>();
-            mCustomHandlers = new List<ToolStripMenuItem>();
+            mCustomHandlers = new List<(string Menu, ToolStripMenuItem Item)>();
         }
 
         public void AddChildNode( TreeNode node )
@@ -280,9 +280,7 @@ namespace GFDStudio.GUI.DataViewNodes
                 }
 
                 foreach ( string fileName in openFileDlg.FileNames )
-                {
-                    Add( fileName );
-                }
+                    AddInternal( fileName );
 
                 InitializeView( true );
             }
@@ -291,16 +289,21 @@ namespace GFDStudio.GUI.DataViewNodes
 
         public void Add( string filepath )
         {
+            AddInternal( filepath );
+            InitializeView( true );
+        }
+
+        private void AddInternal( string filepath )
+        {
             if ( mAddHandlers.Count == 0 )
                 return;
 
-            var type = GetTypeFromPath( filepath, mAddHandlers.Keys );
+            var type      = GetTypeFromPath( filepath, mAddHandlers.Keys );
             var addAction = mAddHandlers[type];
 
             Trace.TraceInformation( $"{nameof( DataViewNode )} [{Text}]: {nameof( Add )} {type} from {filepath}" );
 
             addAction.Invoke( filepath );
-            HasPendingChanges = true;
         }
 
         // 
@@ -480,7 +483,12 @@ namespace GFDStudio.GUI.DataViewNodes
 
         protected void RegisterCustomHandler( string text, Action action, Keys shortcutKeys = Keys.None )
         {
-            mCustomHandlers.Add( new ToolStripMenuItem( text, null, CreateEventHandler( action ), shortcutKeys ) );
+            RegisterCustomHandler( null, text, action, shortcutKeys );
+        }
+
+        protected void RegisterCustomHandler( string menu, string text, Action action, Keys shortcutKeys = Keys.None )
+        {
+            mCustomHandlers.Add( ( menu, new ToolStripMenuItem( text, null, CreateEventHandler( action ), shortcutKeys ) ) );
         }
 
         //
@@ -625,47 +633,104 @@ namespace GFDStudio.GUI.DataViewNodes
         {
             ContextMenuStrip = new ContextMenuStrip();
 
-            if ( mCustomHandlers.Count > 0 )
+            var uncategorizedCustomHandlers = mCustomHandlers.Where( x => x.Menu == null ).ToList();
+            if ( uncategorizedCustomHandlers.Count > 0 )
             {
-                foreach ( var menuItem in mCustomHandlers )
-                    ContextMenuStrip.Items.Add( menuItem );
+                foreach ( var handler in uncategorizedCustomHandlers )
+                    ContextMenuStrip.Items.Add( handler.Item );
 
                 ContextMenuStrip.Items.Add( new ToolStripSeparator() );
             }
 
             if ( ContextMenuFlags.HasFlag( DataViewNodeMenuFlags.Export ) )
             {
-                ContextMenuStrip.Items.Add( new ToolStripMenuItem( "&Export", null, CreateEventHandler( () => Export() ), Keys.Control | Keys.E ) );
+                ContextMenuStrip.Items.Add( new ToolStripMenuItem( "&Export", null, CreateEventHandler( () => Export() ), Keys.Control | Keys.E )
+                {
+                    Name = "Export"
+                });
             }
 
             if ( ContextMenuFlags.HasFlag( DataViewNodeMenuFlags.Replace ) )
             {
-                ContextMenuStrip.Items.Add( new ToolStripMenuItem( "&Replace", null, CreateEventHandler( Replace ), Keys.Control | Keys.R ) );
+                ContextMenuStrip.Items.Add( new ToolStripMenuItem( "&Replace", null, CreateEventHandler( Replace ), Keys.Control | Keys.R )
+                {
+                    Name = "Replace"
+                });
+
                 if ( !ContextMenuFlags.HasFlag( DataViewNodeMenuFlags.Add ) )
                     ContextMenuStrip.Items.Add( new ToolStripSeparator() );
             }
 
             if ( ContextMenuFlags.HasFlag( DataViewNodeMenuFlags.Add ) )
             {
-                ContextMenuStrip.Items.Add( new ToolStripMenuItem( "&Add", null, CreateEventHandler( Add ), Keys.Control | Keys.A ) );
+                ContextMenuStrip.Items.Add( new ToolStripMenuItem( "&Add", null, CreateEventHandler( Add ),
+                                                                   Keys.Control | Keys.A ) { Name = "Add" } );
+
                 if ( ContextMenuFlags.HasFlag( DataViewNodeMenuFlags.Move ) )
                     ContextMenuStrip.Items.Add( new ToolStripSeparator() );
             }
 
             if ( ContextMenuFlags.HasFlag( DataViewNodeMenuFlags.Move ) )
             {
-                ContextMenuStrip.Items.Add( new ToolStripMenuItem( "Move &Up", null, CreateEventHandler( MoveUp ), Keys.Control | Keys.Up ) );
-                ContextMenuStrip.Items.Add( new ToolStripMenuItem( "Move &Down", null, CreateEventHandler( MoveDown ), Keys.Control | Keys.Down ) );
+                ContextMenuStrip.Items.Add( new ToolStripMenuItem( "Move &Up", null, CreateEventHandler( MoveUp ), Keys.Control | Keys.Up )
+                {
+                    Name = "Move Up"
+                });
+                ContextMenuStrip.Items.Add( new ToolStripMenuItem( "Move &Down", null, CreateEventHandler( MoveDown ), Keys.Control | Keys.Down )
+                {
+                    Name = "Move Down"
+                });
             }
 
             if ( ContextMenuFlags.HasFlag( DataViewNodeMenuFlags.Rename ) )
             {
-                ContextMenuStrip.Items.Add( new ToolStripMenuItem( "Re&name", null, CreateEventHandler( BeginRename ), Keys.Control | Keys.N ) );
+                ContextMenuStrip.Items.Add( new ToolStripMenuItem( "Re&name", null, CreateEventHandler( BeginRename ), Keys.Control | Keys.N )
+                {
+                    Name = "Rename"
+                });
+            }
+
+            foreach ( (string menuPath, ToolStripMenuItem item) in mCustomHandlers.Where( x => x.Menu != null ) )
+            {
+                // Add custom handlers with a menu path
+                var menuParts = menuPath.Split( '/' );
+                ToolStripMenuItem parentMenuItem = null;
+
+                foreach ( string menu in menuParts )
+                {
+                    var menuItem = ( ToolStripMenuItem ) ( parentMenuItem == null ? ContextMenuStrip.Items.Find( menu, false ).FirstOrDefault()
+                                                                                  : parentMenuItem.DropDownItems.Find( menu, false ).FirstOrDefault() );
+
+                    var isNewMenuItem = false;
+                    if ( menuItem == null )
+                    {
+                        isNewMenuItem = true;
+                        menuItem      = new ToolStripMenuItem( menu ) { Name = menu };
+                    }
+
+                    if ( isNewMenuItem )
+                    {
+                        if ( parentMenuItem == null )
+                            ContextMenuStrip.Items.Add( menuItem );
+                        else
+                            parentMenuItem.DropDownItems.Add( menuItem );
+                    }
+
+                    parentMenuItem = menuItem;
+                }
+
+                if ( parentMenuItem == null )
+                    ContextMenuStrip.Items.Add( item );
+                else
+                    parentMenuItem.DropDownItems.Add( item );
             }
 
             if ( ContextMenuFlags.HasFlag( DataViewNodeMenuFlags.Delete ) )
             {
-                ContextMenuStrip.Items.Add( new ToolStripMenuItem( "&Delete", null, CreateEventHandler( Delete ), Keys.Control | Keys.Delete ) );
+                ContextMenuStrip.Items.Add( new ToolStripMenuItem( "&Delete", null, CreateEventHandler( Delete ), Keys.Control | Keys.Delete )
+                {
+                    Name = "Delete"
+                });
             }
         }
 
@@ -728,7 +793,14 @@ namespace GFDStudio.GUI.DataViewNodes
 
         private EventHandler CreateEventHandler( Action action )
         {
-            return ( s, e ) => action();
+            return ( s, e ) =>
+            {
+                // Annoyingly, the context menu strip stays visible when a dialog is opened while a 
+                // drop down menu is visible. That's why we explicitly hide it here.
+                ContextMenuStrip.Visible = false;
+
+                action();
+            };
         }
     }
 
