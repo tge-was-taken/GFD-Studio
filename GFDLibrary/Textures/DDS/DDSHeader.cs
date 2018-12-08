@@ -7,6 +7,7 @@ namespace GFDLibrary.Textures.DDS
     public class DDSHeader
     {
         public const int MAGIC = 0x20534444; // 'DDS '
+        public const int SIZE = 0x7C;
 
         public int Size { get; set; }
 
@@ -38,7 +39,7 @@ namespace GFDLibrary.Textures.DDS
 
         public DDSHeader()
         {
-            Size  = 0x7C;
+            Size  = SIZE;
             Flags = DDSHeaderFlags.Caps | DDSHeaderFlags.Height | DDSHeaderFlags.Width | DDSHeaderFlags.PixelFormat;
             Caps  = DDSHeaderCaps.Texture;
         }

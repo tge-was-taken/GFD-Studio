@@ -129,7 +129,7 @@ namespace GFDStudio.GUI.DataViewNodes
         {
             using ( var dialog = new OpenFileDialog() )
             {
-                dialog.Filter = ModuleFilterGenerator.GenerateFilter( new[] { FormatModuleUsageFlags.Import }, typeof( ModelPack ) );
+                dialog.Filter = ModuleFilterGenerator.GenerateFilter( new[] { FormatModuleUsageFlags.Import }, typeof( ModelPack ) ).Filter;
                 dialog.AutoUpgradeEnabled = true;
                 dialog.CheckPathExists = true;
                 dialog.Title = "Select a model file.";

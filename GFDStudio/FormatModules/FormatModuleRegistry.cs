@@ -62,7 +62,11 @@ namespace GFDStudio.FormatModules
                 new EplFormatModule(),
                 new MorphFormatModule(),
                 new MorphTargetListFormatModule(),
-                new MorphTargetFormatModule()
+                new MorphTargetFormatModule(),
+
+                new FieldTexturePS3FormatModule(),
+                new DDSFormatModule(),
+                new GNFTextureFormatModule()
             );
         }
 

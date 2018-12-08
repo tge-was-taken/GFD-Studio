@@ -148,7 +148,10 @@
     <Compile Include="FormatModules\CameraFormatModule.cs" />
     <Compile Include="FormatModules\ChunkType000100F8FormatModule.cs" />
     <Compile Include="FormatModules\ChunkType000100F9FormatModule.cs" />
+    <Compile Include="FormatModules\DDSFormatModule.cs" />
     <Compile Include="FormatModules\EplFormatModule.cs" />
+    <Compile Include="FormatModules\FieldTexturePS3FormatModule.cs" />
+    <Compile Include="FormatModules\GNFTextureFormatModule.cs" />
     <Compile Include="FormatModules\MeshFormatModule.cs" />
     <Compile Include="FormatModules\LightFormatModule.cs" />
     <Compile Include="FormatModules\MorphFormatModule.cs" />
@@ -161,6 +164,8 @@
     <Compile Include="GUI\Controls\ModelView\LineShaderProgram.cs" />
     <Compile Include="GUI\DataViewNodes\AnimationListViewNode.cs" />
     <Compile Include="GUI\DataViewNodes\BoneViewNode.cs" />
+    <Compile Include="GUI\DataViewNodes\FieldTexturePS3ViewNode.cs" />
+    <Compile Include="GUI\DataViewNodes\GNFTextureViewNode.cs" />
     <Compile Include="GUI\DataViewNodes\MorphTargetListViewNode.cs" />
     <Compile Include="GUI\DataViewNodes\MorphTargetViewNode.cs" />
     <Compile Include="GUI\Forms\CreateTextureMapDialog.cs">

@@ -1,7 +1,9 @@
 using System;
+using System.Drawing;
 using System.IO;
 using System.Text;
 using GFDLibrary.IO.Common;
+using GFDLibrary.Textures.DDS;
 using GFDLibrary.Textures.Swizzle;
 
 namespace GFDLibrary.Textures.GNF
@@ -11,7 +13,7 @@ namespace GFDLibrary.Textures.GNF
     /// </summary>
     public class GNFTexture
     {
-        private const int MAGIC = 0x20464E47; // GNF\0x20
+        public const int MAGIC = 0x20464E47; // GNF\0x20
 
         private uint mWord0;
         private uint mWord1;
@@ -185,55 +187,109 @@ namespace GFDLibrary.Textures.GNF
 
         public GNFTexture( TexturePixelFormat format, byte mipMapCount, short width, short height, byte[] data, bool isSwizzled )
         {
-            Width  = width;
-            Height = height;
-            Data = isSwizzled ? data : Swizzler.Swizzle( data, width, height, format == TexturePixelFormat.BC1 ? 8 : 16, SwizzleType.PS4 );
-
+            SurfaceFormat surfaceFormat;
             switch ( format )
             {
                 case TexturePixelFormat.BC1:
-                    SurfaceFormat = SurfaceFormat.BC1;
+                    surfaceFormat = SurfaceFormat.BC1;
                     break;
                 case TexturePixelFormat.BC2:
-                    SurfaceFormat = SurfaceFormat.BC2;
+                    surfaceFormat = SurfaceFormat.BC2;
                     break;
                 case TexturePixelFormat.BC3:
-                    SurfaceFormat = SurfaceFormat.BC3;
+                    surfaceFormat = SurfaceFormat.BC3;
                     break;
                 case TexturePixelFormat.BC7:
-                    SurfaceFormat = SurfaceFormat.BC7;
+                    surfaceFormat = SurfaceFormat.BC7;
                     break;
                 case TexturePixelFormat.ARGB:
-                    SurfaceFormat = SurfaceFormat.Format8_8_8_8;
+                    surfaceFormat = SurfaceFormat.Format8_8_8_8;
                     break;
+                default:
+                    throw new NotImplementedException( format.ToString() );
             }
 
-            Alignment = 8;
-            BaseArraySliceIndex = 0;
-            BaseMipLevel = 0;
-            ChannelOrderX = TextureChannel.X;
-            ChannelOrderY = TextureChannel.Y;
-            ChannelOrderZ = TextureChannel.Z;
-            ChannelOrderW = TextureChannel.W;
-            ChannelType = ChannelType.UNorm;
-            DccAlphaOnMsb = false;
-            DccColorTransform = 0;
-            Depth = 1;
-            IsPaddedToPow2 = false;
-            LastArraySliceIndex = 0;
-            LastMipLevel = 0;
+            Init( surfaceFormat, mipMapCount, width, height, data, isSwizzled );
+        }
+
+        public GNFTexture( Bitmap bitmap )
+        {
+            var ddsFormat = DDSCodec.DetermineBestCompressedFormat( bitmap );
+            var dds = DDSCodec.CompressPixelData( bitmap, ddsFormat );
+            var surfaceFormat = GetSurfaceFormat( ddsFormat );
+            Init( surfaceFormat, 1, ( short )bitmap.Width, ( short )bitmap.Height, dds, false );
+        }
+
+        private static SurfaceFormat GetSurfaceFormat( DDSPixelFormatFourCC ddsFormat )
+        {
+            SurfaceFormat surfaceFormat;
+            switch ( ddsFormat )
+            {
+                case DDSPixelFormatFourCC.DXT1:
+                    surfaceFormat = SurfaceFormat.BC1;
+                    break;
+                case DDSPixelFormatFourCC.DXT2:
+                case DDSPixelFormatFourCC.DXT3:
+                    surfaceFormat = SurfaceFormat.BC2;
+                    break;
+
+                case DDSPixelFormatFourCC.DXT4:
+                case DDSPixelFormatFourCC.DXT5:
+                    surfaceFormat = SurfaceFormat.BC3;
+                    break;
+
+                case DDSPixelFormatFourCC.ATI1:
+                    surfaceFormat = SurfaceFormat.BC4;
+                    break;
+
+                case DDSPixelFormatFourCC.ATI2N_3Dc:
+                    surfaceFormat = SurfaceFormat.BC5;
+                    break;
+
+                default:
+                    throw new NotSupportedException( ddsFormat.ToString() );
+            }
+
+            return surfaceFormat;
+        }
+
+        public GNFTexture( DDSStream dds )
+        {
+            var surfaceFormat = GetSurfaceFormat( dds.PixelFormat.FourCC );
+            Init( surfaceFormat, ( byte ) dds.MipMapCount, ( short ) dds.Width, ( short ) dds.Height, dds.GetPixelData(), false );
+        }
+
+        private void Init( SurfaceFormat format, byte mipMapCount, short width, short height, byte[] data, bool isSwizzled )
+        {
+            Width  = width;
+            Height = height;
+            Data   = isSwizzled ? data : Swizzler.Swizzle( data, width, height, format == SurfaceFormat.BC1 ? 8 : 16, SwizzleType.PS4 );
+            Alignment                  = 8;
+            BaseArraySliceIndex        = 0;
+            BaseMipLevel               = 0;
+            ChannelOrderX              = TextureChannel.X;
+            ChannelOrderY              = TextureChannel.Y;
+            ChannelOrderZ              = TextureChannel.Z;
+            ChannelOrderW              = TextureChannel.W;
+            ChannelType                = ChannelType.UNorm;
+            DccAlphaOnMsb              = false;
+            DccColorTransform          = 0;
+            Depth                      = 1;
+            IsPaddedToPow2             = false;
+            LastArraySliceIndex        = 0;
+            LastMipLevel               = 0;
             MetadataCompressionEnabled = false;
-            MinLodClamp = 0;
-            MinLodWarning = 0;
-            MipStatsCounterIndex = 0;
-            MipStatsEnabled = false;
-            Pitch = Width;
-            SamplerModulationFactor = SamplerModulationFactor.Factor1_0000;
-            TileMode = TileMode.Thin_1DThin;
-            TextureType = TextureType.Type2D;
-            UseAltTileMode = false;
-            Version = 2;
-            LastMipLevel = mipMapCount;
+            MinLodClamp                = 0;
+            MinLodWarning              = 0;
+            MipStatsCounterIndex       = 0;
+            MipStatsEnabled            = false;
+            Pitch                      = Width;
+            SamplerModulationFactor    = SamplerModulationFactor.Factor1_0000;
+            TileMode                   = TileMode.Thin_1DThin;
+            TextureType                = TextureType.Type2D;
+            UseAltTileMode             = false;
+            Version                    = 2;
+            LastMipLevel               = mipMapCount;
         }
 
         public GNFTexture( string filePath )
@@ -242,7 +298,7 @@ namespace GFDLibrary.Textures.GNF
                 Read( reader );
         }
 
-        public GNFTexture( Stream stream, bool leaveOpen )
+        public GNFTexture( Stream stream, bool leaveOpen = true )
         {
             using ( var reader = new EndianBinaryReader( stream, Encoding.Default, leaveOpen, Endianness.LittleEndian ) )
                 Read( reader );

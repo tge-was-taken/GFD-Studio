@@ -171,10 +171,12 @@ namespace GFDStudio.GUI.DataViewNodes
 
             using ( var dialog = new SaveFileDialog() )
             {
+                ( var filter, var filterIndexToTypeMap ) = ModuleFilterGenerator.GenerateFilter( FormatModuleUsageFlags.Export, mExportHandlers.Keys.ToArray() );
+
                 dialog.AutoUpgradeEnabled = true;
                 dialog.CheckPathExists = true;
                 dialog.FileName = Text;
-                dialog.Filter = ModuleFilterGenerator.GenerateFilter( FormatModuleUsageFlags.Export, mExportHandlers.Keys.ToArray() );
+                dialog.Filter = filter;
                 dialog.OverwritePrompt = true;
                 dialog.Title = "Select a file to export to.";
                 dialog.ValidateNames = true;
@@ -185,22 +187,27 @@ namespace GFDStudio.GUI.DataViewNodes
                     return null;
                 }
 
-                Export( dialog.FileName );
+                Export( dialog.FileName, filterIndexToTypeMap[ dialog.FilterIndex ] );
                 return dialog.FileName;
             }
         }
 
-        public void Export( string filepath )
+        public void Export( string filePath )
+        {
+            Export( filePath, null );
+        }
+
+        public void Export( string filePath, Type selectedType )
         {
             if ( mExportHandlers.Count == 0 )
                 return;
 
-            var type = GetTypeFromPath( filepath, mExportHandlers.Keys );
+            var type         = GetTypeFromPath( filePath, mExportHandlers.Keys, selectedType );
             var exportAction = mExportHandlers[type];
 
-            Trace.TraceInformation( $"{nameof( DataViewNode )} [{Text}]: {nameof( Export )} {type} to {filepath}" );
+            Trace.TraceInformation( $"{nameof( DataViewNode )} [{Text}]: {nameof( Export )} {type} to {filePath}" );
 
-            exportAction( filepath );
+            exportAction( filePath );
         }
 
         //
@@ -213,13 +220,14 @@ namespace GFDStudio.GUI.DataViewNodes
 
             using ( var dialog = new OpenFileDialog() )
             {
+                (var filter, var filterIndexToTypeMap) = ModuleFilterGenerator.GenerateFilter( new[] { FormatModuleUsageFlags.Import, FormatModuleUsageFlags.ImportForEditing },
+                                                                                              mReplaceHandlers.Keys.ToArray() );
+
                 dialog.AutoUpgradeEnabled = true;
                 dialog.CheckPathExists = true;
                 dialog.CheckFileExists = true;
                 dialog.FileName = Text;
-                dialog.Filter = ModuleFilterGenerator.GenerateFilter(
-                    new[] { FormatModuleUsageFlags.Import, FormatModuleUsageFlags.ImportForEditing },
-                    mReplaceHandlers.Keys.ToArray() );
+                dialog.Filter = filter;
                 dialog.Multiselect = false;
                 dialog.SupportMultiDottedExtensions = true;
                 dialog.Title = "Select a replacement file.";
@@ -230,19 +238,24 @@ namespace GFDStudio.GUI.DataViewNodes
                     return;
                 }
 
-                Replace( dialog.FileName );
+                ReplaceInternal( dialog.FileName, filterIndexToTypeMap[ dialog.FilterIndex ] );
             }
         }
 
         public void Replace( string filepath )
         {
+            ReplaceInternal( filepath, null );
+        }
+
+        private void ReplaceInternal( string filepath, Type selectedType )
+        {
             if ( mReplaceHandlers.Count == 0 )
                 return;
 
-            var type = GetTypeFromPath( filepath, mReplaceHandlers.Keys );
+            var type          = GetTypeFromPath( filepath, mReplaceHandlers.Keys, selectedType );
             var replaceAction = mReplaceHandlers[type];
 
-            Trace.TraceInformation( $"{nameof( DataViewNode )} [{Text}]: {nameof( Replace )} {type} from {filepath}" );
+            Trace.TraceInformation( $"{nameof( DataViewNode )} [{Text}]: {nameof( ReplaceInternal )} {type} from {filepath}" );
 
             Replace( replaceAction( filepath ) );
         }
@@ -265,10 +278,11 @@ namespace GFDStudio.GUI.DataViewNodes
 
             using ( OpenFileDialog openFileDlg = new OpenFileDialog() )
             {
+                (var filter, var filterIndexToTypeMap) = ModuleFilterGenerator.GenerateFilter( new[] { FormatModuleUsageFlags.Import, FormatModuleUsageFlags.ImportForEditing }, mAddHandlers.Keys.ToArray() );
                 openFileDlg.AutoUpgradeEnabled = true;
                 openFileDlg.CheckPathExists = true;
                 openFileDlg.CheckFileExists = true;
-                openFileDlg.Filter = ModuleFilterGenerator.GenerateFilter( new[] { FormatModuleUsageFlags.Import, FormatModuleUsageFlags.ImportForEditing }, mAddHandlers.Keys.ToArray() );
+                openFileDlg.Filter = filter;
                 openFileDlg.Multiselect = true;
                 openFileDlg.SupportMultiDottedExtensions = true;
                 openFileDlg.Title = "Select file(s) to add.";
@@ -279,8 +293,9 @@ namespace GFDStudio.GUI.DataViewNodes
                     return;
                 }
 
+                var selectedType = filterIndexToTypeMap[ openFileDlg.FilterIndex ];
                 foreach ( string fileName in openFileDlg.FileNames )
-                    AddInternal( fileName );
+                    AddInternal( fileName, selectedType );
 
                 InitializeView( true );
             }
@@ -289,16 +304,16 @@ namespace GFDStudio.GUI.DataViewNodes
 
         public void Add( string filepath )
         {
-            AddInternal( filepath );
+            AddInternal( filepath, null );
             InitializeView( true );
         }
 
-        private void AddInternal( string filepath )
+        private void AddInternal( string filepath, Type selectedType )
         {
             if ( mAddHandlers.Count == 0 )
                 return;
 
-            var type      = GetTypeFromPath( filepath, mAddHandlers.Keys );
+            var type      = GetTypeFromPath( filepath, mAddHandlers.Keys, selectedType );
             var addAction = mAddHandlers[type];
 
             Trace.TraceInformation( $"{nameof( DataViewNode )} [{Text}]: {nameof( Add )} {type} from {filepath}" );
@@ -737,7 +752,7 @@ namespace GFDStudio.GUI.DataViewNodes
         //
         // Helpers
         //
-        private static Type GetTypeFromPath( string filePath, IEnumerable<Type> types )
+        private static Type GetTypeFromPath( string filePath, IEnumerable<Type> types, Type selectedType )
         {
             var extension = Path.GetExtension( filePath );
             if ( string.IsNullOrEmpty( extension ) )
@@ -783,7 +798,12 @@ namespace GFDStudio.GUI.DataViewNodes
             }
 
             if ( modules.Count != 1 )
-                throw new Exception( "Ambigious module match. Multiple suitable modules format found." );
+            {
+                if ( selectedType == null )
+                    throw new Exception( "Ambigious module match. Multiple suitable modules format found." );
+
+                return selectedType;
+            }
 
             if ( !isBaseType )
                 return modules[0].ModelType;

@@ -84,6 +84,7 @@
     <Compile Include="Models\Bone.cs" />
     <Compile Include="Misc\ChunkType000100F8.cs" />
     <Compile Include="Common\Archive.cs" />
+    <Compile Include="Textures\DDS\DDSStream.cs" />
     <Compile Include="Textures\FieldTexturePS3.cs" />
     <Compile Include="Textures\GNF\ChannelType.cs" />
     <Compile Include="Textures\GNF\SamplerModulationFactor.cs" />

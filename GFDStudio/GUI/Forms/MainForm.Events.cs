@@ -238,7 +238,7 @@ namespace GFDStudio.GUI.Forms
         private void HandleAnimationLoadExternalToolStripMenuItemClick( object sender, EventArgs e )
         {
             var filePath = SelectFileToOpen( ModuleFilterGenerator.GenerateFilter( FormatModuleUsageFlags.Import, typeof( AnimationPack ),
-                                                                                   typeof( Animation ) ) );
+                                                                                   typeof( Animation ) ).Filter );
             if ( filePath == null )
                 return;
 

@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Drawing;
 using System.IO;
 using System.Text;
 using GFDLibrary.IO.Common;
+using GFDLibrary.Textures.DDS;
 
 namespace GFDLibrary.Textures
 {
@@ -63,6 +65,64 @@ namespace GFDLibrary.Textures
             Data = data;
         }
 
+        public FieldTexturePS3( Bitmap bitmap )
+        {
+            Field00 = 0x020200FF;
+            Field08 = 0x00000001;
+            Field0C = 0x00000000;
+            Flags   = FieldTextureFlags.Flag2 | FieldTextureFlags.Flag4 | FieldTextureFlags.Flag80;
+
+            var ddsFormat = DDSCodec.DetermineBestCompressedFormat( bitmap );
+            var data = DDSCodec.CompressPixelData( bitmap, ddsFormat );
+
+            if ( ddsFormat == DDSPixelFormatFourCC.DXT3 )
+            {
+                Flags |= FieldTextureFlags.DXT3;
+            }
+            else if ( ddsFormat == DDSPixelFormatFourCC.DXT5 )
+            {
+                Flags |= FieldTextureFlags.DXT5;
+            }
+
+            MipMapCount = ( byte )1;
+            Field1A     = 2;
+            Field1B     = 0;
+            Field1C     = 0xAAE4;
+            Width       = ( short )bitmap.Width;
+            Height      = ( short )bitmap.Height;
+            Field24     = 1;
+            Data        = data;
+        }
+
+        public FieldTexturePS3( byte[] ddsData )
+        {
+            Field00 = 0x020200FF;
+            Field08 = 0x00000001;
+            Field0C = 0x00000000;
+            Flags   = FieldTextureFlags.Flag2 | FieldTextureFlags.Flag4 | FieldTextureFlags.Flag80;
+            var ddsHeader = new DDSHeader( ddsData );
+            var data = new byte[ddsData.Length - ddsHeader.Size];
+            Array.Copy( ddsData, ddsHeader.Size, data, 0, data.Length );
+
+            if ( ddsHeader.PixelFormat.FourCC == DDSPixelFormatFourCC.DXT3 )
+            {
+                Flags |= FieldTextureFlags.DXT3;
+            }
+            else if ( ddsHeader.PixelFormat.FourCC == DDSPixelFormatFourCC.DXT5 )
+            {
+                Flags |= FieldTextureFlags.DXT5;
+            }
+
+            MipMapCount = ( byte )ddsHeader.MipMapCount;
+            Field1A     = 2;
+            Field1B     = 0;
+            Field1C     = 0xAAE4;
+            Width       = ( short )ddsHeader.Width;
+            Height      = ( short )ddsHeader.Height;
+            Field24     = 1;
+            Data        = data;
+        }
+
         public FieldTexturePS3( Stream stream )
         {
             Read( stream, true );
@@ -76,7 +136,7 @@ namespace GFDLibrary.Textures
             }
         }
 
-        public void Save( Stream stream )
+        public void Save( Stream stream, bool leaveOpen = true )
         {
             Write( stream, true );
         }

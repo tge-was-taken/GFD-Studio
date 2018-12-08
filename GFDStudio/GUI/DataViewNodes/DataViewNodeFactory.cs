@@ -78,6 +78,9 @@ namespace GFDStudio.GUI.DataViewNodes
             Register<AnimationPackViewNode>();
             Register<AnimationViewNode>();
             Register( typeof( AnimationListViewNode ), typeof( List<Animation> ) );
+
+            Register<FieldTexturePS3ViewNode>();
+            Register<GNFTextureViewNode>();
         }
 
         /// <summary>

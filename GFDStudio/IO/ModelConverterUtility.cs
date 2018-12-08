@@ -15,7 +15,7 @@ namespace GFDStudio.IO
                 dialog.AutoUpgradeEnabled = true;
                 dialog.CheckPathExists = true;
                 dialog.CheckFileExists = true;
-                dialog.Filter = ModuleFilterGenerator.GenerateFilter( FormatModuleUsageFlags.ImportForEditing, typeof( Assimp.Scene ) );
+                dialog.Filter = ModuleFilterGenerator.GenerateFilter( FormatModuleUsageFlags.ImportForEditing, typeof( Assimp.Scene ) ).Filter;
                 dialog.Multiselect = false;
                 dialog.SupportMultiDottedExtensions = true;
                 dialog.Title = "Select an Assimp model.";

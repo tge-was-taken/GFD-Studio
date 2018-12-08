@@ -91,7 +91,7 @@ namespace GFDStudio.FormatModules
         {
             using ( var dialog = new OpenFileDialog() )
             {
-                dialog.Filter             = ModuleFilterGenerator.GenerateFilter( new[] { FormatModuleUsageFlags.Import }, typeof( T ) );
+                dialog.Filter             = ModuleFilterGenerator.GenerateFilter( new[] { FormatModuleUsageFlags.Import }, typeof( T ) ).Filter;
                 dialog.AutoUpgradeEnabled = true;
                 dialog.CheckPathExists    = true;
                 dialog.Title              = title;
