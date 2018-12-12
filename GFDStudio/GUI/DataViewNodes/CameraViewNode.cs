@@ -12,33 +12,33 @@ namespace GFDStudio.GUI.DataViewNodes
         public override DataViewNodeFlags NodeFlags
             => DataViewNodeFlags.Leaf;
 
-        public Matrix4x4 Transform
+        public Matrix4x4 ViewMatrix
         {
-            get => Data.Transform;
+            get => Data.ViewMatrix;
             set => SetDataProperty( value );
         }
 
-        public float Field180
+        public float ClipPlaneNear
         {
-            get => Data.Field180;
+            get => Data.ClipPlaneNear;
             set => SetDataProperty( value );
         }
 
-        public float Field184
+        public float ClipPlaneFar
         {
-            get => Data.Field184;
+            get => Data.ClipPlaneFar;
             set => SetDataProperty( value );
         }
 
-        public float Field188
+        public float FieldOfView
         {
-            get => Data.Field188;
+            get => Data.FieldOfView;
             set => SetDataProperty( value );
         }
 
-        public float Field18C
+        public float AspectRatio
         {
-            get => Data.Field18C;
+            get => Data.AspectRatio;
             set => SetDataProperty( value );
         }
 

@@ -19,6 +19,14 @@ namespace GFDLibrary.Rendering.OpenGL
 
         public bool IsVisible { get; }
 
+        public GLMesh( GLVertexArray vertexArray, GLMaterial material, bool isVisible )
+        {
+            Mesh = null;
+            VertexArray = vertexArray;
+            Material = material;
+            IsVisible = isVisible;
+        }
+
         public GLMesh( Mesh mesh, Matrix4x4 modelMatrix, List<Bone> bones, List<GLNode> nodes, Dictionary<string, GLMaterial> materials )
         {
             Mesh = mesh;
@@ -62,7 +70,15 @@ namespace GFDLibrary.Rendering.OpenGL
                 }
             }
 
-            VertexArray = new GLVertexArray( vertices, normals, mesh.TexCoordsChannel0, mesh.Triangles );
+            var indices = new uint[mesh.Triangles.Length * 3];
+            for ( int i = 0; i < mesh.Triangles.Length; i++ )
+            {
+                indices[( i * 3 ) + 0] = mesh.Triangles[i].A;
+                indices[( i * 3 ) + 1] = mesh.Triangles[i].B;
+                indices[( i * 3 ) + 2] = mesh.Triangles[i].C;
+            }
+
+            VertexArray = new GLVertexArray( vertices, normals, mesh.TexCoordsChannel0, indices, PrimitiveType.Triangles );
 
             // material
             if ( mesh.MaterialName != null && materials != null )
@@ -99,6 +115,7 @@ namespace GFDLibrary.Rendering.OpenGL
             Material.Bind( shaderProgram );
             shaderProgram.Check();
             VertexArray.Draw();
+            Material.Unbind( shaderProgram );
         }
 
         #region IDisposable Support

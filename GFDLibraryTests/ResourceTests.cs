@@ -312,10 +312,10 @@ namespace GFDLibrary.Tests
 
             Assert.AreEqual( a.Name, b.Name );
             Assert.AreEqual( a.Flags, b.Flags );
-            Assert.AreEqual( a.Ambient, b.Ambient );
-            Assert.AreEqual( a.Diffuse, b.Diffuse );
-            Assert.AreEqual( a.Specular, b.Specular );
-            Assert.AreEqual( a.Emissive, b.Emissive );
+            Assert.AreEqual( a.AmbientColor, b.AmbientColor );
+            Assert.AreEqual( a.DiffuseColor, b.DiffuseColor );
+            Assert.AreEqual( a.SpecularColor, b.SpecularColor );
+            Assert.AreEqual( a.EmissiveColor, b.EmissiveColor );
             Assert.AreEqual( a.Field40, b.Field40 );
             Assert.AreEqual( a.Field44, b.Field44 );
             Assert.AreEqual( a.DrawOrder, b.DrawOrder );
@@ -677,9 +677,9 @@ namespace GFDLibrary.Tests
             }
 
             Assert.AreEqual( a.Type, b.Type );
-            Assert.AreEqual( a.Field30, b.Field30 );
-            Assert.AreEqual( a.Field40, b.Field40 );
-            Assert.AreEqual( a.Field50, b.Field50 );
+            Assert.AreEqual( a.AmbientColor, b.AmbientColor );
+            Assert.AreEqual( a.DiffuseColor, b.DiffuseColor );
+            Assert.AreEqual( a.SpecularColor, b.SpecularColor );
 
             switch ( a.Type )
             {
@@ -688,15 +688,15 @@ namespace GFDLibrary.Tests
                     Assert.AreEqual( a.Field04, b.Field04 );
                     Assert.AreEqual( a.Field08, b.Field08 );
                     break;
-                case LightType.Sky:
+                case LightType.Point:
                     Assert.AreEqual( a.Field10, b.Field10 );
                     Assert.AreEqual( a.Field04, b.Field04 );
                     Assert.AreEqual( a.Field08, b.Field08 );
 
-                    if ( a.Flags.HasFlag( LightFlags.Flag2 ) )
+                    if ( a.Flags.HasFlag( LightFlags.Bit2 ) )
                     {
-                        Assert.AreEqual( a.Field6C, b.Field6C );
-                        Assert.AreEqual( a.Field70, b.Field70 );
+                        Assert.AreEqual( a.AttenuationStart, b.AttenuationStart );
+                        Assert.AreEqual( a.AttenuationEnd, b.AttenuationEnd );
                     }
                     else
                     {
@@ -705,13 +705,13 @@ namespace GFDLibrary.Tests
                         Assert.AreEqual( a.Field68, b.Field68 );
                     }
                     break;
-                case LightType.Type3:
+                case LightType.Spot:
                     Assert.AreEqual( a.Field20, b.Field20 );
                     Assert.AreEqual( a.Field08, b.Field08 );
                     Assert.AreEqual( a.Field04, b.Field04 );
-                    Assert.AreEqual( a.Field74, b.Field74 );
-                    Assert.AreEqual( a.Field78, b.Field78 );
-                    goto case LightType.Sky;
+                    Assert.AreEqual( a.AngleInnerCone, b.AngleInnerCone );
+                    Assert.AreEqual( a.AngleOuterCone, b.AngleOuterCone );
+                    goto case LightType.Point;
             }
         }
 
@@ -723,11 +723,11 @@ namespace GFDLibrary.Tests
                 return;
             }
 
-            Assert.AreEqual( a.Transform, b.Transform );
-            Assert.AreEqual( a.Field180, b.Field180 );
-            Assert.AreEqual( a.Field184, b.Field184 );
-            Assert.AreEqual( a.Field188, b.Field188 );
-            Assert.AreEqual( a.Field18C, b.Field18C );
+            Assert.AreEqual( a.ViewMatrix, b.ViewMatrix );
+            Assert.AreEqual( a.ClipPlaneNear, b.ClipPlaneNear );
+            Assert.AreEqual( a.ClipPlaneFar, b.ClipPlaneFar );
+            Assert.AreEqual( a.FieldOfView, b.FieldOfView );
+            Assert.AreEqual( a.AspectRatio, b.AspectRatio );
             Assert.AreEqual( a.Field190, b.Field190 );
         }
 

@@ -28,13 +28,17 @@ namespace GFDLibrary.Rendering.OpenGL
 
         public bool HasDiffuseTexture => DiffuseTexture != null;
 
+        public bool RenderWireframe { get; set; }
+
+        public bool EnableBackfaceCulling { get; set; } = true;
+
         public GLMaterial( Material material, MaterialTextureCreator textureCreator )
         {
             // color parameters
-            Ambient = material.Ambient.Convert();
-            Diffuse = material.Diffuse.Convert();
-            Specular = material.Specular.Convert();
-            Emissive = material.Emissive.Convert();
+            Ambient = material.AmbientColor.ToOpenTK();
+            Diffuse = material.DiffuseColor.ToOpenTK();
+            Specular = material.SpecularColor.ToOpenTK();
+            Emissive = material.EmissiveColor.ToOpenTK();
 
             // texture
             if ( material.DiffuseMap != null )
@@ -60,8 +64,30 @@ namespace GFDLibrary.Rendering.OpenGL
             shaderProgram.SetUniform( "matSpecular",             Specular );
             shaderProgram.SetUniform( "matEmissive",             Emissive );
             shaderProgram.SetUniform( "matHasAlphaTransparency", HasAlphaTransparency );
+
+            if ( RenderWireframe )
+            {
+                GL.PolygonMode( MaterialFace.FrontAndBack, PolygonMode.Line );
+            }
+
+            if ( !EnableBackfaceCulling )
+            {
+                GL.Disable( EnableCap.CullFace );
+            }
         }
 
+        public void Unbind( GLShaderProgram shaderProgram )
+        {
+            if ( !EnableBackfaceCulling )
+            {
+                GL.Enable( EnableCap.CullFace );
+            }
+
+            if ( RenderWireframe )
+            {
+                GL.PolygonMode( MaterialFace.FrontAndBack, PolygonMode.Fill );
+            }
+        }
 
         #region IDisposable Support
         private bool mDisposed; // To detect redundant calls

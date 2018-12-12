@@ -101,9 +101,8 @@
     <ApplicationIcon>app_data\icons\main_icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AssimpNet, Version=3.3.1.0, Culture=neutral, PublicKeyToken=0d51b391f59f42a6, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Dependencies\Assimp.Net\AssimpNet.dll</HintPath>
+    <Reference Include="AssimpNet, Version=4.1.0.0, Culture=neutral, PublicKeyToken=0d51b391f59f42a6, processorArchitecture=MSIL">
+      <HintPath>..\packages\AssimpNet.4.1.0\lib\net40\AssimpNet.dll</HintPath>
     </Reference>
     <Reference Include="CSharpImageLibrary, Version=4.2.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\CSharpImageLibrary.4.2.0\lib\net462\CSharpImageLibrary.dll</HintPath>
@@ -162,8 +161,11 @@
     <Compile Include="GUI\Controls\AnimationPlaybackState.cs" />
     <Compile Include="GUI\Controls\ModelView\DefaultShaderProgram.cs" />
     <Compile Include="GUI\Controls\ModelView\LineShaderProgram.cs" />
+    <Compile Include="GUI\Controls\PrimitiveMesh.cs" />
+    <Compile Include="GUI\DataViewNodes\AnimationControllerViewNode.cs" />
     <Compile Include="GUI\DataViewNodes\AnimationListViewNode.cs" />
     <Compile Include="GUI\DataViewNodes\BoneViewNode.cs" />
+    <Compile Include="GUI\DataViewNodes\ColorConverter.cs" />
     <Compile Include="GUI\DataViewNodes\FieldTexturePS3ViewNode.cs" />
     <Compile Include="GUI\DataViewNodes\GNFTextureViewNode.cs" />
     <Compile Include="GUI\DataViewNodes\MorphTargetListViewNode.cs" />
@@ -302,6 +304,15 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="GUI\DataViewNodes\DataViewNode.HideInheritedProperties.cs" />
+    <None Include="app_data\primitives\camera.obj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="app_data\primitives\epl.obj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="app_data\primitives\light.obj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="app_data\shaders\line.glsl.fs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -369,6 +380,13 @@
     <PostBuildEvent>
     </PostBuildEvent>
   </PropertyGroup>
+  <Import Project="..\packages\AssimpNet.4.1.0\build\AssimpNet.targets" Condition="Exists('..\packages\AssimpNet.4.1.0\build\AssimpNet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\AssimpNet.4.1.0\build\AssimpNet.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\AssimpNet.4.1.0\build\AssimpNet.targets'))" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

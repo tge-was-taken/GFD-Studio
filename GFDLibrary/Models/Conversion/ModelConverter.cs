@@ -2,7 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using GFDLibrary.Cameras;
 using GFDLibrary.Common;
+using GFDLibrary.Lights;
+using GFDLibrary.Models.Conversion.Utilities;
+using GFDLibrary.Utilities;
 using Ai = Assimp;
 
 namespace GFDLibrary.Models.Conversion
@@ -26,7 +30,7 @@ namespace GFDLibrary.Models.Conversion
             // Convert assimp nodes to our nodes 
             var nodeLookup = new Dictionary<string, NodeInfo>();
             int nextNodeIndex = 0;
-            scene.RootNode = ConvertAssimpNodeRecursively( aiScene.RootNode, nodeLookup, ref nextNodeIndex );
+            scene.RootNode = ConvertAssimpNodeRecursively( aiScene, aiScene.RootNode, nodeLookup, ref nextNodeIndex, options );
 
             // Process the meshes attached to the assimp nodes
             var nodeToBoneIndices = new Dictionary<int, List<int>>();
@@ -104,7 +108,7 @@ namespace GFDLibrary.Models.Conversion
             return isMeshAttachmentNode;
         }
 
-        private static Node ConvertAssimpNodeRecursively( Ai.Node aiNode, Dictionary<string, NodeInfo> nodeLookup, ref int nextIndex )
+        private static Node ConvertAssimpNodeRecursively( Assimp.Scene aiScene, Ai.Node aiNode, Dictionary<string, NodeInfo> nodeLookup, ref int nextIndex, ModelConverterOptions options )
         {
             aiNode.Transform.Decompose( out var scale, out var rotation, out var translation );
 
@@ -116,7 +120,7 @@ namespace GFDLibrary.Models.Conversion
 
             
 
-            if ( !IsMeshAttachmentNode( aiNode) )
+            if ( !IsMeshAttachmentNode( aiNode ) )
             {
                 // Convert properties
                 ConvertAssimpMetadataToProperties( aiNode.Metadata, node );
@@ -131,6 +135,49 @@ namespace GFDLibrary.Models.Conversion
                     throw new Exception( $"Duplicate node name '{node.Name}'" );
                 }
 
+                // Is this a camera?
+                var index = -1;
+                if ( ( index = aiScene.Cameras.FindIndex( x => x.Name == node.Name ) ) != -1 )
+                {
+                    var aiCamera = aiScene.Cameras[ index ];
+                    var camera = new Camera( -aiCamera.Direction.ToNumerics(), aiCamera.Up.ToNumerics(), aiCamera.Position.ToNumerics(),
+                        aiCamera.ClipPlaneNear, aiCamera.ClipPlaneFar, MathHelper.RadiansToDegrees( aiCamera.FieldOfview ),
+                        aiCamera.AspectRatio, 0 
+                    ) { Version = options.Version };
+
+                    node.Attachments.Add( new NodeCameraAttachment( camera ) );
+                }
+                else if ( ( index = aiScene.Lights.FindIndex( x => x.Name == node.Name ) ) != -1 )
+                {
+                    var aiLight = aiScene.Lights[ index ];
+                    var lightType = LightType.Point;
+                    switch ( aiLight.LightType )
+                    {
+                        case Ai.LightSourceType.Directional:
+                            lightType = LightType.Type1;
+                            break;
+                        case Ai.LightSourceType.Point:
+                        case Ai.LightSourceType.Ambient:
+                            lightType = LightType.Point;
+                            break;
+                        case Ai.LightSourceType.Spot:
+                            lightType = LightType.Spot;
+                            break;
+                    }
+
+                    var light = new Light
+                    {
+                        Version = options.Version,
+                        AmbientColor   = aiLight.ColorAmbient.ToNumerics(),
+                        DiffuseColor   = aiLight.ColorDiffuse.ToNumerics(),
+                        SpecularColor  = aiLight.ColorSpecular.ToNumerics(),
+                        AngleInnerCone = aiLight.AngleInnerCone,
+                        AngleOuterCone = aiLight.AngleOuterCone,
+                        Type           = lightType,
+                        Flags          = LightFlags.Bit1 | LightFlags.Bit2
+                    };
+                    node.Attachments.Add( new NodeLightAttachment( light ) );
+                }
 
                 // Process children
                 foreach ( var aiNodeChild in aiNode.Children )
@@ -141,13 +188,13 @@ namespace GFDLibrary.Models.Conversion
                         // Merge children of 'RootNode' node with actual root node
                         foreach ( var aiFakeRootNodeChild in aiNodeChild.Children )
                         {
-                            var childNode = ConvertAssimpNodeRecursively( aiFakeRootNodeChild, nodeLookup, ref nextIndex );
+                            var childNode = ConvertAssimpNodeRecursively( aiScene, aiFakeRootNodeChild, nodeLookup, ref nextIndex, options );
                             node.AddChildNode( childNode );
                         }
                     }
                     else
                     {
-                        var childNode = ConvertAssimpNodeRecursively( aiNodeChild, nodeLookup, ref nextIndex );
+                        var childNode = ConvertAssimpNodeRecursively( aiScene, aiNodeChild, nodeLookup, ref nextIndex, options );
                         node.AddChildNode( childNode );
                     }
                 }
@@ -261,7 +308,7 @@ namespace GFDLibrary.Models.Conversion
                         case Ai.MetaDataType.Bool:
                             property = new UserBoolProperty( metadataEntry.Key, metadataEntry.Value.DataAs<bool>().Value );
                             break;
-                        case Ai.MetaDataType.Int:
+                        case Ai.MetaDataType.Int32:
                             property = new UserIntProperty( metadataEntry.Key, metadataEntry.Value.DataAs<int>().Value );
                             break;
                         case Ai.MetaDataType.UInt64:

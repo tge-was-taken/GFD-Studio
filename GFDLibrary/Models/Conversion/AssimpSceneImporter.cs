@@ -11,6 +11,7 @@ namespace GFDLibrary.Models.Conversion
             aiContext.SetConfig( new Ai.Configs.MeshVertexLimitConfig( 1500 ) ); // estimate
             aiContext.SetConfig( new Ai.Configs.MeshTriangleLimitConfig( 3000 ) ); // estimate
             aiContext.SetConfig( new Ai.Configs.VertexCacheSizeConfig( 63 ) ); // PS3/RSX vertex cache size
+            aiContext.SetConfig( new Ai.Configs.FBXPreservePivotsConfig( false ) );
 
             // Apply ALL the optimizations
             var postProcessSteps = Ai.PostProcessSteps.ImproveCacheLocality | Ai.PostProcessSteps.FindInvalidData | Ai.PostProcessSteps.FlipUVs | Ai.PostProcessSteps.JoinIdenticalVertices |

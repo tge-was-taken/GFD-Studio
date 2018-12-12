@@ -14,10 +14,14 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
 using GFDLibrary.Animations;
+using GFDLibrary.Models;
 using GFDLibrary.Rendering.OpenGL;
+using GFDStudio.DataManagement;
+using Color = System.Drawing.Color;
 using Key = OpenTK.Input.Key;
 using Quaternion = OpenTK.Quaternion;
 using Vector3 = OpenTK.Vector3;
+using Vector4 = OpenTK.Vector4;
 
 namespace GFDStudio.GUI.Controls
 {
@@ -39,6 +43,11 @@ namespace GFDStudio.GUI.Controls
         private int mGridSize = 2000;
         private int mGridSpacing = 16;
         private float mGridMinZ;
+
+        // Primitives
+        private PrimitiveMesh mCameraPrimitive;
+        private PrimitiveMesh mLightPrimitive;
+        private PrimitiveMesh mEplPrimitive;
 
         // Model
         private GLModel mModel;
@@ -131,6 +140,7 @@ namespace GFDStudio.GUI.Controls
             }
 
             CreateGrid();
+            LoadPrimitives();
         }
 
         private void CreateGrid()
@@ -153,6 +163,13 @@ namespace GFDStudio.GUI.Controls
 
             GL.VertexAttribPointer( 0, 3, VertexAttribPointerType.Float, false, mGridVertexBuffer.Stride, 0 );
             GL.EnableVertexAttribArray( 0 );
+        }
+
+        private void LoadPrimitives()
+        {
+            mCameraPrimitive = new PrimitiveMesh( "primitives/camera.obj" );
+            mLightPrimitive = new PrimitiveMesh( "primitives/light.obj" );
+            mEplPrimitive = new PrimitiveMesh( "primitives/epl.obj" );
         }
 
         /// <summary>
@@ -192,6 +209,30 @@ namespace GFDStudio.GUI.Controls
 
                 return null;
             } );
+
+            foreach ( var node in modelPack.Model.Nodes.Where( x => x.HasAttachments ) )
+            {
+                var glNode = mModel.Nodes.Find( x => x.Node == node );
+
+                foreach ( var attachment in node.Attachments )
+                {
+                    switch ( attachment.Type )
+                    {
+                        case NodeAttachmentType.Camera:
+                            glNode.Meshes.Add( mCameraPrimitive.Instantiate( true, false, PrimitiveMesh.DefaultColor ) );
+                            break;
+
+                        case NodeAttachmentType.Light:
+                            glNode.Meshes.Add( mLightPrimitive.Instantiate( true, false, PrimitiveMesh.DefaultColor ) );
+                            break;
+
+                        case NodeAttachmentType.Epl:
+                            glNode.Meshes.Add( mEplPrimitive.Instantiate( true, true, PrimitiveMesh.DefaultColor ) );
+                            break;
+                    }
+                }
+            }
+
             mIsModelLoaded = true;
 
             // Initialize camera

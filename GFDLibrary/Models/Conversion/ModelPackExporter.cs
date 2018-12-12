@@ -3,9 +3,13 @@ using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Text;
+using GFDLibrary.Cameras;
 using GFDLibrary.Common;
+using GFDLibrary.Lights;
 using GFDLibrary.Materials;
+using GFDLibrary.Models.Conversion.Utilities;
 using GFDLibrary.Textures;
+using GFDLibrary.Utilities;
 using Ai = Assimp;
 
 namespace GFDLibrary.Models.Conversion
@@ -29,6 +33,7 @@ namespace GFDLibrary.Models.Conversion
         public static void ExportFile( Ai.Scene scene, string path )
         {
             var aiContext = new Ai.AssimpContext();
+            aiContext.XAxisRotation = 90;
             aiContext.ExportFile( scene, path, "collada", Ai.PostProcessSteps.FlipUVs );
         }
 
@@ -83,10 +88,10 @@ namespace GFDLibrary.Models.Conversion
             var aiMaterial = new Ai.Material
             {
                 Name = AssimpConverterCommon.EscapeName(material.Name),
-                ColorAmbient = new Ai.Color4D( material.Ambient.X, material.Ambient.Y, material.Ambient.Z, material.Ambient.W ),
-                ColorDiffuse = new Ai.Color4D( material.Diffuse.X, material.Diffuse.Y, material.Diffuse.Z, material.Diffuse.W ),
-                ColorSpecular = new Ai.Color4D( material.Specular.X, material.Specular.Y, material.Specular.Z, material.Specular.W ),
-                ColorEmissive = new Ai.Color4D( material.Emissive.X, material.Emissive.Y, material.Emissive.Z, material.Emissive.W )
+                ColorAmbient = new Ai.Color4D( material.AmbientColor.X, material.AmbientColor.Y, material.AmbientColor.Z, material.AmbientColor.W ),
+                ColorDiffuse = new Ai.Color4D( material.DiffuseColor.X, material.DiffuseColor.Y, material.DiffuseColor.Z, material.DiffuseColor.W ),
+                ColorSpecular = new Ai.Color4D( material.SpecularColor.X, material.SpecularColor.Y, material.SpecularColor.Z, material.SpecularColor.W ),
+                ColorEmissive = new Ai.Color4D( material.EmissiveColor.X, material.EmissiveColor.Y, material.EmissiveColor.Z, material.EmissiveColor.W )
             };
 
             if ( material.Flags.HasFlag( MaterialFlags.HasDiffuseMap ) )
@@ -186,6 +191,39 @@ namespace GFDLibrary.Models.Conversion
                             mesh.Name = $"{AssimpConverterCommon.EscapeName(node.Name)}_Attachment{i}_Mesh";
                             aiNode.MeshIndices.Add( mAiScene.Meshes.Count );
                             mAiScene.Meshes.Add( mesh );
+                        }
+                        break;
+
+                    case NodeAttachmentType.Camera:
+                        {
+                            var camera = attachment.GetValue<Camera>();
+                            mAiScene.Cameras.Add( new Ai.Camera
+                            {
+                                Name          = node.Name,
+                                Position      = camera.Position.ToAssimp(),
+                                Up            = camera.Up.ToAssimp(),
+                                Direction     = -camera.Direction.ToAssimp(),
+                                FieldOfview   = MathHelper.DegreesToRadians( camera.FieldOfView ),
+                                ClipPlaneNear = camera.ClipPlaneNear,
+                                ClipPlaneFar  = camera.ClipPlaneFar,
+                                AspectRatio   = camera.AspectRatio
+                            });
+                        }
+                        break;
+
+                    case NodeAttachmentType.Light:
+                        {
+                            var light = attachment.GetValue<Light>();
+                            mAiScene.Lights.Add( new Ai.Light
+                            {
+                                Name = node.Name,
+                                AngleInnerCone = light.AngleInnerCone,
+                                AngleOuterCone = light.AngleOuterCone,
+                                ColorAmbient = light.AmbientColor.ToAssimpAsColor3D(),
+                                ColorDiffuse = light.DiffuseColor.ToAssimpAsColor3D(),
+                                ColorSpecular = light.SpecularColor.ToAssimpAsColor3D(),
+                                LightType = light.Type == LightType.Point ? Ai.LightSourceType.Point : light.Type == LightType.Spot ? Ai.LightSourceType.Spot : Ai.LightSourceType.Directional,
+                            });
                         }
                         break;
                     default:

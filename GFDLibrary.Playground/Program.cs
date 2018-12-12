@@ -68,7 +68,7 @@ namespace GFDLibrary.Playground
 
             //                // Make position relative
             //                var position         = prsKey.Position * positionScale;
-            //                var relativePosition = position - node.Translation;
+            //                var relativePosition = position - node.Position;
             //                prsKey.Position = relativePosition / positionScale;
 
             //                // Make rotation relative

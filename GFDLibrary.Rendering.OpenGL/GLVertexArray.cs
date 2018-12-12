@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Numerics;
 using GFDLibrary.Models;
 using OpenTK.Graphics.OpenGL;
@@ -15,9 +16,11 @@ namespace GFDLibrary.Rendering.OpenGL
 
         public GLVertexAttributeBuffer<Vector2> TextureCoordinateChannel0Buffer { get; }
 
-        public GLBuffer<Triangle> ElementBuffer { get; }
+        public GLBuffer<uint> ElementBuffer { get; }
 
-        public GLVertexArray( Vector3[] positions, Vector3[] normals, Vector2[] texCoords, Triangle[] triangles )
+        public PrimitiveType PrimitiveType { get; }
+
+        public GLVertexArray( Vector3[] positions, Vector3[] normals, Vector2[] texCoords, uint[] indices, PrimitiveType primitiveType )
         {
             // vertex array
             Id = GL.GenVertexArray();
@@ -37,7 +40,8 @@ namespace GFDLibrary.Rendering.OpenGL
             }
 
             // element index buffer
-            ElementBuffer = new GLBuffer<Triangle>( BufferTarget.ElementArrayBuffer, triangles );
+            ElementBuffer = new GLBuffer<uint>( BufferTarget.ElementArrayBuffer, indices );
+            PrimitiveType = primitiveType;
         }
 
         public static void UnbindAll() => GL.BindVertexArray( 0 );
@@ -50,7 +54,7 @@ namespace GFDLibrary.Rendering.OpenGL
         public void Draw()
         {
             Bind();
-            GL.DrawElements( PrimitiveType.Triangles, ElementBuffer.Count * 3, DrawElementsType.UnsignedInt, 0 );
+            GL.DrawElements( PrimitiveType, ElementBuffer.Count, DrawElementsType.UnsignedInt, 0 );
         }
 
         #region IDisposable Support
@@ -63,7 +67,7 @@ namespace GFDLibrary.Rendering.OpenGL
                 if ( disposing )
                 {
                     PositionBuffer.Dispose();
-                    NormalBuffer.Dispose();
+                    NormalBuffer?.Dispose();
                     TextureCoordinateChannel0Buffer?.Dispose();
                     ElementBuffer.Dispose();
                     GL.DeleteVertexArray( Id );

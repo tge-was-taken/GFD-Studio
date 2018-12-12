@@ -246,6 +246,14 @@ namespace GFDLibrary.Models
 
                             case NodeAttachmentType.Epl:
                                 continue;
+
+                            case NodeAttachmentType.Light:
+                                if ( thisNode.Attachments.Any( x => x.Type == NodeAttachmentType.Light ) )
+                                {
+                                    // Don't replace lights, likely not what we want to do
+                                    continue;
+                                }
+                                break;
                         }
 
                         thisNode.Attachments.Add( attachment );

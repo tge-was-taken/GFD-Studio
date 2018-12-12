@@ -100,14 +100,14 @@ namespace GFDLibrary.Rendering.OpenGL
                 {
                     var glMesh = glNode.Meshes[i];
 
-                    if ( Animation != null )
+                    if ( Animation != null && glMesh.Mesh != null )
                     {
                         var oldGlMesh = glMesh;
                         glMesh = glNode.Meshes[i] = new GLMesh( oldGlMesh.Mesh, glNode.WorldTransform, ModelPack.Model.Bones, Nodes, Materials );
                         oldGlMesh.Dispose();
                     }
 
-                    glMesh.Draw( glNode.WorldTransform.Convert(), shaderProgram );
+                    glMesh.Draw( glNode.WorldTransform.ToOpenTK(), shaderProgram );
                 }
             }
         }

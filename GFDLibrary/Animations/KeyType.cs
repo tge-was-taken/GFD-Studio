@@ -25,7 +25,7 @@
         Single5_2,
         Single5Alt,
         Type22,
-        Single_7,
+        CameraFieldOfView,
         Single_8,
         SingleAlt_2,
         NodePRHalf,

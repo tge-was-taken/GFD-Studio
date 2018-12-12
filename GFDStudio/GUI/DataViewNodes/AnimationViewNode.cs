@@ -18,7 +18,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public override DataViewNodeMenuFlags ContextMenuFlags => 
             DataViewNodeMenuFlags.Delete | DataViewNodeMenuFlags.Export | DataViewNodeMenuFlags.Move | DataViewNodeMenuFlags.Replace;
 
-        public override DataViewNodeFlags NodeFlags => DataViewNodeFlags.Leaf;
+        public override DataViewNodeFlags NodeFlags => DataViewNodeFlags.Branch;
 
         public AnimationFlags Flags
         {
@@ -33,6 +33,8 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         public int ControllerCount => Data.Controllers.Count;
+
+        public ListViewNode<AnimationController> Controllers { get; set; }
 
         //public List<AnimationController> Controllers { get; set; }
 
@@ -82,6 +84,7 @@ namespace GFDStudio.GUI.DataViewNodes
 
         protected override void InitializeCore()
         {
+            Properties = new VariantUserPropertyList( Data.Properties ?? new UserPropertyDictionary(), () => Properties = mProperties );
             RegisterExportHandler<Animation>( path => Data.Save( path ) );
             RegisterReplaceHandler<Animation>( Resource.Load<Animation> );
             RegisterReplaceHandler<Assimp.Scene>( file =>
@@ -122,7 +125,8 @@ namespace GFDStudio.GUI.DataViewNodes
 
         protected override void InitializeViewCore()
         {
-            Properties = new VariantUserPropertyList( Data.Properties, () => Properties = mProperties );
+            Controllers = ( ListViewNode<AnimationController> )DataViewNodeFactory.Create( "Controllers", Data.Controllers, new[] { new ListItemNameProvider<AnimationController>( ( x, i ) => x.TargetName ) } );
+            AddChildNode( Controllers );
         }
 
         private static void ImportModelAndFixTargetIds( Animation animation )

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
 using GFDLibrary.IO;
@@ -101,7 +102,7 @@ namespace GFDLibrary.Animations
                     case KeyType.MaterialSingle_4:
                     case KeyType.Single_5:
                     case KeyType.Single_6:
-                    case KeyType.Single_7:
+                    case KeyType.CameraFieldOfView:
                     case KeyType.Single_8:
                     case KeyType.SingleAlt_2:
                     case KeyType.MaterialSingle_9:

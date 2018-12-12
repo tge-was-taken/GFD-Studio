@@ -10,10 +10,10 @@ namespace GFDLibrary.Materials
         {
             var material =  new Material( name )
             {
-                Ambient = new Vector4( 0.549019635f, 0.549019635f, 0.549019635f, 1f ),
-                Diffuse = new Vector4( 0.0980392247f, 0.0980392247f, 0.0980392247f, 1f ),
+                AmbientColor = new Vector4( 0.549019635f, 0.549019635f, 0.549019635f, 1f ),
+                DiffuseColor = new Vector4( 0.0980392247f, 0.0980392247f, 0.0980392247f, 1f ),
                 DiffuseMap = new TextureMap( diffuseMapName ),
-                Emissive = new Vector4( 0, 0, 0, 0 ),
+                EmissiveColor = new Vector4( 0, 0, 0, 0 ),
                 Field40 = 1,
                 Field44 = 0.1f,
                 DrawOrder = MaterialDrawOrder.Front,
@@ -38,7 +38,7 @@ namespace GFDLibrary.Materials
                 Attributes = null,
                 ReflectionMap = null,
                 ShadowMap = null,
-                Specular = new Vector4( 0, 0, 0, 0 ),
+                SpecularColor = new Vector4( 0, 0, 0, 0 ),
                 SpecularMap = null,
             };
 
@@ -67,10 +67,10 @@ namespace GFDLibrary.Materials
             // based off c0001_body_1_skin_kubi_low
             var material =  new Material( name )
             {
-                Ambient = new Vector4( 0.7254902f, 0.6f, 0.7843138f, 1f ),
-                Diffuse = new Vector4( 0.0784313753f, 0.0784313753f, 0.0784313753f, 1 ),
-                Specular = new Vector4( 0.117647067f, 0.117647067f, 0.117647067f, 1 ),
-                Emissive = new Vector4( 0, 0, 0, 0 ),
+                AmbientColor = new Vector4( 0.7254902f, 0.6f, 0.7843138f, 1f ),
+                DiffuseColor = new Vector4( 0.0784313753f, 0.0784313753f, 0.0784313753f, 1 ),
+                SpecularColor = new Vector4( 0.117647067f, 0.117647067f, 0.117647067f, 1 ),
+                EmissiveColor = new Vector4( 0, 0, 0, 0 ),
                 Field40 = 1,
                 Field44 = 0,
                 DrawOrder = MaterialDrawOrder.Front,
@@ -131,7 +131,7 @@ namespace GFDLibrary.Materials
             {
                 Flags = MaterialFlags.Flag1 | MaterialFlags.Flag2 | MaterialFlags.Flag10Crash | MaterialFlags.Flag20 | MaterialFlags.Flag100 |
                         MaterialFlags.EnableLight2 | MaterialFlags.CastShadow,
-                Ambient = new Vector4( 0.6f, 0.6f, 0.6f, 0 ),
+                AmbientColor = new Vector4( 0.6f, 0.6f, 0.6f, 0 ),
                 Attributes = new List< MaterialAttribute >
                 {
                     new MaterialAttributeType0
@@ -147,10 +147,10 @@ namespace GFDLibrary.Materials
                         Type0Flags = 0,
                     }
                 },
-                Diffuse = new Vector4( 0.3000076f, 0.3000076f, 0.3000076f, 1f ),
+                DiffuseColor = new Vector4( 0.3000076f, 0.3000076f, 0.3000076f, 1f ),
                 DiffuseMap = new TextureMap( diffuseMapName ),
                 DrawOrder = MaterialDrawOrder.Front,
-                Emissive = new Vector4( 0f, 0f, 0f, 0f ),
+                EmissiveColor = new Vector4( 0f, 0f, 0f, 0f ),
                 Field40 = 1,
                 Field44 = 0,
                 Field49 = 1,
@@ -173,7 +173,7 @@ namespace GFDLibrary.Materials
                 NormalMap = null,
                 ReflectionMap = null,
                 ShadowMap = null,
-                Specular = new Vector4( 0f, 0f, 0f, 1f ),
+                SpecularColor = new Vector4( 0f, 0f, 0f, 1f ),
                 SpecularMap = null
             };
 

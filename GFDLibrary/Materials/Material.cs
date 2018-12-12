@@ -26,16 +26,16 @@ namespace GFDLibrary.Materials
         }
 
         // 0x00
-        public Vector4 Ambient { get; set; }
+        public Vector4 AmbientColor { get; set; }
 
         // 0x10
-        public Vector4 Diffuse { get; set; }
+        public Vector4 DiffuseColor { get; set; }
 
         // 0x20
-        public Vector4 Specular { get; set; }
+        public Vector4 SpecularColor { get; set; }
 
         // 0x30
-        public Vector4 Emissive { get; set; }
+        public Vector4 EmissiveColor { get; set; }
 
         // 0x40
         public float Field40 { get; set; }
@@ -302,10 +302,10 @@ namespace GFDLibrary.Materials
                 flags = ( MaterialFlags )( ( uint )Flags & 0x7FFFFFFF );
             }
 
-            Ambient = reader.ReadVector4();
-            Diffuse = reader.ReadVector4();
-            Specular = reader.ReadVector4();
-            Emissive = reader.ReadVector4();
+            AmbientColor = reader.ReadVector4();
+            DiffuseColor = reader.ReadVector4();
+            SpecularColor = reader.ReadVector4();
+            EmissiveColor = reader.ReadVector4();
             Field40 = reader.ReadSingle();
             Field44 = reader.ReadSingle();
 
@@ -421,10 +421,10 @@ namespace GFDLibrary.Materials
         {
             writer.WriteStringWithHash( Version, Name );
             writer.WriteUInt32( ( uint )Flags );
-            writer.WriteVector4( Ambient );
-            writer.WriteVector4( Diffuse );
-            writer.WriteVector4( Specular );
-            writer.WriteVector4( Emissive );
+            writer.WriteVector4( AmbientColor );
+            writer.WriteVector4( DiffuseColor );
+            writer.WriteVector4( SpecularColor );
+            writer.WriteVector4( EmissiveColor );
             writer.WriteSingle( Field40 );
             writer.WriteSingle( Field44 );
 

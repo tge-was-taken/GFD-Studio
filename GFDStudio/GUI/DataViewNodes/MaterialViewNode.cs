@@ -30,37 +30,57 @@ namespace GFDStudio.GUI.DataViewNodes
             get => GetDataProperty< MaterialFlags >();
             set => SetDataProperty( value );
         }
-
-        [Browsable( true )]
-        [TypeConverter( typeof( Vector4ColorTypeConverter ) )]
-        public Vector4 Ambient
+        [TypeConverter( typeof( Vector4TypeConverter ) )]
+        public Vector4 AmbientColorFloat
         {
-            get => GetDataProperty< Vector4 >();
+            get => Data.AmbientColor;
             set => SetDataProperty( value );
+        }
+
+        public System.Drawing.Color AmbientColor
+        {
+            get => Data.AmbientColor.ToByte();
+            set => Data.AmbientColor = value.ToFloat();
+        }
+
+        [TypeConverter( typeof( Vector4TypeConverter ) )]
+        public Vector4 DiffuseColorFloat
+        {
+            get => Data.DiffuseColor;
+            set => SetDataProperty( value );
+        }
+
+        public System.Drawing.Color DiffuseColor
+        {
+            get => Data.DiffuseColor.ToByte();
+            set => Data.DiffuseColor = value.ToFloat();
+        }
+
+        [TypeConverter( typeof( Vector4TypeConverter ) )]
+        public Vector4 SpecularColorFloat
+        {
+            get => Data.SpecularColor;
+            set => SetDataProperty( value );
+        }
+
+        public System.Drawing.Color SpecularColor
+        {
+            get => Data.SpecularColor.ToByte();
+            set => Data.SpecularColor = value.ToFloat();
         }
 
         [Browsable( true )]
         [TypeConverter( typeof( Vector4ColorTypeConverter ) )]
-        public Vector4 Diffuse
+        public Vector4 EmissiveColorFloat
         {
             get => GetDataProperty<Vector4>();
             set => SetDataProperty( value );
         }
 
-        [Browsable( true )]
-        [TypeConverter( typeof( Vector4ColorTypeConverter ) )]
-        public Vector4 Specular
+        public System.Drawing.Color EmissiveColor
         {
-            get => GetDataProperty<Vector4>();
-            set => SetDataProperty( value );
-        }
-
-        [Browsable( true )]
-        [TypeConverter( typeof( Vector4ColorTypeConverter ) )]
-        public Vector4 Emissive
-        {
-            get => GetDataProperty<Vector4>();
-            set => SetDataProperty( value );
+            get => Data.EmissiveColor.ToByte();
+            set => Data.EmissiveColor = value.ToFloat();
         }
 
         [Browsable( true )]
