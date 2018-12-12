@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Numerics;
 using GFDLibrary;
 using GFDLibrary.Cameras;
@@ -12,30 +13,35 @@ namespace GFDStudio.GUI.DataViewNodes
         public override DataViewNodeFlags NodeFlags
             => DataViewNodeFlags.Leaf;
 
+        [DisplayName( "View matrix" )]
         public Matrix4x4 ViewMatrix
         {
             get => Data.ViewMatrix;
             set => SetDataProperty( value );
         }
 
+        [DisplayName( "Clip plane near (z-min)" )]
         public float ClipPlaneNear
         {
             get => Data.ClipPlaneNear;
             set => SetDataProperty( value );
         }
 
+        [DisplayName( "Clip plane far (z-max)" )]
         public float ClipPlaneFar
         {
             get => Data.ClipPlaneFar;
             set => SetDataProperty( value );
         }
 
+        [DisplayName( "Field of view" )]
         public float FieldOfView
         {
             get => Data.FieldOfView;
             set => SetDataProperty( value );
         }
 
+        [DisplayName( "Aspect ratio" )]
         public float AspectRatio
         {
             get => Data.AspectRatio;

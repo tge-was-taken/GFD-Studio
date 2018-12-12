@@ -28,12 +28,14 @@ namespace GFDStudio.GUI.DataViewNodes
         public BoneListViewNode Bones { get; set; }
 
         [ Browsable( true ) ]
+        [ DisplayName( "Bounding box" )]
         public BoundingBox? BoundingBox
         {
             get => GetDataProperty< BoundingBox? >();
         }
 
         [Browsable( true )]
+        [DisplayName( "Bounding sphere" )]
         public BoundingSphere? BoundingSphere
         {
             get => GetDataProperty<BoundingSphere?>();

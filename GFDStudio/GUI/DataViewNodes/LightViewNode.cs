@@ -22,39 +22,45 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         [TypeConverter( typeof( Vector4TypeConverter ) )]
-        public Vector4 AmbientColorFloat
+        [DisplayName( "Ambient color (float)" )]
+        public Vector4 AmbientColor
         {
             get => Data.AmbientColor;
             set => SetDataProperty( value );
         }
 
-        public Color AmbientColor
+        [DisplayName( "Ambient color (RGBA)" )]
+        public Color AmbientColorRGBA
         {
             get => Data.AmbientColor.ToByte();
             set => Data.AmbientColor = value.ToFloat();
         }
 
         [TypeConverter( typeof( Vector4TypeConverter ) )]
-        public Vector4 DiffuseColorFloat
+        [DisplayName( "Diffuse color (float)" )]
+        public Vector4 DiffuseColor
         {
             get => Data.DiffuseColor;
             set => SetDataProperty( value );
         }
 
-        public Color DiffuseColor
+        [DisplayName( "Diffuse color (RGBA)" )]
+        public Color DiffuseColorRGBA
         {
             get => Data.DiffuseColor.ToByte();
             set => Data.DiffuseColor = value.ToFloat();
         }
 
         [TypeConverter( typeof( Vector4TypeConverter ) )]
-        public Vector4 SpecularColorFloat
+        [DisplayName( "Diffuse color (float)" )]
+        public Vector4 SpecularColor
         {
             get => Data.SpecularColor;
             set => SetDataProperty( value );
         }
 
-        public Color SpecularColor
+        [DisplayName( "Specular color (RGBA)" )]
+        public Color SpecularColorRGBA
         {
             get => Data.SpecularColor.ToByte();
             set => Data.SpecularColor = value.ToFloat();
@@ -90,12 +96,14 @@ namespace GFDStudio.GUI.DataViewNodes
             set => SetDataProperty( value );
         }
 
+        [DisplayName( "Attenuation start" )]
         public float AttenuationStart
         {
             get => Data.AttenuationStart;
             set => SetDataProperty( value );
         }
 
+        [DisplayName( "Attenuation end" )]
         public float AttenuationEnd
         {
             get => Data.AttenuationEnd;
@@ -120,12 +128,14 @@ namespace GFDStudio.GUI.DataViewNodes
             set => SetDataProperty( value );
         }
 
+        [DisplayName( "Angle inner cone" )]
         public float AngleInnerCone
         {
             get => Data.AngleInnerCone;
             set => SetDataProperty( value );
         }
 
+        [DisplayName( "Angle outer cone" )]
         public float AngleOuterCone
         {
             get => Data.AngleOuterCone;

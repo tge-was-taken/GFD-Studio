@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Numerics;
 using GFDLibrary;
 using GFDLibrary.Models;
@@ -18,6 +19,7 @@ namespace GFDStudio.GUI.DataViewNodes
             set => SetDataProperty( value );
         }
 
+        [DisplayName( "Vertex count" )]
         public int VertexCount => Vertices.Count;
 
         public List<Vector3> Vertices

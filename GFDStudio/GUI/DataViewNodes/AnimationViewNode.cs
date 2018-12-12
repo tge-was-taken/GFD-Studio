@@ -32,8 +32,10 @@ namespace GFDStudio.GUI.DataViewNodes
             set => SetDataProperty( value );
         }
 
+        [DisplayName( "Controller count" )]
         public int ControllerCount => Data.Controllers.Count;
 
+        [Browsable(false)]
         public ListViewNode<AnimationController> Controllers { get; set; }
 
         //public List<AnimationController> Controllers { get; set; }
@@ -48,6 +50,7 @@ namespace GFDStudio.GUI.DataViewNodes
         //[Browsable(false)]
         //public AnimationExtraDataViewNode Field14 { get; set; }
 
+        [DisplayName( "Bounding box" )]
         public BoundingBox? BoundingBox
         {
             get => Data.BoundingBox;

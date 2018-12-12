@@ -131,7 +131,7 @@ namespace GFDLibrary.Materials
     public sealed class MaterialAttributeType0 : MaterialAttribute
     {
         // 0C
-        public Vector4 Field0C { get; set; }
+        public Vector4 Color { get; set; }
 
         // 1C
         public float Field1C { get; set; }
@@ -163,7 +163,7 @@ namespace GFDLibrary.Materials
         {
             if ( Version > 0x1104500 )
             {
-                Field0C = reader.ReadVector4();
+                Color = reader.ReadVector4();
                 Field1C = reader.ReadSingle();
                 Field20 = reader.ReadSingle();
                 Field24 = reader.ReadSingle();
@@ -173,7 +173,7 @@ namespace GFDLibrary.Materials
             }
             else if ( Version > 0x1104220 )
             {
-                Field0C = reader.ReadVector4();
+                Color = reader.ReadVector4();
                 Field1C = reader.ReadSingle();
                 Field20 = reader.ReadSingle();
                 Field24 = reader.ReadSingle();
@@ -197,7 +197,7 @@ namespace GFDLibrary.Materials
             }
             else
             {
-                Field0C = reader.ReadVector4();
+                Color = reader.ReadVector4();
                 Field1C = reader.ReadSingle();
                 Field20 = reader.ReadSingle();
                 Field24 = 1.0f;
@@ -210,7 +210,7 @@ namespace GFDLibrary.Materials
         {
             if ( Version > 0x1104500 )
             {
-                writer.WriteVector4( Field0C );
+                writer.WriteVector4( Color );
                 writer.WriteSingle( Field1C );
                 writer.WriteSingle( Field20 );
                 writer.WriteSingle( Field24 );
@@ -220,7 +220,7 @@ namespace GFDLibrary.Materials
             }
             else if ( Version > 0x1104220 )
             {
-                writer.WriteVector4( Field0C );
+                writer.WriteVector4( Color );
                 writer.WriteSingle( Field1C );
                 writer.WriteSingle( Field20 );
                 writer.WriteSingle( Field24 );
@@ -238,7 +238,7 @@ namespace GFDLibrary.Materials
             }
             else
             {
-                writer.WriteVector4( Field0C );
+                writer.WriteVector4( Color );
                 writer.WriteSingle( Field1C );
                 writer.WriteSingle( Field20 );
                 writer.WriteSingle( Field28 );

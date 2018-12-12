@@ -16,6 +16,7 @@ namespace GFDStudio.GUI.DataViewNodes
 
         [Browsable(true)]
         [TypeConverter( typeof( EnumTypeConverter<MaterialAttributeType> ) )]
+        [DisplayName( "Attribute type" )]
         public MaterialAttributeType AttributeType
         {
             get => GetDataProperty<MaterialAttributeType>();

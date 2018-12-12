@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -25,6 +26,7 @@ namespace GFDStudio.GUI.DataViewNodes
             set => SetDataProperty( value );
         }
 
+        [DisplayName( "Data length" )]
         public int DataLength => Data.DataLength;
 
         public int Field08
@@ -45,6 +47,7 @@ namespace GFDStudio.GUI.DataViewNodes
             set => SetDataProperty( value );
         }
 
+        [DisplayName( "Mip map count" )]
         public byte MipMapCount
         {
             get => GetDataProperty<byte>();

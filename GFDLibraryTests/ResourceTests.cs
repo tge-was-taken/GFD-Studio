@@ -318,7 +318,7 @@ namespace GFDLibrary.Tests
             Assert.AreEqual( a.EmissiveColor, b.EmissiveColor );
             Assert.AreEqual( a.Field40, b.Field40 );
             Assert.AreEqual( a.Field44, b.Field44 );
-            Assert.AreEqual( a.DrawOrder, b.DrawOrder );
+            Assert.AreEqual( a.DrawMethod, b.DrawMethod );
             Assert.AreEqual( a.Field49, b.Field49 );
             Assert.AreEqual( a.Field4A, b.Field4A );
             Assert.AreEqual( a.Field4B, b.Field4B );
@@ -399,7 +399,7 @@ namespace GFDLibrary.Tests
                             var a2 = ( MaterialAttributeType0 )a[i];
                             var b2 = ( MaterialAttributeType0 )b[i];
 
-                            Assert.AreEqual( a2.Field0C, b2.Field0C );
+                            Assert.AreEqual( a2.Color, b2.Color );
                             Assert.AreEqual( a2.Field1C, b2.Field1C );
                             Assert.AreEqual( a2.Field20, b2.Field20 );
                             Assert.AreEqual( a2.Field24, b2.Field24 );
@@ -742,7 +742,7 @@ namespace GFDLibrary.Tests
             Assert.AreEqual( a.Flags, b.Flags );
             Assert.AreEqual( a.VertexAttributeFlags, b.VertexAttributeFlags );
             Assert.AreEqual( a.TriangleCount, b.TriangleCount );
-            Assert.AreEqual( a.TriangleIndexType, b.TriangleIndexType );
+            Assert.AreEqual( a.TriangleIndexFormat, b.TriangleIndexFormat );
             CollectionAssert.AreEqual( a.Triangles, b.Triangles );
 
             Assert.AreEqual( a.VertexCount, b.VertexCount );

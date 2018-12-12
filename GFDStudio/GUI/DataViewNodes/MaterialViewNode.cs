@@ -31,39 +31,45 @@ namespace GFDStudio.GUI.DataViewNodes
             set => SetDataProperty( value );
         }
         [TypeConverter( typeof( Vector4TypeConverter ) )]
-        public Vector4 AmbientColorFloat
+        [DisplayName("Ambient color (float)")]
+        public Vector4 AmbientColor
         {
             get => Data.AmbientColor;
             set => SetDataProperty( value );
         }
 
-        public System.Drawing.Color AmbientColor
+        [DisplayName( "Ambient color (RGBA)" )]
+        public System.Drawing.Color AmbientColorRGBA
         {
             get => Data.AmbientColor.ToByte();
             set => Data.AmbientColor = value.ToFloat();
         }
 
         [TypeConverter( typeof( Vector4TypeConverter ) )]
-        public Vector4 DiffuseColorFloat
+        [DisplayName( "Diffuse color (float)" )]
+        public Vector4 DiffuseColor
         {
             get => Data.DiffuseColor;
             set => SetDataProperty( value );
         }
 
-        public System.Drawing.Color DiffuseColor
+        [DisplayName( "Diffuse color (RGBA)" )]
+        public System.Drawing.Color DiffuseColorRGBA
         {
             get => Data.DiffuseColor.ToByte();
             set => Data.DiffuseColor = value.ToFloat();
         }
 
         [TypeConverter( typeof( Vector4TypeConverter ) )]
-        public Vector4 SpecularColorFloat
+        [DisplayName( "Specular color (float)" )]
+        public Vector4 SpecularColor
         {
             get => Data.SpecularColor;
             set => SetDataProperty( value );
         }
 
-        public System.Drawing.Color SpecularColor
+        [DisplayName( "Specular color (RGBA)" )]
+        public System.Drawing.Color SpecularColorRGBA
         {
             get => Data.SpecularColor.ToByte();
             set => Data.SpecularColor = value.ToFloat();
@@ -71,13 +77,15 @@ namespace GFDStudio.GUI.DataViewNodes
 
         [Browsable( true )]
         [TypeConverter( typeof( Vector4ColorTypeConverter ) )]
-        public Vector4 EmissiveColorFloat
+        [DisplayName( "Emissive color (float)" )]
+        public Vector4 EmissiveColor
         {
             get => GetDataProperty<Vector4>();
             set => SetDataProperty( value );
         }
 
-        public System.Drawing.Color EmissiveColor
+        [DisplayName( "Emissive color (RGBA)" )]
+        public System.Drawing.Color EmissiveColorRGBA
         {
             get => Data.EmissiveColor.ToByte();
             set => Data.EmissiveColor = value.ToFloat();
@@ -98,10 +106,11 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         [Browsable( true )]
-        [TypeConverter( typeof( EnumTypeConverter<MaterialDrawOrder> ) )]
-        public MaterialDrawOrder DrawOrder
+        [TypeConverter( typeof( EnumTypeConverter<MaterialDrawMethod> ) )]
+        [DisplayName( "Draw method" )]
+        public MaterialDrawMethod DrawMethod
         {
-            get => GetDataProperty<MaterialDrawOrder>();
+            get => GetDataProperty<MaterialDrawMethod>();
             set => SetDataProperty( value );
         }
 

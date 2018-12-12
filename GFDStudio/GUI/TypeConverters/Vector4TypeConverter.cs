@@ -108,25 +108,11 @@ namespace GFDStudio.GUI.TypeConverters
                 var values = input.Trim( '[', ']' )
                                              .Split( new[] { "," }, StringSplitOptions.RemoveEmptyEntries );
 
-                var vectorValue = ( Vector4 ) context.GetType().GetProperty( "PropertyValue" ).GetValue( context );
-                bool usesExtendedRange = vectorValue.X > 1 || vectorValue.Y > 1 || vectorValue.Z > 1 || vectorValue.W > 1;
 
                 var x = float.Parse( values[0], CultureInfo.InvariantCulture );
-                if ( !usesExtendedRange && x > 1f )
-                    x /= 255f;
-
                 var y = float.Parse( values[1], CultureInfo.InvariantCulture );
-                if ( !usesExtendedRange && y > 1f )
-                    y /= 255f;
-
                 var z = float.Parse( values[2], CultureInfo.InvariantCulture );
-                if ( !usesExtendedRange && z > 1f )
-                    z /= 255f;
-
                 var w = float.Parse( values[3], CultureInfo.InvariantCulture );
-                if ( !usesExtendedRange && w > 1f )
-                    w /= 255f;
-
                 return new Vector4( x, y, z, w );
             }
             else

@@ -438,7 +438,7 @@ namespace GFDLibrary.Models.Conversion
 
             if ( aiMesh.HasFaces )
             {
-                geometry.TriangleIndexType = aiMesh.VertexCount <= ushort.MaxValue ? TriangleIndexType.UInt16 : TriangleIndexType.UInt32;
+                geometry.TriangleIndexFormat = aiMesh.VertexCount <= ushort.MaxValue ? TriangleIndexFormat.UInt16 : TriangleIndexFormat.UInt32;
                 geometry.Triangles = aiMesh.Faces
                                            .Select( x => new Triangle( ( uint )x.Indices[0], ( uint )x.Indices[1], ( uint )x.Indices[2] ) )
                                            .ToArray();

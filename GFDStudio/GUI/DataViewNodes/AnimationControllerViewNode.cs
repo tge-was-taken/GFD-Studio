@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using GFDLibrary.Animations;
 
 namespace GFDStudio.GUI.DataViewNodes
@@ -8,18 +9,21 @@ namespace GFDStudio.GUI.DataViewNodes
 
         public override DataViewNodeFlags NodeFlags => DataViewNodeFlags.Branch;
 
+        [DisplayName( "Target kind" )]
         public TargetKind TargetKind
         {
             get => GetDataProperty<TargetKind>();
             set => SetDataProperty( value );
         }
 
+        [DisplayName( "Target ID" )]
         public int TargetId
         {
             get => GetDataProperty<int>();
             set => SetDataProperty( value );
         }
 
+        [DisplayName( "Target name" )]
         public string TargetName
         {
             get => GetDataProperty<string>();

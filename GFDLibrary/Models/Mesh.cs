@@ -18,7 +18,7 @@ namespace GFDLibrary.Models
 
         public int TriangleCount => Triangles?.Length ?? 0;
 
-        public TriangleIndexType TriangleIndexType { get; set; }
+        public TriangleIndexFormat TriangleIndexFormat { get; set; }
 
         public int VertexCount => Vertices.Length;
 
@@ -256,7 +256,7 @@ namespace GFDLibrary.Models
 
         public Mesh()
         {
-            TriangleIndexType = TriangleIndexType.UInt16;
+            TriangleIndexFormat = TriangleIndexFormat.UInt16;
         }
 
         public Mesh(uint version):base(version)
@@ -325,7 +325,7 @@ namespace GFDLibrary.Models
             if ( Flags.HasFlag( GeometryFlags.HasTriangles ) )
             {
                 triangleCount = reader.ReadInt32();
-                TriangleIndexType = ( TriangleIndexType )reader.ReadInt16();
+                TriangleIndexFormat = ( TriangleIndexFormat )reader.ReadInt16();
                 Triangles = new Triangle[triangleCount];
             }
 
@@ -397,20 +397,20 @@ namespace GFDLibrary.Models
             {
                 for ( int i = 0; i < Triangles.Length; i++ )
                 {
-                    switch ( TriangleIndexType )
+                    switch ( TriangleIndexFormat )
                     {
-                        case TriangleIndexType.UInt16:
+                        case TriangleIndexFormat.UInt16:
                             Triangles[i].A = reader.ReadUInt16();
                             Triangles[i].B = reader.ReadUInt16();
                             Triangles[i].C = reader.ReadUInt16();
                             break;
-                        case TriangleIndexType.UInt32:
+                        case TriangleIndexFormat.UInt32:
                             Triangles[i].A = reader.ReadUInt32();
                             Triangles[i].B = reader.ReadUInt32();
                             Triangles[i].C = reader.ReadUInt32();
                             break;
                         default:
-                            throw new Exception( $"Unsupported triangle index type: {TriangleIndexType}" );
+                            throw new Exception( $"Unsupported triangle index type: {TriangleIndexFormat}" );
                     }
                 }
             }
@@ -500,7 +500,7 @@ namespace GFDLibrary.Models
             if ( Flags.HasFlag( GeometryFlags.HasTriangles ) )
             {
                 writer.WriteInt32( TriangleCount );
-                writer.WriteInt16( ( short )TriangleIndexType );
+                writer.WriteInt16( ( short )TriangleIndexFormat );
             }
 
             writer.WriteInt32( VertexCount );
@@ -561,20 +561,20 @@ namespace GFDLibrary.Models
             {
                 for ( int i = 0; i < Triangles.Length; i++ )
                 {
-                    switch ( TriangleIndexType )
+                    switch ( TriangleIndexFormat )
                     {
-                        case TriangleIndexType.UInt16:
+                        case TriangleIndexFormat.UInt16:
                             writer.WriteUInt16( ( ushort )Triangles[i].A );
                             writer.WriteUInt16( ( ushort )Triangles[i].B );
                             writer.WriteUInt16( ( ushort )Triangles[i].C );
                             break;
-                        case TriangleIndexType.UInt32:
+                        case TriangleIndexFormat.UInt32:
                             writer.WriteUInt32( Triangles[i].A );
                             writer.WriteUInt32( Triangles[i].B );
                             writer.WriteUInt32( Triangles[i].C );
                             break;
                         default:
-                            throw new InvalidDataException( $"Unsupported triangle index type: {TriangleIndexType}" );
+                            throw new InvalidDataException( $"Unsupported triangle index type: {TriangleIndexFormat}" );
                     }
                 }
             }
@@ -602,7 +602,7 @@ namespace GFDLibrary.Models
         }
     }
 
-    public enum TriangleIndexType
+    public enum TriangleIndexFormat
     {
         None = 0,
         UInt16 = 1,

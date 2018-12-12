@@ -35,6 +35,7 @@ namespace GFDStudio.GUI.DataViewNodes
 
         [Browsable( true )]
         [TypeConverter(typeof( Int32HexTypeConverter ) )]
+        [DisplayName( "Data length" )]
         public int DataLength
         {
             get => Data.Data.Length;

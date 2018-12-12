@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Numerics;
 using GFDLibrary.Models;
 
@@ -10,12 +11,14 @@ namespace GFDStudio.GUI.DataViewNodes
 
         public override DataViewNodeFlags NodeFlags => DataViewNodeFlags.Leaf;
 
+        [DisplayName( "Node index" )]
         public ushort NodeIndex
         {
             get => GetDataProperty<ushort>();
             set => SetDataProperty( value );
         }
 
+        [DisplayName( "Inverse bind matrix" )]
         public Matrix4x4 InverseBindMatrix
         {
             get => GetDataProperty<Matrix4x4>();

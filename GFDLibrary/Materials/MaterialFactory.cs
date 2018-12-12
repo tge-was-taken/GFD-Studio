@@ -16,7 +16,7 @@ namespace GFDLibrary.Materials
                 EmissiveColor = new Vector4( 0, 0, 0, 0 ),
                 Field40 = 1,
                 Field44 = 0.1f,
-                DrawOrder = MaterialDrawOrder.Front,
+                DrawMethod = MaterialDrawMethod.Opaque,
                 Field49 = 1,
                 Field4A = 0,
                 Field4B = 1,
@@ -44,7 +44,7 @@ namespace GFDLibrary.Materials
 
             if ( hasTransparency )
             {
-                material.DrawOrder = MaterialDrawOrder.Back;
+                material.DrawMethod = MaterialDrawMethod.Translucent;
                 material.Field4D = 1;
                 material.Field90 = 0x0080;
             }
@@ -73,7 +73,7 @@ namespace GFDLibrary.Materials
                 EmissiveColor = new Vector4( 0, 0, 0, 0 ),
                 Field40 = 1,
                 Field44 = 0,
-                DrawOrder = MaterialDrawOrder.Front,
+                DrawMethod = MaterialDrawMethod.Opaque,
                 Field49 = 1,
                 Field4A = 0,
                 Field4B = 1,
@@ -95,7 +95,7 @@ namespace GFDLibrary.Materials
                 {
                     new MaterialAttributeType0
                     {
-                        Field0C = new Vector4( 0.980392337f, 0.980392337f, 0.980392337f, 0.392156869f ),
+                        Color = new Vector4( 0.980392337f, 0.980392337f, 0.980392337f, 0.392156869f ),
                         Field1C = 0.6f,
                         Field20 = 14,
                         Field24 = 0.6f,
@@ -115,7 +115,7 @@ namespace GFDLibrary.Materials
 
             if ( hasTransparency )
             {
-                material.DrawOrder = MaterialDrawOrder.Back;
+                material.DrawMethod = MaterialDrawMethod.Translucent;
                 material.Field4D = 1;
                 material.Field90 = 0x0080;
             }
@@ -136,7 +136,7 @@ namespace GFDLibrary.Materials
                 {
                     new MaterialAttributeType0
                     {
-                        Field0C = new Vector4( 0.9799954f, 0.9799954f, 0.9799954f, 0.5882353f ),
+                        Color = new Vector4( 0.9799954f, 0.9799954f, 0.9799954f, 0.5882353f ),
                         Field1C = 0.8f,
                         Field20 = 30,
                         Field24 = 1,
@@ -149,7 +149,7 @@ namespace GFDLibrary.Materials
                 },
                 DiffuseColor = new Vector4( 0.3000076f, 0.3000076f, 0.3000076f, 1f ),
                 DiffuseMap = new TextureMap( diffuseMapName ),
-                DrawOrder = MaterialDrawOrder.Front,
+                DrawMethod = MaterialDrawMethod.Opaque,
                 EmissiveColor = new Vector4( 0f, 0f, 0f, 0f ),
                 Field40 = 1,
                 Field44 = 0,
@@ -179,7 +179,7 @@ namespace GFDLibrary.Materials
 
             if ( hasTransparency )
             {
-                material.DrawOrder = MaterialDrawOrder.Back;
+                material.DrawMethod = MaterialDrawMethod.Translucent;
                 material.Field4D = 1;
                 material.Field90 = 0x0080;
             }

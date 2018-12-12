@@ -44,7 +44,7 @@ namespace GFDLibrary.Rendering.OpenGL
             if ( material.DiffuseMap != null )
             {
                 DiffuseTexture = textureCreator( material, material.DiffuseMap.Name );
-                HasAlphaTransparency = material.DrawOrder != MaterialDrawOrder.Front;
+                HasAlphaTransparency = material.DrawMethod != MaterialDrawMethod.Opaque;
             }
         }
 

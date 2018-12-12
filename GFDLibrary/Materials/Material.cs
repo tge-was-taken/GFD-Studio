@@ -44,7 +44,7 @@ namespace GFDLibrary.Materials
         public float Field44 { get; set; }
 
         // 0x48
-        public MaterialDrawOrder DrawOrder { get; set; }
+        public MaterialDrawMethod DrawMethod { get; set; }
 
         // 0x49
         public byte Field49 { get; set; }
@@ -246,7 +246,7 @@ namespace GFDLibrary.Materials
             Field49 = 1;
             Field4B = 1;
             Field4D = 1;
-            DrawOrder = 0;
+            DrawMethod = 0;
             Field4A = 0;
             Field4C = 0;
             Field5C = 0;
@@ -311,7 +311,7 @@ namespace GFDLibrary.Materials
 
             if ( Version <= 0x1103040 )
             {
-                DrawOrder = ( MaterialDrawOrder )reader.ReadInt16();
+                DrawMethod = ( MaterialDrawMethod )reader.ReadInt16();
                 Field49 = ( byte )reader.ReadInt16();
                 Field4A = ( byte )reader.ReadInt16();
                 Field4B = ( byte )reader.ReadInt16();
@@ -324,7 +324,7 @@ namespace GFDLibrary.Materials
             }
             else
             {
-                DrawOrder = ( MaterialDrawOrder )reader.ReadByte();
+                DrawMethod = ( MaterialDrawMethod )reader.ReadByte();
                 Field49 = reader.ReadByte();
                 Field4A = reader.ReadByte();
                 Field4B = reader.ReadByte();
@@ -430,7 +430,7 @@ namespace GFDLibrary.Materials
 
             if ( Version <= 0x1103040 )
             {
-                writer.WriteInt16( ( short )DrawOrder );
+                writer.WriteInt16( ( short )DrawMethod );
                 writer.WriteInt16( Field49 );
                 writer.WriteInt16( Field4A );
                 writer.WriteInt16( Field4B );
@@ -443,7 +443,7 @@ namespace GFDLibrary.Materials
             }
             else
             {
-                writer.WriteByte( ( byte )DrawOrder );
+                writer.WriteByte( ( byte )DrawMethod );
                 writer.WriteByte( Field49 );
                 writer.WriteByte( Field4A );
                 writer.WriteByte( Field4B );
@@ -566,9 +566,9 @@ namespace GFDLibrary.Materials
         Flag80000000     = 1u << 31
     }
 
-    public enum MaterialDrawOrder
+    public enum MaterialDrawMethod
     {
-        Front,
-        Back,
+        Opaque,
+        Translucent,
     }
 }
