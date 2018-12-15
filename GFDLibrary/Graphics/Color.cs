@@ -3,7 +3,7 @@
 // ReSharper disable NonReadonlyMemberInGetHashCode
 #pragma warning disable S1104 // Fields should not have public accessibility
 #pragma warning disable S2328 // "GetHashCode" should not reference mutable fields
-namespace GFDLibrary.Models
+namespace GFDLibrary.Graphics
 {
     public struct Color : IEquatable<Color>
     {

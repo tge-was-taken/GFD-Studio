@@ -85,7 +85,7 @@
     <Compile Include="Models\Bone.cs" />
     <Compile Include="Misc\ChunkType000100F8.cs" />
     <Compile Include="Common\Archive.cs" />
-    <Compile Include="Models\Color.cs" />
+    <Compile Include="Graphics\Color.cs" />
     <Compile Include="Models\Conversion\Utilities\AssimpExtensions.cs" />
     <Compile Include="Models\Conversion\Utilities\AssimpHelper.cs" />
     <Compile Include="Utilities\MathHelper.cs" />

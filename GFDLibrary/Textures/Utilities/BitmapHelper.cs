@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 
 namespace GFDLibrary.Textures.Utilities
 {
@@ -107,6 +108,45 @@ namespace GFDLibrary.Textures.Utilities
                 }
             }
             return false;
+        }
+
+        /// <summary>
+        /// Create a new <see cref="Bitmap"/> instance using an array of <see cref="Color"/> pixels and the image width and height.
+        /// </summary>
+        /// <param name="colors"><see cref="GFDLibrary.Graphics.Color"/> array containing the color of each pixel in the image.</param>
+        /// <param name="width">The width of the image.</param>
+        /// <param name="height">The height of the image.</param>
+        /// <returns>A new <see cref="Bitmap"/> instance created using the data provided.</returns>
+        public static Bitmap Create( Graphics.Color[] colors, int width, int height )
+        {
+            var bitmap = new Bitmap( width, height, PixelFormat.Format32bppArgb );
+            var bitmapData = bitmap.LockBits
+                (
+                 new Rectangle( 0, 0, width, height ),
+                 ImageLockMode.ReadWrite,
+                 bitmap.PixelFormat
+                );
+
+            unsafe
+            {
+                byte* p = ( byte* )bitmapData.Scan0;
+                Parallel.For( 0, height, y =>
+                {
+                    for ( int x = 0; x < width; x++ )
+                    {
+                        int   offset = ( x * 4 ) + y * bitmapData.Stride;
+                        var color  = colors[x + y * width];
+                        p[offset]     = color.B;
+                        p[offset + 1] = color.G;
+                        p[offset + 2] = color.R;
+                        p[offset + 3] = color.A;
+                    }
+                } );
+            }
+
+            bitmap.UnlockBits( bitmapData );
+
+            return bitmap;
         }
     }
 }

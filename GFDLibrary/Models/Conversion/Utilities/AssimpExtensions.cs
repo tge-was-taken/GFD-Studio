@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using Assimp;
+using GFDLibrary.Graphics;
 using Matrix4x4 = Assimp.Matrix4x4;
 using Quaternion = Assimp.Quaternion;
 
