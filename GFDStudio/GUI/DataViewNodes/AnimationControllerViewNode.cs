@@ -1,11 +1,12 @@
 using System.ComponentModel;
+using GFDLibrary;
 using GFDLibrary.Animations;
 
 namespace GFDStudio.GUI.DataViewNodes
 {
     public class AnimationControllerViewNode : DataViewNode<AnimationController>
     {
-        public override DataViewNodeMenuFlags ContextMenuFlags => 0;
+        public override DataViewNodeMenuFlags ContextMenuFlags => DataViewNodeMenuFlags.Replace | DataViewNodeMenuFlags.Export;
 
         public override DataViewNodeFlags NodeFlags => DataViewNodeFlags.Branch;
 
@@ -36,6 +37,9 @@ namespace GFDStudio.GUI.DataViewNodes
 
         protected override void InitializeCore()
         {
+            TextChanged += ( s, o ) => TargetName = Name = Text;
+            RegisterExportHandler<AnimationController>( Data.Save );
+            RegisterReplaceHandler<AnimationController>( Resource.Load<AnimationController> );
         }
     }
 }

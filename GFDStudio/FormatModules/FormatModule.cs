@@ -163,7 +163,14 @@ namespace GFDStudio.FormatModules
             if ( !UsageFlags.HasFlag( FormatModuleUsageFlags.Bitmap ) )
                 throw new NotSupportedException( "FormatModule does not provide image capabilities" );
 
-            return GetBitmapCore( obj );
+            try
+            {
+                return GetBitmapCore( obj );
+            }
+            catch ( Exception )
+            {
+                return new Bitmap( 32, 32 );
+            }
         }
 
         //

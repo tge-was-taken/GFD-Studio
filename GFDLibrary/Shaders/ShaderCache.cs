@@ -30,7 +30,7 @@ namespace GFDLibrary.Shaders
             CacheVersion = cacheVersion;
         }
 
-        internal override void Read( ResourceReader reader )
+        internal override void Read( ResourceReader reader, long endPosition = -1 )
         {
             var header = reader.ReadFileHeader();
             if ( header.Identifier != ResourceFileIdentifier.ShaderCache )

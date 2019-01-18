@@ -117,13 +117,14 @@ namespace GFDLibrary.Textures
         {
             Bitmap bitmap;
 
-            if ( format == TextureFormat.DDS )
+            switch ( format )
             {
-                return DecodeDDS( data );
-            }
-            else
-            {
-                throw new NotSupportedException();
+                case TextureFormat.DDS:
+                    return DecodeDDS( data );
+                case TextureFormat.GXT:
+                    return DecodeGXT( data );
+                default:
+                    throw new NotSupportedException();
             }
 
             return bitmap;
@@ -176,6 +177,13 @@ namespace GFDLibrary.Textures
 
             // load the saved bmp into a new bitmap
             return new Bitmap( bitmapStream );
+        }
+
+        private static Bitmap DecodeGXT( byte[] data )
+        {
+            var gxt = new Scarlet.IO.ImageFormats.GXT();
+            gxt.Open( new MemoryStream( data ), Scarlet.IO.Endian.LittleEndian );
+            return gxt.GetBitmap();
         }
     }
 }

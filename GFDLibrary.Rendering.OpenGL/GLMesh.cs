@@ -93,6 +93,10 @@ namespace GFDLibrary.Rendering.OpenGL
                     Material = new GLMaterial();
                 }
             }
+            else
+            {
+                Material = new GLMaterial();
+            }
 
             IsVisible = true;
         }

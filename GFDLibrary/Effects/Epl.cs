@@ -35,7 +35,7 @@ namespace GFDLibrary.Effects
 
         }
 
-        internal override void Read( ResourceReader reader )
+        internal override void Read( ResourceReader reader, long endPosition = -1 )
         {
             var startOffset = reader.Position;
             IncludesProperties = true;
@@ -54,6 +54,7 @@ namespace GFDLibrary.Effects
                      test == 0x62206C5F || // b l_
                      test == 0x62207220 || // b r
                      test == 0x6220725F || // b r_
+                     test == 0x62206620 || // b f 
                      test == 0x68656164 || // head
                      test == 0x685F415F || // h_A_
                      test == 0x685F425F || // h_B_

@@ -314,7 +314,7 @@ namespace GFDLibrary.Models
             return (vertices, normals);
         }
 
-        internal override void Read( ResourceReader reader )
+        internal override void Read( ResourceReader reader, long endPosition = -1 )
         {
             var flags = ( GeometryFlags )reader.ReadInt32();
             Flags = flags;

@@ -12,13 +12,13 @@ namespace GFDLibrary.Animations
 
         public Vector3 Scale { get; set; }
 
-        public bool HasPosition => Type != KeyType.NodeRHalf && Type != KeyType.NodeSHalf;
+        public virtual bool HasPosition => Type != KeyType.NodeRHalf && Type != KeyType.NodeSHalf;
 
-        public bool HasRotation => Type != KeyType.NodePHalf && Type != KeyType.NodeSHalf;
+        public virtual bool HasRotation => Type != KeyType.NodeSHalf;
 
-        public bool HasScale => Type == KeyType.NodeSHalf || Type == KeyType.NodePRS || Type == KeyType.NodePRSHalf;
+        public virtual bool HasScale => Type == KeyType.NodeSHalf || Type == KeyType.NodePRS || Type == KeyType.NodePRSHalf;
 
-        public bool IsCompressed => Type != KeyType.NodePR && Type != KeyType.NodePRS;
+        public virtual bool IsCompressed => Type != KeyType.NodePR && Type != KeyType.NodePRS;
 
         public PRSKey( KeyType type ) : base( type )
         {
@@ -45,9 +45,6 @@ namespace GFDLibrary.Animations
                     Position = reader.ReadVector3Half();
                     Rotation = reader.ReadQuaternionHalf();
                     Scale = Type == KeyType.NodePRSHalf ? reader.ReadVector3Half() : Vector3.One;
-                    break;
-                case KeyType.NodePHalf:
-                    Position = reader.ReadVector3Half();
                     break;
                 case KeyType.NodeRHalf:
                     Rotation = reader.ReadQuaternionHalf();
@@ -78,9 +75,6 @@ namespace GFDLibrary.Animations
                     writer.WriteQuaternionHalf( Rotation );
                     if ( Type == KeyType.NodePRSHalf )
                         writer.WriteVector3Half( Scale );
-                    break;
-                case KeyType.NodePHalf:
-                    writer.WriteVector3Half( Position );
                     break;
                 case KeyType.NodeRHalf:
                     writer.WriteQuaternionHalf( Rotation );

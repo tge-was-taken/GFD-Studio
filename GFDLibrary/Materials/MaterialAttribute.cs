@@ -84,6 +84,10 @@ namespace GFDLibrary.Materials
                     attribute = new MaterialAttributeType7( flags, version );
                     break;
 
+                case MaterialAttributeType.Type8:
+                    attribute = new MaterialAttributeType8( flags, version );
+                    break;
+
                 default:
                     Trace.Assert( false, $"Unknown material attribute type: {flags:X8}" );
                     break;
@@ -126,6 +130,7 @@ namespace GFDLibrary.Materials
         Type5 = 5,
         Type6 = 6,
         Type7 = 7,
+        Type8 = 8,
     }
 
     public sealed class MaterialAttributeType0 : MaterialAttribute
@@ -159,7 +164,7 @@ namespace GFDLibrary.Materials
         {
         }
 
-        internal override void Read( ResourceReader reader )
+        internal override void Read( ResourceReader reader, long endPosition = -1 )
         {
             if ( Version > 0x1104500 )
             {
@@ -287,7 +292,7 @@ namespace GFDLibrary.Materials
         {
         }
 
-        internal override void Read( ResourceReader reader )
+        internal override void Read( ResourceReader reader, long endPosition = -1 )
         {
             Field0C = reader.ReadVector4();
             Field1C = reader.ReadSingle();
@@ -385,7 +390,7 @@ namespace GFDLibrary.Materials
         {
         }
 
-        internal override void Read( ResourceReader reader )
+        internal override void Read( ResourceReader reader, long endPosition = -1 )
         {
             Field0C = reader.ReadInt32();
             Field10 = reader.ReadInt32();
@@ -447,7 +452,7 @@ namespace GFDLibrary.Materials
         {
         }
 
-        internal override void Read( ResourceReader reader )
+        internal override void Read( ResourceReader reader, long endPosition = -1 )
         {
             Field0C = reader.ReadSingle();
             Field10 = reader.ReadSingle();
@@ -537,7 +542,7 @@ namespace GFDLibrary.Materials
         {
         }
 
-        internal override void Read( ResourceReader reader )
+        internal override void Read( ResourceReader reader, long endPosition = -1 )
         {
             Field0C = reader.ReadVector4();
             Field1C = reader.ReadSingle();
@@ -610,7 +615,7 @@ namespace GFDLibrary.Materials
         {
         }
 
-        internal override void Read( ResourceReader reader )
+        internal override void Read( ResourceReader reader, long endPosition = -1 )
         {
             Field0C = reader.ReadInt32();
             Field10 = reader.ReadInt32();
@@ -657,7 +662,7 @@ namespace GFDLibrary.Materials
         {
         }
 
-        internal override void Read( ResourceReader reader )
+        internal override void Read( ResourceReader reader, long endPosition = -1 )
         {
             Field0C = reader.ReadInt32();
             Field10 = reader.ReadInt32();
@@ -682,12 +687,116 @@ namespace GFDLibrary.Materials
         {
         }
 
-        internal override void Read( ResourceReader reader )
+        internal override void Read( ResourceReader reader, long endPosition = -1 )
         {
         }
 
         internal override void Write( ResourceWriter writer )
         {
         }
+    }
+
+    public sealed class MaterialAttributeType8 : MaterialAttribute
+    {
+        public Vector3 Field00 { get; set; }
+
+        public float Field0C { get; set; }
+
+        public float Field10 { get; set; }
+
+        public float Field14 { get; set; }
+
+        public float Field18 { get; set; }
+
+        public Vector3 Field1C { get; set; }
+
+        public float Field28 { get; set; }
+
+        public float Field2C { get; set; }
+
+        public int Field30 { get; set; }
+
+        public int Field34 { get; set; }
+
+        public int Field38 { get; set; }
+
+        public MaterialAttributeType8Flags Type8Flags { get; set; }
+
+        public MaterialAttributeType8() : base( MaterialAttributeFlags.Flag1, MaterialAttributeType.Type8 ) { }
+
+        internal MaterialAttributeType8( uint privateFlags, uint version ) : base( privateFlags, version ) { }
+
+        public MaterialAttributeType8( MaterialAttributeFlags flags ) : base( flags, MaterialAttributeType.Type8 )
+        {
+        }
+
+        internal override void Read( ResourceReader reader, long endPosition = -1 )
+        {
+            Field00 = reader.ReadVector3();
+            Field0C = reader.ReadSingle();
+            Field10 = reader.ReadSingle();
+            Field14 = reader.ReadSingle();
+            Field18 = reader.ReadSingle();
+            Field1C = reader.ReadVector3();
+            Field28 = reader.ReadSingle();
+            Field2C = reader.ReadSingle();
+            Field30 = reader.ReadInt32();
+            Field34 = reader.ReadInt32();
+            Field38 = reader.ReadInt32();
+            Type8Flags = ( MaterialAttributeType8Flags )reader.ReadInt32();
+        }
+
+        internal override void Write( ResourceWriter writer )
+        {
+            writer.WriteVector3( Field00 );
+            writer.WriteSingle( Field0C );
+            writer.WriteSingle( Field10 );
+            writer.WriteSingle( Field14 );
+            writer.WriteSingle( Field18 );
+            writer.WriteVector3( Field1C );
+            writer.WriteSingle( Field28 );
+            writer.WriteSingle( Field2C );
+            writer.WriteInt32( Field30 );
+            writer.WriteInt32( Field34 );
+            writer.WriteInt32( Field38 );
+            writer.WriteInt32( ( int )Type8Flags );
+        }
+    }
+
+    [Flags]
+    public enum MaterialAttributeType8Flags
+    {
+        Bit0 = 1 << 0,
+        Bit1 = 1 << 1,
+        Bit2 = 1 << 2,
+        Bit3 = 1 << 3,
+        Bit4 = 1 << 4,
+        Bit5 = 1 << 5,
+        Bit6 = 1 << 6,
+        Bit7 = 1 << 7,
+        Bit8 = 1 << 8,
+        Bit9 = 1 << 9,
+        Bit10 = 1 << 10,
+        Bit11 = 1 << 11,
+        Bit12 = 1 << 12,
+        Bit13 = 1 << 13,
+        Bit14 = 1 << 14,
+        Bit15 = 1 << 15,
+        Bit16 = 1 << 16,
+        Bit17 = 1 << 17,
+        Bit18 = 1 << 18,
+        Bit19 = 1 << 19,
+        Bit20 = 1 << 20,
+        Bit21 = 1 << 21,
+        Bit22 = 1 << 22,
+        Bit23 = 1 << 23,
+        Bit24 = 1 << 24,
+        Bit25 = 1 << 25,
+        Bit26 = 1 << 26,
+        Bit27 = 1 << 27,
+        Bit28 = 1 << 28,
+        Bit29 = 1 << 29,
+        Bit30 = 1 << 30,
+        Bit31 = 1 << 31,
     }
 }

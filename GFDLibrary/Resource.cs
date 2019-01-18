@@ -121,7 +121,7 @@ namespace GFDLibrary
                         res = new Model( header.Version );
                         break;
                     case ResourceType.Node:
-                        return Node.ReadRecursive( reader, header.Version );
+                        return Node.ReadRecursive( reader, header.Version, stream.Length );
                     case ResourceType.UserPropertyDictionary:
                         res = new UserPropertyDictionary( header.Version );
                         break;
@@ -187,7 +187,7 @@ namespace GFDLibrary
                         throw new InvalidDataException( "Unknown/Invalid resource type" );
                 }
 
-                res.Read( reader );
+                res.Read( reader, stream.Length );
 
                 if ( res.ResourceType == ResourceType.ModelPack )
                 {
@@ -254,7 +254,7 @@ namespace GFDLibrary
             }
         }
 
-        internal abstract void Read( ResourceReader reader );
+        internal abstract void Read( ResourceReader reader, long endPosition = -1 );
         internal abstract void Write( ResourceWriter writer );
     }
 }

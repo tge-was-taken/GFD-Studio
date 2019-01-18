@@ -48,7 +48,7 @@ namespace GFDLibrary.Materials
                 Remove( s );
         }
 
-        internal override void Read( ResourceReader reader )
+        internal override void Read( ResourceReader reader, long endPosition = -1 )
         {
             var count = reader.ReadInt32();
             for ( int i = 0; i < count; i++ )

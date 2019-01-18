@@ -56,7 +56,7 @@ namespace GFDLibrary.Lights
             
         }
 
-        internal override void Read( ResourceReader reader )
+        internal override void Read( ResourceReader reader, long endPosition = -1 )
         {
             if ( Version > 0x1104190 )
             {

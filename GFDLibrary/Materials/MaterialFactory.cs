@@ -188,6 +188,76 @@ namespace GFDLibrary.Materials
 
             return material;
         }
+
+        public static Material CreateCharacterSkinFBMaterial( string name, string diffuseMapName, string shadowMapName, bool hasTransparency = false )
+        {
+            var material = new Material( name )
+            {
+                Flags = MaterialFlags.Flag1 | MaterialFlags.Flag2 | MaterialFlags.Flag20 | MaterialFlags.Flag100 |
+                        MaterialFlags.EnableLight2 | MaterialFlags.CastShadow,
+                AmbientColor = new Vector4( 0.4901961f, 0.4901961f, 0.4901961f, 1f ),
+                Attributes = new List<MaterialAttribute>
+                {
+                    new MaterialAttributeType8
+                    {
+                        Field00 = new Vector3(0.9803922f, 0.9803922f, 0.9803922f),
+                        Field0C = 0.470588237f,
+                        Field10 = 0.65f,
+                        Field14 = 30f,
+                        Field18 = 100f,
+                        Field1C = new Vector3(0, 0, 0),
+                        Field28 = 0.35f,
+                        Field2C = 0f,
+                        Field30 = 0,
+                        Field34 = 0,
+                        Field38 = 0,
+                        Flags = MaterialAttributeFlags.Flag1,
+                        Type8Flags = MaterialAttributeType8Flags.Bit0 | MaterialAttributeType8Flags.Bit8,
+                        Version = 0x01105090
+                    }
+                },
+                DiffuseColor = new Vector4( 0f, 0f, 0f, 1f ),
+                DiffuseMap = new TextureMap( diffuseMapName ),
+                DrawMethod = MaterialDrawMethod.Opaque,
+                EmissiveColor = new Vector4( 0f, 0f, 0f, 0f ),
+                Field40 = 1,
+                Field44 = 0,
+                Field49 = 1,
+                Field4A = 0,
+                Field4B = 1,
+                Field4C = 0,
+                Field4D = 1,
+                Field50 = 0,
+                Field5C = 0x68,
+                Field6C = 0xf8fffff8,
+                Field70 = 0xf8fffff8,
+                Field90 = 0,
+                Field92 = 4,
+                Field94 = 5,
+                Field96 = 0,
+                Field98 = 0xFFFFFFFF,
+                GlowMap = null,
+                HighlightMap = null,
+                NightMap = null,
+                NormalMap = null,
+                ReflectionMap = null,
+                ShadowMap = new TextureMap( shadowMapName ),
+                SpecularColor = new Vector4( 0.4901961f, 0.4901961f, 0.4901961f, 1f ),
+                SpecularMap = null,
+                Version = 0x01105090,
+            };
+
+            if ( hasTransparency )
+            {
+                material.DrawMethod = MaterialDrawMethod.Translucent;
+                material.Field4D = 1;
+                material.Field90 = 0x0080;
+            }
+
+            material.IsPresetMaterial = true;
+
+            return material;
+        }
     }
 
     public enum MaterialPreset
@@ -197,5 +267,6 @@ namespace GFDLibrary.Materials
         FieldTerrainCastShadow,
         CharacterSkinP5,
         CharacterClothP4D,
+        CharacterSkinFB
     }
 }

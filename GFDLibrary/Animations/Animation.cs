@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using GFDLibrary.Common;
@@ -23,6 +24,7 @@ namespace GFDLibrary.Animations
         private AnimationFlag80000000Data mField1C;
         private UserPropertyDictionary mProperties;
         private float? mSpeed;
+        private int mUnknown2;
 
         public override ResourceType ResourceType => ResourceType.Animation;
 
@@ -115,7 +117,7 @@ namespace GFDLibrary.Animations
         {          
         }
 
-        internal override void Read( ResourceReader reader )
+        internal override void Read( ResourceReader reader, long endPosition = -1 )
         {
             var animationStart = reader.Position;
 
@@ -125,6 +127,13 @@ namespace GFDLibrary.Animations
             Duration = reader.ReadSingle();
 
             var controllerCount = reader.ReadInt32();
+            if ( Version >= 0x01105100 )
+            {
+                var unknown1 = reader.ReadInt32(); // same as controller count
+                mUnknown2 = reader.ReadInt32(); // TODO: no idea what this is
+                Trace.Assert( unknown1 == controllerCount, "unknown1 != controllerCount" );
+            }
+
             for ( var i = 0; i < controllerCount; i++ )
             {
                 var controller = reader.ReadResource<AnimationController>( Version );
@@ -196,7 +205,7 @@ namespace GFDLibrary.Animations
                 Field1C = new AnimationFlag80000000Data
                 {
                     Field00 = reader.ReadInt32(),
-                    Field04 = reader.ReadStringWithHash( Version ),
+                    Field04 = reader.ReadStringWithHash( Version, true ),
                     Field20 = reader.ReadResource<AnimationLayer>( Version )
                 };
             }
@@ -217,7 +226,16 @@ namespace GFDLibrary.Animations
                 writer.WriteInt32( ( int ) Flags );
 
             writer.WriteSingle( Duration );
-            writer.WriteResourceList( Controllers );
+            writer.WriteInt32( Controllers.Count );
+
+            if ( Version >= 0x01105100 )
+            {
+                writer.WriteInt32( Controllers.Count );
+                writer.WriteInt32( mUnknown2 ); 
+            }
+
+            foreach ( var controller in Controllers )
+                writer.WriteResource( controller );
 
             if ( Flag10000000Data != null )
             {
@@ -233,7 +251,7 @@ namespace GFDLibrary.Animations
                 foreach ( var entry in Field10 )
                 {
                     writer.WriteResource( entry.Field00 );
-                    writer.WriteStringWithHash( Version, entry.Field04 );
+                    writer.WriteStringWithHash( Version, entry.Field04, true );
                 }
             }
 
@@ -243,7 +261,7 @@ namespace GFDLibrary.Animations
             if ( Flags.HasFlag( AnimationFlags.Flag80000000 ) )
             {
                 writer.WriteInt32( Field1C.Field00 );
-                writer.WriteStringWithHash( Version, Field1C.Field04 );
+                writer.WriteStringWithHash( Version, Field1C.Field04, true );
                 writer.WriteResource( Field1C.Field20 );
             }
 

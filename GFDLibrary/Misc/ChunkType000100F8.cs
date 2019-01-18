@@ -15,7 +15,7 @@ namespace GFDLibrary.Misc
         {
         }
 
-        internal override void Read( ResourceReader reader )
+        internal override void Read( ResourceReader reader, long endPosition = -1 )
         {
             throw new System.NotImplementedException();
         }

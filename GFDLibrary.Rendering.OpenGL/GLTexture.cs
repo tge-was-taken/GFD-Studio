@@ -10,26 +10,68 @@ namespace GFDLibrary.Rendering.OpenGL
     {
         public int Id { get; }
 
-        public GLTexture( Texture texture )
+        public unsafe GLTexture( Texture texture )
         {
             Id = GL.GenTexture();
             GL.BindTexture( TextureTarget.Texture2D, Id );
 
-            var ddsHeader = new DDSHeader( new MemoryStream( texture.Data ) );
+            switch ( texture.Format )
+            {
+                case TextureFormat.DDS:
+                    {
+                        var ddsHeader = new DDSHeader( new MemoryStream( texture.Data ) );
 
-            // todo: identify and retrieve values from texture
-            // todo: disable mipmaps for now, they often break and show up as black ( eg after replacing a texture )
-            int mipMapCount = ddsHeader.MipMapCount;
-            if ( mipMapCount > 0 )
-                --mipMapCount;
-            else
-                mipMapCount = 1;
+                        // todo: identify and retrieve values from texture
+                        // todo: disable mipmaps for now, they often break and show up as black ( eg after replacing a texture )
+                        int mipMapCount = ddsHeader.MipMapCount;
+                        if ( mipMapCount > 0 )
+                            --mipMapCount;
+                        else
+                            mipMapCount = 1;
 
-            SetTextureParameters( TextureWrapMode.Repeat, TextureWrapMode.Repeat, TextureMagFilter.Linear, TextureMinFilter.Linear, mipMapCount );
+                        SetTextureParameters( TextureWrapMode.Repeat, TextureWrapMode.Repeat, TextureMagFilter.Linear, TextureMinFilter.Linear, mipMapCount );
 
-            var format = GetPixelInternalFormat( ddsHeader.PixelFormat.FourCC );
+                        var format = GetPixelInternalFormat( ddsHeader.PixelFormat.FourCC );
 
-            UploadDDSTextureData( ddsHeader.Width, ddsHeader.Height, format, mipMapCount, texture.Data, 0x80 );
+                        UploadDDSTextureData( ddsHeader.Width, ddsHeader.Height, format, mipMapCount, texture.Data, 0x80 );
+                    }
+                    break;
+
+                default:
+                    {
+                        // rip hardware acceleration
+                        var bitmap = TextureDecoder.Decode( texture );
+                        SetTextureParameters( TextureWrapMode.Repeat, TextureWrapMode.Repeat, TextureMagFilter.Linear, TextureMinFilter.Linear, 1 );
+
+                        var bitmapData = bitmap.LockBits( new System.Drawing.Rectangle( 0, 0, bitmap.Width, bitmap.Height ),
+                                         System.Drawing.Imaging.ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb );
+
+                        var pixels = new byte[bitmap.Width * bitmap.Height * 4];
+                        fixed ( byte* pPixels = &pixels[ 0 ] )
+                        {
+                            var pSrc = ( byte* ) bitmapData.Scan0;
+                            var pDest = pPixels;
+                            for ( int y = 0; y < bitmap.Height; y++ )
+                            {
+                                for ( int x = 0; x < bitmap.Width; x++ )
+                                {
+                                    *pDest++ = pSrc[ 2 ];
+                                    *pDest++ = pSrc[ 1 ];
+                                    *pDest++ = pSrc[ 0 ];
+                                    *pDest++ = pSrc[ 3 ];
+                                    pSrc += 4;
+                                }
+                            }
+
+                            GL.TexImage2D( TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, bitmap.Width, bitmap.Height, 0, PixelFormat.Rgba,
+                                           PixelType.UnsignedByte, ( IntPtr )pPixels );
+                        }
+
+                        bitmap.UnlockBits( bitmapData );
+                    }
+                    break;
+
+            }
         }
 
         public GLTexture( FieldTexturePS3 texture )

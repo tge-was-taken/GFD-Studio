@@ -168,6 +168,7 @@
     <Compile Include="GUI\DataViewNodes\ColorConverter.cs" />
     <Compile Include="GUI\DataViewNodes\FieldTexturePS3ViewNode.cs" />
     <Compile Include="GUI\DataViewNodes\GNFTextureViewNode.cs" />
+    <Compile Include="GUI\DataViewNodes\MaterialAttributeType8ViewNode.cs" />
     <Compile Include="GUI\DataViewNodes\MorphTargetListViewNode.cs" />
     <Compile Include="GUI\DataViewNodes\MorphTargetViewNode.cs" />
     <Compile Include="GUI\Forms\CreateTextureMapDialog.cs">

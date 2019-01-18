@@ -259,16 +259,16 @@ namespace GFDLibrary.Models
             return $"{Name}";
         }
 
-        internal static Node ReadRecursive( ResourceReader reader, uint version )
+        internal static Node ReadRecursive( ResourceReader reader, uint version, long endPosition )
         {
             var node = reader.ReadResource<Node>( version );
 
             int childCount = reader.ReadInt32();
 
             var childStack = new Stack<Node>();
-            for ( int i = 0; i < childCount; i++ )
+            for ( int i = 0; i < childCount && reader.Position < endPosition; i++ )
             {
-                var childNode = ReadRecursive( reader, version );
+                var childNode = ReadRecursive( reader, version, endPosition );
                 childStack.Push( childNode );
             }
 
@@ -289,7 +289,7 @@ namespace GFDLibrary.Models
             }
         }
 
-        internal override void Read( ResourceReader reader )
+        internal override void Read( ResourceReader reader, long endPosition = -1 )
         {
             Name = reader.ReadStringWithHash( Version );
             Translation = reader.ReadVector3();

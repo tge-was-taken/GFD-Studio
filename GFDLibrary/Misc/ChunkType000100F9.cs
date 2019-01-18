@@ -37,7 +37,7 @@ namespace GFDLibrary.Misc
 
         public List<ChunkType000100F9Entry3> Entry3List { get; set; }
 
-        internal override void Read( ResourceReader reader )
+        internal override void Read( ResourceReader reader, long endPosition = -1 )
         {
             Field140 = reader.ReadInt32();
             Field13C = reader.ReadSingle();

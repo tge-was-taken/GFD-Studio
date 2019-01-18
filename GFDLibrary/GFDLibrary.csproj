@@ -36,6 +36,28 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>7.1</LangVersion>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.1</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.1</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="AssimpNet, Version=4.1.0.0, Culture=neutral, PublicKeyToken=0d51b391f59f42a6, processorArchitecture=MSIL">
       <HintPath>..\packages\AssimpNet.4.1.0\lib\net40\AssimpNet.dll</HintPath>
@@ -71,6 +93,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Animations\Animation.cs" />
+    <Compile Include="Animations\Keys\IKeyType31.cs" />
+    <Compile Include="Animations\Keys\KeyType31Dancing.cs" />
+    <Compile Include="Animations\Keys\KeyType31FullBody.cs" />
+    <Compile Include="Animations\Keys\KeyType31Type.cs" />
     <Compile Include="Animations\Keys\PRSByteKey.cs" />
     <Compile Include="Animations\Keys\QuaternionKey.cs" />
     <Compile Include="Animations\Keys\Single4ByteKey.cs" />
@@ -200,6 +226,16 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="IO\ResourceOld\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Dependencies\Scarlet\Scarlet.IO.ImageFormats\Scarlet.IO.ImageFormats.csproj">
+      <Project>{4e7b19c8-1983-41fe-98e4-0532137638fc}</Project>
+      <Name>Scarlet.IO.ImageFormats</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Dependencies\Scarlet\Scarlet\Scarlet.csproj">
+      <Project>{b1cc2b0e-4226-4ac5-9940-900a8847201a}</Project>
+      <Name>Scarlet</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

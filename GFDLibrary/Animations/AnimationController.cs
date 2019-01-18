@@ -36,11 +36,11 @@ namespace GFDLibrary.Animations
             return $"{TargetKind} {TargetId} {TargetName}";
         }
 
-        internal override void Read( ResourceReader reader )
+        internal override void Read( ResourceReader reader, long endPosition = -1 )
         {
             TargetKind = ( TargetKind )reader.ReadInt16();
             TargetId = reader.ReadInt32();
-            TargetName = reader.ReadStringWithHash( Version );
+            TargetName = reader.ReadStringWithHash( Version, true );
             Layers = reader.ReadResourceList<AnimationLayer>( Version );
         }
 
@@ -48,7 +48,7 @@ namespace GFDLibrary.Animations
         {
             writer.WriteInt16( ( short ) TargetKind );
             writer.WriteInt32( TargetId );
-            writer.WriteStringWithHash( Version, TargetName );
+            writer.WriteStringWithHash( Version, TargetName, true );
             writer.WriteResourceList( Layers );
         }
 

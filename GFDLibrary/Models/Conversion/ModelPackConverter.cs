@@ -109,6 +109,7 @@ namespace GFDLibrary.Models.Conversion
                     }
                     break;
                 case MaterialPreset.CharacterSkinP5:
+                case MaterialPreset.CharacterSkinFB:
                     {
                         if ( diffuseTexture != null )
                         {
@@ -122,7 +123,14 @@ namespace GFDLibrary.Models.Conversion
                             }
 
                             // TODO: transparency
-                            material = MaterialFactory.CreateCharacterSkinP5Material( materialName, diffuseTexture.Name, shadowTextureName, HasAlpha( diffuseTexture.PixelFormat ) );
+                            var hasTransparency = HasAlpha( diffuseTexture.PixelFormat );
+
+                            if ( options.MaterialPreset == MaterialPreset.CharacterSkinP5 )
+                                material = MaterialFactory.CreateCharacterSkinP5Material( materialName, diffuseTexture.Name, shadowTextureName,
+                                                                                          hasTransparency );
+                            else
+                                material = MaterialFactory.CreateCharacterSkinFBMaterial( materialName, diffuseTexture.Name, shadowTextureName,
+                                                                                          hasTransparency );
                         }
                     }
                     break;

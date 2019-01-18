@@ -50,6 +50,7 @@ namespace GFDStudio.GUI.DataViewNodes
             Register<MaterialAttributeType5ViewNode>();
             Register<MaterialAttributeType6ViewNode>();
             Register<MaterialAttributeType7ViewNode>();
+            Register<MaterialAttributeType8ViewNode>();
 
             // gfd model view models
             Register<ModelViewNode>();

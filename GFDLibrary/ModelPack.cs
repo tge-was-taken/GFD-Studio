@@ -86,7 +86,7 @@ namespace GFDLibrary
             }
         }
 
-        internal override void Read( ResourceReader reader )
+        internal override void Read( ResourceReader reader, long endPosition = -1 )
         {
             while ( ( reader.Position + ResourceChunkHeader.SIZE ) < reader.BaseStream.Length )
             {
@@ -96,27 +96,28 @@ namespace GFDLibrary
 
                 var chunkDataLength = chunk.Length - 16;
                 var chunkDataStart = reader.Position;
+                var chunkDataEnd = chunkDataStart + chunkDataLength;
 
                 switch ( chunk.Type )
                 {
                     case ResourceChunkType.TextureDictionary:
-                        Textures = reader.ReadResource<TextureDictionary>( chunk.Version );
+                        Textures = reader.ReadResource<TextureDictionary>( chunk.Version, chunkDataEnd );
                         break;
                     case ResourceChunkType.MaterialDictionary:
-                        Materials = reader.ReadResource<MaterialDictionary>( chunk.Version );
+                        Materials = reader.ReadResource<MaterialDictionary>( chunk.Version, chunkDataEnd );
                         break;
                     case ResourceChunkType.Model:
-                        Model = reader.ReadResource<Model>( chunk.Version );
+                        Model = reader.ReadResource<Model>( chunk.Version, chunkDataEnd );
                         break;
                     case ResourceChunkType.ChunkType000100F9:
-                        ChunkType000100F9 = reader.ReadResource<ChunkType000100F9>( chunk.Version );
+                        ChunkType000100F9 = reader.ReadResource<ChunkType000100F9>( chunk.Version, chunkDataEnd );
                         break;
                     case ResourceChunkType.ChunkType000100F8:
                         ChunkType000100F8 = new ChunkType000100F8( chunk.Version ) { Data = reader.ReadBytes( chunkDataLength ) };
                         break;
                     case ResourceChunkType.AnimationPack:
                         {
-                            AnimationPack = reader.ReadResource<AnimationPack>( chunk.Version );
+                            AnimationPack = reader.ReadResource<AnimationPack>( chunk.Version, chunkDataEnd );
 
                             if ( AnimationPack.ErrorsOccuredDuringLoad && Model != null )
                             {

@@ -83,7 +83,7 @@ namespace GFDLibrary.Textures
             return new Texture( name, TextureFormat.DDS, sDummyTextureData ) { IsDefaultTexture = true };
         }
 
-        internal override void Read( ResourceReader reader )
+        internal override void Read( ResourceReader reader, long endPosition = -1 )
         {
             Name = reader.ReadString();
             Format = ( TextureFormat )reader.ReadInt16();
@@ -115,5 +115,6 @@ namespace GFDLibrary.Textures
     {
         Invalid = 0,
         DDS = 1,
+        GXT = 6
     }
 }

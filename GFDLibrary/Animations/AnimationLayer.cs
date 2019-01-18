@@ -27,7 +27,7 @@ namespace GFDLibrary.Animations
         public Vector3 ScaleScale { get; set; }
 
         public bool UsesScaleVectors => KeyType == KeyType.NodePRHalf || KeyType == KeyType.NodePRSHalf ||
-                                        KeyType == KeyType.NodePRHalf_2 || KeyType == KeyType.NodePHalf ||
+                                        KeyType == KeyType.NodePRHalf_2 || KeyType == KeyType.Type31 ||
                                         KeyType == KeyType.NodeRHalf || KeyType == KeyType.NodeSHalf;
 
         public bool HasPRSKeyFrames
@@ -41,10 +41,12 @@ namespace GFDLibrary.Animations
                     case KeyType.NodePRHalf:
                     case KeyType.NodePRSHalf:
                     case KeyType.NodePRHalf_2:
-                    case KeyType.NodePHalf:
                     case KeyType.NodeRHalf:
                     case KeyType.NodeSHalf:
                         return true;
+
+                    case KeyType.Type31:
+                        return Version < 0x01105100;
                 }
 
                 return false;
@@ -62,7 +64,7 @@ namespace GFDLibrary.Animations
         {         
         }
 
-        internal override void Read( ResourceReader reader )
+        internal override void Read( ResourceReader reader, long endPosition = -1 )
         {
             KeyType = ( KeyType )reader.ReadInt32();
 
@@ -80,7 +82,6 @@ namespace GFDLibrary.Animations
                     case KeyType.NodePRHalf:
                     case KeyType.NodePRSHalf:
                     case KeyType.NodePRHalf_2:
-                    case KeyType.NodePHalf:
                     case KeyType.NodeRHalf:
                     case KeyType.NodeSHalf:
                         key = new PRSKey( KeyType );
@@ -126,6 +127,18 @@ namespace GFDLibrary.Animations
                     case KeyType.Type22:
                         key = new KeyType22();
                         break;
+                    case KeyType.Type31:
+                        {
+                            if ( Version < 0x01105100 )
+                            {
+                                key = new KeyType31Dancing();
+                            }
+                            else
+                            {
+                                key = new KeyType31FullBody();
+                            }
+                        }
+                        break;
                     default:
                         throw new InvalidDataException( $"Unknown/Invalid Key frame type: {KeyType}" );
                 }
@@ -138,7 +151,9 @@ namespace GFDLibrary.Animations
             if ( UsesScaleVectors )
             {
                 PositionScale = reader.ReadVector3();
-                ScaleScale = reader.ReadVector3();
+
+                if ( Version < 0x01105100 || KeyType != KeyType.Type31 )
+                    ScaleScale = reader.ReadVector3();
             }
         }
 
@@ -152,7 +167,9 @@ namespace GFDLibrary.Animations
             if ( UsesScaleVectors )
             {
                 writer.WriteVector3( PositionScale );
-                writer.WriteVector3( ScaleScale );
+
+                if ( Version < 0x01105100 || KeyType != KeyType.Type31 )
+                    writer.WriteVector3( ScaleScale );
             }
         }
     }

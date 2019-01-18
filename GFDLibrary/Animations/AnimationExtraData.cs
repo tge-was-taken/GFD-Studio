@@ -33,7 +33,7 @@ namespace GFDLibrary.Animations
             
         }
 
-        internal override void Read( ResourceReader reader )
+        internal override void Read( ResourceReader reader, long endPosition = -1 )
         {
             Field00 = reader.ReadResource<Animation>( Version );
             Field10 = reader.ReadSingle();

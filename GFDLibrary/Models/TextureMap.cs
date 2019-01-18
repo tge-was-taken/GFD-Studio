@@ -111,7 +111,7 @@ namespace GFDLibrary.Models
             Field88 = 0;
         }
 
-        internal override void Read( ResourceReader reader )
+        internal override void Read( ResourceReader reader, long endPosition = -1 )
         {
             Name = reader.ReadStringWithHash( Version );
             Field44 = reader.ReadInt32();

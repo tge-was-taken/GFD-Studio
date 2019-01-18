@@ -111,7 +111,7 @@ namespace GFDLibrary.Cameras
             Field190 = field190;
         }
 
-        internal override void Read( ResourceReader reader )
+        internal override void Read( ResourceReader reader, long endPosition = -1 )
         {
             ViewMatrix = reader.ReadMatrix4x4();
             ClipPlaneNear = reader.ReadSingle();
