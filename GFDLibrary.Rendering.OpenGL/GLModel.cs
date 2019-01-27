@@ -5,7 +5,10 @@ using System.Linq;
 using System.Numerics;
 using GFDLibrary.Animations;
 using GFDLibrary.Models;
+using OpenTK;
 using OpenTK.Graphics.OpenGL;
+using Quaternion = System.Numerics.Quaternion;
+using Vector3 = System.Numerics.Vector3;
 
 namespace GFDLibrary.Rendering.OpenGL
 {
@@ -88,11 +91,19 @@ namespace GFDLibrary.Rendering.OpenGL
 
         public void Draw( GLShaderProgram shaderProgram, GLCamera camera, double animationTime )
         {
+            var view = camera.View;
+            var proj = camera.Projection;
+            Draw( shaderProgram, ref view, ref proj, animationTime );
+        }
+
+        public void Draw( GLShaderProgram shaderProgram, ref Matrix4 view, ref Matrix4 projection, double animationTime )
+        {
             if ( Animation != null )
                 AnimateNodes( animationTime );
 
             shaderProgram.Use();
-            camera.Bind( shaderProgram );
+            shaderProgram.SetUniform( "view", view );
+            shaderProgram.SetUniform( "projection", projection );
 
             foreach ( var glNode in Nodes )
             {
@@ -102,7 +113,7 @@ namespace GFDLibrary.Rendering.OpenGL
 
                     if ( Animation != null && glMesh.Mesh != null )
                     {
-                        var oldGlMesh = glMesh;
+                        var oldGlMesh             = glMesh;
                         glMesh = glNode.Meshes[i] = new GLMesh( oldGlMesh.Mesh, glNode.WorldTransform, ModelPack.Model.Bones, Nodes, Materials );
                         oldGlMesh.Dispose();
                     }

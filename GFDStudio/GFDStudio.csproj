@@ -159,8 +159,6 @@
     <Compile Include="FormatModules\NodeFormatModule.cs" />
     <Compile Include="FormatModules\ModelFormatModule.cs" />
     <Compile Include="GUI\Controls\AnimationPlaybackState.cs" />
-    <Compile Include="GUI\Controls\ModelView\DefaultShaderProgram.cs" />
-    <Compile Include="GUI\Controls\ModelView\LineShaderProgram.cs" />
     <Compile Include="GUI\Controls\PrimitiveMesh.cs" />
     <Compile Include="GUI\DataViewNodes\AnimationControllerViewNode.cs" />
     <Compile Include="GUI\DataViewNodes\AnimationListViewNode.cs" />
@@ -375,7 +373,9 @@
       <Name>GFDLibrary</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="GUI\Controls\ModelView\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

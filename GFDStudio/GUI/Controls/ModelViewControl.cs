@@ -8,7 +8,6 @@ using System.Windows.Forms;
 using GFDLibrary;
 using GFDLibrary.Common;
 using GFDLibrary.Textures;
-using GFDStudio.GUI.Controls.ModelView;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
@@ -31,13 +30,13 @@ namespace GFDStudio.GUI.Controls
 
         public static ModelViewControl Instance => sInstance ?? ( sInstance = new ModelViewControl() );
 
-        private DefaultShaderProgram mDefaultShader;
+        private GLShaderProgram mDefaultShader;
         private GLPerspectiveCamera mCamera;
         private readonly bool mCanRender = true;
         private Point mLastMouseLocation;
 
         // Grid
-        private LineShaderProgram mLineShader;
+        private GLShaderProgram mLineShader;
         private int mGridVertexArrayID;
         private GLBuffer<Vector3> mGridVertexBuffer;
         private int mGridSize = 2000;
@@ -425,10 +424,19 @@ namespace GFDStudio.GUI.Controls
         /// </summary>
         private bool InitializeShaders()
         {
-            if ( !DefaultShaderProgram.TryCreate( out mDefaultShader ) )
-                return false;
+            if ( !GLShaderProgram.TryCreate( DataStore.GetPath( "shaders/default.glsl.vs" ),
+                                             DataStore.GetPath( "shaders/default.glsl.fs" ),
+                                             out mDefaultShader ) )
+            {
+                if ( !GLShaderProgram.TryCreate( DataStore.GetPath( "shaders/basic.glsl.vs" ),
+                                                 DataStore.GetPath( "shaders/basic.glsl.fs" ),
+                                                 out mDefaultShader ) )
+                {
+                    return false;
+                }
+            }
 
-            if ( !LineShaderProgram.TryCreate( out mLineShader ) )
+            if ( !GLShaderProgram.TryCreate( DataStore.GetPath( "shaders/line.glsl.vs" ), DataStore.GetPath( "shaders/line.glsl.fs" ), out mLineShader ) )
                 return false;
 
             return true;

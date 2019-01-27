@@ -7,32 +7,39 @@ using OpenTK.Graphics.OpenGL;
 
 namespace GFDLibrary.Rendering.OpenGL
 {
-    public abstract class GLShaderProgram : IDisposable
+    public class GLShaderProgram : IDisposable
     {
-        public static bool TryCreate( string vertexShaderFilepath, string fragmentShaderFilepath, out int id )
+        public static bool TryCreate( string vertexShaderFilepath, string fragmentShaderFilepath, out GLShaderProgram shaderProgram )
         {
-            var vertexShaderSource   = File.ReadAllText( vertexShaderFilepath );
-            var fragmentShaderSource = File.ReadAllText( fragmentShaderFilepath );
+            return TryCreate( File.OpenRead( vertexShaderFilepath ), File.OpenRead( fragmentShaderFilepath ), out shaderProgram );
+        }
+
+        public static bool TryCreate( Stream vertexShaderStream, Stream fragmentShaderStream, out GLShaderProgram shaderProgram )
+        {
+            var vertexShaderSource = new StreamReader( vertexShaderStream ).ReadToEnd();
+            var fragmentShaderSource = new StreamReader( fragmentShaderStream ).ReadToEnd();
 
             using ( var builder = new GLShaderProgramBuilder() )
             {
                 if ( !builder.TryAttachShader( ShaderType.VertexShader, vertexShaderSource ) )
                 {
-                    id = 0;
+                    shaderProgram = null;
                     return false;
                 }
 
                 if ( !builder.TryAttachShader( ShaderType.FragmentShader, fragmentShaderSource ) )
                 {
-                    id = 0;
+                    shaderProgram = null;
                     return false;
                 }
 
-                if ( !builder.TryBuild( out id ) )
+                if ( !builder.TryBuild( out var id ) )
                 {
+                    shaderProgram = null;
                     return false;
                 }
 
+                shaderProgram = new GLShaderProgram( id );
                 return true;
             }
         }
@@ -50,7 +57,7 @@ namespace GFDLibrary.Rendering.OpenGL
 
         public int Id { get; }
 
-        protected GLShaderProgram( int id )
+        public GLShaderProgram( int id )
         {
             Id = id;
             mUniforms = new Dictionary<string, Uniform>();
@@ -58,8 +65,13 @@ namespace GFDLibrary.Rendering.OpenGL
 
         public void RegisterUniform<T>( string name )
         {
+            RegisterUniform( name, typeof( T ) );
+        }
+
+        public void RegisterUniform( string name, Type type )
+        {
             // check if uniform exists
-            if ( mUniforms.ContainsKey(name) )
+            if ( mUniforms.ContainsKey( name ) )
             {
                 throw new Exception( $"Uniform \"{name}\" already registered" );
             }
@@ -74,8 +86,8 @@ namespace GFDLibrary.Rendering.OpenGL
             // register uniform in dict
             mUniforms[name] = new Uniform()
             {
-                Name = name,
-                Type = typeof( T ),
+                Name     = name,
+                Type     = type,
                 Location = location,
             };
         }
@@ -132,6 +144,12 @@ namespace GFDLibrary.Rendering.OpenGL
             GL.UseProgram( Id );
         }
 
+        public void Use( GLCamera camera )
+        {
+            Use();
+            camera.Bind( this );
+        }
+
         [Conditional( "DEBUG" )]
         public void Check( )
         {
@@ -166,9 +184,10 @@ namespace GFDLibrary.Rendering.OpenGL
 
             if ( !mUniforms.ContainsKey(name) )
             {
-                throw new Exception( $"Uniform \"{name}\" is not registered" );
+                //throw new Exception( $"Uniform \"{name}\" is not registered" );
+                RegisterUniform( name, null );
             }
-            else
+            //else
             {
                 uniform = mUniforms[name];
             }
@@ -181,7 +200,7 @@ namespace GFDLibrary.Rendering.OpenGL
         {
             var type = typeof( T );
             var uniformType = uniform.Type;
-            if ( uniformType != type )
+            if ( uniformType != null && uniformType != type )
             {
                 throw new Exception( $"Attempted to assign value of type {type} to uniform \"{uniform.Name}\" of type {uniformType}" );
             }
