@@ -1,3 +1,4 @@
 [submodule "Dependencies/Scarlet"]
 	path = Dependencies/Scarlet
-	url = https://github.com/xdanieldzd/Scarlet
+	url = https://github.com/TGEnigma/Scarlet
+	branch = fix-build
