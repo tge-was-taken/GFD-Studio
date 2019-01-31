@@ -13,9 +13,12 @@ namespace GFDStudio.GUI.TypeConverters
 
         public VariantUserPropertyList( UserPropertyDictionary dictionary, Action modified )
         {
-            foreach ( var userProperty in dictionary.Values )
+            if ( dictionary != null )
             {
-                List.Add( new VariantUserProperty( userProperty ) );
+                foreach ( var userProperty in dictionary.Values )
+                {
+                    List.Add( new VariantUserProperty( userProperty ) );
+                }
             }
 
             mModifiedCallback = modified;

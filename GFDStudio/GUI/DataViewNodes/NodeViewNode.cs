@@ -66,7 +66,7 @@ namespace GFDStudio.GUI.DataViewNodes
             set
             {
                 mProperties = value;
-                Data.Properties = new UserPropertyDictionary( Properties.Select( x => x.ToTypedUserProperty() ) );
+                Data.Properties = Properties.Count == 0 ? null : new UserPropertyDictionary( Properties.Select( x => x.ToTypedUserProperty() ) );
             }
         }
 

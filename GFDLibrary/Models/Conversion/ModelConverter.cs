@@ -108,6 +108,33 @@ namespace GFDLibrary.Models.Conversion
             return isMeshAttachmentNode;
         }
 
+        private static void TryAddProperty( UserPropertyDictionary dictionary, UserProperty property )
+        {
+            if ( !dictionary.ContainsKey( property.Name ) )
+                dictionary.Add( property );
+        }
+
+        private static void TryAddFullBodyObjectProperties( UserPropertyDictionary dictionary, string name )
+        {
+            TryAddProperty( dictionary, new UserIntProperty( $"{name}.CatherineData.xrd649_envelope_tone", 100 ) );
+            TryAddProperty( dictionary, new UserIntProperty( $"{name}.CatherineData.xrd649_envelope_edge", 100 ) );
+            TryAddProperty( dictionary, new UserIntProperty( $"{name}.CatherineData.xrd649_envelope", 0 ) );
+            TryAddProperty( dictionary, new UserIntProperty( $"{name}.CatherineData.xrd649_outline", 0 ) );
+            TryAddProperty( dictionary, new UserIntProperty( $"{name}.CatherineData.xrd649_shadow_reciever", 0 ) );
+            TryAddProperty( dictionary, new UserIntProperty( $"{name}.CatherineData.xrd649_shadow_caster", 0 ) );
+            TryAddProperty( dictionary, new UserIntProperty( $"{name}.CatherineData.xrd649_fog_disable", 0 ) );
+            TryAddProperty( dictionary, new UserIntProperty( $"{name}.CatherineData.xrd649_pos_resid", 0 ) );
+            TryAddProperty( dictionary, new UserIntProperty( $"{name}.CatherineData.xrd649_pos_minor", 0 ) );
+            TryAddProperty( dictionary, new UserIntProperty( $"{name}.CatherineData.xrd649_pos_major", 0 ) );
+            TryAddProperty( dictionary, new UserIntProperty( $"{name}.CatherineData.xrd649_pos_type", 1 ) );
+            TryAddProperty( dictionary, new UserIntProperty( $"{name}.CatherineData.xrd649_ca_type", 3 ) );
+        }
+
+        private static HashSet<string> sFullBodyObjectNames = new HashSet<string>()
+        {
+            "bell", "bar", "heart", "clock", "drink01", "drink02", "item_block02", 
+        };
+
         private static Node ConvertAssimpNodeRecursively( Assimp.Scene aiScene, Ai.Node aiNode, Dictionary<string, NodeInfo> nodeLookup, ref int nextIndex, ModelConverterOptions options )
         {
             aiNode.Transform.Decompose( out var scale, out var rotation, out var translation );
@@ -124,6 +151,22 @@ namespace GFDLibrary.Models.Conversion
             {
                 // Convert properties
                 ConvertAssimpMetadataToProperties( aiNode.Metadata, node );
+
+                if ( options.SetFullBodyNodeProperties )
+                {
+                    if (node.Name == "See User Defined Properties" )
+                    {
+                        TryAddProperty( node.Properties, new UserIntProperty( "NiSortAdjustNode", 0 ) );
+                    }
+                    else if ( node.Name.EndsWith( "root" ) || node.Name == "Bip01" )
+                    {
+                        TryAddProperty( node.Properties, new UserIntProperty( "KFAccumRoot", 0 ) );
+                    }
+                    else if ( sFullBodyObjectNames.Contains( node.Name ) )
+                    {
+                        TryAddFullBodyObjectProperties( node.Properties, node.Name );
+                    }
+                }
 
                 if ( !nodeLookup.ContainsKey( node.Name ) )
                 {
@@ -572,11 +615,14 @@ namespace GFDLibrary.Models.Conversion
         /// </summary>
         public bool GenerateVertexColors { get; set; }
 
+        public bool SetFullBodyNodeProperties { get; set; }
+
         public ModelConverterOptions()
         {
             Version = ResourceVersion.Persona5;
             ConvertSkinToZUp = false;
             GenerateVertexColors = false;
+            SetFullBodyNodeProperties = false;
         }
     }
 }

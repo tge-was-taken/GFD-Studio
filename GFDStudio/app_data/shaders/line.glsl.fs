@@ -4,17 +4,17 @@
 in vec3 fPosition;
 
 // out
-out vec4 outColor;
+out vec4 oColor;
 
 // uniforms
-uniform vec4 color;
-uniform float minZ;
+uniform vec4 uColor;
+uniform float uMinZ;
 
 void main()
 {
     vec4 backColor = vec4( 0.82745098039215686274509803921569, 0.82745098039215686274509803921569, 0.82745098039215686274509803921569, 1.0 );
-    float blend = ( fPosition.z / minZ ) * 8;
-	outColor.r = min( color.r * blend, backColor.r );
-    outColor.g = min( color.g * blend, backColor.g );
-    outColor.b = min( color.b * blend, backColor.b );
+    float blend = ( fPosition.z / uMinZ ) * 8;
+	oColor.r = min( uColor.r * blend, backColor.r );
+    oColor.g = min( uColor.g * blend, backColor.g );
+    oColor.b = min( uColor.b * blend, backColor.b );
 }

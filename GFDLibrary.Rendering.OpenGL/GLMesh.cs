@@ -115,7 +115,7 @@ namespace GFDLibrary.Rendering.OpenGL
 
         public void Draw( Matrix4 modelMatrix, GLShaderProgram shaderProgram )
         {
-            shaderProgram.SetUniform( "model", modelMatrix);
+            shaderProgram.SetUniform( "uModel", modelMatrix);
             Material.Bind( shaderProgram );
             shaderProgram.Check();
             VertexArray.Draw();

@@ -352,10 +352,10 @@ namespace GFDStudio.GUI.Controls
         private void DrawGrid( Matrix4 view, Matrix4 projection )
         {
             mLineShader.Use();
-            mLineShader.SetUniform( "view", view );
-            mLineShader.SetUniform( "projection", projection );
-            mLineShader.SetUniform( "color", new Vector4( 0.15f, 0.15f, 0.15f, 1f ) );
-            mLineShader.SetUniform( "minZ", mGridMinZ );
+            mLineShader.SetUniform( "uView", view );
+            mLineShader.SetUniform( "uProjection", projection );
+            mLineShader.SetUniform( "uColor", new Vector4( 0.15f, 0.15f, 0.15f, 1f ) );
+            mLineShader.SetUniform( "uMinZ", mGridMinZ );
 
             GL.BindVertexArray( mGridVertexArrayID );
             GL.DrawArrays( PrimitiveType.Lines, 0, mGridVertexBuffer.Count );

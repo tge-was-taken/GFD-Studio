@@ -102,15 +102,17 @@ namespace GFDLibrary.Rendering.OpenGL
                 AnimateNodes( animationTime );
 
             shaderProgram.Use();
-            shaderProgram.SetUniform( "view", view );
-            shaderProgram.SetUniform( "projection", projection );
+            shaderProgram.SetUniform( "uView", view );
+            shaderProgram.SetUniform( "uProjection", projection );
 
             foreach ( var glNode in Nodes )
             {
+                if ( !glNode.IsVisible )
+                    continue;
+
                 for ( var i = 0; i < glNode.Meshes.Count; i++ )
                 {
                     var glMesh = glNode.Meshes[i];
-
                     if ( Animation != null && glMesh.Mesh != null )
                     {
                         var oldGlMesh             = glMesh;

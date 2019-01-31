@@ -71,7 +71,7 @@ namespace GFDStudio.GUI.DataViewNodes
             set
             {
                 mProperties     = value;
-                Data.Properties = new UserPropertyDictionary( Properties.Select( x => x.ToTypedUserProperty() ) );
+                Data.Properties = Properties.Count == 0 ? null : new UserPropertyDictionary( Properties.Select( x => x.ToTypedUserProperty() ) );
             }
         }
 
@@ -87,7 +87,7 @@ namespace GFDStudio.GUI.DataViewNodes
 
         protected override void InitializeCore()
         {
-            Properties = new VariantUserPropertyList( Data.Properties ?? new UserPropertyDictionary(), () => Properties = mProperties );
+            Properties = new VariantUserPropertyList( Data.Properties, () => Properties = mProperties );
             RegisterExportHandler<Animation>( path => Data.Save( path ) );
             RegisterReplaceHandler<Animation>( Resource.Load<Animation> );
             RegisterReplaceHandler<Assimp.Scene>( file =>

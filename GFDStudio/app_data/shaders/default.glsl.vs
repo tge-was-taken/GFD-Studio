@@ -15,16 +15,16 @@ out vec2 fTex0;
 out vec4 fColor0;
 
 // uniforms
-uniform mat4 model;
-uniform mat4 view;
-uniform mat4 projection;
+uniform mat4 uModel;
+uniform mat4 uView;
+uniform mat4 uProjection;
 
 void main()
 {
-	mat4 modelView = view * model;
-	fPosition = ( modelView * vec4( vPosition, 1.0 ) ).xyz;
-	fNormal = ( modelView * vec4( vNormal, 0.0 ) ).xyz;
+	mat4 uModelView = uView * uModel;
+	fPosition = ( uModelView * vec4( vPosition, 1.0 ) ).xyz;
+	fNormal = ( uModelView * vec4( vNormal, 0.0 ) ).xyz;
 	fTex0 = vTex0;
 	fColor0 = vec4( 1.0, 1.0, 1.0, 1.0 );
-	gl_Position = projection * modelView * vec4( vPosition, 1.0 );
+	gl_Position = uProjection * uModelView * vec4( vPosition, 1.0 );
 }

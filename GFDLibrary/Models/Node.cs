@@ -320,7 +320,15 @@ namespace GFDLibrary.Models
             {
                 var hasProperties = reader.ReadBoolean();
                 if ( hasProperties )
+                {
                     Properties = reader.ReadResource<UserPropertyDictionary>( Version );
+
+                    Console.WriteLine( Name );
+                    foreach ( var item in Properties.Values )
+                    {
+                        Console.WriteLine( "\t" + item.ToUserPropertyString() );
+                    }
+                }
             }
 
             if ( Version > 0x1104230 )

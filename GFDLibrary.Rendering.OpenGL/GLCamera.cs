@@ -34,8 +34,8 @@ namespace GFDLibrary.Rendering.OpenGL
 
         public void Bind( GLShaderProgram shaderProgram )
         {
-            shaderProgram.SetUniform( "view",       View);
-            shaderProgram.SetUniform( "projection", Projection);
+            shaderProgram.SetUniform( "uView",       View);
+            shaderProgram.SetUniform( "uProjection", Projection);
         }
     }
 }

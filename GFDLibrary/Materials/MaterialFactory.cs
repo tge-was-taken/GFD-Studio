@@ -244,15 +244,15 @@ namespace GFDLibrary.Materials
                 ShadowMap = new TextureMap( shadowMapName ),
                 SpecularColor = new Vector4( 0.4901961f, 0.4901961f, 0.4901961f, 1f ),
                 SpecularMap = null,
-                Version = 0x01105090,
+                Version = 0x01105100,
             };
 
-            if ( hasTransparency )
-            {
-                material.DrawMethod = MaterialDrawMethod.Translucent;
-                material.Field4D = 1;
-                material.Field90 = 0x0080;
-            }
+            //if ( hasTransparency )
+            //{
+            //    material.DrawMethod = MaterialDrawMethod.Translucent;
+            //    material.Field4D = 1;
+            //    material.Field90 = 0x0080;
+            //}
 
             material.IsPresetMaterial = true;
 

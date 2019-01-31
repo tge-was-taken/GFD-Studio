@@ -54,16 +54,16 @@ namespace GFDLibrary.Rendering.OpenGL
 
         public void Bind( GLShaderProgram shaderProgram )
         {
-            shaderProgram.SetUniform( "matHasDiffuse", HasDiffuseTexture );
+            shaderProgram.SetUniform( "uMatHasDiffuse", HasDiffuseTexture );
 
             if ( HasDiffuseTexture )
                 DiffuseTexture.Bind();
 
-            shaderProgram.SetUniform( "matAmbient",              Ambient );
-            shaderProgram.SetUniform( "matDiffuse",              Diffuse );
-            shaderProgram.SetUniform( "matSpecular",             Specular );
-            shaderProgram.SetUniform( "matEmissive",             Emissive );
-            shaderProgram.SetUniform( "matHasAlphaTransparency", HasAlphaTransparency );
+            shaderProgram.SetUniform( "uMatAmbient",              Ambient );
+            shaderProgram.SetUniform( "uMatDiffuse",              Diffuse );
+            shaderProgram.SetUniform( "uMatSpecular",             Specular );
+            shaderProgram.SetUniform( "uMatEmissive",             Emissive );
+            shaderProgram.SetUniform( "uMatHasAlphaTransparency", HasAlphaTransparency );
 
             if ( RenderWireframe )
             {

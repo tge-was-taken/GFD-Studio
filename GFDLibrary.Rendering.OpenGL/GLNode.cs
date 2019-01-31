@@ -14,6 +14,7 @@ namespace GFDLibrary.Rendering.OpenGL
         public Matrix4x4 CurrentTransform { get; set; }
         public Matrix4x4 WorldTransform { get; set; }
         public List<GLMesh> Meshes { get; }
+        public bool IsVisible { get; set; } = true;
 
         public GLNode( Node node )
         {
