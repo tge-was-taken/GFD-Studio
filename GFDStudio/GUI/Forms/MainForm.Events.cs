@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -232,6 +233,74 @@ namespace GFDStudio.GUI.Forms
             if ( failures.Count > 0 )
             {
                 MessageBox.Show( "An error occured while processing the following files:\n" + string.Join( "\n", failures ) );
+            }
+        }
+
+        private void HandleRescaleAnimationsToolStripMenuItemClick( object sender, EventArgs e)
+        {
+            string directoryPath;
+            using (var dialog = new VistaFolderBrowserDialog())
+            {
+                dialog.Description =
+                    "Select a directory containing GAP files, or subdirectories containing GAP files to rescale.\n" +
+                    "Note that this will replace the original files.";
+
+                if (dialog.ShowDialog() != DialogResult.OK)
+                    return;
+
+                directoryPath = dialog.SelectedPath;
+            }
+
+            float scale = 1;
+            using (var scaleDialog = new SetScaleValueDialog())
+            {
+                if (scaleDialog.ShowDialog() != DialogResult.OK)
+                    return;
+                scale = Convert.ToSingle(scaleDialog.Result.Scale);
+            }
+
+            var failures = new ConcurrentBag<string>();
+
+            using (var dialog = new ProgressDialog())
+            {
+                dialog.DoWork += (o, progress) =>
+                {
+                    var filePaths = Directory.EnumerateFiles(directoryPath, "*.GAP", SearchOption.AllDirectories).ToList();
+                    var processedFileCount = 0;
+
+                    Parallel.ForEach(filePaths, (filePath, state) =>
+                    {
+                        lock (dialog)
+                        {
+                            if (dialog.CancellationPending)
+                            {
+                                state.Stop();
+                                return;
+                            }
+
+                            dialog.ReportProgress((int)(((float)++processedFileCount / filePaths.Count) * 100),
+                                                   $"Processing {Path.GetFileName(filePath)}", null);
+                        }
+
+                        try
+                        {
+                            var animationPack = Resource.Load<AnimationPack>(filePath);
+                            animationPack.Rescale(scale);
+                            animationPack.Save(filePath);
+                        }
+                        catch (Exception ex)
+                        {
+                            failures.Add(filePath);
+                        }
+                    });
+                };
+
+                dialog.ShowDialog();
+            }
+
+            if (failures.Count > 0)
+            {
+                MessageBox.Show("An error occured while processing the following files:\n" + string.Join("\n", failures));
             }
         }
 

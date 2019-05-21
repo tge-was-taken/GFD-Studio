@@ -30,6 +30,7 @@ namespace GFDStudio.GUI.Forms
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.mMainMenuStrip = new System.Windows.Forms.MenuStrip();
             this.mFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -53,6 +54,7 @@ namespace GFDStudio.GUI.Forms
             this.mAnimationStopButton = new System.Windows.Forms.Button();
             this.mAnimationPlaybackButton = new System.Windows.Forms.Button();
             this.mAnimationTrackBar = new System.Windows.Forms.TrackBar();
+            this.rescaleAnimationPacksInDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mMainMenuStrip.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -135,14 +137,15 @@ namespace GFDStudio.GUI.Forms
             // loadExternalToolStripMenuItem
             // 
             this.loadExternalToolStripMenuItem.Name = "loadExternalToolStripMenuItem";
-            this.loadExternalToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loadExternalToolStripMenuItem.Size = new System.Drawing.Size(100, 22);
             this.loadExternalToolStripMenuItem.Text = "Load";
             this.loadExternalToolStripMenuItem.Click += new System.EventHandler(this.HandleAnimationLoadExternalToolStripMenuItemClick);
             // 
             // toolsToolStripMenuItem
             // 
             this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.makeRelativeToolStripMenuItem});
+            this.makeRelativeToolStripMenuItem,
+            this.rescaleAnimationPacksInDirectoryToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
             this.toolsToolStripMenuItem.Text = "Tools";
@@ -162,7 +165,7 @@ namespace GFDStudio.GUI.Forms
             this.mPropertyGrid.Location = new System.Drawing.Point(743, 445);
             this.mPropertyGrid.Name = "mPropertyGrid";
             this.mPropertyGrid.PropertySort = System.Windows.Forms.PropertySort.NoSort;
-            this.mPropertyGrid.Size = new System.Drawing.Size(497, 424);
+            this.mPropertyGrid.Size = new System.Drawing.Size(497, 292);
             this.mPropertyGrid.TabIndex = 2;
             // 
             // mContentPanel
@@ -173,14 +176,16 @@ namespace GFDStudio.GUI.Forms
             this.mContentPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.mContentPanel.Location = new System.Drawing.Point(12, 28);
             this.mContentPanel.Name = "mContentPanel";
-            this.mContentPanel.Size = new System.Drawing.Size(725, 800);
+            this.mContentPanel.Size = new System.Drawing.Size(725, 668);
             this.mContentPanel.TabIndex = 3;
             // 
             // mModelEditorTreeView
             // 
             this.mModelEditorTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.mModelEditorTreeView.ImageIndex = 0;
             this.mModelEditorTreeView.Location = new System.Drawing.Point(6, 6);
             this.mModelEditorTreeView.Name = "mModelEditorTreeView";
+            this.mModelEditorTreeView.SelectedImageIndex = 0;
             this.mModelEditorTreeView.Size = new System.Drawing.Size(477, 373);
             this.mModelEditorTreeView.TabIndex = 1;
             this.mModelEditorTreeView.TopNode = null;
@@ -221,8 +226,10 @@ namespace GFDStudio.GUI.Forms
             // mAnimationListTreeView
             // 
             this.mAnimationListTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.mAnimationListTreeView.ImageIndex = 0;
             this.mAnimationListTreeView.Location = new System.Drawing.Point(6, 6);
             this.mAnimationListTreeView.Name = "mAnimationListTreeView";
+            this.mAnimationListTreeView.SelectedImageIndex = 0;
             this.mAnimationListTreeView.Size = new System.Drawing.Size(477, 373);
             this.mAnimationListTreeView.TabIndex = 2;
             this.mAnimationListTreeView.TopNode = null;
@@ -239,11 +246,11 @@ namespace GFDStudio.GUI.Forms
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 70F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 73F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 79F));
             this.tableLayoutPanel1.Controls.Add(this.mAnimationStopButton, 7, 0);
             this.tableLayoutPanel1.Controls.Add(this.mAnimationPlaybackButton, 6, 0);
             this.tableLayoutPanel1.Controls.Add(this.mAnimationTrackBar, 0, 0);
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(12, 834);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(12, 702);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 1;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
@@ -253,9 +260,9 @@ namespace GFDStudio.GUI.Forms
             // mAnimationStopButton
             // 
             this.mAnimationStopButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mAnimationStopButton.Location = new System.Drawing.Point(649, 3);
+            this.mAnimationStopButton.Location = new System.Drawing.Point(643, 3);
             this.mAnimationStopButton.Name = "mAnimationStopButton";
-            this.mAnimationStopButton.Size = new System.Drawing.Size(73, 29);
+            this.mAnimationStopButton.Size = new System.Drawing.Size(79, 29);
             this.mAnimationStopButton.TabIndex = 2;
             this.mAnimationStopButton.Text = "Stop";
             this.mAnimationStopButton.UseVisualStyleBackColor = true;
@@ -264,7 +271,7 @@ namespace GFDStudio.GUI.Forms
             // mAnimationPlaybackButton
             // 
             this.mAnimationPlaybackButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mAnimationPlaybackButton.Location = new System.Drawing.Point(579, 3);
+            this.mAnimationPlaybackButton.Location = new System.Drawing.Point(573, 3);
             this.mAnimationPlaybackButton.Name = "mAnimationPlaybackButton";
             this.mAnimationPlaybackButton.Size = new System.Drawing.Size(64, 29);
             this.mAnimationPlaybackButton.TabIndex = 0;
@@ -277,14 +284,21 @@ namespace GFDStudio.GUI.Forms
             this.mAnimationTrackBar.Dock = System.Windows.Forms.DockStyle.Fill;
             this.mAnimationTrackBar.Location = new System.Drawing.Point(3, 3);
             this.mAnimationTrackBar.Name = "mAnimationTrackBar";
-            this.mAnimationTrackBar.Size = new System.Drawing.Size(570, 29);
+            this.mAnimationTrackBar.Size = new System.Drawing.Size(564, 29);
             this.mAnimationTrackBar.TabIndex = 1;
+            // 
+            // rescaleAnimationPacksInDirectoryToolStripMenuItem
+            // 
+            this.rescaleAnimationPacksInDirectoryToolStripMenuItem.Name = "rescaleAnimationPacksInDirectoryToolStripMenuItem";
+            this.rescaleAnimationPacksInDirectoryToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
+            this.rescaleAnimationPacksInDirectoryToolStripMenuItem.Text = "Rescale animation packs in directory";
+            this.rescaleAnimationPacksInDirectoryToolStripMenuItem.Click += new System.EventHandler(this.HandleRescaleAnimationsToolStripMenuItemClick);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1252, 881);
+            this.ClientSize = new System.Drawing.Size(1252, 749);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.mPropertyGrid);
@@ -331,5 +345,6 @@ namespace GFDStudio.GUI.Forms
         private System.Windows.Forms.TrackBar mAnimationTrackBar;
         private DataTreeView mAnimationListTreeView;
         private System.Windows.Forms.Button mAnimationStopButton;
+        private System.Windows.Forms.ToolStripMenuItem rescaleAnimationPacksInDirectoryToolStripMenuItem;
     }
 }

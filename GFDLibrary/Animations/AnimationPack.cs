@@ -150,5 +150,24 @@ namespace GFDLibrary.Animations
 
             ExtraData?.Retarget( originalNodeLookup, newNodeLookup, fixArms );
         }
+
+        public void Rescale(float scale)
+        {
+            for (int w = 0; w < this.Animations.Count(); w++)
+            {
+                Animation animation = this.Animations[w];
+                for (int x = 0; x < animation.Controllers.Count(); x++)
+                {
+                    AnimationController controller = animation.Controllers[x];
+                    for (int y = 0; y < controller.Layers.Count(); y++)
+                    {
+                        if (controller.TargetName == "root")
+                        {
+                            controller.Layers[y].ScaleScale *= scale;
+                        }
+                    }
+                }
+            }
+        }
     }
 }
