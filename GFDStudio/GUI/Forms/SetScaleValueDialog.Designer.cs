@@ -67,6 +67,7 @@
             // numUpDwn
             // 
             this.numUpDwn.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.numUpDwn.DecimalPlaces = 2;
             this.numUpDwn.Location = new System.Drawing.Point(44, 7);
             this.numUpDwn.Name = "numUpDwn";
             this.numUpDwn.Size = new System.Drawing.Size(169, 20);
