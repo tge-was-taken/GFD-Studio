@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using GFDLibrary;
@@ -251,12 +252,14 @@ namespace GFDStudio.GUI.Forms
                 directoryPath = dialog.SelectedPath;
             }
 
-            float scale = 1;
+            Vector3 scale = new Vector3 { };
+            Vector3 position = new Vector3 { };
             using (var scaleDialog = new SetScaleValueDialog())
             {
                 if (scaleDialog.ShowDialog() != DialogResult.OK)
                     return;
-                scale = Convert.ToSingle(scaleDialog.Result.Scale);
+                scale = scaleDialog.Result.Scale;
+                position = scaleDialog.Result.Position;
             }
 
             var failures = new ConcurrentBag<string>();
@@ -285,7 +288,7 @@ namespace GFDStudio.GUI.Forms
                         try
                         {
                             var animationPack = Resource.Load<AnimationPack>(filePath);
-                            animationPack.Rescale(scale);
+                            animationPack.Rescale(scale, position);
                             animationPack.Save(filePath);
                         }
                         catch (Exception ex)

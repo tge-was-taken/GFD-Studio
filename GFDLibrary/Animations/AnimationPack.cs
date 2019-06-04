@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using GFDLibrary.IO;
 using GFDLibrary.Models;
 
@@ -151,7 +152,7 @@ namespace GFDLibrary.Animations
             ExtraData?.Retarget( originalNodeLookup, newNodeLookup, fixArms );
         }
 
-        public void Rescale(float scale)
+        public void Rescale(Vector3 scale, Vector3 position)
         {
             for (int w = 0; w < this.Animations.Count(); w++)
             {
@@ -161,12 +162,33 @@ namespace GFDLibrary.Animations
                     AnimationController controller = animation.Controllers[x];
                     for (int y = 0; y < controller.Layers.Count(); y++)
                     {
-                        if (controller.TargetName == "root")
+                        AnimationLayer layer = controller.Layers[y];
+                        if (layer.HasPRSKeyFrames && controller.TargetName == "root")
                         {
-                            controller.Layers[y].ScaleScale *= scale;
+                            var newLayer = new AnimationLayer(layer.Version) { KeyType = KeyType.NodePRS };
+                            for (int z = 0; z < layer.Keys.Count(); z++)
+                            {
+                                foreach (var key in layer.Keys)
+                                {
+                                    PRSKey prsKey = (PRSKey)key;
+
+                                    var newKey = new PRSKey(KeyType.NodePRS)
+                                    {
+                                        Time = prsKey.Time,
+                                        Position = (prsKey.Position + position) * layer.PositionScale,
+                                        Rotation = prsKey.Rotation,
+                                        Scale = prsKey.Scale * scale
+                                    };
+
+                                    newLayer.Keys.Add(newKey);
+                                }
+                            }
+                            controller.Layers[y] = newLayer;
+                        
                         }
                     }
                 }
+                
             }
         }
     }

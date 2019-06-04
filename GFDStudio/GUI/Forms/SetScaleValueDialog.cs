@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 using System.Windows.Forms;
 
 namespace GFDStudio.GUI.Forms
@@ -26,7 +27,8 @@ namespace GFDStudio.GUI.Forms
                 mParent = parent;
             }
 
-            public float Scale => Convert.ToSingle(mParent.numUpDwn.Value);
-        }
+            public Vector3 Scale => new Vector3 { X = Convert.ToSingle(mParent.num_ScaleX.Value), Y = Convert.ToSingle(mParent.num_ScaleY.Value), Z = Convert.ToSingle(mParent.num_ScaleZ.Value) };
+            public Vector3 Position => new Vector3 { X = Convert.ToSingle(mParent.num_PosX.Value), Y = Convert.ToSingle(mParent.num_PosY.Value), Z = Convert.ToSingle(mParent.num_PosZ.Value) };            
+            }
     }
 }
