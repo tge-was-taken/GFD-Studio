@@ -154,19 +154,19 @@ namespace GFDLibrary.Animations
 
         public void Rescale(Vector3 scale, Vector3 position)
         {
-            for (int w = 0; w < this.Animations.Count(); w++)
+            for (int w = 0; w < this.Animations.Count; w++)
             {
                 Animation animation = this.Animations[w];
-                for (int x = 0; x < animation.Controllers.Count(); x++)
+                for (int x = 0; x < animation.Controllers.Count; x++)
                 {
                     AnimationController controller = animation.Controllers[x];
-                    for (int y = 0; y < controller.Layers.Count(); y++)
+                    for (int y = 0; y < controller.Layers.Count; y++)
                     {
                         AnimationLayer layer = controller.Layers[y];
                         if (layer.HasPRSKeyFrames && controller.TargetId == 0)
                         {
                             var newLayer = new AnimationLayer(layer.Version) { KeyType = KeyType.NodePRS };
-                            for (int z = 0; z < layer.Keys.Count(); z++)
+                            for (int z = 0; z < layer.Keys.Count; z++)
                             {
                                 foreach (var key in layer.Keys)
                                 {
@@ -175,9 +175,9 @@ namespace GFDLibrary.Animations
                                     var newKey = new PRSKey(KeyType.NodePRS)
                                     {
                                         Time = prsKey.Time,
-                                        Position = (prsKey.Position + position) * layer.PositionScale,
+                                        Position = (prsKey.Position * layer.PositionScale) + position,
                                         Rotation = prsKey.Rotation,
-                                        Scale = prsKey.Scale * scale
+                                        Scale = (prsKey.Scale * layer.ScaleScale) * scale
                                     };
 
                                     newLayer.Keys.Add(newKey);

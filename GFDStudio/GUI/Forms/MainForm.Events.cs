@@ -252,8 +252,8 @@ namespace GFDStudio.GUI.Forms
                 directoryPath = dialog.SelectedPath;
             }
 
-            Vector3 scale = new Vector3 { };
-            Vector3 position = new Vector3 { };
+            Vector3 scale;
+            Vector3 position;
             using (var scaleDialog = new SetScaleValueDialog())
             {
                 if (scaleDialog.ShowDialog() != DialogResult.OK)

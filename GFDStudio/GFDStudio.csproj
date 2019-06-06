@@ -181,9 +181,7 @@
     <Compile Include="GUI\Forms\CreateTextureMapDialog.Designer.cs">
       <DependentUpon>CreateTextureMapDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Forms\MainForm.Events.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="GUI\Forms\MainForm.Events.cs" />
     <Compile Include="GUI\Forms\ModelConverterOptionsDialog.cs">
       <SubType>Form</SubType>
     </Compile>
