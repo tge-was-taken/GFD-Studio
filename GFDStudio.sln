@@ -1,11 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28010.2003
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.352
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GFDStudio", "GFDStudio\GFDStudio.csproj", "{75D72552-D73F-47F9-BC26-A5C6BE341901}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GFDLibrary", "GFDLibrary\GFDLibrary.csproj", "{A41AC644-A107-4788-8E4F-E10CCA64F3B6}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B1CC2B0E-4226-4AC5-9940-900A8847201A} = {B1CC2B0E-4226-4AC5-9940-900A8847201A}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GFDLibrary.Tests", "GFDLibraryTests\GFDLibrary.Tests.csproj", "{B8FD6F26-3B3B-43C5-AE25-DAF1D5F554BE}"
 EndProject
@@ -13,13 +16,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GFDLibrary.Playground", "GF
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GFDLibrary.Rendering.OpenGL", "GFDLibrary.Rendering.OpenGL\GFDLibrary.Rendering.OpenGL.csproj", "{D3676CBB-FAF8-4D38-BC6D-8F1E539E0B5C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scarlet", "Dependencies\Scarlet\Scarlet\Scarlet.csproj", "{B1CC2B0E-4226-4AC5-9940-900A8847201A}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scarlet.IO.ImageFormats", "Dependencies\Scarlet\Scarlet.IO.ImageFormats\Scarlet.IO.ImageFormats.csproj", "{4E7B19C8-1983-41FE-98E4-0532137638FC}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dependencies", "Dependencies", "{99026BAA-1FC1-4F12-9C8E-B29F5629DA2D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scarlet", "Scarlet", "{0F0E7431-76ED-4407-A264-A77F2D4D9EA9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scarlet", "..\Scarlet-1.2.3\Scarlet\Scarlet.csproj", "{B1CC2B0E-4226-4AC5-9940-900A8847201A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scarlet.IO.ImageFormats", "..\Scarlet-1.2.3\Scarlet.IO.ImageFormats\Scarlet.IO.ImageFormats.csproj", "{4E7B19C8-1983-41FE-98E4-0532137638FC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -120,9 +123,9 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{0F0E7431-76ED-4407-A264-A77F2D4D9EA9} = {99026BAA-1FC1-4F12-9C8E-B29F5629DA2D}
 		{B1CC2B0E-4226-4AC5-9940-900A8847201A} = {0F0E7431-76ED-4407-A264-A77F2D4D9EA9}
 		{4E7B19C8-1983-41FE-98E4-0532137638FC} = {0F0E7431-76ED-4407-A264-A77F2D4D9EA9}
-		{0F0E7431-76ED-4407-A264-A77F2D4D9EA9} = {99026BAA-1FC1-4F12-9C8E-B29F5629DA2D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BD633E5D-8912-4A36-B69C-E40CF3BA12B2}

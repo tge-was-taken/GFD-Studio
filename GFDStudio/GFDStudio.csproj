@@ -169,15 +169,19 @@
     <Compile Include="GUI\DataViewNodes\MaterialAttributeType8ViewNode.cs" />
     <Compile Include="GUI\DataViewNodes\MorphTargetListViewNode.cs" />
     <Compile Include="GUI\DataViewNodes\MorphTargetViewNode.cs" />
+    <Compile Include="GUI\Forms\SetScaleValueDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Forms\SetScaleValueDialog.Designer.cs">
+      <DependentUpon>SetScaleValueDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Forms\CreateTextureMapDialog.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="GUI\Forms\CreateTextureMapDialog.Designer.cs">
       <DependentUpon>CreateTextureMapDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="GUI\Forms\MainForm.Events.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="GUI\Forms\MainForm.Events.cs" />
     <Compile Include="GUI\Forms\ModelConverterOptionsDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -283,6 +287,9 @@
     <EmbeddedResource Include="GUI\Controls\ModelViewControl.resx">
       <DependentUpon>ModelViewControl.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Forms\SetScaleValueDialog.resx">
+      <DependentUpon>SetScaleValueDialog.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GUI\Forms\CreateTextureMapDialog.resx">
       <DependentUpon>CreateTextureMapDialog.cs</DependentUpon>
     </EmbeddedResource>
@@ -364,17 +371,21 @@
     <Content Include="app_data\icons\main_icon.ico" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="GUI\Controls\ModelView\" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\GFDLibrary.Rendering.OpenGL\GFDLibrary.Rendering.OpenGL.csproj">
-      <Project>{d3676cbb-faf8-4d38-bc6d-8f1e539e0b5c}</Project>
+      <Project>{D3676CBB-FAF8-4D38-BC6D-8F1E539E0B5C}</Project>
       <Name>GFDLibrary.Rendering.OpenGL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GFDLibraryTests\GFDLibrary.Tests.csproj">
+      <Project>{b8fd6f26-3b3b-43c5-ae25-daf1d5f554be}</Project>
+      <Name>GFDLibrary.Tests</Name>
     </ProjectReference>
     <ProjectReference Include="..\GFDLibrary\GFDLibrary.csproj">
       <Project>{a41ac644-a107-4788-8e4f-e10cca64f3b6}</Project>
       <Name>GFDLibrary</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="GUI\Controls\ModelView\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
