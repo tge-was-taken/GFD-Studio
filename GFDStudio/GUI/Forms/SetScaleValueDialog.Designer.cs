@@ -28,24 +28,25 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SetScaleValueDialog));
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.lbl_ScaleZ = new System.Windows.Forms.Label();
             this.lbl_scaleX = new System.Windows.Forms.Label();
             this.num_ScaleX = new System.Windows.Forms.NumericUpDown();
-            this.CancelButton = new System.Windows.Forms.Button();
-            this.OKButton = new System.Windows.Forms.Button();
-            this.lbl_Scale = new System.Windows.Forms.Label();
             this.lbl_ScaleY = new System.Windows.Forms.Label();
             this.num_ScaleY = new System.Windows.Forms.NumericUpDown();
-            this.lbl_ScaleZ = new System.Windows.Forms.Label();
             this.num_ScaleZ = new System.Windows.Forms.NumericUpDown();
+            this.lbl_Scale = new System.Windows.Forms.Label();
+            this.CancelButton = new System.Windows.Forms.Button();
+            this.OKButton = new System.Windows.Forms.Button();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.num_PosX = new System.Windows.Forms.NumericUpDown();
-            this.lbl_Position = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.num_PosY = new System.Windows.Forms.NumericUpDown();
             this.num_PosZ = new System.Windows.Forms.NumericUpDown();
+            this.lbl_Position = new System.Windows.Forms.Label();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.num_ScaleX)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.num_ScaleY)).BeginInit();
@@ -81,6 +82,16 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(146, 97);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
+            // lbl_ScaleZ
+            // 
+            this.lbl_ScaleZ.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.lbl_ScaleZ.AutoSize = true;
+            this.lbl_ScaleZ.Location = new System.Drawing.Point(45, 78);
+            this.lbl_ScaleZ.Name = "lbl_ScaleZ";
+            this.lbl_ScaleZ.Size = new System.Drawing.Size(14, 13);
+            this.lbl_ScaleZ.TabIndex = 8;
+            this.lbl_ScaleZ.Text = "Z";
+            // 
             // lbl_scaleX
             // 
             this.lbl_scaleX.Anchor = System.Windows.Forms.AnchorStyles.Right;
@@ -109,41 +120,6 @@
             0,
             0,
             0});
-            // 
-            // CancelButton
-            // 
-            this.CancelButton.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.CancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.CancelButton.Location = new System.Drawing.Point(60, 122);
-            this.CancelButton.Margin = new System.Windows.Forms.Padding(10);
-            this.CancelButton.Name = "CancelButton";
-            this.CancelButton.Size = new System.Drawing.Size(75, 23);
-            this.CancelButton.TabIndex = 1;
-            this.CancelButton.Text = "Cancel";
-            this.CancelButton.UseVisualStyleBackColor = true;
-            // 
-            // OKButton
-            // 
-            this.OKButton.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.OKButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.OKButton.Location = new System.Drawing.Point(149, 122);
-            this.OKButton.Margin = new System.Windows.Forms.Padding(10);
-            this.OKButton.Name = "OKButton";
-            this.OKButton.Size = new System.Drawing.Size(75, 23);
-            this.OKButton.TabIndex = 2;
-            this.OKButton.Text = "OK";
-            this.OKButton.UseVisualStyleBackColor = true;
-            this.OKButton.Click += new System.EventHandler(this.OKButton_Click);
-            // 
-            // lbl_Scale
-            // 
-            this.lbl_Scale.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.lbl_Scale.AutoSize = true;
-            this.lbl_Scale.Location = new System.Drawing.Point(65, 4);
-            this.lbl_Scale.Name = "lbl_Scale";
-            this.lbl_Scale.Size = new System.Drawing.Size(78, 13);
-            this.lbl_Scale.TabIndex = 5;
-            this.lbl_Scale.Text = "Scale Multiplier";
             // 
             // lbl_ScaleY
             // 
@@ -174,16 +150,6 @@
             0,
             0});
             // 
-            // lbl_ScaleZ
-            // 
-            this.lbl_ScaleZ.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.lbl_ScaleZ.AutoSize = true;
-            this.lbl_ScaleZ.Location = new System.Drawing.Point(45, 78);
-            this.lbl_ScaleZ.Name = "lbl_ScaleZ";
-            this.lbl_ScaleZ.Size = new System.Drawing.Size(14, 13);
-            this.lbl_ScaleZ.TabIndex = 8;
-            this.lbl_ScaleZ.Text = "Z";
-            // 
             // num_ScaleZ
             // 
             this.num_ScaleZ.Anchor = System.Windows.Forms.AnchorStyles.Left;
@@ -202,6 +168,41 @@
             0,
             0,
             0});
+            // 
+            // lbl_Scale
+            // 
+            this.lbl_Scale.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.lbl_Scale.AutoSize = true;
+            this.lbl_Scale.Location = new System.Drawing.Point(65, 4);
+            this.lbl_Scale.Name = "lbl_Scale";
+            this.lbl_Scale.Size = new System.Drawing.Size(78, 13);
+            this.lbl_Scale.TabIndex = 5;
+            this.lbl_Scale.Text = "Scale Multiplier";
+            // 
+            // CancelButton
+            // 
+            this.CancelButton.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.CancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.CancelButton.Location = new System.Drawing.Point(60, 122);
+            this.CancelButton.Margin = new System.Windows.Forms.Padding(10);
+            this.CancelButton.Name = "CancelButton";
+            this.CancelButton.Size = new System.Drawing.Size(75, 23);
+            this.CancelButton.TabIndex = 1;
+            this.CancelButton.Text = "Cancel";
+            this.CancelButton.UseVisualStyleBackColor = true;
+            // 
+            // OKButton
+            // 
+            this.OKButton.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.OKButton.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.OKButton.Location = new System.Drawing.Point(149, 122);
+            this.OKButton.Margin = new System.Windows.Forms.Padding(10);
+            this.OKButton.Name = "OKButton";
+            this.OKButton.Size = new System.Drawing.Size(75, 23);
+            this.OKButton.TabIndex = 2;
+            this.OKButton.Text = "OK";
+            this.OKButton.UseVisualStyleBackColor = true;
+            this.OKButton.Click += new System.EventHandler(this.OKButton_Click);
             // 
             // tableLayoutPanel2
             // 
@@ -266,21 +267,6 @@
             this.num_PosX.Name = "num_PosX";
             this.num_PosX.Size = new System.Drawing.Size(76, 20);
             this.num_PosX.TabIndex = 4;
-            this.num_PosX.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            // 
-            // lbl_Position
-            // 
-            this.lbl_Position.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.lbl_Position.AutoSize = true;
-            this.lbl_Position.Location = new System.Drawing.Point(50, 4);
-            this.lbl_Position.Name = "lbl_Position";
-            this.lbl_Position.Size = new System.Drawing.Size(75, 13);
-            this.lbl_Position.TabIndex = 5;
-            this.lbl_Position.Text = "Position Offset";
             // 
             // label4
             // 
@@ -310,11 +296,6 @@
             this.num_PosY.Name = "num_PosY";
             this.num_PosY.Size = new System.Drawing.Size(76, 20);
             this.num_PosY.TabIndex = 7;
-            this.num_PosY.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
             // 
             // num_PosZ
             // 
@@ -334,11 +315,16 @@
             this.num_PosZ.Name = "num_PosZ";
             this.num_PosZ.Size = new System.Drawing.Size(76, 20);
             this.num_PosZ.TabIndex = 9;
-            this.num_PosZ.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
+            // 
+            // lbl_Position
+            // 
+            this.lbl_Position.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.lbl_Position.AutoSize = true;
+            this.lbl_Position.Location = new System.Drawing.Point(50, 4);
+            this.lbl_Position.Name = "lbl_Position";
+            this.lbl_Position.Size = new System.Drawing.Size(75, 13);
+            this.lbl_Position.TabIndex = 5;
+            this.lbl_Position.Text = "Position Offset";
             // 
             // SetScaleValueDialog
             // 
@@ -350,10 +336,11 @@
             this.Controls.Add(this.OKButton);
             this.Controls.Add(this.CancelButton);
             this.Controls.Add(this.tableLayoutPanel1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "SetScaleValueDialog";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "SetScaleValueDialog";
+            this.Text = "Scale/Reposition";
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.num_ScaleX)).EndInit();

@@ -48,13 +48,13 @@ namespace GFDStudio.GUI.Forms
             this.mContentPanel = new System.Windows.Forms.Panel();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.mModelEditorTreeView = new GFDStudio.GUI.DataViewNodes.DataTreeView();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.mAnimationListTreeView = new GFDStudio.GUI.DataViewNodes.DataTreeView();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.mAnimationStopButton = new System.Windows.Forms.Button();
             this.mAnimationPlaybackButton = new System.Windows.Forms.Button();
             this.mAnimationTrackBar = new System.Windows.Forms.TrackBar();
-            this.mModelEditorTreeView = new GFDStudio.GUI.DataViewNodes.DataTreeView();
-            this.mAnimationListTreeView = new GFDStudio.GUI.DataViewNodes.DataTreeView();
             this.mMainMenuStrip.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -153,15 +153,15 @@ namespace GFDStudio.GUI.Forms
             // makeRelativeToolStripMenuItem
             // 
             this.makeRelativeToolStripMenuItem.Name = "makeRelativeToolStripMenuItem";
-            this.makeRelativeToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
+            this.makeRelativeToolStripMenuItem.Size = new System.Drawing.Size(327, 22);
             this.makeRelativeToolStripMenuItem.Text = "Retarget animation packs in directory";
             this.makeRelativeToolStripMenuItem.Click += new System.EventHandler(this.HandleRetargetAnimationsToolStripMenuItemClick);
             // 
             // rescaleAnimationPacksInDirectoryToolStripMenuItem
             // 
             this.rescaleAnimationPacksInDirectoryToolStripMenuItem.Name = "rescaleAnimationPacksInDirectoryToolStripMenuItem";
-            this.rescaleAnimationPacksInDirectoryToolStripMenuItem.Size = new System.Drawing.Size(271, 22);
-            this.rescaleAnimationPacksInDirectoryToolStripMenuItem.Text = "Rescale animation packs in directory";
+            this.rescaleAnimationPacksInDirectoryToolStripMenuItem.Size = new System.Drawing.Size(327, 22);
+            this.rescaleAnimationPacksInDirectoryToolStripMenuItem.Text = "Rescale/Reposition animation packs in directory";
             this.rescaleAnimationPacksInDirectoryToolStripMenuItem.Click += new System.EventHandler(this.HandleRescaleAnimationsToolStripMenuItemClick);
             // 
             // mPropertyGrid
@@ -208,6 +208,17 @@ namespace GFDStudio.GUI.Forms
             this.tabPage1.Text = "Model Editor";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
+            // mModelEditorTreeView
+            // 
+            this.mModelEditorTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.mModelEditorTreeView.ImageIndex = 0;
+            this.mModelEditorTreeView.Location = new System.Drawing.Point(6, 6);
+            this.mModelEditorTreeView.Name = "mModelEditorTreeView";
+            this.mModelEditorTreeView.SelectedImageIndex = 0;
+            this.mModelEditorTreeView.Size = new System.Drawing.Size(477, 373);
+            this.mModelEditorTreeView.TabIndex = 1;
+            this.mModelEditorTreeView.TopNode = null;
+            // 
             // tabPage2
             // 
             this.tabPage2.Controls.Add(this.mAnimationListTreeView);
@@ -218,6 +229,17 @@ namespace GFDStudio.GUI.Forms
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Animation List";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // mAnimationListTreeView
+            // 
+            this.mAnimationListTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.mAnimationListTreeView.ImageIndex = 0;
+            this.mAnimationListTreeView.Location = new System.Drawing.Point(6, 6);
+            this.mAnimationListTreeView.Name = "mAnimationListTreeView";
+            this.mAnimationListTreeView.SelectedImageIndex = 0;
+            this.mAnimationListTreeView.Size = new System.Drawing.Size(477, 373);
+            this.mAnimationListTreeView.TabIndex = 2;
+            this.mAnimationListTreeView.TopNode = null;
             // 
             // tableLayoutPanel1
             // 
@@ -231,7 +253,7 @@ namespace GFDStudio.GUI.Forms
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 70F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 97F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 103F));
             this.tableLayoutPanel1.Controls.Add(this.mAnimationStopButton, 7, 0);
             this.tableLayoutPanel1.Controls.Add(this.mAnimationPlaybackButton, 6, 0);
             this.tableLayoutPanel1.Controls.Add(this.mAnimationTrackBar, 0, 0);
@@ -245,9 +267,9 @@ namespace GFDStudio.GUI.Forms
             // mAnimationStopButton
             // 
             this.mAnimationStopButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mAnimationStopButton.Location = new System.Drawing.Point(625, 3);
+            this.mAnimationStopButton.Location = new System.Drawing.Point(619, 3);
             this.mAnimationStopButton.Name = "mAnimationStopButton";
-            this.mAnimationStopButton.Size = new System.Drawing.Size(97, 29);
+            this.mAnimationStopButton.Size = new System.Drawing.Size(103, 29);
             this.mAnimationStopButton.TabIndex = 2;
             this.mAnimationStopButton.Text = "Stop";
             this.mAnimationStopButton.UseVisualStyleBackColor = true;
@@ -256,7 +278,7 @@ namespace GFDStudio.GUI.Forms
             // mAnimationPlaybackButton
             // 
             this.mAnimationPlaybackButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mAnimationPlaybackButton.Location = new System.Drawing.Point(555, 3);
+            this.mAnimationPlaybackButton.Location = new System.Drawing.Point(549, 3);
             this.mAnimationPlaybackButton.Name = "mAnimationPlaybackButton";
             this.mAnimationPlaybackButton.Size = new System.Drawing.Size(64, 29);
             this.mAnimationPlaybackButton.TabIndex = 0;
@@ -269,30 +291,8 @@ namespace GFDStudio.GUI.Forms
             this.mAnimationTrackBar.Dock = System.Windows.Forms.DockStyle.Fill;
             this.mAnimationTrackBar.Location = new System.Drawing.Point(3, 3);
             this.mAnimationTrackBar.Name = "mAnimationTrackBar";
-            this.mAnimationTrackBar.Size = new System.Drawing.Size(546, 29);
+            this.mAnimationTrackBar.Size = new System.Drawing.Size(540, 29);
             this.mAnimationTrackBar.TabIndex = 1;
-            // 
-            // mModelEditorTreeView
-            // 
-            this.mModelEditorTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.mModelEditorTreeView.ImageIndex = 0;
-            this.mModelEditorTreeView.Location = new System.Drawing.Point(6, 6);
-            this.mModelEditorTreeView.Name = "mModelEditorTreeView";
-            this.mModelEditorTreeView.SelectedImageIndex = 0;
-            this.mModelEditorTreeView.Size = new System.Drawing.Size(477, 373);
-            this.mModelEditorTreeView.TabIndex = 1;
-            this.mModelEditorTreeView.TopNode = null;
-            // 
-            // mAnimationListTreeView
-            // 
-            this.mAnimationListTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.mAnimationListTreeView.ImageIndex = 0;
-            this.mAnimationListTreeView.Location = new System.Drawing.Point(6, 6);
-            this.mAnimationListTreeView.Name = "mAnimationListTreeView";
-            this.mAnimationListTreeView.SelectedImageIndex = 0;
-            this.mAnimationListTreeView.Size = new System.Drawing.Size(477, 373);
-            this.mAnimationListTreeView.TabIndex = 2;
-            this.mAnimationListTreeView.TopNode = null;
             // 
             // MainForm
             // 

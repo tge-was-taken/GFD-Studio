@@ -163,7 +163,7 @@ namespace GFDLibrary.Animations
                     for (int y = 0; y < controller.Layers.Count(); y++)
                     {
                         AnimationLayer layer = controller.Layers[y];
-                        if (layer.HasPRSKeyFrames && controller.TargetName == "root")
+                        if (layer.HasPRSKeyFrames && controller.TargetId == 0)
                         {
                             var newLayer = new AnimationLayer(layer.Version) { KeyType = KeyType.NodePRS };
                             for (int z = 0; z < layer.Keys.Count(); z++)
