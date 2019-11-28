@@ -31,7 +31,9 @@ namespace GFDLibrary.Common
             using ( var reader = new ArchiveReader( stream, true ))
             {
                 // Read first entry, if this succeeds it's probably a valid archive
-                return reader.ReadEntryHeader( out var dummy );
+                bool isValid = reader.ReadEntryHeader( out var dummy );
+                stream.Position = 0;
+                return isValid;
             }
         }
 
