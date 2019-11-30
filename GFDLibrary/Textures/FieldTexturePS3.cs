@@ -101,8 +101,8 @@ namespace GFDLibrary.Textures
             Field0C = 0x00000000;
             Flags   = FieldTextureFlags.Flag2 | FieldTextureFlags.Flag4 | FieldTextureFlags.Flag80;
             var ddsHeader = new DDSHeader( ddsData );
-            var data = new byte[ddsData.Length - ddsHeader.Size];
-            Array.Copy( ddsData, ddsHeader.Size, data, 0, data.Length );
+            var data = new byte[ddsData.Length - ddsHeader.Size - 4];
+            Array.Copy( ddsData, ddsHeader.Size + 4, data, 0, data.Length );
 
             if ( ddsHeader.PixelFormat.FourCC == DDSPixelFormatFourCC.DXT3 )
             {

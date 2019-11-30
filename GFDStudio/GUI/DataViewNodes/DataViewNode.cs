@@ -93,7 +93,7 @@ namespace GFDStudio.GUI.DataViewNodes
         /// Gets the parent tree view of the tree node.
         /// </summary>
         [Browsable( false )]
-        public new DataTreeView DataTreeView => ( DataTreeView )base.TreeView;
+        public DataTreeView DataTreeView => ( DataTreeView )base.TreeView;
 
         /// <summary>
         /// This event is fired whenever the tree node label text is changed.

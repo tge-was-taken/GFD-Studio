@@ -25,7 +25,7 @@ namespace GFDStudio.GUI.DataViewNodes
 
         [Browsable( true )]
         [TypeConverter( typeof( EnumTypeConverter<MaterialFlags> ) )]
-        public new MaterialFlags Flags
+        public MaterialFlags Flags
         {
             get => GetDataProperty< MaterialFlags >();
             set => SetDataProperty( value );

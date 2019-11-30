@@ -221,7 +221,7 @@ namespace GFDStudio.GUI.Forms
                             animationPack.Retarget( originalScene, newScene, fixArms );
                             animationPack.Save( filePath );
                         }
-                        catch ( Exception ex )
+                        catch ( Exception )
                         {
                             failures.Add( filePath );
                         }
@@ -291,7 +291,7 @@ namespace GFDStudio.GUI.Forms
                             animationPack.Rescale(scale, position);
                             animationPack.Save(filePath);
                         }
-                        catch (Exception ex)
+                        catch (Exception)
                         {
                             failures.Add(filePath);
                         }

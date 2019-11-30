@@ -358,7 +358,7 @@
         #endregion
 
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.Button CancelButton;
+        private new System.Windows.Forms.Button CancelButton;
         private System.Windows.Forms.Button OKButton;
         private System.Windows.Forms.Label lbl_scaleX;
         private System.Windows.Forms.NumericUpDown num_ScaleX;

@@ -51,7 +51,7 @@ namespace GFDLibrary.Animations
                 // Try to read blend animations
                 BlendAnimations = ReadAnimations( reader );
             }
-            catch ( Exception e )
+            catch ( Exception )
             {
                 ErrorsOccuredDuringLoad = true;
 
@@ -74,7 +74,7 @@ namespace GFDLibrary.Animations
                 if ( Flags.HasFlag( AnimationPackFlags.Flag4 ) )
                     ExtraData = reader.ReadResource<AnimationExtraData>( Version );
             }
-            catch ( Exception e )
+            catch ( Exception )
             {
                 // Make sure to clear the flag for the extra data so we don't crash during writing
                 Flags &= ~AnimationPackFlags.Flag4;
@@ -95,7 +95,7 @@ namespace GFDLibrary.Animations
                 {
                     list.Add( reader.ReadResource<Animation>( Version ) );
                 }
-                catch ( Exception e )
+                catch ( Exception )
                 {
                     ErrorsOccuredDuringLoad = true;
 

@@ -126,8 +126,6 @@ namespace GFDLibrary.Textures
                 default:
                     throw new NotSupportedException();
             }
-
-            return bitmap;
         }
 
         private static Bitmap DecodeDDS( byte[] data )
@@ -137,7 +135,7 @@ namespace GFDLibrary.Textures
                 // Prefer DDSCodec -- handles alpha properly but doesn't handle non pow 2 textures & DX10+ formats
                 return DDSCodec.DecompressImage( data );
             }
-            catch ( Exception e )
+            catch ( Exception )
             {
             }
 
@@ -146,7 +144,7 @@ namespace GFDLibrary.Textures
                 // Image engine SUCKS at alpha handling, but its better than nothing
                 return DecodeDDSWithImageEngine( data );
             }
-            catch ( Exception e )
+            catch ( Exception )
             {
             }
 

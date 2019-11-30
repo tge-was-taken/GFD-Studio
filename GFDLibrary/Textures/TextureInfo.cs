@@ -84,7 +84,6 @@ namespace GFDLibrary.Textures
                     {
                         goto default;
                     }
-                    break;
 
                 default:
                     throw new NotSupportedException( $"Unsupported DDS pixel format" );
