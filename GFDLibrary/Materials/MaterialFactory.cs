@@ -125,6 +125,63 @@ namespace GFDLibrary.Materials
             return material;
         }
 
+        public static Material CreatePersonaSkinP5Material(string name, string diffuseMapName, string specularMapName, string shadowMapName )
+        {
+            // based off ps0201, t01-5 material
+            var material = new Material(name)
+            {
+                AmbientColor = new Vector4(0.7058824f, 0.7058824f, 0.7058824f, 1f),
+                DiffuseColor = new Vector4(0.3137255f, 0.3137255f, 0.3137255f, 1),
+                SpecularColor = new Vector4(0, 0, 0, 0),
+                EmissiveColor = new Vector4(0.9f, 0.9f, 0.9f, 10),
+                Field40 = 1,
+                Field44 = 0.1f,
+                DrawMethod = MaterialDrawMethod.Opaque,
+                Field49 = 1,
+                Field4A = 0,
+                Field4B = 1,
+                Field4C = 0,
+                Field4D = 1,
+                Field50 = 0,
+                Field5C = 3,
+                Field6C = 0xF8FFFE38,
+                Field70 = 0xF8FFFE38,
+                Field90 = 0,
+                Field92 = 4,
+                Field94 = 2,
+                Field96 = 0,
+                DiffuseMap = new TextureMap(diffuseMapName),
+                SpecularMap = new TextureMap(specularMapName),
+                ShadowMap = new TextureMap(shadowMapName),
+                Flags = MaterialFlags.Flag1 | MaterialFlags.Flag2 | MaterialFlags.Flag4 | MaterialFlags.Flag20 | MaterialFlags.Flag40 | MaterialFlags.EnableLight2 |
+                        MaterialFlags.CastShadow | MaterialFlags.HasAttributes | MaterialFlags.Flag20000Crash | MaterialFlags.HasDiffuseMap | MaterialFlags.HasSpecularMap | MaterialFlags.HasShadowMap,
+                Attributes = new List<MaterialAttribute>
+                {
+                    new MaterialAttributeType1
+                    {
+                        Field0C = new Vector4(0.2352941f, 0.5960785f, 1, 1),
+                        Field1C = 0.85f,
+                        Field20 = 2,
+                        Field24 = new Vector4(0, 0, 0, 0),
+                        Field34 = 0,
+                        Field38 = 0,
+                        Flags = MaterialAttributeFlags.Flag1,
+                        Type1Flags = MaterialAttributeType1Flags.Flag2
+                    },
+                    new MaterialAttributeType2
+                    {
+                        Field0C = 1,
+                        Field10 = 121,
+                        Flags = MaterialAttributeFlags.Flag1
+                    }
+                }
+            };
+
+            material.IsPresetMaterial = true;
+
+            return material;
+        }
+
         public static Material CreateCharacterClothP4DMaterial( string name, string diffuseMapName, bool hasTransparency = false )
         {
             var material = new Material( name )
@@ -266,6 +323,7 @@ namespace GFDLibrary.Materials
         FieldTerrain,
         FieldTerrainCastShadow,
         CharacterSkinP5,
+        PersonaSkinP5,
         CharacterClothP4D,
         CharacterSkinFB
     }
