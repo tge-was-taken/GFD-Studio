@@ -155,9 +155,6 @@ namespace GFDLibrary.Models.Conversion
                                 specularTextureName = specularTexture.Name;
                             }
 
-                            // TODO: transparency
-                            var hasTransparency = HasAlpha(diffuseTexture.PixelFormat);
-
                             material = MaterialFactory.CreatePersonaSkinP5Material(materialName, diffuseTexture.Name, specularTextureName, shadowTextureName);
                         }
                     }
