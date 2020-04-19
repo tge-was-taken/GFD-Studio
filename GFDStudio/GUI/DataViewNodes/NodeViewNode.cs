@@ -1,22 +1,24 @@
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Numerics;
 using System.Windows.Forms;
 using GFDLibrary;
-using GFDStudio.FormatModules;
+using GFDLibrary.Common;
+using GFDLibrary.Models;
 using GFDStudio.GUI.TypeConverters;
 
 namespace GFDStudio.GUI.DataViewNodes
 {
     public class NodeViewNode : DataViewNode<Node>
     {
+        private VariantUserPropertyList mProperties;
+
         public override DataViewNodeMenuFlags ContextMenuFlags
             => DataViewNodeMenuFlags.Delete | DataViewNodeMenuFlags.Move | DataViewNodeMenuFlags.Rename | DataViewNodeMenuFlags.Export;
 
-        public override DataViewNodeFlags NodeFlags 
-            => ( Data.HasChildren || Data.HasAttachments ) ? DataViewNodeFlags.Branch : DataViewNodeFlags.Leaf;
+        public override DataViewNodeFlags NodeFlags
+            => DataViewNodeFlags.Branch;
 
         [ Browsable( true ) ]
         public new string Name
@@ -57,11 +59,15 @@ namespace GFDStudio.GUI.DataViewNodes
         public AttachmentListViewNode AttachmentListViewNode { get; set; }
 
         [ Browsable( true ) ]
-        [ TypeConverter( typeof( UserPropertyDictionaryTypeConverter ) ) ]
-        public UserPropertyCollection Properties
+        [ TypeConverter( typeof( ExpandableObjectConverter ) ) ]
+        public VariantUserPropertyList Properties
         {
-            get => GetDataProperty<UserPropertyCollection>();
-            set => SetDataProperty( value );
+            get => mProperties;
+            set
+            {
+                mProperties = value;
+                Data.Properties = Properties.Count == 0 ? null : new UserPropertyDictionary( Properties.Select( x => x.ToTypedUserProperty() ) );
+            }
         }
 
         [ Browsable( true ) ]
@@ -91,7 +97,7 @@ namespace GFDStudio.GUI.DataViewNodes
                 node.Translation = Translation;
                 node.Rotation = Rotation;
                 node.Scale = Scale;
-                node.Properties = Properties;
+                node.Properties = new UserPropertyDictionary( Properties.Select( x => x.ToTypedUserProperty() ) );
                 node.FieldE0 = FieldE0;
                 node.Attachments = Nodes.Contains( AttachmentListViewNode ) ? AttachmentListViewNode.Data.Select( NodeAttachment.Create ).ToList() : null;
 
@@ -108,21 +114,23 @@ namespace GFDStudio.GUI.DataViewNodes
 
         protected override void InitializeViewCore()
         {
+            Properties = new VariantUserPropertyList( Data.Properties, () => Properties = mProperties );
+
             AttachmentListViewNode = ( AttachmentListViewNode )DataViewNodeFactory.Create(
                 "Attachments",
                 Data.Attachments == null ? new List<Resource>() : Data.Attachments.Select( x => x.GetValue() ).ToList(),
                 new object[] { new ListItemNameProvider<Resource>( ( value, index ) => value.ResourceType.ToString() ) } );
 
-            Nodes.Add( AttachmentListViewNode );
+            AddChildNode( AttachmentListViewNode );
 
 
             var children = Data.Children.ToList();
-            Children = ( ListViewNode<Node> )DataViewNodeFactory.Create(
+            Children = ( NodeListViewNode )DataViewNodeFactory.Create(
                 "Children",
                 children,
                 new object[] { new ListItemNameProvider<Node>( ( value, index ) => value.Name ) } );
 
-            Nodes.Add( Children );
+            AddChildNode( Children );
         }
     }
 
@@ -143,7 +151,7 @@ namespace GFDStudio.GUI.DataViewNodes
                 var resource = Resource.Load( file );
                 if ( NodeAttachment.IsOfCompatibleType( resource ) )
                 {
-                    Data.Add( resource );
+                    AddChildNode( DataViewNodeFactory.Create( resource.ResourceType.ToString(), resource ) );
                 }
                 else
                 {
@@ -151,6 +159,28 @@ namespace GFDStudio.GUI.DataViewNodes
                 }
             } );
 
+            base.InitializeCore();
+        }
+    }
+
+    public class NodeListViewNode : ListViewNode<Node>
+    {
+        public NodeListViewNode( string text, List<Node> data, ListItemNameProvider<Node> nameProvider ) : base( text, data, nameProvider )
+        {
+        }
+
+        public NodeListViewNode( string text, List<Node> data, IList<string> itemNames ) : base( text, data, itemNames )
+        {
+        }
+
+        protected override void InitializeCore()
+        {
+            RegisterAddHandler<Node>( file =>
+            {
+                var node = Resource.Load<Node>( file );
+                AddChildNode( DataViewNodeFactory.Create( node.Name, node ) );
+            } );
+            RegisterCustomHandler( "Add", "New node", () => { AddChildNode( new NodeViewNode( "New node", new Node( "New node" ) ) ); } );
             base.InitializeCore();
         }
     }

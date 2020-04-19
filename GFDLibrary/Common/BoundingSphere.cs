@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Numerics;
 
-namespace GFDLibrary
+namespace GFDLibrary.Common
 {
     /// <summary>
     /// Represents a sphere consisting of a center vector and a sphere radius used for calculations.

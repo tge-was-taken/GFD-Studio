@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Numerics;
 using GFDLibrary;
+using GFDLibrary.Materials;
 using GFDStudio.GUI.TypeConverters;
 
 namespace GFDStudio.GUI.DataViewNodes
@@ -17,10 +18,18 @@ namespace GFDStudio.GUI.DataViewNodes
         // 0C
         [Browsable(true)]
         [TypeConverter(typeof(Vector4TypeConverter))]
-        public Vector4 Field0C
+        [DisplayName("Color (float)")]
+        public Vector4 Color
         {
             get => GetDataProperty< Vector4 >();
             set => SetDataProperty( value );
+        }
+
+        [DisplayName( "Color (RGBA)" )]
+        public System.Drawing.Color ColorRGBA
+        {
+            get => Data.Color.ToByte();
+            set => Data.Color = value.ToFloat();
         }
 
         // 1C

@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Windows.Forms;
 using GFDLibrary;
+using GFDLibrary.Materials;
 using Ookii.Dialogs;
 
 namespace GFDStudio.GUI.DataViewNodes
@@ -21,8 +22,13 @@ namespace GFDStudio.GUI.DataViewNodes
         {
             RegisterExportHandler<MaterialDictionary>( path => Data.Save(  path ) );
             RegisterReplaceHandler<MaterialDictionary>( Resource.Load<MaterialDictionary> );
-            RegisterAddHandler< Material >( path => Data.Add( Resource.Load< Material >( path ) ) );
-            RegisterCustomHandler( "Export All", () =>
+            RegisterAddHandler<Material>( path => Data.Add( Resource.Load<Material>( path ) ) );
+            RegisterCustomHandler( "Add", "New material", () =>
+            {
+                Data.Add( new Material( "New material" ) );
+                InitializeView( true );
+            } );
+            RegisterCustomHandler( "Export", "All", () =>
             {
                 using ( var dialog = new VistaFolderBrowserDialog() )
                 {
@@ -48,7 +54,7 @@ namespace GFDStudio.GUI.DataViewNodes
         {
             foreach ( var texture in Data.Materials )
             {
-                Nodes.Add( DataViewNodeFactory.Create( texture.Name, texture ) );
+                AddChildNode( DataViewNodeFactory.Create( texture.Name, texture ) );
             }
         }
     }

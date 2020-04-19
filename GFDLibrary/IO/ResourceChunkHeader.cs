@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.IO;
 
 namespace GFDLibrary.IO
@@ -10,6 +9,7 @@ namespace GFDLibrary.IO
         public uint Version { get; set; }
         public ResourceChunkType Type { get; set; }
         public int Length { get; set; }
+        public int Reserved { get; set; }
 
         internal ResourceChunkHeader()
         {         
@@ -20,6 +20,7 @@ namespace GFDLibrary.IO
             Version = version;
             Type = type;
             Length = length;
+            Reserved = 0;
         }
 
         internal void Read( BinaryReader reader )
@@ -27,7 +28,7 @@ namespace GFDLibrary.IO
             Version = reader.ReadUInt32();
             Type = ( ResourceChunkType )reader.ReadInt32();
             Length = reader.ReadInt32();
-            reader.ReadInt32();
+            Reserved = reader.ReadInt32();
         }
 
         internal void Write( BinaryWriter writer )
@@ -35,7 +36,7 @@ namespace GFDLibrary.IO
             writer.Write( Version );
             writer.Write( ( int )Type );
             writer.Write( Length );
-            writer.Write( 0 );
+            writer.Write( Reserved );
         }
     }
 }

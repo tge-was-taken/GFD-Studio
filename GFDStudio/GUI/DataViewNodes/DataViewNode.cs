@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
+using GFDStudio.DataManagement;
 using GFDStudio.FormatModules;
 
 namespace GFDStudio.GUI.DataViewNodes
@@ -37,6 +39,8 @@ namespace GFDStudio.GUI.DataViewNodes
         private readonly Dictionary<Type, DataViewNodeExportHandler> mExportHandlers;
         private readonly Dictionary<Type, DataViewNodeReplaceHandler> mReplaceHandlers;
         private readonly Dictionary<Type, DataViewNodeAddHandler> mAddHandlers;
+
+        internal static ImageList ImageList { get; } = new ImageList();
 
         /// <summary>
         /// Gets or sets the resource held by the view model.
@@ -89,7 +93,7 @@ namespace GFDStudio.GUI.DataViewNodes
         /// Gets the parent tree view of the tree node.
         /// </summary>
         [Browsable( false )]
-        public new DataTreeView DataTreeView => ( DataTreeView )base.TreeView;
+        public DataTreeView DataTreeView => ( DataTreeView )base.TreeView;
 
         /// <summary>
         /// This event is fired whenever the tree node label text is changed.
@@ -115,7 +119,7 @@ namespace GFDStudio.GUI.DataViewNodes
 
         private bool mHasPendingChanges;
         private bool mIsInitializingView;
-        private readonly List<ToolStripMenuItem> mCustomHandlers;
+        private readonly List<(string Menu, ToolStripMenuItem Item)> mCustomHandlers;
 
         /// <summary>
         /// Gets or sets if the tree node is dirty and its resource needs to be rebuilt.
@@ -137,11 +141,24 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         protected DataViewNode( string text ) : base( text )
-        {
+        {      
             mExportHandlers = new Dictionary<Type, DataViewNodeExportHandler>();
             mReplaceHandlers = new Dictionary<Type, DataViewNodeReplaceHandler>();
             mAddHandlers = new Dictionary<Type, DataViewNodeAddHandler>();
-            mCustomHandlers = new List< ToolStripMenuItem >();
+            mCustomHandlers = new List<(string Menu, ToolStripMenuItem Item)>();
+        }
+
+        public void AddChildNode( TreeNode node )
+        {
+            Nodes.Add( node );
+
+            if ( !mIsInitializingView )
+            {
+                HasPendingChanges = true;
+
+                if ( node is DataViewNode dataViewNode )
+                    dataViewNode.InitializeView();
+            }
         }
 
         //
@@ -154,10 +171,12 @@ namespace GFDStudio.GUI.DataViewNodes
 
             using ( var dialog = new SaveFileDialog() )
             {
+                ( var filter, var filterIndexToTypeMap ) = ModuleFilterGenerator.GenerateFilter( FormatModuleUsageFlags.Export, mExportHandlers.Keys.ToArray() );
+
                 dialog.AutoUpgradeEnabled = true;
                 dialog.CheckPathExists = true;
                 dialog.FileName = Text;
-                dialog.Filter = ModuleFilterGenerator.GenerateFilter( FormatModuleUsageFlags.Export, mExportHandlers.Keys.ToArray() );
+                dialog.Filter = filter;
                 dialog.OverwritePrompt = true;
                 dialog.Title = "Select a file to export to.";
                 dialog.ValidateNames = true;
@@ -168,22 +187,27 @@ namespace GFDStudio.GUI.DataViewNodes
                     return null;
                 }
 
-                Export( dialog.FileName );
+                Export( dialog.FileName, filterIndexToTypeMap[ dialog.FilterIndex ] );
                 return dialog.FileName;
             }
         }
 
-        public void Export( string filepath )
+        public void Export( string filePath )
+        {
+            Export( filePath, null );
+        }
+
+        public void Export( string filePath, Type selectedType )
         {
             if ( mExportHandlers.Count == 0 )
                 return;
 
-            var type = GetTypeFromPath( filepath, mExportHandlers.Keys );
+            var type         = GetTypeFromPath( filePath, mExportHandlers.Keys, selectedType );
             var exportAction = mExportHandlers[type];
 
-            Trace.TraceInformation( $"{nameof( DataViewNode )} [{Text}]: {nameof( Export )} {type} to {filepath}" );
+            Trace.TraceInformation( $"{nameof( DataViewNode )} [{Text}]: {nameof( Export )} {type} to {filePath}" );
 
-            exportAction( filepath );
+            exportAction( filePath );
         }
 
         //
@@ -196,13 +220,14 @@ namespace GFDStudio.GUI.DataViewNodes
 
             using ( var dialog = new OpenFileDialog() )
             {
+                (var filter, var filterIndexToTypeMap) = ModuleFilterGenerator.GenerateFilter( new[] { FormatModuleUsageFlags.Import, FormatModuleUsageFlags.ImportForEditing },
+                                                                                              mReplaceHandlers.Keys.ToArray() );
+
                 dialog.AutoUpgradeEnabled = true;
                 dialog.CheckPathExists = true;
                 dialog.CheckFileExists = true;
                 dialog.FileName = Text;
-                dialog.Filter = ModuleFilterGenerator.GenerateFilter(
-                    new[] { FormatModuleUsageFlags.Import, FormatModuleUsageFlags.ImportForEditing },
-                    mReplaceHandlers.Keys.ToArray() );
+                dialog.Filter = filter;
                 dialog.Multiselect = false;
                 dialog.SupportMultiDottedExtensions = true;
                 dialog.Title = "Select a replacement file.";
@@ -213,19 +238,24 @@ namespace GFDStudio.GUI.DataViewNodes
                     return;
                 }
 
-                Replace( dialog.FileName );
+                ReplaceInternal( dialog.FileName, filterIndexToTypeMap[ dialog.FilterIndex ] );
             }
         }
 
         public void Replace( string filepath )
         {
+            ReplaceInternal( filepath, null );
+        }
+
+        private void ReplaceInternal( string filepath, Type selectedType )
+        {
             if ( mReplaceHandlers.Count == 0 )
                 return;
 
-            var type = GetTypeFromPath( filepath, mReplaceHandlers.Keys );
+            var type          = GetTypeFromPath( filepath, mReplaceHandlers.Keys, selectedType );
             var replaceAction = mReplaceHandlers[type];
 
-            Trace.TraceInformation( $"{nameof( DataViewNode )} [{Text}]: {nameof( Replace )} {type} from {filepath}" );
+            Trace.TraceInformation( $"{nameof( DataViewNode )} [{Text}]: {nameof( ReplaceInternal )} {type} from {filepath}" );
 
             Replace( replaceAction( filepath ) );
         }
@@ -248,10 +278,11 @@ namespace GFDStudio.GUI.DataViewNodes
 
             using ( OpenFileDialog openFileDlg = new OpenFileDialog() )
             {
+                (var filter, var filterIndexToTypeMap) = ModuleFilterGenerator.GenerateFilter( new[] { FormatModuleUsageFlags.Import, FormatModuleUsageFlags.ImportForEditing }, mAddHandlers.Keys.ToArray() );
                 openFileDlg.AutoUpgradeEnabled = true;
                 openFileDlg.CheckPathExists = true;
                 openFileDlg.CheckFileExists = true;
-                openFileDlg.Filter = ModuleFilterGenerator.GenerateFilter( new[] { FormatModuleUsageFlags.Import, FormatModuleUsageFlags.ImportForEditing }, mAddHandlers.Keys.ToArray() );
+                openFileDlg.Filter = filter;
                 openFileDlg.Multiselect = true;
                 openFileDlg.SupportMultiDottedExtensions = true;
                 openFileDlg.Title = "Select file(s) to add.";
@@ -262,10 +293,9 @@ namespace GFDStudio.GUI.DataViewNodes
                     return;
                 }
 
+                var selectedType = filterIndexToTypeMap[ openFileDlg.FilterIndex ];
                 foreach ( string fileName in openFileDlg.FileNames )
-                {
-                    Add( fileName );
-                }
+                    AddInternal( fileName, selectedType );
 
                 InitializeView( true );
             }
@@ -274,10 +304,16 @@ namespace GFDStudio.GUI.DataViewNodes
 
         public void Add( string filepath )
         {
+            AddInternal( filepath, null );
+            InitializeView( true );
+        }
+
+        private void AddInternal( string filepath, Type selectedType )
+        {
             if ( mAddHandlers.Count == 0 )
                 return;
 
-            var type = GetTypeFromPath( filepath, mAddHandlers.Keys );
+            var type      = GetTypeFromPath( filepath, mAddHandlers.Keys, selectedType );
             var addAction = mAddHandlers[type];
 
             Trace.TraceInformation( $"{nameof( DataViewNode )} [{Text}]: {nameof( Add )} {type} from {filepath}" );
@@ -462,7 +498,12 @@ namespace GFDStudio.GUI.DataViewNodes
 
         protected void RegisterCustomHandler( string text, Action action, Keys shortcutKeys = Keys.None )
         {
-            mCustomHandlers.Add( new ToolStripMenuItem( text, null, CreateEventHandler( action ), shortcutKeys ) );
+            RegisterCustomHandler( null, text, action, shortcutKeys );
+        }
+
+        protected void RegisterCustomHandler( string menu, string text, Action action, Keys shortcutKeys = Keys.None )
+        {
+            mCustomHandlers.Add( ( menu, new ToolStripMenuItem( text, null, CreateEventHandler( action ), shortcutKeys ) ) );
         }
 
         //
@@ -520,11 +561,35 @@ namespace GFDStudio.GUI.DataViewNodes
             // initialize the derived view model
             InitializeCore();
 
+            // Set the icon
+            SetIcon();
+
             // set initialization flag
             IsInitialized = true;
 
             // subscribe to the PropertyChanged event /after/ init
             PropertyChanged += OnPropertyChanged;
+        }
+
+
+        private void SetIcon()
+        {
+            if ( string.IsNullOrWhiteSpace( ImageKey ) )
+            {
+                if ( NodeFlags.HasFlag( DataViewNodeFlags.Branch ) )
+                {
+                    ImageKey = DataStore.GetPath( "icons/folder.png" );
+                }
+                else
+                {
+                    ImageKey = DataStore.GetPath( "icons/node.png" );
+                }
+            }
+
+            if ( !ImageList.Images.ContainsKey( ImageKey ) )
+                ImageList.Images.Add( ImageKey, new Bitmap( ImageKey ) );
+
+            ImageKey = SelectedImageKey = ImageKey;
         }
 
         protected virtual void OnPropertyChanged( object sender, PropertyChangedEventArgs e )
@@ -583,54 +648,111 @@ namespace GFDStudio.GUI.DataViewNodes
         {
             ContextMenuStrip = new ContextMenuStrip();
 
-            if ( mCustomHandlers.Count > 0 )
+            var uncategorizedCustomHandlers = mCustomHandlers.Where( x => x.Menu == null ).ToList();
+            if ( uncategorizedCustomHandlers.Count > 0 )
             {
-                foreach ( var menuItem in mCustomHandlers )
-                    ContextMenuStrip.Items.Add( menuItem );
+                foreach ( var handler in uncategorizedCustomHandlers )
+                    ContextMenuStrip.Items.Add( handler.Item );
 
                 ContextMenuStrip.Items.Add( new ToolStripSeparator() );
             }
 
             if ( ContextMenuFlags.HasFlag( DataViewNodeMenuFlags.Export ) )
             {
-                ContextMenuStrip.Items.Add( new ToolStripMenuItem( "&Export", null, CreateEventHandler( () => Export() ), Keys.Control | Keys.E ) );
+                ContextMenuStrip.Items.Add( new ToolStripMenuItem( "&Export", null, CreateEventHandler( () => Export() ), Keys.Control | Keys.E )
+                {
+                    Name = "Export"
+                });
             }
 
             if ( ContextMenuFlags.HasFlag( DataViewNodeMenuFlags.Replace ) )
             {
-                ContextMenuStrip.Items.Add( new ToolStripMenuItem( "&Replace", null, CreateEventHandler( Replace ), Keys.Control | Keys.R ) );
+                ContextMenuStrip.Items.Add( new ToolStripMenuItem( "&Replace", null, CreateEventHandler( Replace ), Keys.Control | Keys.R )
+                {
+                    Name = "Replace"
+                });
+
                 if ( !ContextMenuFlags.HasFlag( DataViewNodeMenuFlags.Add ) )
                     ContextMenuStrip.Items.Add( new ToolStripSeparator() );
             }
 
             if ( ContextMenuFlags.HasFlag( DataViewNodeMenuFlags.Add ) )
             {
-                ContextMenuStrip.Items.Add( new ToolStripMenuItem( "&Add", null, CreateEventHandler( Add ), Keys.Control | Keys.A ) );
+                ContextMenuStrip.Items.Add( new ToolStripMenuItem( "&Add", null, CreateEventHandler( Add ),
+                                                                   Keys.Control | Keys.A ) { Name = "Add" } );
+
                 if ( ContextMenuFlags.HasFlag( DataViewNodeMenuFlags.Move ) )
                     ContextMenuStrip.Items.Add( new ToolStripSeparator() );
             }
 
             if ( ContextMenuFlags.HasFlag( DataViewNodeMenuFlags.Move ) )
             {
-                ContextMenuStrip.Items.Add( new ToolStripMenuItem( "Move &Up", null, CreateEventHandler( MoveUp ), Keys.Control | Keys.Up ) );
-                ContextMenuStrip.Items.Add( new ToolStripMenuItem( "Move &Down", null, CreateEventHandler( MoveDown ), Keys.Control | Keys.Down ) );
+                ContextMenuStrip.Items.Add( new ToolStripMenuItem( "Move &Up", null, CreateEventHandler( MoveUp ), Keys.Control | Keys.Up )
+                {
+                    Name = "Move Up"
+                });
+                ContextMenuStrip.Items.Add( new ToolStripMenuItem( "Move &Down", null, CreateEventHandler( MoveDown ), Keys.Control | Keys.Down )
+                {
+                    Name = "Move Down"
+                });
             }
 
             if ( ContextMenuFlags.HasFlag( DataViewNodeMenuFlags.Rename ) )
             {
-                ContextMenuStrip.Items.Add( new ToolStripMenuItem( "Re&name", null, CreateEventHandler( BeginRename ), Keys.Control | Keys.N ) );
+                ContextMenuStrip.Items.Add( new ToolStripMenuItem( "Re&name", null, CreateEventHandler( BeginRename ), Keys.Control | Keys.N )
+                {
+                    Name = "Rename"
+                });
+            }
+
+            foreach ( (string menuPath, ToolStripMenuItem item) in mCustomHandlers.Where( x => x.Menu != null ) )
+            {
+                // Add custom handlers with a menu path
+                var menuParts = menuPath.Split( '/' );
+                ToolStripMenuItem parentMenuItem = null;
+
+                foreach ( string menu in menuParts )
+                {
+                    var menuItem = ( ToolStripMenuItem ) ( parentMenuItem == null ? ContextMenuStrip.Items.Find( menu, false ).FirstOrDefault()
+                                                                                  : parentMenuItem.DropDownItems.Find( menu, false ).FirstOrDefault() );
+
+                    var isNewMenuItem = false;
+                    if ( menuItem == null )
+                    {
+                        isNewMenuItem = true;
+                        menuItem      = new ToolStripMenuItem( menu ) { Name = menu };
+                    }
+
+                    if ( isNewMenuItem )
+                    {
+                        if ( parentMenuItem == null )
+                            ContextMenuStrip.Items.Add( menuItem );
+                        else
+                            parentMenuItem.DropDownItems.Add( menuItem );
+                    }
+
+                    parentMenuItem = menuItem;
+                }
+
+                if ( parentMenuItem == null )
+                    ContextMenuStrip.Items.Add( item );
+                else
+                    parentMenuItem.DropDownItems.Add( item );
             }
 
             if ( ContextMenuFlags.HasFlag( DataViewNodeMenuFlags.Delete ) )
             {
-                ContextMenuStrip.Items.Add( new ToolStripMenuItem( "&Delete", null, CreateEventHandler( Delete ), Keys.Control | Keys.Delete ) );
+                ContextMenuStrip.Items.Add( new ToolStripMenuItem( "&Delete", null, CreateEventHandler( Delete ), Keys.Control | Keys.Delete )
+                {
+                    Name = "Delete"
+                });
             }
         }
 
         //
         // Helpers
         //
-        private static Type GetTypeFromPath( string filePath, IEnumerable<Type> types )
+        private static Type GetTypeFromPath( string filePath, IEnumerable<Type> types, Type selectedType )
         {
             var extension = Path.GetExtension( filePath );
             if ( string.IsNullOrEmpty( extension ) )
@@ -676,7 +798,12 @@ namespace GFDStudio.GUI.DataViewNodes
             }
 
             if ( modules.Count != 1 )
-                throw new Exception( "Ambigious module match. Multiple suitable modules format found." );
+            {
+                if ( selectedType == null )
+                    throw new Exception( "Ambigious module match. Multiple suitable modules format found." );
+
+                return selectedType;
+            }
 
             if ( !isBaseType )
                 return modules[0].ModelType;
@@ -686,7 +813,14 @@ namespace GFDStudio.GUI.DataViewNodes
 
         private EventHandler CreateEventHandler( Action action )
         {
-            return ( s, e ) => action();
+            return ( s, e ) =>
+            {
+                // Annoyingly, the context menu strip stays visible when a dialog is opened while a 
+                // drop down menu is visible. That's why we explicitly hide it here.
+                ContextMenuStrip.Visible = false;
+
+                action();
+            };
         }
     }
 

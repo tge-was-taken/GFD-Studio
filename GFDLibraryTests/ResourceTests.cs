@@ -3,9 +3,18 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using GFDLibrary;
+using GFDLibrary.Animations;
+using GFDLibrary.Cameras;
+using GFDLibrary.Common;
+using GFDLibrary.Effects;
+using GFDLibrary.Lights;
+using GFDLibrary.Materials;
+using GFDLibrary.Models;
+using GFDLibrary.Shaders;
+using GFDLibrary.Textures;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace AtlusGfdLibraryRegressionTests
+namespace GFDLibrary.Tests
 {
     [TestClass()]
     public class ResourceTests
@@ -30,21 +39,21 @@ namespace AtlusGfdLibraryRegressionTests
         {
             using ( var fileStream = File.OpenRead( Model_P5PlayerModel_Path ) )
             {
-                var res = Resource.Load<Model>( fileStream );
+                var res = Resource.Load<ModelPack>( fileStream );
             }
         }
 
         [TestMethod()]
         public void LoadFromFile_Model_P5PlayerModel_ShouldNotThrow()
         {
-            var res = Resource.Load<Model>( Model_P5PlayerModel_Path );
+            var res = Resource.Load<ModelPack>( Model_P5PlayerModel_Path );
         }
 
         [TestMethod()]
         public void LoadAndSaveToFile_Model_P5PlayerModel_OutputSizeShouldBeEqualToInputSize()
         {
             var originalSize = new FileInfo( Model_P5PlayerModel_Path ).Length;
-            var model = Resource.Load<Model>( Model_P5PlayerModel_Path );
+            var model = Resource.Load<ModelPack>( Model_P5PlayerModel_Path );
             model.Save( GetNewPath( Model_P5PlayerModel_Path ) );
             var newSize = new FileInfo( GetNewPath( Model_P5PlayerModel_Path ) ).Length;
 
@@ -54,9 +63,9 @@ namespace AtlusGfdLibraryRegressionTests
         [TestMethod()]
         public void LoadAndSaveToFile_Model_P5PlayerModel_OutputShouldBeEqualToInput()
         {
-            var originalModel = Resource.Load<Model>( Model_P5PlayerModel_Path );
+            var originalModel = Resource.Load<ModelPack>( Model_P5PlayerModel_Path );
             originalModel.Save( GetNewPath( Model_P5PlayerModel_Path ) );
-            var newModel = Resource.Load<Model>( GetNewPath( Model_P5PlayerModel_Path ) );
+            var newModel = Resource.Load<ModelPack>( GetNewPath( Model_P5PlayerModel_Path ) );
 
             CompareModels( originalModel, newModel );
         }
@@ -68,21 +77,21 @@ namespace AtlusGfdLibraryRegressionTests
         {
             using ( var fileStream = File.OpenRead( Model_P4DFaceModel_Path ) )
             {
-                var res = Resource.Load<Model>( fileStream );
+                var res = Resource.Load<ModelPack>( fileStream );
             }
         }
 
         [TestMethod()]
         public void LoadFromFile_Model_P4DMorphFaceModel_ShouldNotThrow()
         {
-            var res = Resource.Load<Model>( Model_P4DFaceModel_Path );
+            var res = Resource.Load<ModelPack>( Model_P4DFaceModel_Path );
         }
 
         [TestMethod()]
         public void LoadAndSaveToFile_Model_P4DMorphFaceModel_OutputSizeShouldBeEqualToInputSize()
         {
             var originalSize = new FileInfo( Model_P4DFaceModel_Path ).Length;
-            var model = Resource.Load<Model>( Model_P4DFaceModel_Path );
+            var model = Resource.Load<ModelPack>( Model_P4DFaceModel_Path );
             model.Save( GetNewPath( Model_P4DFaceModel_Path ) );
             var newSize = new FileInfo( GetNewPath( Model_P4DFaceModel_Path ) ).Length;
 
@@ -92,9 +101,9 @@ namespace AtlusGfdLibraryRegressionTests
         [TestMethod()]
         public void LoadAndSaveToFile_Model_P4DMorphFaceModel_OutputShouldBeEqualToInput()
         {
-            var originalModel = Resource.Load<Model>( Model_P4DFaceModel_Path );
+            var originalModel = Resource.Load<ModelPack>( Model_P4DFaceModel_Path );
             originalModel.Save( GetNewPath( Model_P4DFaceModel_Path ) );
-            var newModel = Resource.Load<Model>( GetNewPath( Model_P4DFaceModel_Path ) );
+            var newModel = Resource.Load<ModelPack>( GetNewPath( Model_P4DFaceModel_Path ) );
 
             CompareModels( originalModel, newModel );
         }
@@ -106,21 +115,21 @@ namespace AtlusGfdLibraryRegressionTests
         {
             using ( var fileStream = File.OpenRead( Model_P5FieldLevelModel_Path ) )
             {
-                var res = Resource.Load<Model>( fileStream );
+                var res = Resource.Load<ModelPack>( fileStream );
             }
         }
 
         [TestMethod()]
         public void LoadFromFile_Model_P5FieldLevelModel_ShouldNotThrow()
         {
-            var res = Resource.Load<Model>( Model_P5FieldLevelModel_Path );
+            var res = Resource.Load<ModelPack>( Model_P5FieldLevelModel_Path );
         }
 
         [TestMethod()]
         public void LoadAndSaveToFile_Model_P5FieldLevelModel_OutputSizeShouldBeEqualToInputSize()
         {
             var originalSize = new FileInfo( Model_P5FieldLevelModel_Path ).Length;
-            var model = Resource.Load<Model>( Model_P5FieldLevelModel_Path );
+            var model = Resource.Load<ModelPack>( Model_P5FieldLevelModel_Path );
             model.Save( GetNewPath( Model_P5FieldLevelModel_Path ) );
             var newSize = new FileInfo( GetNewPath( Model_P5FieldLevelModel_Path ) ).Length;
 
@@ -130,9 +139,9 @@ namespace AtlusGfdLibraryRegressionTests
         [TestMethod()]
         public void LoadAndSaveToFile_Model_P5FieldLevelModel_OutputShouldBeEqualToInput()
         {
-            var originalModel = Resource.Load<Model>( Model_P5FieldLevelModel_Path );
+            var originalModel = Resource.Load<ModelPack>( Model_P5FieldLevelModel_Path );
             originalModel.Save( GetNewPath( Model_P5FieldLevelModel_Path ) );
-            var newModel = Resource.Load<Model>( GetNewPath( Model_P5FieldLevelModel_Path ) );
+            var newModel = Resource.Load<ModelPack>( GetNewPath( Model_P5FieldLevelModel_Path ) );
 
             CompareModels( originalModel, newModel );
         }
@@ -223,7 +232,7 @@ namespace AtlusGfdLibraryRegressionTests
 
         // Comparison methods
 
-        private void CompareModels(Model a, Model b)
+        private void CompareModels(ModelPack a, ModelPack b)
         {
             if ( a == null || b == null )
             {
@@ -236,7 +245,7 @@ namespace AtlusGfdLibraryRegressionTests
 
             CompareTextureDictionaries( a.Textures, a.Textures );
             CompareMaterialDictionaries( a.Materials, b.Materials );
-            CompareScenes( a.Scene, b.Scene );
+            CompareScenes( a.Model, b.Model );
             CompareAnimationPackage( a.AnimationPack, b.AnimationPack );
         }
 
@@ -303,13 +312,13 @@ namespace AtlusGfdLibraryRegressionTests
 
             Assert.AreEqual( a.Name, b.Name );
             Assert.AreEqual( a.Flags, b.Flags );
-            Assert.AreEqual( a.Ambient, b.Ambient );
-            Assert.AreEqual( a.Diffuse, b.Diffuse );
-            Assert.AreEqual( a.Specular, b.Specular );
-            Assert.AreEqual( a.Emissive, b.Emissive );
+            Assert.AreEqual( a.AmbientColor, b.AmbientColor );
+            Assert.AreEqual( a.DiffuseColor, b.DiffuseColor );
+            Assert.AreEqual( a.SpecularColor, b.SpecularColor );
+            Assert.AreEqual( a.EmissiveColor, b.EmissiveColor );
             Assert.AreEqual( a.Field40, b.Field40 );
             Assert.AreEqual( a.Field44, b.Field44 );
-            Assert.AreEqual( a.DrawOrder, b.DrawOrder );
+            Assert.AreEqual( a.DrawMethod, b.DrawMethod );
             Assert.AreEqual( a.Field49, b.Field49 );
             Assert.AreEqual( a.Field4A, b.Field4A );
             Assert.AreEqual( a.Field4B, b.Field4B );
@@ -390,7 +399,7 @@ namespace AtlusGfdLibraryRegressionTests
                             var a2 = ( MaterialAttributeType0 )a[i];
                             var b2 = ( MaterialAttributeType0 )b[i];
 
-                            Assert.AreEqual( a2.Field0C, b2.Field0C );
+                            Assert.AreEqual( a2.Color, b2.Color );
                             Assert.AreEqual( a2.Field1C, b2.Field1C );
                             Assert.AreEqual( a2.Field20, b2.Field20 );
                             Assert.AreEqual( a2.Field24, b2.Field24 );
@@ -502,7 +511,7 @@ namespace AtlusGfdLibraryRegressionTests
             }
         }
 
-        private void CompareScenes( Scene a, Scene b )
+        private void CompareScenes( Model a, Model b )
         {
             if ( a == null || b == null )
             {
@@ -513,39 +522,10 @@ namespace AtlusGfdLibraryRegressionTests
             Assert.AreEqual( a.Version, b.Version );
 
             Assert.AreEqual( a.Flags, b.Flags );
-            CompareBoneMap( a.BonePalette, b.BonePalette );
+            CollectionAssert.AreEqual( a.Bones, b.Bones );
             Assert.AreEqual( a.BoundingBox, b.BoundingBox );
             Assert.AreEqual( a.BoundingSphere, b.BoundingSphere );
             CompareNodes( a.RootNode, b.RootNode );
-        }
-
-        private void CompareBoneMap( BonePalette a, BonePalette b )
-        {
-            if ( a == null || b == null )
-            {
-                Assert.IsTrue( a == null ? ( b == null ) : ( b != null ) );
-                return;
-            }
-
-            Assert.AreEqual( a.BoneCount, b.BoneCount );
-
-            if ( a.InverseBindMatrices == null || b.InverseBindMatrices == null )
-            {
-                Assert.IsTrue( a.InverseBindMatrices == null ? ( b.InverseBindMatrices == null ) : ( b.InverseBindMatrices != null ) );
-                return;
-            }
-
-            if( a.BoneToNodeIndices == null || b.BoneToNodeIndices == null )
-            {
-                Assert.IsTrue( a.BoneToNodeIndices == null ? ( b.BoneToNodeIndices == null ) : ( b.BoneToNodeIndices != null ) );
-                return;
-            }
-
-            for ( int i = 0; i < a.BoneCount; i++ )
-            {
-                Assert.AreEqual( a.InverseBindMatrices[i], b.InverseBindMatrices[i] );
-                Assert.AreEqual( a.BoneToNodeIndices[i], b.BoneToNodeIndices[i] );
-            }
         }
 
         private void CompareNodes( Node a, Node b )
@@ -623,15 +603,15 @@ namespace AtlusGfdLibraryRegressionTests
             switch ( a.Type )
             {
                 case NodeAttachmentType.Invalid:
-                case NodeAttachmentType.Scene:
-                case NodeAttachmentType.Mesh:
+                case NodeAttachmentType.Model:
+                case NodeAttachmentType.Unknown:
                     throw new InvalidDataException();
 
                 case NodeAttachmentType.Node:
                     CompareNodes( a.GetValue<Node>(), b.GetValue<Node>() );
                     break;
-                case NodeAttachmentType.Geometry:
-                    CompareGeometries( a.GetValue<Geometry>(), b.GetValue<Geometry>() );
+                case NodeAttachmentType.Mesh:
+                    CompareGeometries( a.GetValue<Mesh>(), b.GetValue<Mesh>() );
                     break;
                 case NodeAttachmentType.Camera:
                     CompareCameras( a.GetValue<Camera>(), b.GetValue<Camera>() );
@@ -663,7 +643,7 @@ namespace AtlusGfdLibraryRegressionTests
 
             Assert.AreEqual( a.TargetCount, b.TargetCount );
             CollectionAssert.AreEqual( a.TargetInts, b.TargetInts );
-            Assert.AreEqual( a.MaterialName, b.MaterialName );
+            Assert.AreEqual( a.NodeName, b.NodeName );
         }
 
         private void CompareEplLeafs( EplLeaf a, EplLeaf b )
@@ -697,9 +677,9 @@ namespace AtlusGfdLibraryRegressionTests
             }
 
             Assert.AreEqual( a.Type, b.Type );
-            Assert.AreEqual( a.Field30, b.Field30 );
-            Assert.AreEqual( a.Field40, b.Field40 );
-            Assert.AreEqual( a.Field50, b.Field50 );
+            Assert.AreEqual( a.AmbientColor, b.AmbientColor );
+            Assert.AreEqual( a.DiffuseColor, b.DiffuseColor );
+            Assert.AreEqual( a.SpecularColor, b.SpecularColor );
 
             switch ( a.Type )
             {
@@ -708,15 +688,15 @@ namespace AtlusGfdLibraryRegressionTests
                     Assert.AreEqual( a.Field04, b.Field04 );
                     Assert.AreEqual( a.Field08, b.Field08 );
                     break;
-                case LightType.Sky:
+                case LightType.Point:
                     Assert.AreEqual( a.Field10, b.Field10 );
                     Assert.AreEqual( a.Field04, b.Field04 );
                     Assert.AreEqual( a.Field08, b.Field08 );
 
-                    if ( a.Flags.HasFlag( LightFlags.Flag2 ) )
+                    if ( a.Flags.HasFlag( LightFlags.Bit2 ) )
                     {
-                        Assert.AreEqual( a.Field6C, b.Field6C );
-                        Assert.AreEqual( a.Field70, b.Field70 );
+                        Assert.AreEqual( a.AttenuationStart, b.AttenuationStart );
+                        Assert.AreEqual( a.AttenuationEnd, b.AttenuationEnd );
                     }
                     else
                     {
@@ -725,13 +705,13 @@ namespace AtlusGfdLibraryRegressionTests
                         Assert.AreEqual( a.Field68, b.Field68 );
                     }
                     break;
-                case LightType.Type3:
+                case LightType.Spot:
                     Assert.AreEqual( a.Field20, b.Field20 );
                     Assert.AreEqual( a.Field08, b.Field08 );
                     Assert.AreEqual( a.Field04, b.Field04 );
-                    Assert.AreEqual( a.Field74, b.Field74 );
-                    Assert.AreEqual( a.Field78, b.Field78 );
-                    goto case LightType.Sky;
+                    Assert.AreEqual( a.AngleInnerCone, b.AngleInnerCone );
+                    Assert.AreEqual( a.AngleOuterCone, b.AngleOuterCone );
+                    goto case LightType.Point;
             }
         }
 
@@ -743,15 +723,15 @@ namespace AtlusGfdLibraryRegressionTests
                 return;
             }
 
-            Assert.AreEqual( a.Transform, b.Transform );
-            Assert.AreEqual( a.Field180, b.Field180 );
-            Assert.AreEqual( a.Field184, b.Field184 );
-            Assert.AreEqual( a.Field188, b.Field188 );
-            Assert.AreEqual( a.Field18C, b.Field18C );
+            Assert.AreEqual( a.ViewMatrix, b.ViewMatrix );
+            Assert.AreEqual( a.ClipPlaneNear, b.ClipPlaneNear );
+            Assert.AreEqual( a.ClipPlaneFar, b.ClipPlaneFar );
+            Assert.AreEqual( a.FieldOfView, b.FieldOfView );
+            Assert.AreEqual( a.AspectRatio, b.AspectRatio );
             Assert.AreEqual( a.Field190, b.Field190 );
         }
 
-        private void CompareGeometries( Geometry a, Geometry b )
+        private void CompareGeometries( Mesh a, Mesh b )
         {
             if ( a == null || b == null )
             {
@@ -762,7 +742,7 @@ namespace AtlusGfdLibraryRegressionTests
             Assert.AreEqual( a.Flags, b.Flags );
             Assert.AreEqual( a.VertexAttributeFlags, b.VertexAttributeFlags );
             Assert.AreEqual( a.TriangleCount, b.TriangleCount );
-            Assert.AreEqual( a.TriangleIndexType, b.TriangleIndexType );
+            Assert.AreEqual( a.TriangleIndexFormat, b.TriangleIndexFormat );
             CollectionAssert.AreEqual( a.Triangles, b.Triangles );
 
             Assert.AreEqual( a.VertexCount, b.VertexCount );

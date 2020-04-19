@@ -1,5 +1,5 @@
 ﻿using System.IO;
-using GFDLibrary;
+using GFDLibrary.Common;
 
 namespace GFDStudio.FormatModules
 {

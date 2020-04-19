@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using GFDLibrary.IO.Common;
 
-namespace GFDLibrary
+namespace GFDLibrary.Common
 {
     public class Archive : IDisposable, IEnumerable<string>
     {
@@ -31,7 +31,9 @@ namespace GFDLibrary
             using ( var reader = new ArchiveReader( stream, true ))
             {
                 // Read first entry, if this succeeds it's probably a valid archive
-                return reader.ReadEntryHeader( out var dummy );
+                bool isValid = reader.ReadEntryHeader( out var dummy );
+                stream.Position = 0;
+                return isValid;
             }
         }
 

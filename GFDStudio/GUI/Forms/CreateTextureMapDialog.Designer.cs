@@ -151,7 +151,7 @@
         #endregion
 
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.Button CancelButton;
+        private new System.Windows.Forms.Button CancelButton;
         private System.Windows.Forms.Button OKButton;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ComboBox comboBox1;

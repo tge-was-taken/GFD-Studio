@@ -163,7 +163,14 @@ namespace GFDStudio.FormatModules
             if ( !UsageFlags.HasFlag( FormatModuleUsageFlags.Bitmap ) )
                 throw new NotSupportedException( "FormatModule does not provide image capabilities" );
 
-            return GetBitmapCore( obj );
+            try
+            {
+                return GetBitmapCore( obj );
+            }
+            catch ( Exception )
+            {
+                return new Bitmap( 32, 32 );
+            }
         }
 
         //
@@ -181,22 +188,22 @@ namespace GFDStudio.FormatModules
         // IModule implementation
         //
 
-        object IFormatModule.Import( Stream stream, string filename = null ) 
+        object IFormatModule.Import( Stream stream, string filename ) 
             => Import( stream, filename );
 
         object IFormatModule.Import( string filepath ) 
             => Import( filepath );
 
-        object IFormatModule.Import( byte[] bytes, string filename = null ) 
+        object IFormatModule.Import( byte[] bytes, string filename ) 
             => Import( bytes, filename );
 
-        void IFormatModule.Export( object obj, Stream stream, string filename = null ) 
+        void IFormatModule.Export( object obj, Stream stream, string filename ) 
             => Export( ( T )obj, stream, filename );
 
         void IFormatModule.Export( object obj, string filepath ) 
             => Export( ( T )obj, filepath );
 
-        void IFormatModule.Export( object obj, out byte[] data, string filename = null ) 
+        void IFormatModule.Export( object obj, out byte[] data, string filename ) 
             => Export( ( T )obj, out data, filename );
 
         Bitmap IFormatModule.GetBitmap( object obj )

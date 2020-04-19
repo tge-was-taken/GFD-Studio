@@ -1,5 +1,5 @@
 using System.ComponentModel;
-using GFDLibrary;
+using GFDLibrary.Materials;
 using GFDStudio.GUI.TypeConverters;
 
 namespace GFDStudio.GUI.DataViewNodes
@@ -16,6 +16,7 @@ namespace GFDStudio.GUI.DataViewNodes
 
         [Browsable(true)]
         [TypeConverter( typeof( EnumTypeConverter<MaterialAttributeType> ) )]
+        [DisplayName( "Attribute type" )]
         public MaterialAttributeType AttributeType
         {
             get => GetDataProperty<MaterialAttributeType>();

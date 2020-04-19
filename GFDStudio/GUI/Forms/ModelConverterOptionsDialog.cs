@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Windows.Forms;
 using GFDLibrary;
+using GFDLibrary.Materials;
 
 namespace GFDStudio.GUI.Forms
 {

@@ -1,18 +1,19 @@
 ﻿using System.IO;
 using GFDLibrary;
+using GFDLibrary.Models;
 
 namespace GFDStudio.FormatModules
 {
     public class ModelFormatModule : FormatModule<Model>
     {
-        public override string Name =>
-            "Model";
+        public override string Name
+            => "Model";
 
-        public override string[] Extensions =>
-            new[] { "gfs", "gmd" };
+        public override string[] Extensions
+            => new[] { "gmod" };
 
-        public override FormatModuleUsageFlags UsageFlags =>
-             FormatModuleUsageFlags.Import | FormatModuleUsageFlags.Export;
+        public override FormatModuleUsageFlags UsageFlags
+            => FormatModuleUsageFlags.Export | FormatModuleUsageFlags.Import;
 
         protected override bool CanImportCore( Stream stream, string filename = null )
         {

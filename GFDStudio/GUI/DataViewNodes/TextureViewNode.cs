@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel;
 using System.Drawing;
 using System.IO;
-using GFDLibrary;
-using GFDLibrary.IO.Utilities;
+using GFDLibrary.Textures;
+using GFDLibrary.Textures.DDS;
+using GFDLibrary.Textures.Utilities;
 using GFDStudio.GUI.TypeConverters;
 
 namespace GFDStudio.GUI.DataViewNodes
@@ -34,6 +35,7 @@ namespace GFDStudio.GUI.DataViewNodes
 
         [Browsable( true )]
         [TypeConverter(typeof( Int32HexTypeConverter ) )]
+        [DisplayName( "Data length" )]
         public int DataLength
         {
             get => Data.Data.Length;
@@ -74,10 +76,10 @@ namespace GFDStudio.GUI.DataViewNodes
         protected override void InitializeCore()
         {
             RegisterExportHandler<Bitmap>( path => TextureDecoder.Decode( Data ).Save( path, ImageFormatHelper.GetImageFormatFromPath( path ) ) );
-            RegisterExportHandler<Stream>( path => File.WriteAllBytes( path, Data.Data ) );
+            RegisterExportHandler<DDSStream>( path => File.WriteAllBytes( path, Data.Data ) );
 
             RegisterReplaceHandler<Bitmap>( path => TextureEncoder.Encode( Name, Format, Field1C, Field1D, Field1E, Field1F, new Bitmap( path ) ) );
-            RegisterReplaceHandler< Stream >( path => new Texture( Name, Format, File.ReadAllBytes( path ), Field1C, Field1D, Field1E, Field1F ) );
+            RegisterReplaceHandler<DDSStream>( path => new Texture( Name, Format, File.ReadAllBytes( path ), Field1C, Field1D, Field1E, Field1F ) );
 
             TextChanged += ( s, o ) => Name = Text;
         }

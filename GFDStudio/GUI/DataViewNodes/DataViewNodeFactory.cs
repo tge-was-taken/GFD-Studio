@@ -5,6 +5,8 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 using GFDLibrary;
+using GFDLibrary.Animations;
+using GFDLibrary.Models;
 using GFDStudio.FormatModules;
 
 namespace GFDStudio.GUI.DataViewNodes
@@ -29,7 +31,7 @@ namespace GFDStudio.GUI.DataViewNodes
             Register<ArchiveViewNode>();
 
             // gfd resource view models
-            Register<ModelViewNode>();
+            Register<ModelPackViewNode>();
 
             // gfd texture resource view models
             Register<TextureDictionaryViewNode>();
@@ -48,17 +50,22 @@ namespace GFDStudio.GUI.DataViewNodes
             Register<MaterialAttributeType5ViewNode>();
             Register<MaterialAttributeType6ViewNode>();
             Register<MaterialAttributeType7ViewNode>();
+            Register<MaterialAttributeType8ViewNode>();
 
-            // gfd scene view models
-            Register<SceneViewNode>();
-            Register<BonePaletteViewNode>();
+            // gfd model view models
+            Register<ModelViewNode>();
+            Register( typeof( BoneListViewNode ), typeof( List<Bone> ) );
+            Register<BoneViewNode>();
             Register<NodeViewNode>();
             Register( typeof( AttachmentListViewNode ), typeof( List<Resource> ) );
-            Register<GeometryViewNode>();
+            Register( typeof( NodeListViewNode ), typeof( List<Node> ) );
+            Register<MeshViewNode>();
             Register<CameraViewNode>();
             Register<LightViewNode>();
             Register<EplViewNode>();
             Register<MorphViewNode>();
+            Register<MorphTargetListViewNode>();
+            Register<MorphTargetViewNode>();
 
             // gfd chunk type 000100F9 view models
             Register<ChunkType000100F9ViewNode>();
@@ -72,6 +79,10 @@ namespace GFDStudio.GUI.DataViewNodes
             Register<AnimationPackViewNode>();
             Register<AnimationViewNode>();
             Register( typeof( AnimationListViewNode ), typeof( List<Animation> ) );
+            Register<AnimationControllerViewNode>();
+
+            Register<FieldTexturePS3ViewNode>();
+            Register<GNFTextureViewNode>();
         }
 
         /// <summary>

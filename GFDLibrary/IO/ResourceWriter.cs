@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
 using System.Text;
+using GFDLibrary.Common;
 using GFDLibrary.IO.Common;
 
 namespace GFDLibrary.IO
@@ -81,9 +82,12 @@ namespace GFDLibrary.IO
             WriteStringRaw( value );
         }
 
-        public void WriteStringWithHash( uint version, string value )
+        public void WriteStringWithHash( uint version, string value, bool withPadding = false )
         {
             WriteString( value );
+
+            if ( version >= 0x01105100 && withPadding )
+                WriteByte( 0 ); // padding byte
 
             if ( version > 0x1080000 )
                 WriteInt32( StringHasher.GenerateStringHash( value ) );
@@ -199,8 +203,8 @@ namespace GFDLibrary.IO
                 case ResourceType.MaterialDictionary:
                     type = ResourceChunkType.MaterialDictionary;
                     break;
-                case ResourceType.Scene:
-                    type = ResourceChunkType.Scene;
+                case ResourceType.Model:
+                    type = ResourceChunkType.Model;
                     break;
                 case ResourceType.ChunkType000100F9:
                     type = ResourceChunkType.ChunkType000100F9;

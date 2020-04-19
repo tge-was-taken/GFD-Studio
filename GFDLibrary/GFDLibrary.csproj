@@ -9,9 +9,11 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>GFDLibrary</RootNamespace>
     <AssemblyName>GFDLibrary</AssemblyName>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -22,6 +24,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>7.1</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -31,11 +34,33 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>7.1</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.1</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <LangVersion>7.1</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AssimpNet, Version=3.3.1.0, Culture=neutral, PublicKeyToken=0d51b391f59f42a6, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Dependencies\Assimp.Net\AssimpNet.dll</HintPath>
+    <Reference Include="AssimpNet, Version=4.1.0.0, Culture=neutral, PublicKeyToken=0d51b391f59f42a6, processorArchitecture=MSIL">
+      <HintPath>..\packages\AssimpNet.4.1.0\lib\net40\AssimpNet.dll</HintPath>
     </Reference>
     <Reference Include="CSharpImageLibrary, Version=4.2.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\CSharpImageLibrary.4.2.0\lib\net462\CSharpImageLibrary.dll</HintPath>
@@ -68,77 +93,109 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Animations\Animation.cs" />
-    <Compile Include="Animations\Keyframes\KeyframePRSByte.cs" />
-    <Compile Include="Animations\Keyframes\KeyframeQuaternion.cs" />
-    <Compile Include="Animations\Keyframes\KeyframeSingle4Byte.cs" />
-    <Compile Include="Animations\Keyframes\KeyframeSingle5.cs" />
-    <Compile Include="Animations\Keyframes\KeyframeSingleByte.cs" />
-    <Compile Include="Animations\Keyframes\KeyframeType22.cs" />
-    <Compile Include="Animations\Keyframes\KeyframeVector3.cs" />
+    <Compile Include="Animations\Keys\IKeyType31.cs" />
+    <Compile Include="Animations\Keys\KeyType31Dancing.cs" />
+    <Compile Include="Animations\Keys\KeyType31FullBody.cs" />
+    <Compile Include="Animations\Keys\KeyType31Type.cs" />
+    <Compile Include="Animations\Keys\PRSByteKey.cs" />
+    <Compile Include="Animations\Keys\QuaternionKey.cs" />
+    <Compile Include="Animations\Keys\Single4ByteKey.cs" />
+    <Compile Include="Animations\Keys\Single5Key.cs" />
+    <Compile Include="Animations\Keys\SingleByteKey.cs" />
+    <Compile Include="Animations\Keys\KeyType22.cs" />
+    <Compile Include="Animations\Keys\Vector3Key.cs" />
     <Compile Include="Animations\TargetKind.cs" />
-    <Compile Include="Animations\Keyframes\KeyframePRS.cs" />
-    <Compile Include="AnimationPack.cs" />
-    <Compile Include="AnimationPackFlags.cs" />
-    <Compile Include="Bone.cs" />
-    <Compile Include="ChunkType000100F8.cs" />
+    <Compile Include="Animations\Keys\PRSKey.cs" />
+    <Compile Include="Animations\AnimationPack.cs" />
+    <Compile Include="Animations\AnimationPackFlags.cs" />
+    <Compile Include="Models\Bone.cs" />
+    <Compile Include="Misc\ChunkType000100F8.cs" />
     <Compile Include="Common\Archive.cs" />
-    <Compile Include="FieldTexturePS3.cs" />
-    <Compile Include="GNFTexture.cs" />
+    <Compile Include="Graphics\Color.cs" />
+    <Compile Include="Models\Conversion\Utilities\AssimpExtensions.cs" />
+    <Compile Include="Models\Conversion\Utilities\AssimpHelper.cs" />
+    <Compile Include="Utilities\MathHelper.cs" />
+    <Compile Include="Utilities\Matrix4x4Extensions.cs" />
+    <Compile Include="Utilities\QuaternionExtensions.cs" />
+    <Compile Include="Textures\DDS\DDSStream.cs" />
+    <Compile Include="Textures\FieldTexturePS3.cs" />
+    <Compile Include="Textures\GNF\ChannelType.cs" />
+    <Compile Include="Textures\GNF\SamplerModulationFactor.cs" />
+    <Compile Include="Textures\GNF\SurfaceFormat.cs" />
+    <Compile Include="Textures\GNF\GNFTexture.cs" />
     <Compile Include="IO\Common\FileUtils.cs" />
-    <Compile Include="Processing\Models\AnimationConverter.cs" />
-    <Compile Include="Processing\Models\AssimpConverterCommon.cs" />
-    <Compile Include="Processing\Models\AssimpSceneImporter.cs" />
-    <Compile Include="Processing\Textures\Utilities\BitmapUtilities.cs" />
+    <Compile Include="Animations\Conversion\AnimationConverter.cs" />
+    <Compile Include="Models\Conversion\AssimpConverterCommon.cs" />
+    <Compile Include="Models\Conversion\AssimpSceneImporter.cs" />
+    <Compile Include="Textures\DDS\DDSCodec.cs" />
+    <Compile Include="Textures\DDS\DDSFormatDetails.cs" />
+    <Compile Include="Textures\DDS\DDSHeader.cs" />
+    <Compile Include="Textures\DDS\DDSHeaderCaps.cs" />
+    <Compile Include="Textures\DDS\DDSHeaderFlags.cs" />
+    <Compile Include="Textures\DDS\DDSHelper.cs" />
+    <Compile Include="Textures\DDS\DDSPixelFormat.cs" />
+    <Compile Include="Textures\DDS\DDSPixelFormatFlags.cs" />
+    <Compile Include="Textures\DDS\DDSPixelFormatFourCC.cs" />
+    <Compile Include="Textures\GNF\TextureChannel.cs" />
+    <Compile Include="Textures\GNF\TextureType.cs" />
+    <Compile Include="Textures\GNF\TileMode.cs" />
+    <Compile Include="Textures\Swizzle\INullSwizzleAlgorithm.cs" />
+    <Compile Include="Textures\Swizzle\ISwizzleAlgorithm.cs" />
+    <Compile Include="Textures\Swizzle\PS3SwizzleAlgorithm.cs" />
+    <Compile Include="Textures\Swizzle\PS4SwizzleAlgorithm.cs" />
+    <Compile Include="Textures\Swizzle\SwitchSwizzleAlgorithm.cs" />
+    <Compile Include="Textures\Swizzle\Swizzler.cs" />
+    <Compile Include="Textures\Swizzle\SwizzleUtilities.cs" />
+    <Compile Include="Textures\Utilities\BitmapHelper.cs" />
     <Compile Include="Animations\AnimationFlag10000000DataEntry.cs" />
     <Compile Include="IO\Common\EndiannessSwapUtility.cs" />
     <Compile Include="Animations\AnimationController.cs" />
     <Compile Include="Animations\AnimationFlags.cs" />
-    <Compile Include="Animations\Keyframe.cs" />
-    <Compile Include="Animations\KeyframeTrack.cs" />
-    <Compile Include="Animations\KeyframeType.cs" />
+    <Compile Include="Animations\Key.cs" />
+    <Compile Include="Animations\AnimationLayer.cs" />
+    <Compile Include="Animations\KeyType.cs" />
     <Compile Include="Animations\AnimationExtraData.cs" />
     <Compile Include="Animations\AnimationFlag80000000Data.cs" />
-    <Compile Include="Animations\Keyframes\KeyframeSingle.cs" />
-    <Compile Include="EplAnimation.cs" />
-    <Compile Include="Processing\Textures\TextureInfo.cs" />
-    <Compile Include="Processing\Textures\TexturePixelFormat.cs" />
-    <Compile Include="Processing\Textures\TextureUtilities.cs" />
+    <Compile Include="Animations\Keys\SingleKey.cs" />
+    <Compile Include="Effects\EplAnimation.cs" />
+    <Compile Include="Textures\TextureInfo.cs" />
+    <Compile Include="Textures\TexturePixelFormat.cs" />
+    <Compile Include="Textures\TextureUtilities.cs" />
     <Compile Include="Common\BoundingBox.cs" />
     <Compile Include="Common\BoundingSphere.cs" />
     <Compile Include="Common\ByteVector3.cs" />
     <Compile Include="Common\ByteVector4.cs" />
-    <Compile Include="Camera.cs" />
-    <Compile Include="ChunkType000100F9Entry2.cs" />
-    <Compile Include="ChunkType000100F9Entry3.cs" />
-    <Compile Include="Epl.cs" />
-    <Compile Include="EplLeaf.cs" />
-    <Compile Include="Geometry.cs" />
-    <Compile Include="ChunkType000100F9.cs" />
-    <Compile Include="ChunkType000100F9Entry1.cs" />
+    <Compile Include="Cameras\Camera.cs" />
+    <Compile Include="Misc\ChunkType000100F9Entry2.cs" />
+    <Compile Include="Misc\ChunkType000100F9Entry3.cs" />
+    <Compile Include="Effects\Epl.cs" />
+    <Compile Include="Effects\EplLeaf.cs" />
+    <Compile Include="Models\Mesh.cs" />
+    <Compile Include="Misc\ChunkType000100F9.cs" />
+    <Compile Include="Misc\ChunkType000100F9Entry1.cs" />
     <Compile Include="IO\Common\AlignmentUtilities.cs" />
-    <Compile Include="Processing\Textures\Utilities\ImageFormatUtillities.cs" />
+    <Compile Include="Textures\Utilities\ImageFormatHelper.cs" />
     <Compile Include="IO\Common\StreamExtensions.cs" />
     <Compile Include="IO\Common\StreamView.cs" />
-    <Compile Include="Processing\Materials\MaterialFactory.cs" />
-    <Compile Include="MorphTargetList.cs" />
-    <Compile Include="MorphTarget.cs" />
-    <Compile Include="Processing\Models\ModelExporter.cs" />
-    <Compile Include="BonePalette.cs" />
+    <Compile Include="Materials\MaterialFactory.cs" />
+    <Compile Include="Models\MorphTargetList.cs" />
+    <Compile Include="Models\MorphTarget.cs" />
+    <Compile Include="Models\Conversion\ModelPackExporter.cs" />
     <Compile Include="IO\Common\EndianBinaryWriter.cs" />
     <Compile Include="IO\Common\StringBinaryFormat.cs" />
     <Compile Include="IO\Common\UnsafeUtilities.cs" />
-    <Compile Include="Light.cs" />
-    <Compile Include="Material.cs" />
-    <Compile Include="MaterialAttribute.cs" />
-    <Compile Include="MaterialDictionary.cs" />
-    <Compile Include="Morph.cs" />
-    <Compile Include="Node.cs" />
-    <Compile Include="NodeAttachment.cs" />
+    <Compile Include="Lights\Light.cs" />
+    <Compile Include="Materials\Material.cs" />
+    <Compile Include="Materials\MaterialAttribute.cs" />
+    <Compile Include="Materials\MaterialDictionary.cs" />
+    <Compile Include="Models\Morph.cs" />
+    <Compile Include="Models\Node.cs" />
+    <Compile Include="Models\NodeAttachment.cs" />
     <Compile Include="Common\UserProperty.cs" />
-    <Compile Include="Processing\Models\ModelConverter.cs" />
-    <Compile Include="Processing\Models\SceneConverter.cs" />
-    <Compile Include="Processing\Textures\TextureDecoder.cs" />
-    <Compile Include="Processing\Textures\TextureEncoder.cs" />
+    <Compile Include="Models\Conversion\ModelPackConverter.cs" />
+    <Compile Include="Models\Conversion\ModelConverter.cs" />
+    <Compile Include="Textures\TextureDecoder.cs" />
+    <Compile Include="Textures\TextureEncoder.cs" />
     <Compile Include="IO\ResourceChunkHeader.cs" />
     <Compile Include="IO\ResourceChunkType.cs" />
     <Compile Include="IO\ResourceFileHeader.cs" />
@@ -147,40 +204,49 @@
     <Compile Include="ResourceType.cs" />
     <Compile Include="ResourceVersion.cs" />
     <Compile Include="IO\ResourceWriter.cs" />
-    <Compile Include="TextureMap.cs" />
+    <Compile Include="Models\TextureMap.cs" />
     <Compile Include="Resource.cs" />
-    <Compile Include="Model.cs" />
-    <Compile Include="Scene.cs" />
-    <Compile Include="Shader.cs" />
-    <Compile Include="ShaderCache.cs" />
+    <Compile Include="ModelPack.cs" />
+    <Compile Include="Models\Model.cs" />
+    <Compile Include="Shaders\Shader.cs" />
+    <Compile Include="Shaders\ShaderCache.cs" />
     <Compile Include="Common\StringHasher.cs" />
-    <Compile Include="Texture.cs" />
-    <Compile Include="TextureDictionary.cs" />
+    <Compile Include="Textures\Texture.cs" />
+    <Compile Include="Textures\TextureDictionary.cs" />
     <Compile Include="IO\Common\EndianBinaryReader.cs" />
     <Compile Include="IO\Common\Endianness.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Triangle.cs" />
-    <Compile Include="Common\UserPropertyCollection.cs" />
-    <Compile Include="VertexWeight.cs" />
+    <Compile Include="Models\Triangle.cs" />
+    <Compile Include="Common\UserPropertyDictionary.cs" />
+    <Compile Include="Models\VertexWeight.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Assimp32.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assimp64.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Folder Include="IO\ResourceOld\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="IO\ResourceOld\" />
+    <ProjectReference Include="..\Dependencies\Scarlet\Scarlet.IO.ImageFormats\Scarlet.IO.ImageFormats.csproj">
+      <Project>{4e7b19c8-1983-41fe-98e4-0532137638fc}</Project>
+      <Name>Scarlet.IO.ImageFormats</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Dependencies\Scarlet\Scarlet\Scarlet.csproj">
+      <Project>{b1cc2b0e-4226-4ac5-9940-900a8847201a}</Project>
+      <Name>Scarlet</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
     </PostBuildEvent>
   </PropertyGroup>
+  <Import Project="..\packages\AssimpNet.4.1.0\build\AssimpNet.targets" Condition="Exists('..\packages\AssimpNet.4.1.0\build\AssimpNet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\AssimpNet.4.1.0\build\AssimpNet.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\AssimpNet.4.1.0\build\AssimpNet.targets'))" />
+  </Target>
 </Project>

@@ -1,7 +1,7 @@
-namespace GFDLibrary
+namespace GFDLibrary.Animations
 {
     /// <summary>
-    /// Represents the different kinds of entities a controller can controler.
+    /// Represents the different kinds of entities a controller can control.
     /// </summary>
     public enum TargetKind
     {

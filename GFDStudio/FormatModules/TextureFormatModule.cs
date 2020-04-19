@@ -1,7 +1,7 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using System.IO;
 using GFDLibrary;
+using GFDLibrary.Textures;
 
 namespace GFDStudio.FormatModules
 {

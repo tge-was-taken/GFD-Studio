@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.IO;
+﻿using System.ComponentModel;
 using System.Windows.Forms;
 using GFDLibrary;
+using GFDLibrary.Animations;
 using GFDStudio.FormatModules;
-using Ookii.Dialogs;
 
 namespace GFDStudio.GUI.DataViewNodes
 {
@@ -51,22 +48,22 @@ namespace GFDStudio.GUI.DataViewNodes
 
                 return model;
             });
-            RegisterCustomHandler( "Make Relative", () =>
+            RegisterCustomHandler( "Tools", "Retarget", () =>
             {
-                var originalScene = ( Parent as ModelViewNode )?.Scene?.Data ??
-                                    ModuleImportUtilities.SelectImportFile<Model>( "Select the original model file." )?.Scene;
+                var originalScene = ( Parent as ModelPackViewNode )?.Model?.Data ??
+                                    ModuleImportUtilities.SelectImportFile<ModelPack>( "Select the original model file." )?.Model;
 
                 if ( originalScene == null )
                     return;
 
-                var newScene = ModuleImportUtilities.SelectImportFile<Model>( "Select the new model file." )?.Scene;
+                var newScene = ModuleImportUtilities.SelectImportFile<ModelPack>( "Select the new model file." )?.Model;
                 if ( newScene == null )
                     return;    
 
                 bool fixArms = MessageBox.Show( "Fix arms? If unsure, select No.", "Question", MessageBoxButtons.YesNo,
                                                 MessageBoxIcon.Question, MessageBoxDefaultButton.Button2 ) == DialogResult.Yes;
 
-                Data.MakeTransformsRelative( originalScene, newScene, fixArms );
+                Data.Retarget( originalScene, newScene, fixArms );
             } );
         }
 
@@ -82,49 +79,11 @@ namespace GFDStudio.GUI.DataViewNodes
             if ( ExtraData != null )
             {
                 ExtraData = ( AnimationExtraDataViewNode ) DataViewNodeFactory.Create( "Extra Data", Data.ExtraData );
-                Nodes.Add( ExtraData );
+                AddChildNode( ExtraData );
             }
 
-            Nodes.Add( Animations );
-            Nodes.Add( BlendAnimations );
-        }
-    }
-
-    public class AnimationListViewNode : ListViewNode<Animation>
-    {
-        public AnimationListViewNode( string text, List<Animation> data, ListItemNameProvider<Animation> nameProvider ) : base( text, data, nameProvider )
-        {
-        }
-
-        public AnimationListViewNode( string text, List<Animation> data, IList<string> itemNames ) : base( text, data, itemNames )
-        {
-        }
-
-        protected override void InitializeCore()
-        {
-            RegisterAddHandler<Animation>( file =>
-            {
-                var animation = Resource.Load<Animation>( file );
-                Data.Add( animation );
-            } );
-            RegisterCustomHandler( "Export All", () =>
-            {
-                using ( var dialog = new VistaFolderBrowserDialog() )
-                {
-                    if ( dialog.ShowDialog() != DialogResult.OK )
-                        return;
-
-                    foreach ( AnimationViewNode animationViewModel in Nodes )
-                        animationViewModel.Data.Save( Path.Combine( dialog.SelectedPath, animationViewModel.Text + ".ganm" ) );
-                }
-            } );
-            RegisterCustomHandler( "Add New", () =>
-            {
-                Data.Add( new Animation() );
-                InitializeView( true );
-            } );
-
-            base.InitializeCore();
+            AddChildNode( Animations );
+            AddChildNode( BlendAnimations );
         }
     }
 }

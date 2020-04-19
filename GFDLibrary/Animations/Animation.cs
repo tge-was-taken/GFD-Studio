@@ -1,9 +1,12 @@
 ﻿using System.Collections.Generic;
-using GFDLibrary.IO;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
+using GFDLibrary.Common;
+using GFDLibrary.IO;
+using GFDLibrary.Models;
 
-namespace GFDLibrary
+namespace GFDLibrary.Animations
 {
     public sealed class Animation : Resource
     {
@@ -19,8 +22,9 @@ namespace GFDLibrary
         private AnimationExtraData mField14;
         private BoundingBox? mBoundingBox;
         private AnimationFlag80000000Data mField1C;
-        private UserPropertyCollection mProperties;
+        private UserPropertyDictionary mProperties;
         private float? mSpeed;
+        private int mUnknown2;
 
         public override ResourceType ResourceType => ResourceType.Animation;
 
@@ -82,7 +86,7 @@ namespace GFDLibrary
         }
 
         // 20
-        public UserPropertyCollection Properties
+        public UserPropertyDictionary Properties
         {
             get => mProperties;
             set
@@ -113,7 +117,7 @@ namespace GFDLibrary
         {          
         }
 
-        internal override void Read( ResourceReader reader )
+        internal override void Read( ResourceReader reader, long endPosition = -1 )
         {
             var animationStart = reader.Position;
 
@@ -123,6 +127,13 @@ namespace GFDLibrary
             Duration = reader.ReadSingle();
 
             var controllerCount = reader.ReadInt32();
+            if ( Version >= 0x01105100 )
+            {
+                var unknown1 = reader.ReadInt32(); // same as controller count
+                mUnknown2 = reader.ReadInt32(); // TODO: no idea what this is
+                Trace.Assert( unknown1 == controllerCount, "unknown1 != controllerCount" );
+            }
+
             for ( var i = 0; i < controllerCount; i++ )
             {
                 var controller = reader.ReadResource<AnimationController>( Version );
@@ -194,8 +205,8 @@ namespace GFDLibrary
                 Field1C = new AnimationFlag80000000Data
                 {
                     Field00 = reader.ReadInt32(),
-                    Field04 = reader.ReadStringWithHash( Version ),
-                    Field20 = reader.ReadResource<KeyframeTrack>( Version )
+                    Field04 = reader.ReadStringWithHash( Version, true ),
+                    Field20 = reader.ReadResource<AnimationLayer>( Version )
                 };
             }
 
@@ -206,7 +217,7 @@ namespace GFDLibrary
                 Speed = reader.ReadSingle();
 
             if ( Flags.HasFlag( AnimationFlags.HasProperties ) )
-                Properties = reader.ReadResource<UserPropertyCollection>( Version );
+                Properties = reader.ReadResource<UserPropertyDictionary>( Version );
         }
 
         internal override void Write( ResourceWriter writer )
@@ -215,7 +226,16 @@ namespace GFDLibrary
                 writer.WriteInt32( ( int ) Flags );
 
             writer.WriteSingle( Duration );
-            writer.WriteResourceList( Controllers );
+            writer.WriteInt32( Controllers.Count );
+
+            if ( Version >= 0x01105100 )
+            {
+                writer.WriteInt32( Controllers.Count );
+                writer.WriteInt32( mUnknown2 ); 
+            }
+
+            foreach ( var controller in Controllers )
+                writer.WriteResource( controller );
 
             if ( Flag10000000Data != null )
             {
@@ -231,7 +251,7 @@ namespace GFDLibrary
                 foreach ( var entry in Field10 )
                 {
                     writer.WriteResource( entry.Field00 );
-                    writer.WriteStringWithHash( Version, entry.Field04 );
+                    writer.WriteStringWithHash( Version, entry.Field04, true );
                 }
             }
 
@@ -241,7 +261,7 @@ namespace GFDLibrary
             if ( Flags.HasFlag( AnimationFlags.Flag80000000 ) )
             {
                 writer.WriteInt32( Field1C.Field00 );
-                writer.WriteStringWithHash( Version, Field1C.Field04 );
+                writer.WriteStringWithHash( Version, Field1C.Field04, true );
                 writer.WriteResource( Field1C.Field20 );
             }
 
@@ -255,9 +275,9 @@ namespace GFDLibrary
                 writer.WriteResource( Properties );
         }
 
-        public void FixTargetIds( Scene scene )
+        public void FixTargetIds( Model model )
         {
-            FixTargetIds( scene.Nodes );
+            FixTargetIds( model.Nodes );
         }
 
         internal void FixTargetIds( IEnumerable<Node> nodes )
@@ -269,12 +289,12 @@ namespace GFDLibrary
             }
         }
 
-        public void MakeTransformsRelative( Scene originalScene, Scene newScene, bool fixArms )
+        public void Retarget( Model originalModel, Model newModel, bool fixArms )
         {
-            MakeTransformsRelative( originalScene.Nodes.ToDictionary( x => x.Name ), newScene.Nodes.ToDictionary( x => x.Name ), fixArms );
+            Retarget( originalModel.Nodes.ToDictionary( x => x.Name ), newModel.Nodes.ToDictionary( x => x.Name ), fixArms );
         }
 
-        internal void MakeTransformsRelative( Dictionary<string, Node> originalNodeLookup, Dictionary<string, Node> newNodeLookup, bool fixArms )
+        internal void Retarget( Dictionary<string, Node> originalNodeLookup, Dictionary<string, Node> newNodeLookup, bool fixArms )
         {
             FixTargetIds( newNodeLookup.Values );
 
@@ -286,29 +306,29 @@ namespace GFDLibrary
                 var nodeName                = originalNode.Name;
                 var originalNodeInvRotation = Quaternion.Inverse( originalNode.Rotation );
 
-                foreach ( var track in controller.Tracks )
+                foreach ( var track in controller.Layers )
                 {
-                    if ( !track.HasPRSKeyFrames() )
+                    if ( !track.HasPRSKeyFrames )
                         continue;
 
                     var positionScale = track.PositionScale;
 
-                    foreach ( var keyframe in track.Keyframes )
+                    foreach ( var key in track.Keys )
                     {
-                        var prsKeyframe = ( KeyframePRS )keyframe;
+                        var prsKey = ( PRSKey )key;
 
                         // Make position relative
-                        var position         = prsKeyframe.Position * positionScale;
+                        var position         = prsKey.Position * positionScale;
                         var relativePosition = position - originalNode.Translation;
                         var newPosition      = newNode.Translation + relativePosition;
-                        prsKeyframe.Position = newPosition / positionScale;
+                        prsKey.Position = newPosition / positionScale;
 
                         // Don't make rotation relative if we're attempting to fix the arms
                         if ( !fixArms || !sArmsFixNodeNameBlacklist.Contains( nodeName ) )
                         {
                             // Make rotation relative
-                            var relativeRotation = originalNodeInvRotation * prsKeyframe.Rotation;
-                            prsKeyframe.Rotation = newNode.Rotation * relativeRotation;
+                            var relativeRotation = originalNodeInvRotation * prsKey.Rotation;
+                            prsKey.Rotation = newNode.Rotation * relativeRotation;
                         }
                     }
                 }

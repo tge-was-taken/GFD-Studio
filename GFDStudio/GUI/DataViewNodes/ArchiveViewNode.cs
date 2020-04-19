@@ -1,6 +1,12 @@
-﻿using System.IO;
-using GFDLibrary;
+﻿using System;
+using System.IO;
+using System.Windows.Forms;
+using GFDLibrary.Common;
+using GFDLibrary.Textures;
+using GFDLibrary.Textures.DDS;
+using GFDLibrary.Textures.GNF;
 using GFDStudio.FormatModules;
+using Ookii.Dialogs;
 
 namespace GFDStudio.GUI.DataViewNodes
 {
@@ -20,7 +26,7 @@ namespace GFDStudio.GUI.DataViewNodes
         {
             RegisterExportHandler<Archive>( ( path ) => Data.Save( path ) );
             RegisterReplaceHandler<Archive>( ( path ) => new Archive( path ) );
-            RegisterAddHandler<Stream>( ( path ) => Nodes.Add( DataViewNodeFactory.Create( path ) ) );
+            RegisterAddHandler<Stream>( ( path ) => AddChildNode( DataViewNodeFactory.Create( path ) ) );
             RegisterModelUpdateHandler( () =>
             {
                 var builder = new ArchiveBuilder();
@@ -32,6 +38,24 @@ namespace GFDStudio.GUI.DataViewNodes
 
                 return builder.Build();
             });
+            RegisterCustomHandler("Export", "All", () =>
+            {
+                using ( var dialog = new VistaFolderBrowserDialog() )
+                {
+                    if ( dialog.ShowDialog() != DialogResult.OK )
+                        return;
+
+                    foreach ( DataViewNode node in Nodes )
+                    {
+                        // Hack for field texture archives: prefer DDS output format
+                        Type type = null;
+                        if ( node.DataType == typeof( FieldTexturePS3 ) || node.DataType == typeof( GNFTexture ) )
+                            type = typeof( DDSStream );
+
+                        node.Export( Path.Combine( dialog.SelectedPath, node.Text ), type );
+                    }
+                }
+            } );
         }
 
         protected override void InitializeViewCore()
@@ -39,7 +63,7 @@ namespace GFDStudio.GUI.DataViewNodes
             foreach ( var entryName in Data )
             {
                 var node = DataViewNodeFactory.Create( entryName, Data.OpenFile( entryName ) );
-                Nodes.Add( node );
+                AddChildNode( node );
             }
         }
     }

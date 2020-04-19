@@ -1,4 +1,6 @@
-﻿namespace GFDLibrary
+﻿using GFDLibrary.Effects;
+
+namespace GFDLibrary.Animations
 {
     public class AnimationFlag10000000DataEntry
     {

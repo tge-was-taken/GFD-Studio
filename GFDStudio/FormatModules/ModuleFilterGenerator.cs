@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
@@ -18,7 +19,7 @@ namespace GFDStudio.FormatModules
         /// <returns>A file filter for use in file dialogs.</returns>
         public static string GenerateFilter( FormatModuleUsageFlags flags )
         {
-            return GenerateFilter( flags, null );
+            return GenerateFilter( flags, null ).Filter;
         }
 
         public static string GenerateFilterForAllSupportedImportFormats()
@@ -54,25 +55,28 @@ namespace GFDStudio.FormatModules
         /// <param name="flags">The module flags used to filter which modules to include in the filter.</param>
         /// <param name="objectTypes">The module object types used to filter which modules to include in the filter.</param>
         /// <returns>A file filter for use in file dialogs.</returns>
-        public static string GenerateFilter( FormatModuleUsageFlags flags, params Type[] objectTypes )
+        public static ( string Filter, Dictionary<int, Type> TypeMap) GenerateFilter( FormatModuleUsageFlags flags, params Type[] objectTypes )
         {
             return GenerateFilterInternal( new[] { flags }, objectTypes );
         }
 
         public static string GenerateFilter( params FormatModuleUsageFlags[] flags )
         {
-            return GenerateFilterInternal( flags );
+            return GenerateFilterInternal( flags ).Filter;
         }
 
-        public static string GenerateFilter( FormatModuleUsageFlags[] flags, params Type[] objectTypes )
+        public static (string Filter, Dictionary<int, Type> TypeMap) GenerateFilter( FormatModuleUsageFlags[] flags, params Type[] objectTypes )
         {
             return GenerateFilterInternal( flags, objectTypes );
         }
 
-        private static string GenerateFilterInternal( FormatModuleUsageFlags[] flags, Type[] objectTypes = null )
+        private static (string Filter, Dictionary<int, Type> TypeMap) GenerateFilterInternal( FormatModuleUsageFlags[] flags, Type[] objectTypes = null )
         {
             if ( sBuilder.Length != 0 )
                 sBuilder.Clear();
+
+            var typeMap = new Dictionary<int, Type>();
+            var filterIndex = 1;
 
             bool isFirst = true;
             foreach ( var module in FormatModuleRegistry.Modules )
@@ -113,9 +117,12 @@ namespace GFDStudio.FormatModules
                         sBuilder.Append( ';' );
                     }
                 }
+
+                typeMap[ filterIndex ] = module.ModelType;
+                ++filterIndex;
             }
 
-            return sBuilder.ToString();
+            return ( sBuilder.ToString(), typeMap );
         }
     }
 }

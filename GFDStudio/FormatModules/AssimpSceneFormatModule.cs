@@ -1,6 +1,6 @@
 ﻿using System.IO;
 using Assimp;
-using GFDLibrary.IO.Assimp;
+using GFDLibrary.Models.Conversion;
 using GFDStudio.IO;
 
 namespace GFDStudio.FormatModules
@@ -8,7 +8,7 @@ namespace GFDStudio.FormatModules
     public class AssimpSceneFormatModule : FormatModule<Scene>
     {
         public override string Name
-            => "Assimp Scene";
+            => "Assimp Model";
 
         public override string[] Extensions
             => new[] { "dae", "obj", "fbx" };
@@ -28,7 +28,7 @@ namespace GFDStudio.FormatModules
 
         protected override void ExportCore( Scene obj, Stream stream, string filename = null )
         {
-            ModelExporter.ExportFile( obj, filename );
+            ModelPackExporter.ExportFile( obj, filename );
         }
     }
 }

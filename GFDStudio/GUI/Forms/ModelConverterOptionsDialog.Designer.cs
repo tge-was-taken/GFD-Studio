@@ -219,7 +219,7 @@
         private System.Windows.Forms.CheckBox GenerateVertexColorsCheckBox;
         private System.Windows.Forms.Label GenerateVertexColorsLabel;
         private System.Windows.Forms.Button ConvertButton;
-        private System.Windows.Forms.Button CancelButton;
+        private new System.Windows.Forms.Button CancelButton;
         private System.Windows.Forms.ToolTip ToolTip;
     }
 }

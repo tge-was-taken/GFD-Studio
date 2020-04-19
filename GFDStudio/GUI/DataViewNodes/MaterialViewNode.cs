@@ -2,6 +2,8 @@
 using System.ComponentModel;
 using System.Numerics;
 using GFDLibrary;
+using GFDLibrary.Materials;
+using GFDLibrary.Models;
 using GFDStudio.GUI.TypeConverters;
 
 namespace GFDStudio.GUI.DataViewNodes
@@ -23,42 +25,70 @@ namespace GFDStudio.GUI.DataViewNodes
 
         [Browsable( true )]
         [TypeConverter( typeof( EnumTypeConverter<MaterialFlags> ) )]
-        public new MaterialFlags Flags
+        public MaterialFlags Flags
         {
             get => GetDataProperty< MaterialFlags >();
             set => SetDataProperty( value );
         }
-
-        [Browsable( true )]
         [TypeConverter( typeof( Vector4TypeConverter ) )]
-        public Vector4 Ambient
+        [DisplayName("Ambient color (float)")]
+        public Vector4 AmbientColor
         {
-            get => GetDataProperty< Vector4 >();
+            get => Data.AmbientColor;
             set => SetDataProperty( value );
         }
 
-        [Browsable( true )]
+        [DisplayName( "Ambient color (RGBA)" )]
+        public System.Drawing.Color AmbientColorRGBA
+        {
+            get => Data.AmbientColor.ToByte();
+            set => Data.AmbientColor = value.ToFloat();
+        }
+
         [TypeConverter( typeof( Vector4TypeConverter ) )]
-        public Vector4 Diffuse
+        [DisplayName( "Diffuse color (float)" )]
+        public Vector4 DiffuseColor
+        {
+            get => Data.DiffuseColor;
+            set => SetDataProperty( value );
+        }
+
+        [DisplayName( "Diffuse color (RGBA)" )]
+        public System.Drawing.Color DiffuseColorRGBA
+        {
+            get => Data.DiffuseColor.ToByte();
+            set => Data.DiffuseColor = value.ToFloat();
+        }
+
+        [TypeConverter( typeof( Vector4TypeConverter ) )]
+        [DisplayName( "Specular color (float)" )]
+        public Vector4 SpecularColor
+        {
+            get => Data.SpecularColor;
+            set => SetDataProperty( value );
+        }
+
+        [DisplayName( "Specular color (RGBA)" )]
+        public System.Drawing.Color SpecularColorRGBA
+        {
+            get => Data.SpecularColor.ToByte();
+            set => Data.SpecularColor = value.ToFloat();
+        }
+
+        [Browsable( true )]
+        [TypeConverter( typeof( Vector4ColorTypeConverter ) )]
+        [DisplayName( "Emissive color (float)" )]
+        public Vector4 EmissiveColor
         {
             get => GetDataProperty<Vector4>();
             set => SetDataProperty( value );
         }
 
-        [Browsable( true )]
-        [TypeConverter( typeof( Vector4TypeConverter ) )]
-        public Vector4 Specular
+        [DisplayName( "Emissive color (RGBA)" )]
+        public System.Drawing.Color EmissiveColorRGBA
         {
-            get => GetDataProperty<Vector4>();
-            set => SetDataProperty( value );
-        }
-
-        [Browsable( true )]
-        [TypeConverter( typeof( Vector4TypeConverter ) )]
-        public Vector4 Emissive
-        {
-            get => GetDataProperty<Vector4>();
-            set => SetDataProperty( value );
+            get => Data.EmissiveColor.ToByte();
+            set => Data.EmissiveColor = value.ToFloat();
         }
 
         [Browsable( true )]
@@ -76,10 +106,11 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         [Browsable( true )]
-        [TypeConverter( typeof( EnumTypeConverter<MaterialDrawOrder> ) )]
-        public MaterialDrawOrder DrawOrder
+        [TypeConverter( typeof( EnumTypeConverter<MaterialDrawMethod> ) )]
+        [DisplayName( "Draw method" )]
+        public MaterialDrawMethod DrawMethod
         {
-            get => GetDataProperty<MaterialDrawOrder>();
+            get => GetDataProperty<MaterialDrawMethod>();
             set => SetDataProperty( value );
         }
 
@@ -294,14 +325,14 @@ namespace GFDStudio.GUI.DataViewNodes
         protected override void InitializeViewCore()
         {
             TextureMapsViewNode = ( TextureMapListViewNode)DataViewNodeFactory.Create( "Texture Maps", CreateTextureMapInfo() );
-            Nodes.Add( TextureMapsViewNode );
+            AddChildNode( TextureMapsViewNode );
 
             AttributesViewNode =
                 ( ListViewNode< MaterialAttribute > ) DataViewNodeFactory.Create(
                     "Attributes", 
                     Data.Attributes == null ? new List< MaterialAttribute >() : Data.Attributes,
                     new object[] { new ListItemNameProvider< MaterialAttribute >( ( value, index ) => value.AttributeType.ToString() ) } );
-            Nodes.Add( AttributesViewNode );
+            AddChildNode( AttributesViewNode );
         }
     }
 }

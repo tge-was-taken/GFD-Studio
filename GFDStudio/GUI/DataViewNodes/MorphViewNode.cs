@@ -1,4 +1,6 @@
+using System.ComponentModel;
 using GFDLibrary;
+using GFDLibrary.Models;
 
 namespace GFDStudio.GUI.DataViewNodes
 {
@@ -12,15 +14,17 @@ namespace GFDStudio.GUI.DataViewNodes
 
         public int TargetCount => Data.TargetCount;
 
+        [DisplayName( "Target ints" )]
         public int[] TargetInts
         {
             get => Data.TargetInts;
             set => SetDataProperty( value );
         }
 
-        public string MaterialName
+        [DisplayName( "Node name" )]
+        public string NodeName
         {
-            get => Data.MaterialName;
+            get => Data.NodeName;
             set => SetDataProperty( value );
         }
 

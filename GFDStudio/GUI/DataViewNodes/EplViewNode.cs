@@ -1,4 +1,5 @@
 using GFDLibrary;
+using GFDLibrary.Effects;
 
 namespace GFDStudio.GUI.DataViewNodes
 {

@@ -1,6 +1,8 @@
 using System.ComponentModel;
+using System.Drawing;
 using System.Numerics;
 using GFDLibrary;
+using GFDLibrary.Lights;
 using GFDStudio.GUI.TypeConverters;
 
 namespace GFDStudio.GUI.DataViewNodes
@@ -20,24 +22,48 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         [TypeConverter( typeof( Vector4TypeConverter ) )]
-        public Vector4 Field30
+        [DisplayName( "Ambient color (float)" )]
+        public Vector4 AmbientColor
         {
-            get => Data.Field30;
+            get => Data.AmbientColor;
             set => SetDataProperty( value );
         }
 
-        [TypeConverter( typeof( Vector4TypeConverter ) )]
-        public Vector4 Field40
+        [DisplayName( "Ambient color (RGBA)" )]
+        public Color AmbientColorRGBA
         {
-            get => Data.Field40;
-            set => SetDataProperty( value );
+            get => Data.AmbientColor.ToByte();
+            set => Data.AmbientColor = value.ToFloat();
         }
 
         [TypeConverter( typeof( Vector4TypeConverter ) )]
-        public Vector4 Field50
+        [DisplayName( "Diffuse color (float)" )]
+        public Vector4 DiffuseColor
         {
-            get => Data.Field50;
+            get => Data.DiffuseColor;
             set => SetDataProperty( value );
+        }
+
+        [DisplayName( "Diffuse color (RGBA)" )]
+        public Color DiffuseColorRGBA
+        {
+            get => Data.DiffuseColor.ToByte();
+            set => Data.DiffuseColor = value.ToFloat();
+        }
+
+        [TypeConverter( typeof( Vector4TypeConverter ) )]
+        [DisplayName( "Diffuse color (float)" )]
+        public Vector4 SpecularColor
+        {
+            get => Data.SpecularColor;
+            set => SetDataProperty( value );
+        }
+
+        [DisplayName( "Specular color (RGBA)" )]
+        public Color SpecularColorRGBA
+        {
+            get => Data.SpecularColor.ToByte();
+            set => Data.SpecularColor = value.ToFloat();
         }
 
         public LightType Type
@@ -70,15 +96,17 @@ namespace GFDStudio.GUI.DataViewNodes
             set => SetDataProperty( value );
         }
 
-        public float Field6C
+        [DisplayName( "Attenuation start" )]
+        public float AttenuationStart
         {
-            get => Data.Field6C;
+            get => Data.AttenuationStart;
             set => SetDataProperty( value );
         }
 
-        public float Field70
+        [DisplayName( "Attenuation end" )]
+        public float AttenuationEnd
         {
-            get => Data.Field70;
+            get => Data.AttenuationEnd;
             set => SetDataProperty( value );
         }
 
@@ -100,15 +128,17 @@ namespace GFDStudio.GUI.DataViewNodes
             set => SetDataProperty( value );
         }
 
-        public float Field74
+        [DisplayName( "Angle inner cone" )]
+        public float AngleInnerCone
         {
-            get => Data.Field74;
+            get => Data.AngleInnerCone;
             set => SetDataProperty( value );
         }
 
-        public float Field78
+        [DisplayName( "Angle outer cone" )]
+        public float AngleOuterCone
         {
-            get => Data.Field78;
+            get => Data.AngleOuterCone;
             set => SetDataProperty( value );
         }
 

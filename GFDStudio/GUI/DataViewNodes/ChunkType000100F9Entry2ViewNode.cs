@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Numerics;
-using GFDLibrary;
+using GFDLibrary.Misc;
 
 namespace GFDStudio.GUI.DataViewNodes
 {
@@ -42,6 +42,7 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         [Browsable( true )]
+        [DisplayName( "Node name" )]
         public string NodeName
         {
             get => GetDataProperty<string>();

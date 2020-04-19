@@ -1,17 +1,24 @@
 using System;
+using System.ComponentModel;
+using System.Linq;
 using System.Windows.Forms;
 using GFDLibrary;
-using GFDLibrary.Processing.Models;
+using GFDLibrary.Animations;
+using GFDLibrary.Animations.Conversion;
+using GFDLibrary.Common;
 using GFDStudio.FormatModules;
+using GFDStudio.GUI.TypeConverters;
 
 namespace GFDStudio.GUI.DataViewNodes
 {
     public class AnimationViewNode : DataViewNode<Animation>
     {
+        private VariantUserPropertyList mProperties;
+
         public override DataViewNodeMenuFlags ContextMenuFlags => 
             DataViewNodeMenuFlags.Delete | DataViewNodeMenuFlags.Export | DataViewNodeMenuFlags.Move | DataViewNodeMenuFlags.Replace;
 
-        public override DataViewNodeFlags NodeFlags => DataViewNodeFlags.Leaf;
+        public override DataViewNodeFlags NodeFlags => DataViewNodeFlags.Branch;
 
         public AnimationFlags Flags
         {
@@ -25,7 +32,11 @@ namespace GFDStudio.GUI.DataViewNodes
             set => SetDataProperty( value );
         }
 
+        [DisplayName( "Controller count" )]
         public int ControllerCount => Data.Controllers.Count;
+
+        [Browsable(false)]
+        public ListViewNode<AnimationController> Controllers { get; set; }
 
         //public List<AnimationController> Controllers { get; set; }
 
@@ -39,6 +50,7 @@ namespace GFDStudio.GUI.DataViewNodes
         //[Browsable(false)]
         //public AnimationExtraDataViewNode Field14 { get; set; }
 
+        [DisplayName( "Bounding box" )]
         public BoundingBox? BoundingBox
         {
             get => Data.BoundingBox;
@@ -51,10 +63,16 @@ namespace GFDStudio.GUI.DataViewNodes
         //    set => SetDataProperty( value );
         //}
 
-        public UserPropertyCollection Properties
+        [Browsable( true )]
+        [TypeConverter( typeof( ExpandableObjectConverter ) )]
+        public VariantUserPropertyList Properties
         {
-            get => Data.Properties;
-            set => SetDataProperty( value );
+            get => mProperties;
+            set
+            {
+                mProperties     = value;
+                Data.Properties = Properties.Count == 0 ? null : new UserPropertyDictionary( Properties.Select( x => x.ToTypedUserProperty() ) );
+            }
         }
 
         public float? Speed
@@ -69,16 +87,17 @@ namespace GFDStudio.GUI.DataViewNodes
 
         protected override void InitializeCore()
         {
+            Properties = new VariantUserPropertyList( Data.Properties, () => Properties = mProperties );
             RegisterExportHandler<Animation>( path => Data.Save( path ) );
             RegisterReplaceHandler<Animation>( Resource.Load<Animation> );
             RegisterReplaceHandler<Assimp.Scene>( file =>
             {
                 var animation = AnimationConverter.ConvertFromAssimpScene( file, new AnimationConverterOptions() );
-                var modelViewModel = Parent?.Parent as ModelViewNode;
+                var modelViewModel = Parent?.Parent as ModelPackViewNode;
 
-                if ( modelViewModel?.Scene != null )
+                if ( modelViewModel?.Model != null )
                 {
-                    animation.FixTargetIds( modelViewModel.Scene.Data );
+                    animation.FixTargetIds( modelViewModel.Model.Data );
                 }
                 else
                 {
@@ -87,14 +106,37 @@ namespace GFDStudio.GUI.DataViewNodes
 
                 return animation;
             } );
-            RegisterCustomHandler( "Fix IDs", () => ImportModelAndFixTargetIds( Data ) );
+            RegisterCustomHandler( "Tools", "Fix IDs", () => ImportModelAndFixTargetIds( Data ) );
+            RegisterCustomHandler( "Tools", "Retarget", () =>
+            {
+                var originalModel = ( Parent as ModelPackViewNode )?.Model?.Data ??
+                                    ModuleImportUtilities.SelectImportFile<ModelPack>( "Select the original model file." )?.Model;
+
+                if ( originalModel == null )
+                    return;
+
+                var newModel = ModuleImportUtilities.SelectImportFile<ModelPack>( "Select the new model file." )?.Model;
+                if ( newModel == null )
+                    return;
+
+                bool fixArms = MessageBox.Show( "Fix arms? If unsure, select No.", "Question", MessageBoxButtons.YesNo,
+                                                MessageBoxIcon.Question, MessageBoxDefaultButton.Button2 ) == DialogResult.Yes;
+
+                Data.Retarget( originalModel, newModel, fixArms );
+            } );
+        }
+
+        protected override void InitializeViewCore()
+        {
+            Controllers = ( ListViewNode<AnimationController> )DataViewNodeFactory.Create( "Controllers", Data.Controllers, new[] { new ListItemNameProvider<AnimationController>( ( x, i ) => x.TargetName ) } );
+            AddChildNode( Controllers );
         }
 
         private static void ImportModelAndFixTargetIds( Animation animation )
         {
             using ( var dialog = new OpenFileDialog() )
             {
-                dialog.Filter = ModuleFilterGenerator.GenerateFilter( new[] { FormatModuleUsageFlags.Import }, typeof( Model ) );
+                dialog.Filter = ModuleFilterGenerator.GenerateFilter( new[] { FormatModuleUsageFlags.Import }, typeof( ModelPack ) ).Filter;
                 dialog.AutoUpgradeEnabled = true;
                 dialog.CheckPathExists = true;
                 dialog.Title = "Select a model file.";
@@ -106,9 +148,9 @@ namespace GFDStudio.GUI.DataViewNodes
 
                 try
                 {
-                    var model = Resource.Load<Model>( dialog.FileName );
-                    if ( model.Scene != null )
-                        animation.FixTargetIds( model.Scene );
+                    var model = Resource.Load<ModelPack>( dialog.FileName );
+                    if ( model.Model != null )
+                        animation.FixTargetIds( model.Model );
                 }
                 catch ( Exception e )
                 {

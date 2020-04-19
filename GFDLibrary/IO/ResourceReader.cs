@@ -1,9 +1,8 @@
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Numerics;
 using System.Text;
+using GFDLibrary.Common;
 using GFDLibrary.IO.Common;
 
 namespace GFDLibrary.IO
@@ -45,9 +44,12 @@ namespace GFDLibrary.IO
             return sSJISEncoding.GetString( bytes );
         }
 
-        public string ReadStringWithHash( uint version )
+        public string ReadStringWithHash( uint version, bool withPadding = false )
         {
             var str = ReadString();
+
+            if ( version >= 0x01105100 && withPadding )
+                SeekCurrent( 1 ); // padding byte
 
             if ( version > 0x1080000 )
             {
@@ -221,29 +223,29 @@ namespace GFDLibrary.IO
             return value;
         }
 
-        public T ReadResource<T>( uint version ) where T : Resource, new()
+        public T ReadResource<T>( uint version, long endPosition = -1 ) where T : Resource, new()
         {
             var obj = new T();
             obj.Version = version;
-            obj.Read( this );
+            obj.Read( this, endPosition );
             return obj;
         }
 
-        public void ReadResources<T>( uint version, IList<T> list, int count ) where T : Resource, new()
+        public void ReadResources<T>( uint version, IList<T> list, int count, long endPosition = -1 ) where T : Resource, new()
         {
             for ( int i = 0; i < count; i++ )
             {
-                list[ i ] = ReadResource<T>( version );
+                list[ i ] = ReadResource<T>( version, endPosition );
             }
         }
 
-        public List<T> ReadResourceList<T>( uint version ) where T : Resource, new()
+        public List<T> ReadResourceList<T>( uint version, long endPosition = -1 ) where T : Resource, new()
         {
             var count = ReadInt32();
             var list = new List<T>( count );
             for ( int i = 0; i < count; i++ )
             {
-                list.Add( ReadResource<T>( version ) );
+                list.Add( ReadResource<T>( version, endPosition ) );
             }
 
             return list;

@@ -30,6 +30,11 @@ namespace GFDStudio.GUI.DataViewNodes
             }
         }
 
+        public DataTreeView()
+        {
+            ImageList = DataViewNode.ImageList;
+        }
+
         /// <summary>
         /// Sets the first visible node in the tree. Clears all nodes if not empty.
         /// </summary>

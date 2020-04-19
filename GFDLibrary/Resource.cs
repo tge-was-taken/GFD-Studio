@@ -1,6 +1,16 @@
 ﻿using System.IO;
+using GFDLibrary.Animations;
+using GFDLibrary.Cameras;
+using GFDLibrary.Common;
+using GFDLibrary.Effects;
 using GFDLibrary.IO;
 using GFDLibrary.IO.Common;
+using GFDLibrary.Lights;
+using GFDLibrary.Materials;
+using GFDLibrary.Misc;
+using GFDLibrary.Models;
+using GFDLibrary.Shaders;
+using GFDLibrary.Textures;
 
 namespace GFDLibrary
 {
@@ -72,8 +82,8 @@ namespace GFDLibrary
 
                 switch ( header.Type )
                 {
-                    case ResourceType.Model:
-                        res = new Model( header.Version );
+                    case ResourceType.ModelPack:
+                        res = new ModelPack( header.Version );
                         break;
 
                     case ResourceType.ShaderCachePS3:
@@ -107,14 +117,13 @@ namespace GFDLibrary
                     case ResourceType.ShaderPS4:
                         res = new ShaderPS4( header.Version );
                         break;
-                    case ResourceType.Scene:
-                        res = new Scene( header.Version );
+                    case ResourceType.Model:
+                        res = new Model( header.Version );
                         break;
                     case ResourceType.Node:
-                        res = new Node( header.Version );
-                        break;
-                    case ResourceType.UserPropertyCollection:
-                        res = new UserPropertyCollection( header.Version );
+                        return Node.ReadRecursive( reader, header.Version, stream.Length );
+                    case ResourceType.UserPropertyDictionary:
+                        res = new UserPropertyDictionary( header.Version );
                         break;
                     case ResourceType.Morph:
                         res = new Morph( header.Version );
@@ -132,8 +141,7 @@ namespace GFDLibrary
                         res = new ChunkType000100F9( header.Version );
                         break;
                     case ResourceType.ChunkType000100F8:
-                        res = new ChunkType000100F8( header.Version );
-                        break;
+                        return new ChunkType000100F8( header.Version ) { Data = reader.ReadBytes( reader.ReadInt32() ) };
                     case ResourceType.AnimationPack:
                         res = new AnimationPack( header.Version );
                         break;
@@ -145,8 +153,8 @@ namespace GFDLibrary
                     case ResourceType.Light:
                         res = new Light( header.Version );
                         break;
-                    case ResourceType.Geometry:
-                        res = new Geometry( header.Version );
+                    case ResourceType.Mesh:
+                        res = new Mesh( header.Version );
                         break;
                     case ResourceType.Camera:
                         res = new Camera( header.Version );
@@ -169,8 +177,8 @@ namespace GFDLibrary
                     case ResourceType.AnimationExtraData:
                         res = new AnimationExtraData( header.Version );
                         break;
-                    case ResourceType.KeyframeTrack:
-                        res = new KeyframeTrack( header.Version );
+                    case ResourceType.AnimationLayer:
+                        res = new AnimationLayer( header.Version );
                         break;
                     case ResourceType.AnimationController:
                         res = new AnimationController( header.Version );
@@ -179,14 +187,14 @@ namespace GFDLibrary
                         throw new InvalidDataException( "Unknown/Invalid resource type" );
                 }
 
-                res.Read( reader );
+                res.Read( reader, stream.Length );
 
-                if ( res.ResourceType == ResourceType.Model )
+                if ( res.ResourceType == ResourceType.ModelPack )
                 {
-                    // Identifier AnimationPack from a file with a model resource header
-                    var model = ( Model )res;
+                    // Identify AnimationPack from a file with a model resource header
+                    var model = ( ModelPack )res;
                     if ( model.AnimationPack != null && model.ChunkType000100F8 == null && model.ChunkType000100F9 == null &&
-                         model.Materials == null && model.Scene == null && model.Textures == null )
+                         model.Materials == null && model.Model == null && model.Textures == null )
                     {
                         res = model.AnimationPack;
                     }
@@ -215,7 +223,7 @@ namespace GFDLibrary
                 if ( ResourceType == ResourceType.AnimationPack )
                 {
                     // For AnimationPacks we write a model file header, and then a chunk containing the pack data.
-                    writer.WriteFileHeader( ResourceFileIdentifier.Model, Version, ResourceType.Model );
+                    writer.WriteFileHeader( ResourceFileIdentifier.Model, Version, ResourceType.ModelPack );
                     writer.WriteResourceChunk( this );
                     return;
                 }
@@ -228,13 +236,25 @@ namespace GFDLibrary
                         // We have to write this to the file so we can remember it when we load it.
                         writer.WriteBoolean( ( ( Epl ) this ).IncludesProperties );
                         break;
+
+                    case ResourceType.Node:
+                        Node.WriteRecursive( writer, ( Node ) this );
+                        return;
+
+                    case ResourceType.ChunkType000100F8:
+                        {
+                            var chunk = ( ChunkType000100F8 )this;
+                            writer.WriteInt32( chunk.Data.Length );
+                            writer.WriteBytes( chunk.Data );
+                            return;
+                        }
                 }
 
                 Write( writer );
             }
         }
 
-        internal abstract void Read( ResourceReader reader );
+        internal abstract void Read( ResourceReader reader, long endPosition = -1 );
         internal abstract void Write( ResourceWriter writer );
     }
 }
