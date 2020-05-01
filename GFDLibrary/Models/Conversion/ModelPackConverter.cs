@@ -135,6 +135,31 @@ namespace GFDLibrary.Models.Conversion
                     }
                     break;
 
+                case MaterialPreset.PersonaSkinP5:
+                    {
+                        if (diffuseTexture != null)
+                        {
+                            textureDictionary.Add(diffuseTexture.Texture);
+                            string shadowTextureName = diffuseTexture.Name;
+                            string specularTextureName = diffuseTexture.Name;
+
+                            if (ambientTexture != null)
+                            {
+                                textureDictionary.Add(ambientTexture.Texture);
+                                shadowTextureName = ambientTexture.Name;
+                            }
+
+                            if (specularTexture != null)
+                            {
+                                textureDictionary.Add(specularTexture.Texture);
+                                specularTextureName = specularTexture.Name;
+                            }
+
+                            material = MaterialFactory.CreatePersonaSkinP5Material(materialName, diffuseTexture.Name, specularTextureName, shadowTextureName);
+                        }
+                    }
+                    break;
+
                 case MaterialPreset.CharacterClothP4D:
                     {
                         if ( diffuseTexture != null )
