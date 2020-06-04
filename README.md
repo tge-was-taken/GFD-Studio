@@ -27,7 +27,7 @@ You can edit these properties manually, or export them from another model and re
 
 ### P5R Animation backport
 
-Warning: Work In Progress, keep saves of your files.
+**Warning:** Work In Progress, keep saves of your files.
 
 GFD Studio can now convert P5R animations to P5.
 There are still issues with bones, to fix it you need to follow this process:
