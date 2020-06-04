@@ -27,12 +27,14 @@ You can edit these properties manually, or export them from another model and re
 
 ### P5R Animation backport
 
-GFD Studio will now convert P5R animations to be loadable in P5 Vanilla.
-There are still issues with bones to fix it you need to follow this process:
+Warning: Work In Progress, keep saves of your files.
 
- - Load animation in GFD Studio
+GFD Studio can now convert P5R animations to P5.
+There are still issues with bones, to fix it you need to follow this process:
+
+ - Load animation file in GFD Studio
  - Export it as .GAP
  - Load the GAP in 3dsmax using maxscript
  - Export the animation as FBX
  - Replace the animation in GFD Studio
- - Once done with all animations export again as GAP
+ - Once done with all animations you want export again as .GAP
