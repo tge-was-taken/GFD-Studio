@@ -86,7 +86,7 @@ namespace GFDLibrary.IO
         {
             WriteString( value );
 
-            if ( version >= 0x01105100 && withPadding )
+            if ( version > 0x01105100 && withPadding )
                 WriteByte( 0 ); // padding byte
 
             if ( version > 0x1080000 )

@@ -31,6 +31,10 @@ namespace GFDLibrary.Animations.Conversion
 
                 var nodeName = AssimpConverterCommon.UnescapeName( aiChannel.NodeName );
 
+                Ai.Node node = aiScene.RootNode.FindNode(nodeName);
+                if (node == null)
+                    continue;
+
                 var controller = new AnimationController( options.Version )
                 {
                     TargetKind = TargetKind.Node,
@@ -53,8 +57,8 @@ namespace GFDLibrary.Animations.Conversion
                                                .ToList();
 
                 // Decompose the local transform of the affected node so we can use them as the base values for our keyframes
-                aiScene.RootNode.FindNode( nodeName ).Transform
-                       .Decompose( out var nodeBaseScale, out var nodeBaseRotation, out var nodeBaseTranslation );
+
+                node.Transform.Decompose( out var nodeBaseScale, out var nodeBaseRotation, out var nodeBaseTranslation );
 
                 // Keep track of the last position, rotation and scale used to ensure that interpolation works properly
                 var lastPosition = nodeBaseTranslation;

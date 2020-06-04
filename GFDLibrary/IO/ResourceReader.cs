@@ -48,7 +48,7 @@ namespace GFDLibrary.IO
         {
             var str = ReadString();
 
-            if ( version >= 0x01105100 && withPadding )
+            if (version > 0x01105100 && withPadding )
                 SeekCurrent( 1 ); // padding byte
 
             if ( version > 0x1080000 )
