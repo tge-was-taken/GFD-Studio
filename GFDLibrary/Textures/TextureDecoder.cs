@@ -115,8 +115,6 @@ namespace GFDLibrary.Textures
 
         public static Bitmap Decode( byte[] data, TextureFormat format )
         {
-            Bitmap bitmap;
-
             switch ( format )
             {
                 case TextureFormat.DDS:
