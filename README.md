@@ -32,9 +32,9 @@ You can edit these properties manually, or export them from another model and re
 GFD Studio can now convert P5R animations to P5.
 There are still issues with bones (weird movement, rotation, etc), you can fix them by following this process:
 
- - Load animation file in GFD Studio
- - Export it as .GAP
- - Load the GAP in 3dsmax using maxscript
- - Export the animation as FBX
- - Replace the animation in GFD Studio
- - Once done with all animations you want export again as .GAP
+1. Load animation file in GFD Studio
+2. Export it as .GAP
+3. Load the GAP in 3dsmax using maxscript
+4. Export the animation as FBX
+5. Replace the animation in GFD Studio
+6. Once done with all animations you want export again as .GAP
