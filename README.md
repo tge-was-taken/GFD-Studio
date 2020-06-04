@@ -24,3 +24,15 @@ You can edit these properties manually, or export them from another model and re
 4. Also be sure to update the bitmap names for the newly replaced material. **They need to match a texture that's part of the model.**
 5. You can right click the Textures or Materials to export or replace them all at once as one file, or add individual textures or materials that are missing.
 5. Click the filename at the top of the list to refresh the preview. If a material name is wrong or references a texture that can't be found, parts of the model will be shaded black.
+
+### P5R Animation backport
+
+GFD Studio will now convert P5R animations to be loadable in P5 Vanilla.
+There are still with bones to fix it you need to follow this process:
+
+ - Load animation in GFD Studio
+ - Export it as .GAP
+ - Load the GAP in 3dsmax using maxscript
+ - Export the animation as FBX
+ - Replace the animation in GFD Studio
+ - Once done with all animations export again as GAP
