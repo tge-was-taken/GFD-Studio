@@ -37,4 +37,4 @@ There are still issues with bones (weird movement, rotation, etc), you can fix t
 3. Load the GAP in 3dsmax using maxscript (can be found here https://amicitia.github.io/tools/p5)
 4. Export the animation as FBX
 5. Replace the animation in GFD Studio
-6. Once done with all animations you want export again as .GAP
+6. Once done with all animations you want, export again as .GAP
