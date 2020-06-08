@@ -27,13 +27,13 @@ You can edit these properties manually, or export them from another model and re
 
 ### P5R Animation backport
 
-**Warnings:** 
-Work In Progress, keep saves of your files. 
-This version is not compatible with "Catherine Full Body" as it shares version number with "P5R" but requires different behavior.
-
 GFD Studio can now convert P5R animations to P5.
 There are still issues with some bones, mostly rotation flipping. Will be fixed as soon as possible.
 
 1. Load a .GAP file in GFD Studio
 2. Right-Click -> Export on the animations folder
 3. The animations should be loadable in P5 vanilla
+
+**Warnings:** 
+Work In Progress, keep saves of your files. 
+This version is not compatible with "Catherine Full Body" as it shares version number with "P5R" but requires different behavior.
