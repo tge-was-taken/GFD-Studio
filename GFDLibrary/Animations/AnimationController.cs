@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using GFDLibrary.IO;
 using GFDLibrary.Models;
@@ -115,6 +116,7 @@ namespace GFDLibrary.Animations
             AnimationLayer r = null;
             AnimationLayer s = null;
             AnimationLayer pr = null;
+            AnimationLayer ps = null;
             AnimationLayer rs = null;
 
             // Cannot assume layers order
@@ -141,6 +143,10 @@ namespace GFDLibrary.Animations
                     rs = layers[0];
                     break;
 
+                case KeyType.NodePSHalf:
+                    ps = layers[0];
+                    break;
+
                 default:
                     return null;
             }
@@ -165,6 +171,10 @@ namespace GFDLibrary.Animations
 
                 case KeyType.NodeRSHalf:
                     rs = layers[1];
+                    break;
+
+                case KeyType.NodePSHalf:
+                    ps = layers[1];
                     break;
 
                 default:
@@ -195,6 +205,10 @@ namespace GFDLibrary.Animations
                         rs = layers[2];
                         break;
 
+                    case KeyType.NodePSHalf:
+                        ps = layers[2];
+                        break;
+
                     default:
                         return null;
                 }
@@ -202,7 +216,7 @@ namespace GFDLibrary.Animations
 
             // Create new PRS layer
 
-            AnimationLayer mergedLayer = new AnimationLayer(Version)
+            AnimationLayer prsLayer = new AnimationLayer(Version)
             {
                 KeyType = KeyType.NodePRSHalf
             };
@@ -213,13 +227,13 @@ namespace GFDLibrary.Animations
             {
                 for (int i = 0; i < p.Keys.Count; i++)
                 {
-                    PRSKey prsKey = new PRSKey(mergedLayer.KeyType)
+                    PRSKey prsKey = new PRSKey(prsLayer.KeyType)
                     {
                         Time = ((PRSKey)p.Keys[i]).Time,
                         Position = ((KeyType31Dancing)p.Keys[i]).Position
                     };
 
-                    mergedLayer.Keys.Add(prsKey);
+                    prsLayer.Keys.Add(prsKey);
                 }
             }
 
@@ -229,22 +243,31 @@ namespace GFDLibrary.Animations
             {
                 for (int i = 0; i < pr.Keys.Count; i++)
                 {
-                    PRSKey prsKey = new PRSKey(mergedLayer.KeyType)
+                    PRSKey prsKey = new PRSKey(prsLayer.KeyType)
                     {
                         Time = ((PRSKey)pr.Keys[i]).Time,
-                        Position = ((PRSKey)pr.Keys[i]).Position
+                        Position = ((PRSKey)pr.Keys[i]).Position,
+                        Rotation = ((PRSKey)pr.Keys[i]).Rotation
                     };
 
-                    if (TargetName.Equals("Bip01 R ThighTwist") || TargetName.Equals("Bip01 R Thigh"))
-                    {
-                        prsKey.Rotation = -((PRSKey)pr.Keys[i]).Rotation;
-                    }
-                    else
-                    {
-                        prsKey.Rotation = ((PRSKey)pr.Keys[i]).Rotation;
-                    }
+                    prsLayer.Keys.Add(prsKey);
+                }
+            }
 
-                    mergedLayer.Keys.Add(prsKey);
+			// Position/Scale layer
+
+            if (ps != null)
+            {
+                for (int i = 0; i < ps.Keys.Count; i++)
+                {
+                    PRSKey prsKey = new PRSKey(prsLayer.KeyType)
+                    {
+                        Time = ((PRSKey)ps.Keys[i]).Time,
+                        Position = ((PRSKey)ps.Keys[i]).Position,
+                        Scale = ((PRSKey)ps.Keys[i]).Scale
+                    };
+
+                    prsLayer.Keys.Add(prsKey);
                 }
             }
 
@@ -256,7 +279,7 @@ namespace GFDLibrary.Animations
                 {
                     float time = r.Keys[i].Time;
 
-                    var key = (PRSKey)mergedLayer.Keys.FirstOrDefault(k => time == k.Time);
+                    var key = (PRSKey)prsLayer.Keys.FirstOrDefault(k => time == k.Time);
 
                     if (key != null)
                     {
@@ -264,22 +287,31 @@ namespace GFDLibrary.Animations
                     }
                     else
                     {
-                        PRSKey newKey = new PRSKey(KeyType.NodePRSHalf)
+                        PRSKey prsKey = new PRSKey(KeyType.NodePRSHalf)
                         {
                             Time = ((PRSKey)r.Keys[i]).Time,
                             Rotation = ((PRSKey)r.Keys[i]).Rotation
                         };
 
-                        key = (PRSKey)mergedLayer.Keys.FirstOrDefault(k => time > k.Time);
-                        if (key != null)
+                        // find index to insert new key
+                        int index = prsLayer.Keys.Count - 1;
+                        for (int j = 0; j < prsLayer.Keys.Count() - 1; j++)
                         {
-                            newKey.Position = key.Position;
-                            mergedLayer.Keys.Insert(mergedLayer.Keys.IndexOf(key) + 1, newKey);
+                            if (prsLayer.Keys[j].Time < time && prsLayer.Keys[j + 1].Time > time)
+                            {
+                                index = j;
+                                break;
+                            }
+                        }
+                        prsKey.Position = ((PRSKey)prsLayer.Keys[index]).Position;
+
+                        if (index < prsLayer.Keys.Count - 1)
+                        {
+                            prsLayer.Keys.Insert(index + 1, prsKey);
                         }
                         else
                         {
-                            newKey.Position = ((PRSKey)mergedLayer.Keys[mergedLayer.Keys.Count - 1]).Position;
-                            mergedLayer.Keys.Add(newKey);
+                            prsLayer.Keys.Add(prsKey);
                         }
                     }
                 }
@@ -293,7 +325,7 @@ namespace GFDLibrary.Animations
                 {
                     float time = rs.Keys[i].Time;
 
-                    var key = (PRSKey)mergedLayer.Keys.FirstOrDefault(k => time == k.Time);
+                    var key = (PRSKey)prsLayer.Keys.FirstOrDefault(k => time == k.Time);
 
                     if (key != null)
                     {
@@ -302,23 +334,34 @@ namespace GFDLibrary.Animations
                     }
                     else
                     {
-                        PRSKey newKey = new PRSKey(KeyType.NodePRSHalf)
+                        PRSKey prsKey = new PRSKey(KeyType.NodePRSHalf)
                         {
                             Time = ((PRSKey)rs.Keys[i]).Time,
                             Rotation = ((PRSKey)rs.Keys[i]).Rotation,
                             Scale = ((PRSKey)rs.Keys[i]).Scale
                         };
 
-                        key = (PRSKey)mergedLayer.Keys.FirstOrDefault(k => time > k.Time);
-                        if (key != null)
+                        // find index to insert new key
+                        int index = prsLayer.Keys.Count - 1;
+                        for (int j = 0; j < prsLayer.Keys.Count() - 1; j++)
                         {
-                            newKey.Position = key.Position;
-                            mergedLayer.Keys.Insert(mergedLayer.Keys.IndexOf(key) + 1, newKey);
+                            if (prsLayer.Keys[j].Time < time && prsLayer.Keys[j + 1].Time > time)
+                            {
+                                index = j;
+                                break;
+                            }
+                        }
+                        
+                        // apply previous key values
+                        prsKey.Position = ((PRSKey)prsLayer.Keys[index]).Position;
+
+                        if (index < prsLayer.Keys.Count - 1)
+                        {
+                            prsLayer.Keys.Insert(index + 1, prsKey);
                         }
                         else
                         {
-                            newKey.Position = ((PRSKey)mergedLayer.Keys[mergedLayer.Keys.Count - 1]).Position;
-                            mergedLayer.Keys.Add(newKey);
+                            prsLayer.Keys.Add(prsKey);
                         }
                     }
                 }
@@ -332,7 +375,7 @@ namespace GFDLibrary.Animations
                 {
                     float time = s.Keys[i].Time;
 
-                    var key = (PRSKey)mergedLayer.Keys.FirstOrDefault(k => time == k.Time);
+                    var key = (PRSKey)prsLayer.Keys.FirstOrDefault(k => time == k.Time);
 
                     if (key != null)
                     {
@@ -340,33 +383,43 @@ namespace GFDLibrary.Animations
                     }
                     else
                     {
-                        PRSKey newKey = new PRSKey(KeyType.NodePRSHalf)
+                        PRSKey prsKey = new PRSKey(KeyType.NodePRSHalf)
                         {
                             Time = ((PRSKey)s.Keys[i]).Time,
                             Scale = ((PRSKey)s.Keys[i]).Scale
                         };
 
-                        key = (PRSKey)mergedLayer.Keys.FirstOrDefault(k => time > k.Time);
-                        if (key != null)
+                        // find index to insert new key
+                        int index = prsLayer.Keys.Count - 1;
+                        for (int j = 0; j < prsLayer.Keys.Count() - 1; j++)
                         {
-                            newKey.Position = key.Position;
-                            newKey.Rotation = key.Rotation;
-                            mergedLayer.Keys.Insert(mergedLayer.Keys.IndexOf(key) + 1, newKey);
+                            if (prsLayer.Keys[j].Time < time && prsLayer.Keys[j + 1].Time > time)
+                            {
+                                index = j;
+                                break;
+                            }
+                        }
+
+                        // apply previous key values
+                        prsKey.Position = ((PRSKey)prsLayer.Keys[index]).Position;
+                        prsKey.Rotation = ((PRSKey)prsLayer.Keys[index]).Rotation;
+
+                        if (index < prsLayer.Keys.Count - 1)
+                        {
+                            prsLayer.Keys.Insert(index + 1, prsKey);
                         }
                         else
                         {
-                            newKey.Position = ((PRSKey)mergedLayer.Keys[mergedLayer.Keys.Count - 1]).Position;
-                            newKey.Rotation = ((PRSKey)mergedLayer.Keys[mergedLayer.Keys.Count - 1]).Rotation;
-                            mergedLayer.Keys.Add(newKey);
+                            prsLayer.Keys.Add(prsKey);
                         }
                     }
                 }
 
-                mergedLayer.PositionScale = p != null ? p.PositionScale : pr.PositionScale;
-                mergedLayer.ScaleScale = s != null ? s.ScaleScale : rs.ScaleScale;
+                prsLayer.PositionScale = p != null ? p.PositionScale : pr.PositionScale;
+                prsLayer.ScaleScale = s != null ? s.ScaleScale : rs.ScaleScale;
             }
 
-            return mergedLayer;
+            return prsLayer;
         }
 
         #endregion Internals
