@@ -230,7 +230,8 @@ namespace GFDLibrary.Animations
                     PRSKey prsKey = new PRSKey(prsLayer.KeyType)
                     {
                         Time = ((PRSKey)p.Keys[i]).Time,
-                        Position = ((KeyType31Dancing)p.Keys[i]).Position
+                        Position = ((KeyType31Dancing)p.Keys[i]).Position,
+                        IsSetPosition = true
                     };
 
                     prsLayer.Keys.Add(prsKey);
@@ -247,7 +248,9 @@ namespace GFDLibrary.Animations
                     {
                         Time = ((PRSKey)pr.Keys[i]).Time,
                         Position = ((PRSKey)pr.Keys[i]).Position,
-                        Rotation = ((PRSKey)pr.Keys[i]).Rotation
+                        IsSetPosition = true,
+                        Rotation = ((PRSKey)pr.Keys[i]).Rotation,
+                        IsSetRotation = true
                     };
 
                     prsLayer.Keys.Add(prsKey);
@@ -264,7 +267,9 @@ namespace GFDLibrary.Animations
                     {
                         Time = ((PRSKey)ps.Keys[i]).Time,
                         Position = ((PRSKey)ps.Keys[i]).Position,
-                        Scale = ((PRSKey)ps.Keys[i]).Scale
+                        IsSetPosition = true,
+                        Scale = ((PRSKey)ps.Keys[i]).Scale,
+                        IsSetScale = true
                     };
 
                     prsLayer.Keys.Add(prsKey);
@@ -278,23 +283,23 @@ namespace GFDLibrary.Animations
                 for (int i = 0; i < r.Keys.Count; i++)
                 {
                     float time = r.Keys[i].Time;
-
-                    var key = (PRSKey)prsLayer.Keys.FirstOrDefault(k => time == k.Time);
-
-                    if (key != null)
+                    int index = prsLayer.Keys.FindIndex(k => time == k.Time);
+                    if (index != -1)
                     {
-                        key.Rotation = ((PRSKey)r.Keys[i]).Rotation;
+                        ((PRSKey)prsLayer.Keys[index]).Rotation = ((PRSKey)r.Keys[i]).Rotation;
+                        ((PRSKey)prsLayer.Keys[index]).IsSetRotation = true;
                     }
                     else
                     {
                         PRSKey prsKey = new PRSKey(KeyType.NodePRSHalf)
                         {
                             Time = ((PRSKey)r.Keys[i]).Time,
-                            Rotation = ((PRSKey)r.Keys[i]).Rotation
+                            Rotation = ((PRSKey)r.Keys[i]).Rotation,
+                            IsSetRotation = true
                         };
 
                         // find index to insert new key
-                        int index = prsLayer.Keys.Count - 1;
+                        index = prsLayer.Keys.Count - 1;
                         for (int j = 0; j < prsLayer.Keys.Count() - 1; j++)
                         {
                             if (prsLayer.Keys[j].Time < time && prsLayer.Keys[j + 1].Time > time)
@@ -303,7 +308,6 @@ namespace GFDLibrary.Animations
                                 break;
                             }
                         }
-                        prsKey.Position = ((PRSKey)prsLayer.Keys[index]).Position;
 
                         if (index < prsLayer.Keys.Count - 1)
                         {
@@ -324,13 +328,13 @@ namespace GFDLibrary.Animations
                 for (int i = 0; i < rs.Keys.Count; i++)
                 {
                     float time = rs.Keys[i].Time;
-
-                    var key = (PRSKey)prsLayer.Keys.FirstOrDefault(k => time == k.Time);
-
-                    if (key != null)
+                    int index = prsLayer.Keys.FindIndex(k => time == k.Time);
+                    if (index != -1)
                     {
-                        key.Rotation = ((PRSKey)rs.Keys[i]).Rotation;
-                        key.Scale = ((PRSKey)rs.Keys[i]).Scale;
+                        ((PRSKey)prsLayer.Keys[index]).Rotation = ((PRSKey)rs.Keys[i]).Rotation;
+                        ((PRSKey)prsLayer.Keys[index]).IsSetRotation = true;
+                        ((PRSKey)prsLayer.Keys[index]).Scale = ((PRSKey)rs.Keys[i]).Scale;
+                        ((PRSKey)prsLayer.Keys[index]).IsSetScale = true;
                     }
                     else
                     {
@@ -338,11 +342,13 @@ namespace GFDLibrary.Animations
                         {
                             Time = ((PRSKey)rs.Keys[i]).Time,
                             Rotation = ((PRSKey)rs.Keys[i]).Rotation,
-                            Scale = ((PRSKey)rs.Keys[i]).Scale
+                            IsSetRotation = true,
+                            Scale = ((PRSKey)rs.Keys[i]).Scale,
+                            IsSetScale = true
                         };
 
                         // find index to insert new key
-                        int index = prsLayer.Keys.Count - 1;
+                        index = prsLayer.Keys.Count - 1;
                         for (int j = 0; j < prsLayer.Keys.Count() - 1; j++)
                         {
                             if (prsLayer.Keys[j].Time < time && prsLayer.Keys[j + 1].Time > time)
@@ -351,9 +357,6 @@ namespace GFDLibrary.Animations
                                 break;
                             }
                         }
-                        
-                        // apply previous key values
-                        prsKey.Position = ((PRSKey)prsLayer.Keys[index]).Position;
 
                         if (index < prsLayer.Keys.Count - 1)
                         {
@@ -374,23 +377,23 @@ namespace GFDLibrary.Animations
                 for (int i = 0; i < s.Keys.Count; i++)
                 {
                     float time = s.Keys[i].Time;
-
-                    var key = (PRSKey)prsLayer.Keys.FirstOrDefault(k => time == k.Time);
-
-                    if (key != null)
+                    int index = prsLayer.Keys.FindIndex(k => time == k.Time);
+                    if (index != -1)
                     {
-                        key.Scale = ((PRSKey)s.Keys[i]).Scale;
+                        ((PRSKey)prsLayer.Keys[index]).Scale = ((PRSKey)s.Keys[i]).Scale;
+                        ((PRSKey)prsLayer.Keys[index]).IsSetScale = true;
                     }
                     else
                     {
                         PRSKey prsKey = new PRSKey(KeyType.NodePRSHalf)
                         {
                             Time = ((PRSKey)s.Keys[i]).Time,
-                            Scale = ((PRSKey)s.Keys[i]).Scale
+                            Scale = ((PRSKey)s.Keys[i]).Scale,
+                            IsSetScale = true
                         };
 
                         // find index to insert new key
-                        int index = prsLayer.Keys.Count - 1;
+                        index = prsLayer.Keys.Count - 1;
                         for (int j = 0; j < prsLayer.Keys.Count() - 1; j++)
                         {
                             if (prsLayer.Keys[j].Time < time && prsLayer.Keys[j + 1].Time > time)
@@ -399,10 +402,6 @@ namespace GFDLibrary.Animations
                                 break;
                             }
                         }
-
-                        // apply previous key values
-                        prsKey.Position = ((PRSKey)prsLayer.Keys[index]).Position;
-                        prsKey.Rotation = ((PRSKey)prsLayer.Keys[index]).Rotation;
 
                         if (index < prsLayer.Keys.Count - 1)
                         {
@@ -417,6 +416,24 @@ namespace GFDLibrary.Animations
 
                 prsLayer.PositionScale = p != null ? p.PositionScale : pr.PositionScale;
                 prsLayer.ScaleScale = s != null ? s.ScaleScale : rs.ScaleScale;
+            }
+
+            for (int i = 1; i < prsLayer.Keys.Count; i++)
+            {
+                if (!((PRSKey)prsLayer.Keys[i]).IsSetPosition)
+                {
+                    ((PRSKey)prsLayer.Keys[i]).Position = ((PRSKey)prsLayer.Keys[i-1]).Position;
+                }
+
+                if (!((PRSKey)prsLayer.Keys[i]).IsSetRotation)
+                {
+                    ((PRSKey)prsLayer.Keys[i]).Rotation = ((PRSKey)prsLayer.Keys[i - 1]).Rotation;
+                }
+
+                if (!((PRSKey)prsLayer.Keys[i]).IsSetScale)
+                {
+                    ((PRSKey)prsLayer.Keys[i]).Scale = ((PRSKey)prsLayer.Keys[i - 1]).Scale;
+                }
             }
 
             return prsLayer;
