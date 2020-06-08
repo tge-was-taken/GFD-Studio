@@ -8,9 +8,15 @@ namespace GFDLibrary.Animations
     {
         public Vector3 Position { get; set; }
 
+        public bool IsSetPosition { get; set; }
+
         public Quaternion Rotation { get; set; }
 
+        public bool IsSetRotation { get; set; }
+
         public Vector3 Scale { get; set; }
+
+        public bool IsSetScale { get; set; }
 
         public virtual bool HasPosition => Type != KeyType.NodeRHalf && Type != KeyType.NodeSHalf;
 
