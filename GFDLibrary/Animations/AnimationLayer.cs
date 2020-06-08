@@ -28,9 +28,9 @@ namespace GFDLibrary.Animations
         // 1C
         public Vector3 ScaleScale { get; set; }
 
-        public bool UsesScaleVectors => KeyType == KeyType.NodePRHalf || KeyType == KeyType.NodePRSHalf ||
-                                        KeyType == KeyType.NodePRHalf_2 || KeyType == KeyType.Type31 ||
-                                        KeyType == KeyType.NodeRHalf || KeyType == KeyType.NodeSHalf || KeyType == KeyType.NodeRSHalf;
+        public bool UsesScaleVectors => KeyType == KeyType.NodePRSHalf ||
+                                        KeyType == KeyType.NodePRHalf  || KeyType == KeyType.NodePRHalf_2  || KeyType == KeyType.NodeRSHalf || KeyType == KeyType.NodePSHalf ||
+                                        KeyType == KeyType.Type31      || KeyType == KeyType.NodeRHalf     || KeyType == KeyType.NodeSHalf;
 
         public bool HasPRSKeyFrames
         {
@@ -79,7 +79,7 @@ namespace GFDLibrary.Animations
             KeyType = (KeyType)reader.ReadInt32();
 
             var keyCount = reader.ReadInt32();
-            var keyTimings = reader.ReadSingles( keyCount );
+            var keyTimings = reader.ReadSingles(keyCount);
 
             for (int i = 0; i < keyCount; i++)
             {
@@ -95,6 +95,7 @@ namespace GFDLibrary.Animations
                     case KeyType.NodeRHalf:
                     case KeyType.NodeSHalf:
                     case KeyType.NodeRSHalf:
+                    case KeyType.NodePSHalf:
                         key = new PRSKey(KeyType);
                         break;
 
@@ -169,21 +170,12 @@ namespace GFDLibrary.Animations
                 Keys.Add(key);
             }
 
-            if (KeyType == KeyType.NodeRSHalf)
-            {
-                // bunch of 0s
-                reader.ReadInt32();
-                reader.ReadInt32();
-                reader.ReadInt32();
-            }
-
             if (UsesScaleVectors)
             {
-                // NodeSHalf and NodeRSHalf probably define the ScaleScale instead of PositionScale vector. Need more digging.
                 PositionScale = reader.ReadVector3();
 
-                if ((Version <= 0x01105100 || KeyType != KeyType.Type31) && KeyType != KeyType.NodeRSHalf)
-                    ScaleScale = reader.ReadVector3();
+                // TODO: do not set for Type31 used in other games than P5R
+                ScaleScale = reader.ReadVector3();
             }
         }
 

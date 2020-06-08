@@ -63,6 +63,11 @@ namespace GFDLibrary.Animations
                     Scale = reader.ReadVector3Half();
                     break;
 
+                case KeyType.NodePSHalf:
+                    Position = reader.ReadVector3Half();
+                    Scale = reader.ReadVector3Half();
+                    break;
+
                 default:
                     throw new InvalidOperationException(nameof(Type));
             }
@@ -99,6 +104,11 @@ namespace GFDLibrary.Animations
 
                 case KeyType.NodeRSHalf:
                     writer.WriteQuaternionHalf(Rotation);
+                    writer.WriteVector3Half(Scale);
+                    break;
+
+                case KeyType.NodePSHalf:
+                    writer.WriteVector3Half(Position);
                     writer.WriteVector3Half(Scale);
                     break;
 

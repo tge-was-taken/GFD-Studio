@@ -36,7 +36,7 @@
         Type31,             // NodePHalf for P5Royal
         NodeRHalf,
         NodeSHalf,
-        Type34,             // NodePSHalf? Haven't encountered yet.
+        NodePSHalf,
         NodeRSHalf
     }
 }
