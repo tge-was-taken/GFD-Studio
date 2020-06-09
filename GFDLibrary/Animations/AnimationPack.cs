@@ -9,8 +9,6 @@ namespace GFDLibrary.Animations
 {
     public sealed class AnimationPack : Resource
     {
-        #region Properties
-		
         public override ResourceType ResourceType => ResourceType.AnimationPack;
 
         public byte[] RawData { get; set; }
@@ -25,12 +23,8 @@ namespace GFDLibrary.Animations
 
         public AnimationExtraData ExtraData { get; set; }
 
-        #endregion Properties
-
-        #region Constructors
-
-        public AnimationPack(uint version)
-            : base(version)
+        public AnimationPack( uint version )
+            : base( version )
         {
             Animations = new List<Animation>();
             BlendAnimations = new List<Animation>();
@@ -43,33 +37,29 @@ namespace GFDLibrary.Animations
             BlendAnimations = new List<Animation>();
         }
 
-        #endregion Constructors
-
-        #region Binary IO
-
-        internal override void Read(ResourceReader reader, long endPosition = -1)
+        internal override void Read( ResourceReader reader, long endPosition = -1 )
         {
-            if (Version > 0x1104950)
-                Flags = (AnimationPackFlags)reader.ReadInt32(); // r26
+            if ( Version > 0x1104950 )
+                Flags = ( AnimationPackFlags )reader.ReadInt32(); // r26
 
-            Animations = ReadAnimations(reader);
+            Animations = ReadAnimations( reader );
 
             // TODO: fix this mess
             var start = reader.Position;
             try
             {
                 // Try to read blend animations
-                BlendAnimations = ReadAnimations(reader);
+                BlendAnimations = ReadAnimations( reader );
             }
-            catch (Exception)
+            catch ( Exception )
             {
                 ErrorsOccuredDuringLoad = true;
 
-                if (Flags.HasFlag(AnimationPackFlags.Flag4))
+                if ( Flags.HasFlag( AnimationPackFlags.Flag4 ) )
                 {
                     // If it failed, and the extra data flag is set then try reading it as extra data instead
                     BlendAnimations = new List<Animation>();
-                    reader.SeekBegin(start - 8);
+                    reader.SeekBegin( start - 8 );
                 }
                 else
                 {
@@ -81,10 +71,10 @@ namespace GFDLibrary.Animations
             try
             {
                 // Try reading extra data if present
-                if (Flags.HasFlag(AnimationPackFlags.Flag4))
-                    ExtraData = reader.ReadResource<AnimationExtraData>(Version);
+                if ( Flags.HasFlag( AnimationPackFlags.Flag4 ) )
+                    ExtraData = reader.ReadResource<AnimationExtraData>( Version );
             }
-            catch (Exception)
+            catch ( Exception )
             {
                 // Make sure to clear the flag for the extra data so we don't crash during writing
                 Flags &= ~AnimationPackFlags.Flag4;
@@ -92,11 +82,11 @@ namespace GFDLibrary.Animations
             }
         }
 
-        private List<Animation> ReadAnimations(ResourceReader reader)
+        private List<Animation> ReadAnimations( ResourceReader reader )
         {
             var count = reader.ReadInt32();
-            var list = new List<Animation>(count);
-            for (int i = 0; i < count; i++)
+            var list = new List<Animation>( count );
+            for ( int i = 0; i < count; i++ )
             {
                 // Animations are super broken at the moment
                 // so try to read one, and give up if it doesn't work out
@@ -105,12 +95,12 @@ namespace GFDLibrary.Animations
                 {
                     list.Add( reader.ReadResource<Animation>( Version ) );
                 }
-                catch (Exception)
+                catch ( Exception )
                 {
                     ErrorsOccuredDuringLoad = true;
 
-                    while (i++ < count)
-                        list.Add(new Animation());
+                    while ( i++ < count )
+                        list.Add( new Animation() );
 
                     break;
                 }
@@ -119,51 +109,47 @@ namespace GFDLibrary.Animations
             return list;
         }
 
-        internal override void Write(ResourceWriter writer)
+        internal override void Write( ResourceWriter writer )
         {
-            if (RawData != null)
+            if ( RawData != null )
             {
-                writer.Write(RawData);
+                writer.Write( RawData );
                 return;
             }
 
-            if (Version > 0x1104950)
-                writer.WriteInt32((int)Flags);
+            if ( Version > 0x1104950 )
+                writer.WriteInt32( ( int )Flags );
 
-            writer.WriteResourceList(Animations);
-            writer.WriteResourceList(BlendAnimations);
+            writer.WriteResourceList( Animations );
+            writer.WriteResourceList( BlendAnimations );
 
-            if (Flags.HasFlag(AnimationPackFlags.Flag4))
-                writer.WriteResource(ExtraData);
+            if ( Flags.HasFlag( AnimationPackFlags.Flag4 ) )
+                writer.WriteResource( ExtraData );
         }
 
-        #endregion Binary IO
-
-        #region Public methods
-
-        public void FixTargetIds(Model model)
+        public void FixTargetIds( Model model )
         {
-            foreach (var animation in Animations)
-                animation.FixTargetIds(model);
+            foreach ( var animation in Animations )
+                animation.FixTargetIds( model );
 
-            foreach (var animation in BlendAnimations)
-                animation.FixTargetIds(model);
+            foreach ( var animation in BlendAnimations )
+                animation.FixTargetIds( model );
 
-            ExtraData?.FixTargetIds(model);
+            ExtraData?.FixTargetIds( model );
         }
 
-        public void Retarget(Model originalModel, Model newModel, bool fixArms)
+        public void Retarget( Model originalModel, Model newModel, bool fixArms )
         {
-            var originalNodeLookup = originalModel.Nodes.ToDictionary(x => x.Name);
-            var newNodeLookup = newModel.Nodes.ToDictionary(x => x.Name);
+            var originalNodeLookup = originalModel.Nodes.ToDictionary( x => x.Name );
+            var newNodeLookup = newModel.Nodes.ToDictionary( x => x.Name );
 
-            foreach (var animation in Animations)
-                animation.Retarget(originalNodeLookup, newNodeLookup, fixArms);
+            foreach ( var animation in Animations )
+                animation.Retarget( originalNodeLookup, newNodeLookup, fixArms );
 
-            foreach (var animation in BlendAnimations)
-                animation.FixTargetIds(newModel.Nodes); // blend animations are already relative, they only need their ids fixed
+            foreach ( var animation in BlendAnimations )
+                animation.FixTargetIds( newModel.Nodes ); // blend animations are already relative, they only need their ids fixed
 
-            ExtraData?.Retarget(originalNodeLookup, newNodeLookup, fixArms);
+            ExtraData?.Retarget( originalNodeLookup, newNodeLookup, fixArms );
         }
 
         public void Rescale(Vector3 scale, Vector3 position)
@@ -198,12 +184,12 @@ namespace GFDLibrary.Animations
                                 }
                             }
                             controller.Layers[y] = newLayer;
+                        
                         }
                     }
                 }
+                
             }
         }
-
-        #endregion Public methods
     }
 }

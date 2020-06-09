@@ -87,9 +87,6 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Xml.Serialization" />
     <Reference Include="UsefulThings, Version=1.7.3.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\UsefulCSharpThings.1.7.3\lib\net462\UsefulThings.dll</HintPath>
     </Reference>

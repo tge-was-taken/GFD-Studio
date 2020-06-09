@@ -31,8 +31,8 @@ namespace GFDLibrary.Animations.Conversion
 
                 var nodeName = AssimpConverterCommon.UnescapeName( aiChannel.NodeName );
 
-                Ai.Node node = aiScene.RootNode.FindNode(nodeName);
-                if (node == null)
+                Ai.Node node = aiScene.RootNode.FindNode( nodeName );
+                if ( node == null )
                     continue;
 
                 var controller = new AnimationController( options.Version )

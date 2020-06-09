@@ -33,7 +33,7 @@
         NodePRHalf_2,
         MaterialSingle_9,
         SingleAlt_3,
-        Type31,             // NodePHalf for P5Royal
+        Type31,
         NodeRHalf,
         NodeSHalf,
         NodePSHalf,
