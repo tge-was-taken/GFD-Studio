@@ -8,8 +8,6 @@ namespace GFDLibrary.Animations
 {
     public sealed class AnimationLayer : Resource
     {
-        #region Properties
-
         public override ResourceType ResourceType => ResourceType.AnimationLayer;
 
         // 00
@@ -36,7 +34,7 @@ namespace GFDLibrary.Animations
         {
             get
             {
-                switch (KeyType)
+                switch ( KeyType )
                 {
                     case KeyType.NodePR:
                     case KeyType.NodePRS:
@@ -55,37 +53,29 @@ namespace GFDLibrary.Animations
             }
         }
 
-        #endregion Properties
-
-        #region Constructors
-
         public AnimationLayer(uint version) : base(version)
         {
-            Keys = new List<Key>();
+            Keys = new List< Key >();
             PositionScale = Vector3.One;
             ScaleScale = Vector3.One;
         }
 
         public AnimationLayer() : this(ResourceVersion.Persona5)
-        {
+        {         
         }
 
-        #endregion Constructors
-
-        #region Binary IO
-
-        internal override void Read(ResourceReader reader, long endPosition = -1)
+        internal override void Read( ResourceReader reader, long endPosition = -1 )
         {
-            KeyType = (KeyType)reader.ReadInt32();
+            KeyType = ( KeyType )reader.ReadInt32();
 
             var keyCount = reader.ReadInt32();
-            var keyTimings = reader.ReadSingles(keyCount);
+            var keyTimings = reader.ReadSingles( keyCount );
 
-            for (int i = 0; i < keyCount; i++)
+            for ( int i = 0; i < keyCount; i++ )
             {
                 Key key;
 
-                switch (KeyType)
+                switch ( KeyType )
                 {
                     case KeyType.NodePR:
                     case KeyType.NodePRS:
@@ -96,22 +86,19 @@ namespace GFDLibrary.Animations
                     case KeyType.NodeSHalf:
                     case KeyType.NodeRSHalf:
                     case KeyType.NodePSHalf:
-                        key = new PRSKey(KeyType);
+                        key = new PRSKey( KeyType );
                         break;
-
                     case KeyType.Vector3:
                     case KeyType.Vector3_2:
                     case KeyType.Vector3_3:
                     case KeyType.Vector3_4:
                     case KeyType.MaterialVector3_5:
-                        key = new Vector3Key(KeyType);
+                        key = new Vector3Key( KeyType );
                         break;
-
                     case KeyType.Quaternion:
                     case KeyType.Quaternion_2:
-                        key = new QuaternionKey(KeyType);
+                        key = new QuaternionKey( KeyType );
                         break;
-
                     case KeyType.Single:
                     case KeyType.Single_2:
                     case KeyType.Single_3:
@@ -123,34 +110,28 @@ namespace GFDLibrary.Animations
                     case KeyType.SingleAlt_2:
                     case KeyType.MaterialSingle_9:
                     case KeyType.SingleAlt_3:
-                        key = new SingleKey(KeyType);
+                        key = new SingleKey( KeyType );
                         break;
-
                     case KeyType.Single5:
                     case KeyType.Single5_2:
                     case KeyType.Single5Alt:
-                        key = new Single5Key(KeyType);
+                        key = new Single5Key( KeyType );
                         break;
-
                     case KeyType.PRSByte:
                         key = new PRSByteKey();
                         break;
-
                     case KeyType.Single4Byte:
                         key = new Single4ByteKey();
                         break;
-
                     case KeyType.SingleByte:
                         key = new SingleByteKey();
                         break;
-
                     case KeyType.Type22:
                         key = new KeyType22();
                         break;
-
                     case KeyType.Type31:
                         {
-                            if (Version <= 0x01105100)
+                            if ( Version <= 0x01105100 )
                             {
                                 key = new KeyType31Dancing();
                             }
@@ -160,17 +141,16 @@ namespace GFDLibrary.Animations
                             }
                         }
                         break;
-
                     default:
-                        throw new InvalidDataException($"Unknown/Invalid Key frame type: {KeyType}");
+                        throw new InvalidDataException( $"Unknown/Invalid Key frame type: {KeyType}" );
                 }
 
-                key.Time = keyTimings[i];
-                key.Read(reader);
-                Keys.Add(key);
+                key.Time = keyTimings[ i ];
+                key.Read( reader );
+                Keys.Add( key );
             }
 
-            if (UsesScaleVectors)
+            if ( UsesScaleVectors )
             {
                 PositionScale = reader.ReadVector3();
 
@@ -179,22 +159,20 @@ namespace GFDLibrary.Animations
             }
         }
 
-        internal override void Write(ResourceWriter writer)
+        internal override void Write( ResourceWriter writer )
         {
-            writer.WriteInt32((int)KeyType);
-            writer.WriteInt32(Keys.Count);
-            Keys.ForEach(x => writer.WriteSingle(x.Time));
-            Keys.ForEach(x => x.Write(writer));
+            writer.WriteInt32( ( int ) KeyType );
+            writer.WriteInt32( Keys.Count );
+            Keys.ForEach( x => writer.WriteSingle( x.Time ) );
+            Keys.ForEach( x => x.Write( writer ) );
 
-            if (UsesScaleVectors)
+            if ( UsesScaleVectors )
             {
-                writer.WriteVector3(PositionScale);
+                writer.WriteVector3( PositionScale );
 
-                if (Version < 0x01105100 || KeyType != KeyType.Type31)
-                    writer.WriteVector3(ScaleScale);
+                if ( Version < 0x01105100 || KeyType != KeyType.Type31 )
+                    writer.WriteVector3( ScaleScale );
             }
         }
-
-        #endregion Binary IO
     }
 }
