@@ -28,6 +28,8 @@ namespace GFDLibrary.Animations
 
         public override ResourceType ResourceType => ResourceType.Animation;
 
+        public bool IsCatherineFullBodyData { get; set; } = false;
+
         // 00
         public AnimationFlags Flags { get; set; }
 
@@ -127,7 +129,7 @@ namespace GFDLibrary.Animations
             Duration = reader.ReadSingle();
 
             var controllerCount = reader.ReadInt32();
-            if (Version > 0x01105100)
+            if (IsCatherineFullBodyData)
             {
                 var unknown1 = reader.ReadInt32(); // same as controller count
                 mUnknown2 = reader.ReadInt32(); // TODO: no idea what this is
@@ -228,7 +230,7 @@ namespace GFDLibrary.Animations
             writer.WriteSingle( Duration );
             writer.WriteInt32( Controllers.Count );
 
-            if (Version > 0x01105100)
+            if (IsCatherineFullBodyData)
             {
                 writer.WriteInt32( Controllers.Count );
                 writer.WriteInt32( mUnknown2 ); 
