@@ -44,11 +44,11 @@ namespace GFDLibrary.IO
             return sSJISEncoding.GetString( bytes );
         }
 
-        public string ReadStringWithHash( uint version, bool withPadding = false )
+        public string ReadStringWithHash( uint version, bool withPadding = false, bool isCatherineFullBodyData = false )
         {
             var str = ReadString();
 
-            if (version > 0x01105100 && withPadding )
+            if ( isCatherineFullBodyData && withPadding )
                 SeekCurrent( 1 ); // padding byte
 
             if ( version > 0x1080000 )

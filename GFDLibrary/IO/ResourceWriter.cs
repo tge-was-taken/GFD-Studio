@@ -82,11 +82,11 @@ namespace GFDLibrary.IO
             WriteStringRaw( value );
         }
 
-        public void WriteStringWithHash( uint version, string value, bool withPadding = false )
+        public void WriteStringWithHash( uint version, string value, bool withPadding = false, bool isCatherineFullBodyData = false )
         {
             WriteString( value );
 
-            if ( version > 0x01105100 && withPadding )
+            if ( isCatherineFullBodyData && withPadding )
                 WriteByte( 0 ); // padding byte
 
             if ( version > 0x1080000 )

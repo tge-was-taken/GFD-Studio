@@ -10,6 +10,8 @@ namespace GFDLibrary.Animations
     {
         public override ResourceType ResourceType => ResourceType.AnimationLayer;
 
+        public bool IsCatherineFullBodyData { get; set; } = false;
+
         // 00
         public KeyType KeyType { get; set; }
 
@@ -46,7 +48,7 @@ namespace GFDLibrary.Animations
                         return true;
 
                     case KeyType.Type31:
-                        return Version <= 0x01105100;
+                        return !IsCatherineFullBodyData;
                 }
 
                 return false;
@@ -131,13 +133,13 @@ namespace GFDLibrary.Animations
                         break;
                     case KeyType.Type31:
                         {
-                            if ( Version <= 0x01105100 )
+                            if (IsCatherineFullBodyData)
                             {
-                                key = new KeyType31Dancing();
+                                key = new KeyType31FullBody();
                             }
                             else
                             {
-                                key = new KeyType31FullBody();
+                                key = new KeyType31Dancing();
                             }
                         }
                         break;
@@ -154,8 +156,8 @@ namespace GFDLibrary.Animations
             {
                 PositionScale = reader.ReadVector3();
 
-                // TODO: do not set for Type31 used in other games than P5R
-                ScaleScale = reader.ReadVector3();
+                if ( !IsCatherineFullBodyData || KeyType != KeyType.Type31 )
+                    ScaleScale = reader.ReadVector3();
             }
         }
 
@@ -170,7 +172,7 @@ namespace GFDLibrary.Animations
             {
                 writer.WriteVector3( PositionScale );
 
-                if ( Version < 0x01105100 || KeyType != KeyType.Type31 )
+                if ( !IsCatherineFullBodyData || KeyType != KeyType.Type31 )
                     writer.WriteVector3( ScaleScale );
             }
         }
