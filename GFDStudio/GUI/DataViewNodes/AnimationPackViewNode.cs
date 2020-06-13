@@ -65,6 +65,10 @@ namespace GFDStudio.GUI.DataViewNodes
 
                 Data.Retarget( originalScene, newScene, fixArms );
             } );
+            RegisterCustomHandler("Tools", "Convert to P5", () =>
+            {
+                Data.ConvertToP5();
+            });
         }
 
         protected override void InitializeViewCore()

@@ -6,23 +6,47 @@ namespace GFDLibrary.Animations
 {
     public class PRSKey : Key
     {
-        public Vector3 Position { get; set; }
+        public Vector3 Position 
+        {
+            get => mPosition;
+            set
+            {
+                mPosition = value;
+                HasPosition = true;
+            }
+        }
 
-        public bool IsSetPosition { get; set; }
+        private Vector3 mPosition;
 
-        public Quaternion Rotation { get; set; }
+        public Quaternion Rotation
+        {
+            get => mRotation;
+            set
+            {
+                mRotation = value;
+                HasRotation = true;
+            }
+        }
 
-        public bool IsSetRotation { get; set; }
+        private Quaternion mRotation;
 
-        public Vector3 Scale { get; set; }
+        public Vector3 Scale
+        {
+            get => mScale;
+            set
+            {
+                mScale = value;
+                HasScale = true;
+            }
+        }
 
-        public bool IsSetScale { get; set; }
+        private Vector3 mScale;
 
-        public virtual bool HasPosition => Type != KeyType.NodeRHalf && Type != KeyType.NodeSHalf;
+        public bool HasPosition { get; set; }
 
-        public virtual bool HasRotation => Type != KeyType.NodeSHalf;
+        public bool HasRotation { get; set; }
 
-        public virtual bool HasScale => Type == KeyType.NodeSHalf || Type == KeyType.NodePRS || Type == KeyType.NodePRSHalf;
+        public bool HasScale { get; set; }
 
         public virtual bool IsCompressed => Type != KeyType.NodePR && Type != KeyType.NodePRS;
 
@@ -43,29 +67,35 @@ namespace GFDLibrary.Animations
                 case KeyType.NodePRS:
                     Position = reader.ReadVector3();
                     Rotation = reader.ReadQuaternion();
-                    Scale = Type == KeyType.NodePRS ? reader.ReadVector3() : Vector3.One;
+                    if (Type == KeyType.NodePRS) Scale = reader.ReadVector3();
                     break;
+
                 case KeyType.NodePRHalf:
                 case KeyType.NodePRSHalf:
                 case KeyType.NodePRHalf_2:
                     Position = reader.ReadVector3Half();
                     Rotation = reader.ReadQuaternionHalf();
-                    Scale = Type == KeyType.NodePRSHalf ? reader.ReadVector3Half() : Vector3.One;
+                    if (Type == KeyType.NodePRSHalf) Scale = reader.ReadVector3Half();
                     break;
+
                 case KeyType.NodeRHalf:
                     Rotation = reader.ReadQuaternionHalf();
                     break;
+
                 case KeyType.NodeSHalf:
                     Scale = reader.ReadVector3Half();
                     break;
+
                 case KeyType.NodeRSHalf:
                     Rotation = reader.ReadQuaternionHalf();
                     Scale = reader.ReadVector3Half();
                     break;
+
                 case KeyType.NodePSHalf:
                     Position = reader.ReadVector3Half();
                     Scale = reader.ReadVector3Half();
                     break;
+
                 default:
                     throw new InvalidOperationException(nameof(Type));
             }
