@@ -291,6 +291,11 @@ namespace GFDLibrary.Animations
             }
         }
 
+        public void ConvertToP5()
+        {
+            Controllers.ForEach( c => c.ConvertToP5() );
+        }
+
         public void Retarget( Model originalModel, Model newModel, bool fixArms )
         {
             Retarget( originalModel.Nodes.ToDictionary( x => x.Name ), newModel.Nodes.ToDictionary( x => x.Name ), fixArms );

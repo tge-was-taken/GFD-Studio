@@ -1,12 +1,23 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using GFDLibrary.IO;
 using GFDLibrary.Models;
+using System.Numerics;
 
 namespace GFDLibrary.Animations
 {
     public sealed class AnimationController : Resource
     {
+        [Flags]
+        enum PRSFlags
+        {
+            Unknown = 0,
+            P = 1,
+            R = 2,
+            S = 4
+        }
+
         public override ResourceType ResourceType => ResourceType.AnimationController;
 
         // 00
@@ -42,13 +53,6 @@ namespace GFDLibrary.Animations
             TargetId = reader.ReadInt32();
             TargetName = reader.ReadStringWithHash( Version, true );
             Layers = reader.ReadResourceList<AnimationLayer>( Version );
-
-            AnimationLayer mergedLayer = ConvertToPRS( Layers );
-            if ( mergedLayer != null )
-            {
-                Layers.Clear();
-                Layers.Add( mergedLayer );
-            }
         }
 
         internal override void Write( ResourceWriter writer )
@@ -85,6 +89,16 @@ namespace GFDLibrary.Animations
             return TargetId != -1;
         }
 
+        public void ConvertToP5()
+        {
+            AnimationLayer mergedLayer = ConvertToPRS( Layers );
+            if ( mergedLayer != null )
+            {
+                Layers.Clear();
+                Layers.Add( mergedLayer );
+            }
+        }
+
         /// <summary>
         /// Converts splitted Position, Rotation and Scale layers into one NodePRSHalf layer.
         /// </summary>
@@ -94,329 +108,103 @@ namespace GFDLibrary.Animations
         {
             if ( layers.Count < 2 || layers.Count > 3 ) return null;
 
-            AnimationLayer p = null;
-            AnimationLayer r = null;
-            AnimationLayer s = null;
-            AnimationLayer pr = null;
-            AnimationLayer ps = null;
-            AnimationLayer rs = null;
-
-            // Cannot assume layers order
-
-            switch ( layers[0].KeyType )
+            // Exit if we have an unhandled controller
+            foreach ( AnimationLayer layer in layers )
             {
-                case KeyType.Type31:
-                    p = layers[0];
-                    break;
-
-                case KeyType.NodeRHalf:
-                    r = layers[0];
-                    break;
-
-                case KeyType.NodeSHalf:
-                    s = layers[0];
-                    break;
-
-                case KeyType.NodePRHalf:
-                    pr = layers[0];
-                    break;
-
-                case KeyType.NodeRSHalf:
-                    rs = layers[0];
-                    break;
-
-                case KeyType.NodePSHalf:
-                    ps = layers[0];
-                    break;
-
-                default:
-                    return null;
-            }
-
-            switch ( layers[1].KeyType )
-            {
-                case KeyType.Type31:
-                    p = layers[1];
-                    break;
-
-                case KeyType.NodeRHalf:
-                    r = layers[1];
-                    break;
-
-                case KeyType.NodeSHalf:
-                    s = layers[1];
-                    break;
-
-                case KeyType.NodePRHalf:
-                    pr = layers[1];
-                    break;
-
-                case KeyType.NodeRSHalf:
-                    rs = layers[1];
-                    break;
-
-                case KeyType.NodePSHalf:
-                    ps = layers[1];
-                    break;
-
-                default:
-                    return null;
-            }
-
-            if ( layers.Count > 2 )
-            {
-                switch ( layers[2].KeyType )
+                switch ( layer.KeyType )
                 {
                     case KeyType.Type31:
-                        p = layers[2];
-                        break;
-
                     case KeyType.NodeRHalf:
-                        r = layers[2];
-                        break;
-
                     case KeyType.NodeSHalf:
-                        s = layers[2];
-                        break;
-
                     case KeyType.NodePRHalf:
-                        pr = layers[2];
-                        break;
-
                     case KeyType.NodeRSHalf:
-                        rs = layers[2];
-                        break;
-
                     case KeyType.NodePSHalf:
-                        ps = layers[2];
                         break;
-
                     default:
                         return null;
                 }
             }
 
             // Create new PRS layer
-
             AnimationLayer prsLayer = new AnimationLayer( Version )
             {
                 KeyType = KeyType.NodePRSHalf
             };
 
-            // Position layer
-
-            if ( p != null )
+            // Feed keys to the new layer
+            foreach ( AnimationLayer layer in layers )
             {
-                for ( int i = 0; i < p.Keys.Count; i++ )
+                for ( int i = 0; i < layer.Keys.Count; i++ )
                 {
-                    PRSKey prsKey = new PRSKey(prsLayer.KeyType)
+                    var isNewKey = true;
+                    float time = layer.Keys[i].Time;
+
+                    // Get existing key or create new one
+                    var prsKey = (PRSKey)prsLayer.Keys.FirstOrDefault( k => k.Time == time );
+
+                    if ( prsKey != null ) isNewKey = false;
+                    else prsKey = new PRSKey( prsLayer.KeyType ) { Time = time };
+
+                    // Set key data
+                    if ( ((PRSKey)layer.Keys[i]).HasPosition )
                     {
-                        Time = ((PRSKey)p.Keys[i]).Time,
-                        Position = ((KeyType31Dancing)p.Keys[i]).Position,
-                        IsSetPosition = true
-                    };
-
-                    prsLayer.Keys.Add( prsKey );
-                }
-            }
-
-            // Position/Rotation layer
-
-            if ( pr != null )
-            {
-                for ( int i = 0; i < pr.Keys.Count; i++ )
-                {
-                    PRSKey prsKey = new PRSKey( prsLayer.KeyType )
-                    {
-                        Time = ((PRSKey)pr.Keys[i]).Time,
-                        Position = ((PRSKey)pr.Keys[i]).Position,
-                        IsSetPosition = true,
-                        Rotation = ((PRSKey)pr.Keys[i]).Rotation,
-                        IsSetRotation = true
-                    };
-
-                    prsLayer.Keys.Add( prsKey );
-                }
-            }
-
-			// Position/Scale layer
-
-            if ( ps != null )
-            {
-                for ( int i = 0; i < ps.Keys.Count; i++ )
-                {
-                    PRSKey prsKey = new PRSKey( prsLayer.KeyType )
-                    {
-                        Time = ((PRSKey)ps.Keys[i]).Time,
-                        Position = ((PRSKey)ps.Keys[i]).Position,
-                        IsSetPosition = true,
-                        Scale = ((PRSKey)ps.Keys[i]).Scale,
-                        IsSetScale = true
-                    };
-
-                    prsLayer.Keys.Add( prsKey );
-                }
-            }
-
-            // Rotation layer
-
-            if ( r != null )
-            {
-                for ( int i = 0; i < r.Keys.Count; i++ )
-                {
-                    float time = r.Keys[i].Time;
-                    int index = prsLayer.Keys.FindIndex( k => time == k.Time );
-                    if ( index != -1 )
-                    {
-                        ((PRSKey)prsLayer.Keys[index]).Rotation = ((PRSKey)r.Keys[i]).Rotation;
-                        ((PRSKey)prsLayer.Keys[index]).IsSetRotation = true;
+                        prsKey.Position = ((PRSKey)layer.Keys[i]).Position;
                     }
-                    else
-                    {
-                        PRSKey prsKey = new PRSKey( KeyType.NodePRSHalf )
-                        {
-                            Time = ((PRSKey)r.Keys[i]).Time,
-                            Rotation = ((PRSKey)r.Keys[i]).Rotation,
-                            IsSetRotation = true
-                        };
 
-                        // find index to insert new key
-                        index = prsLayer.Keys.Count - 1;
+                    if ( ((PRSKey)layer.Keys[i]).HasRotation )
+                    {
+                        prsKey.Rotation = ((PRSKey)layer.Keys[i]).Rotation;
+                    }
+
+                    if ( ((PRSKey)layer.Keys[i]).HasScale )
+                    {
+                        prsKey.Scale = ((PRSKey)layer.Keys[i]).Scale;
+                    }
+
+                    if ( isNewKey )
+                    {
+                        // Define where to insert the key
+                        int count = prsLayer.Keys.Count;
                         for ( int j = 0; j < prsLayer.Keys.Count() - 1; j++ )
                         {
-                            if ( prsLayer.Keys[j].Time < time && prsLayer.Keys[j + 1].Time > time )
+                            if ( prsLayer.Keys[j].Time <= time && prsLayer.Keys[j + 1].Time > time )
                             {
-                                index = j;
+                                prsLayer.Keys.Insert(j + 1, prsKey);
                                 break;
                             }
                         }
-
-                        if ( index < prsLayer.Keys.Count - 1 )
-                        {
-                            prsLayer.Keys.Insert( index + 1, prsKey );
-                        }
-                        else
-                        {
-                            prsLayer.Keys.Add( prsKey );
-                        }
+                        
+                        if ( count == prsLayer.Keys.Count ) prsLayer.Keys.Add(prsKey);
                     }
                 }
             }
 
-            // Rotatation/Scale layer
+            // Just in case
+            ((PRSKey)prsLayer.Keys[0]).HasPosition = true;
+            ((PRSKey)prsLayer.Keys[0]).HasRotation = true;
+            ((PRSKey)prsLayer.Keys[0]).HasScale = true;
 
-            if (rs != null)
-            {
-                for ( int i = 0; i < rs.Keys.Count; i++ )
-                {
-                    float time = rs.Keys[i].Time;
-                    int index = prsLayer.Keys.FindIndex( k => time == k.Time );
-                    if ( index != -1 )
-                    {
-                        ((PRSKey)prsLayer.Keys[index]).Rotation = ((PRSKey)rs.Keys[i]).Rotation;
-                        ((PRSKey)prsLayer.Keys[index]).IsSetRotation = true;
-                        ((PRSKey)prsLayer.Keys[index]).Scale = ((PRSKey)rs.Keys[i]).Scale;
-                        ((PRSKey)prsLayer.Keys[index]).IsSetScale = true;
-                    }
-                    else
-                    {
-                        PRSKey prsKey = new PRSKey( KeyType.NodePRSHalf )
-                        {
-                            Time = ((PRSKey)rs.Keys[i]).Time,
-                            Rotation = ((PRSKey)rs.Keys[i]).Rotation,
-                            IsSetRotation = true,
-                            Scale = ((PRSKey)rs.Keys[i]).Scale,
-                            IsSetScale = true
-                        };
-
-                        // find index to insert new key
-                        index = prsLayer.Keys.Count - 1;
-                        for ( int j = 0; j < prsLayer.Keys.Count() - 1; j++ )
-                        {
-                            if ( prsLayer.Keys[j].Time < time && prsLayer.Keys[j + 1].Time > time )
-                            {
-                                index = j;
-                                break;
-                            }
-                        }
-
-                        if ( index < prsLayer.Keys.Count - 1 )
-                        {
-                            prsLayer.Keys.Insert(index + 1, prsKey);
-                        }
-                        else
-                        {
-                            prsLayer.Keys.Add(prsKey);
-                        }
-                    }
-                }
-            }
-
-            // Scale layer
-
-            if ( s != null )
-            {
-                for ( int i = 0; i < s.Keys.Count; i++ )
-                {
-                    float time = s.Keys[i].Time;
-                    int index = prsLayer.Keys.FindIndex( k => time == k.Time );
-                    if ( index != -1 )
-                    {
-                        ((PRSKey)prsLayer.Keys[index]).Scale = ((PRSKey)s.Keys[i]).Scale;
-                        ((PRSKey)prsLayer.Keys[index]).IsSetScale = true;
-                    }
-                    else
-                    {
-                        PRSKey prsKey = new PRSKey(KeyType.NodePRSHalf)
-                        {
-                            Time = ((PRSKey)s.Keys[i]).Time,
-                            Scale = ((PRSKey)s.Keys[i]).Scale,
-                            IsSetScale = true
-                        };
-
-                        // find index to insert new key
-                        index = prsLayer.Keys.Count - 1;
-                        for ( int j = 0; j < prsLayer.Keys.Count() - 1; j++ )
-                        {
-                            if ( prsLayer.Keys[j].Time < time && prsLayer.Keys[j + 1].Time > time )
-                            {
-                                index = j;
-                                break;
-                            }
-                        }
-
-                        if ( index < prsLayer.Keys.Count - 1 )
-                        {
-                            prsLayer.Keys.Insert(index + 1, prsKey);
-                        }
-                        else
-                        {
-                            prsLayer.Keys.Add(prsKey);
-                        }
-                    }
-                }
-
-                prsLayer.PositionScale = p != null ? p.PositionScale : pr.PositionScale;
-                prsLayer.ScaleScale = s != null ? s.ScaleScale : rs.ScaleScale;
-            }
-
+            // PRS Keys completion
             for ( int i = 1; i < prsLayer.Keys.Count; i++ )
             {
-                if ( !((PRSKey)prsLayer.Keys[i]).IsSetPosition )
+                if ( !((PRSKey)prsLayer.Keys[i]).HasPosition )
                 {
-                    ((PRSKey)prsLayer.Keys[i]).Position = ((PRSKey)prsLayer.Keys[i-1]).Position;
+                    ((PRSKey)prsLayer.Keys[i]).Position = ((PRSKey)prsLayer.Keys[i - 1]).Position;
                 }
 
-                if ( !((PRSKey)prsLayer.Keys[i]).IsSetRotation )
+                if ( !((PRSKey)prsLayer.Keys[i]).HasRotation )
                 {
                     ((PRSKey)prsLayer.Keys[i]).Rotation = ((PRSKey)prsLayer.Keys[i - 1]).Rotation;
                 }
 
-                if ( !((PRSKey)prsLayer.Keys[i]).IsSetScale )
+                if ( !((PRSKey)prsLayer.Keys[i]).HasScale )
                 {
                     ((PRSKey)prsLayer.Keys[i]).Scale = ((PRSKey)prsLayer.Keys[i - 1]).Scale;
                 }
             }
+
+            prsLayer.PositionScale = layers.FirstOrDefault( l => ((PRSKey)l.Keys[0]).HasPosition )?.PositionScale ?? Vector3.One;
+            prsLayer.ScaleScale = layers.FirstOrDefault( l => ((PRSKey)l.Keys[0]).HasScale )?.ScaleScale ?? Vector3.One;
 
             return prsLayer;
         }

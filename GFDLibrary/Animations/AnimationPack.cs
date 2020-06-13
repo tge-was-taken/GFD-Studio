@@ -188,8 +188,13 @@ namespace GFDLibrary.Animations
                         }
                     }
                 }
-                
             }
+        }
+
+        public void ConvertToP5()
+        {
+            Animations.ForEach( a => a.ConvertToP5() );
+            BlendAnimations.ForEach( ba => ba.ConvertToP5() );
         }
     }
 }
