@@ -35,6 +35,8 @@
         SingleAlt_3,
         Type31,
         NodeRHalf,
-        NodeSHalf
+        NodeSHalf,
+        NodePSHalf,
+        NodeRSHalf
     }
 }
