@@ -52,9 +52,9 @@ namespace GFDLibrary.Animations
 
         public PRSKey( KeyType type ) : base( type )
         {
-            Position = Vector3.Zero;
-            Rotation = Quaternion.Identity;
-            Scale = Vector3.One;
+            mPosition = Vector3.Zero;
+            mRotation = Quaternion.Identity;
+            mScale = Vector3.One;
         }
 
         public PRSKey() : this( KeyType.NodePRS ) { }
