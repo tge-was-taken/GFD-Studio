@@ -10,6 +10,8 @@ namespace GFDLibrary.Animations
     {
         public override ResourceType ResourceType => ResourceType.AnimationLayer;
 
+        public bool IsCatherineFullBodyData { get; set; } = false;
+
         // 00
         public KeyType KeyType { get; set; }
 
@@ -26,9 +28,9 @@ namespace GFDLibrary.Animations
         // 1C
         public Vector3 ScaleScale { get; set; }
 
-        public bool UsesScaleVectors => KeyType == KeyType.NodePRHalf || KeyType == KeyType.NodePRSHalf ||
-                                        KeyType == KeyType.NodePRHalf_2 || KeyType == KeyType.Type31 ||
-                                        KeyType == KeyType.NodeRHalf || KeyType == KeyType.NodeSHalf;
+        public bool UsesScaleVectors => KeyType == KeyType.NodePRSHalf ||
+                                        KeyType == KeyType.NodePRHalf  || KeyType == KeyType.NodePRHalf_2  || KeyType == KeyType.NodeRSHalf || KeyType == KeyType.NodePSHalf ||
+                                        KeyType == KeyType.Type31      || KeyType == KeyType.NodeRHalf     || KeyType == KeyType.NodeSHalf;
 
         public bool HasPRSKeyFrames
         {
@@ -46,7 +48,7 @@ namespace GFDLibrary.Animations
                         return true;
 
                     case KeyType.Type31:
-                        return Version < 0x01105100;
+                        return !IsCatherineFullBodyData;
                 }
 
                 return false;
@@ -84,6 +86,8 @@ namespace GFDLibrary.Animations
                     case KeyType.NodePRHalf_2:
                     case KeyType.NodeRHalf:
                     case KeyType.NodeSHalf:
+                    case KeyType.NodeRSHalf:
+                    case KeyType.NodePSHalf:
                         key = new PRSKey( KeyType );
                         break;
                     case KeyType.Vector3:
@@ -129,13 +133,13 @@ namespace GFDLibrary.Animations
                         break;
                     case KeyType.Type31:
                         {
-                            if ( Version < 0x01105100 )
+                            if (IsCatherineFullBodyData)
                             {
-                                key = new KeyType31Dancing();
+                                key = new KeyType31FullBody();
                             }
                             else
                             {
-                                key = new KeyType31FullBody();
+                                key = new KeyType31Dancing();
                             }
                         }
                         break;
@@ -152,7 +156,7 @@ namespace GFDLibrary.Animations
             {
                 PositionScale = reader.ReadVector3();
 
-                if ( Version < 0x01105100 || KeyType != KeyType.Type31 )
+                if ( !IsCatherineFullBodyData || KeyType != KeyType.Type31 )
                     ScaleScale = reader.ReadVector3();
             }
         }
@@ -168,7 +172,7 @@ namespace GFDLibrary.Animations
             {
                 writer.WriteVector3( PositionScale );
 
-                if ( Version < 0x01105100 || KeyType != KeyType.Type31 )
+                if ( !IsCatherineFullBodyData || KeyType != KeyType.Type31 )
                     writer.WriteVector3( ScaleScale );
             }
         }

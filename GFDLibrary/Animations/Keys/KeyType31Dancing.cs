@@ -6,12 +6,6 @@ namespace GFDLibrary.Animations
     {
         public KeyType31Type SubType => KeyType31Type.Dancing;
 
-        public override bool HasPosition => true;
-
-        public override bool HasRotation => false;
-
-        public override bool HasScale => false;
-
         public KeyType31Dancing() : base( KeyType.Type31 )
         {
             

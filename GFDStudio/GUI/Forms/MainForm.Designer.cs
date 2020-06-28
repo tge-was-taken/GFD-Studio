@@ -55,6 +55,7 @@ namespace GFDStudio.GUI.Forms
             this.mAnimationStopButton = new System.Windows.Forms.Button();
             this.mAnimationPlaybackButton = new System.Windows.Forms.Button();
             this.mAnimationTrackBar = new System.Windows.Forms.TrackBar();
+            this.convertAnimationsToP5InDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mMainMenuStrip.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -145,7 +146,8 @@ namespace GFDStudio.GUI.Forms
             // 
             this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.makeRelativeToolStripMenuItem,
-            this.rescaleAnimationPacksInDirectoryToolStripMenuItem});
+            this.rescaleAnimationPacksInDirectoryToolStripMenuItem,
+            this.convertAnimationsToP5InDirectoryToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
             this.toolsToolStripMenuItem.Text = "Tools";
@@ -294,6 +296,13 @@ namespace GFDStudio.GUI.Forms
             this.mAnimationTrackBar.Size = new System.Drawing.Size(516, 29);
             this.mAnimationTrackBar.TabIndex = 1;
             // 
+            // convertAnimationsToP5InDirectoryToolStripMenuItem
+            // 
+            this.convertAnimationsToP5InDirectoryToolStripMenuItem.Name = "convertAnimationsToP5InDirectoryToolStripMenuItem";
+            this.convertAnimationsToP5InDirectoryToolStripMenuItem.Size = new System.Drawing.Size(327, 22);
+            this.convertAnimationsToP5InDirectoryToolStripMenuItem.Text = "Convert P5R animations to P5 in directory";
+            this.convertAnimationsToP5InDirectoryToolStripMenuItem.Click += new System.EventHandler(this.HandleConvertAnimationsToolStripMenuItemClick);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -346,5 +355,6 @@ namespace GFDStudio.GUI.Forms
         private DataTreeView mAnimationListTreeView;
         private System.Windows.Forms.Button mAnimationStopButton;
         private System.Windows.Forms.ToolStripMenuItem rescaleAnimationPacksInDirectoryToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem convertAnimationsToP5InDirectoryToolStripMenuItem;
     }
 }
