@@ -2,10 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Assimp.Configs;
 using GFDLibrary.IO;
 using GFDLibrary.Models.Conversion;
-using GFDLibrary.Textures;
 
 namespace GFDLibrary.Materials
 {
