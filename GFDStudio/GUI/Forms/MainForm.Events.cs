@@ -355,9 +355,8 @@ namespace GFDStudio.GUI.Forms
                         try
                         {
                             var materialDictionary = Resource.Load<MaterialDictionary>(filePath);
-                            Console.WriteLine(materialDictionary);
-                            //materialDictionary.ReplaceWith (MaterialDictionary.ConvertToMaterialPreset(materialDictionary, option));
-                            //materialDictionary.Save(filePath);
+                            materialDictionary.ReplaceWith (MaterialDictionary.ConvertToMaterialPreset(materialDictionary, option));
+                            materialDictionary.Save(filePath);
                         }
                         catch (Exception)
                         {
