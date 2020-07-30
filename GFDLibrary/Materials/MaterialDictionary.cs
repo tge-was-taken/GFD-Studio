@@ -1,7 +1,11 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Assimp.Configs;
 using GFDLibrary.IO;
+using GFDLibrary.Models.Conversion;
+using GFDLibrary.Textures;
 
 namespace GFDLibrary.Materials
 {
@@ -26,6 +30,63 @@ namespace GFDLibrary.Materials
         {
             get => mDictionary[name];
             set => mDictionary[name] = value;
+        }
+
+        public static MaterialDictionary ConvertToMaterialPreset( MaterialDictionary materialDictionary, ModelPackConverterOptions options )
+        {
+            Material newMaterial = null;
+            var newMaterialDictionary = new MaterialDictionary(options.Version);
+
+            foreach (var material in materialDictionary.Materials)
+            {
+                Console.WriteLine(materialDictionary.Materials);
+                var materialName = material.Name;
+                var diffuseTexture = material.DiffuseMap;
+                var shadowTexture = material.ShadowMap;
+                if (shadowTexture == null)
+                    shadowTexture = material.DiffuseMap;
+                var specularTexture = material.SpecularMap;
+                if (specularTexture == null)
+                    specularTexture = material.DiffuseMap;
+
+                switch (options.MaterialPreset)
+                {
+                    case MaterialPreset.FieldTerrain:
+                        {
+                            newMaterial = MaterialFactory.CreateFieldTerrainMaterial(materialName, diffuseTexture.Name, false);
+                        }
+                        break;
+                    case MaterialPreset.FieldTerrainCastShadow:
+                        {
+                            newMaterial = MaterialFactory.CreateFieldTerrainCastShadowMaterial(materialName, diffuseTexture.Name, false);
+                        }
+                        break;
+                    case MaterialPreset.CharacterSkinP5:
+                    case MaterialPreset.CharacterSkinFB:
+                        {
+                            if (options.MaterialPreset == MaterialPreset.CharacterSkinP5)
+                                newMaterial = MaterialFactory.CreateCharacterSkinP5Material(materialName, diffuseTexture.Name, shadowTexture.Name, false);
+                            else
+                                newMaterial = MaterialFactory.CreateCharacterSkinFBMaterial(materialName, diffuseTexture.Name, shadowTexture.Name, false);
+                        }
+                        break;
+
+                    case MaterialPreset.PersonaSkinP5:
+                        {
+                            newMaterial = MaterialFactory.CreatePersonaSkinP5Material(materialName, diffuseTexture.Name, specularTexture.Name, shadowTexture.Name);
+                        }
+                        break;
+
+                    case MaterialPreset.CharacterClothP4D:
+                        {
+                            newMaterial = MaterialFactory.CreateCharacterClothP4DMaterial(materialName, diffuseTexture.Name, false);
+                        }
+                        break;
+                }
+                newMaterialDictionary.Add(newMaterial);
+            }
+
+            return newMaterialDictionary;
         }
 
         public void ReplaceWith( MaterialDictionary other )
