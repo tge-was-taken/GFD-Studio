@@ -37,7 +37,6 @@ namespace GFDLibrary.Materials
 
             foreach (var material in materialDictionary.Materials)
             {
-                Console.WriteLine(materialDictionary.Materials);
                 var materialName = material.Name;
                 var diffuseTexture = material.DiffuseMap;
                 var shadowTexture = material.ShadowMap;

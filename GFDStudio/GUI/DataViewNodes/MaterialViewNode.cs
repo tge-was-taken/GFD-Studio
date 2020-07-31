@@ -1,9 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Numerics;
+using System.Windows.Forms;
 using GFDLibrary;
 using GFDLibrary.Materials;
 using GFDLibrary.Models;
+using GFDLibrary.Models.Conversion;
+using GFDStudio.GUI.Forms;
 using GFDStudio.GUI.TypeConverters;
 
 namespace GFDStudio.GUI.DataViewNodes
@@ -248,6 +251,7 @@ namespace GFDStudio.GUI.DataViewNodes
         {
             RegisterExportHandler<Material>( path => Data.Save(  path ) );
             RegisterReplaceHandler<Material>( Resource.Load<Material> );
+            RegisterCustomHandler("Convert to", "Material preset", () => { ConvertToMaterialPreset(); });
             RegisterModelUpdateHandler( () =>
             {
                 var material = Data;
@@ -333,6 +337,22 @@ namespace GFDStudio.GUI.DataViewNodes
                     Data.Attributes == null ? new List< MaterialAttribute >() : Data.Attributes,
                     new object[] { new ListItemNameProvider< MaterialAttribute >( ( value, index ) => value.AttributeType.ToString() ) } );
             AddChildNode( AttributesViewNode );
+        }
+
+        private void ConvertToMaterialPreset()
+        {
+            using (var dialog = new ModelConverterOptionsDialog(false))
+            {
+                if (dialog.ShowDialog() != DialogResult.OK)
+                    return;
+
+                ModelPackConverterOptions options = new ModelPackConverterOptions()
+                {
+                    MaterialPreset = dialog.MaterialPreset,
+                    Version = dialog.Version
+                };
+                Replace(Material.ConvertToMaterialPreset(Data, options));
+            }
         }
     }
 }
