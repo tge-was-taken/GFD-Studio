@@ -87,24 +87,24 @@ namespace GFDLibrary.Materials
             return newMaterialDictionary;
         }
 
-        public void ReplaceWith( MaterialDictionary other )
+        public void ReplaceWith(MaterialDictionary other)
         {
-            foreach ( var material in other )
+            foreach (var material in other)
             {
                 // Don't replace the material if we're replacing a normal material with a preset one.
-                if ( !ContainsKey(material.Key) || !material.Value.IsPresetMaterial || this[ material.Key ].IsPresetMaterial )
+                if (!ContainsKey(material.Key) || !material.Value.IsPresetMaterial || this[material.Key].IsPresetMaterial)
                     this[material.Key] = material.Value;
             }
 
             var toRemove = new List<string>();
-            foreach ( var material in this )
+            foreach (var material in this)
             {
-                if ( !other.TryGetMaterial( material.Key, out _ ) )
-                    toRemove.Add( material.Key );
+                if (!other.TryGetMaterial(material.Key, out _))
+                    toRemove.Add(material.Key);
             }
 
-            foreach ( string s in toRemove )
-                Remove( s );
+            foreach (string s in toRemove)
+                Remove(s);
         }
 
         internal override void Read( ResourceReader reader, long endPosition = -1 )
