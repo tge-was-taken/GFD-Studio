@@ -44,6 +44,8 @@ namespace GFDStudio.GUI.Forms
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.makeRelativeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rescaleAnimationPacksInDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.convertAnimationsToP5InDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.convertMaterialInDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mPropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.mContentPanel = new System.Windows.Forms.Panel();
             this.tabControl1 = new System.Windows.Forms.TabControl();
@@ -55,7 +57,6 @@ namespace GFDStudio.GUI.Forms
             this.mAnimationStopButton = new System.Windows.Forms.Button();
             this.mAnimationPlaybackButton = new System.Windows.Forms.Button();
             this.mAnimationTrackBar = new System.Windows.Forms.TrackBar();
-            this.convertAnimationsToP5InDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mMainMenuStrip.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -147,9 +148,10 @@ namespace GFDStudio.GUI.Forms
             this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.makeRelativeToolStripMenuItem,
             this.rescaleAnimationPacksInDirectoryToolStripMenuItem,
-            this.convertAnimationsToP5InDirectoryToolStripMenuItem});
+            this.convertAnimationsToP5InDirectoryToolStripMenuItem,
+            this.convertMaterialInDirectoryToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
-            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
+            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(46, 20);
             this.toolsToolStripMenuItem.Text = "Tools";
             // 
             // makeRelativeToolStripMenuItem
@@ -165,6 +167,20 @@ namespace GFDStudio.GUI.Forms
             this.rescaleAnimationPacksInDirectoryToolStripMenuItem.Size = new System.Drawing.Size(327, 22);
             this.rescaleAnimationPacksInDirectoryToolStripMenuItem.Text = "Rescale/Reposition animation packs in directory";
             this.rescaleAnimationPacksInDirectoryToolStripMenuItem.Click += new System.EventHandler(this.HandleRescaleAnimationsToolStripMenuItemClick);
+            // 
+            // convertAnimationsToP5InDirectoryToolStripMenuItem
+            // 
+            this.convertAnimationsToP5InDirectoryToolStripMenuItem.Name = "convertAnimationsToP5InDirectoryToolStripMenuItem";
+            this.convertAnimationsToP5InDirectoryToolStripMenuItem.Size = new System.Drawing.Size(327, 22);
+            this.convertAnimationsToP5InDirectoryToolStripMenuItem.Text = "Convert P5R animations to P5 in directory";
+            this.convertAnimationsToP5InDirectoryToolStripMenuItem.Click += new System.EventHandler(this.HandleConvertAnimationsToolStripMenuItemClick);
+            // 
+            // convertMaterialInDirectoryToolStripMenuItem
+            // 
+            this.convertMaterialInDirectoryToolStripMenuItem.Name = "convertMaterialInDirectoryToolStripMenuItem";
+            this.convertMaterialInDirectoryToolStripMenuItem.Size = new System.Drawing.Size(327, 22);
+            this.convertMaterialInDirectoryToolStripMenuItem.Text = "Convert model materials in directory";
+            this.convertMaterialInDirectoryToolStripMenuItem.Click += new System.EventHandler(this.HandleConvertMaterialsToolStripMenuItemClick);
             // 
             // mPropertyGrid
             // 
@@ -255,7 +271,7 @@ namespace GFDStudio.GUI.Forms
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 70F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 127F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 139F));
             this.tableLayoutPanel1.Controls.Add(this.mAnimationStopButton, 7, 0);
             this.tableLayoutPanel1.Controls.Add(this.mAnimationPlaybackButton, 6, 0);
             this.tableLayoutPanel1.Controls.Add(this.mAnimationTrackBar, 0, 0);
@@ -269,9 +285,9 @@ namespace GFDStudio.GUI.Forms
             // mAnimationStopButton
             // 
             this.mAnimationStopButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mAnimationStopButton.Location = new System.Drawing.Point(595, 3);
+            this.mAnimationStopButton.Location = new System.Drawing.Point(583, 3);
             this.mAnimationStopButton.Name = "mAnimationStopButton";
-            this.mAnimationStopButton.Size = new System.Drawing.Size(127, 29);
+            this.mAnimationStopButton.Size = new System.Drawing.Size(139, 29);
             this.mAnimationStopButton.TabIndex = 2;
             this.mAnimationStopButton.Text = "Stop";
             this.mAnimationStopButton.UseVisualStyleBackColor = true;
@@ -280,7 +296,7 @@ namespace GFDStudio.GUI.Forms
             // mAnimationPlaybackButton
             // 
             this.mAnimationPlaybackButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mAnimationPlaybackButton.Location = new System.Drawing.Point(525, 3);
+            this.mAnimationPlaybackButton.Location = new System.Drawing.Point(513, 3);
             this.mAnimationPlaybackButton.Name = "mAnimationPlaybackButton";
             this.mAnimationPlaybackButton.Size = new System.Drawing.Size(64, 29);
             this.mAnimationPlaybackButton.TabIndex = 0;
@@ -293,15 +309,8 @@ namespace GFDStudio.GUI.Forms
             this.mAnimationTrackBar.Dock = System.Windows.Forms.DockStyle.Fill;
             this.mAnimationTrackBar.Location = new System.Drawing.Point(3, 3);
             this.mAnimationTrackBar.Name = "mAnimationTrackBar";
-            this.mAnimationTrackBar.Size = new System.Drawing.Size(516, 29);
+            this.mAnimationTrackBar.Size = new System.Drawing.Size(504, 29);
             this.mAnimationTrackBar.TabIndex = 1;
-            // 
-            // convertAnimationsToP5InDirectoryToolStripMenuItem
-            // 
-            this.convertAnimationsToP5InDirectoryToolStripMenuItem.Name = "convertAnimationsToP5InDirectoryToolStripMenuItem";
-            this.convertAnimationsToP5InDirectoryToolStripMenuItem.Size = new System.Drawing.Size(327, 22);
-            this.convertAnimationsToP5InDirectoryToolStripMenuItem.Text = "Convert P5R animations to P5 in directory";
-            this.convertAnimationsToP5InDirectoryToolStripMenuItem.Click += new System.EventHandler(this.HandleConvertAnimationsToolStripMenuItemClick);
             // 
             // MainForm
             // 
@@ -356,5 +365,6 @@ namespace GFDStudio.GUI.Forms
         private System.Windows.Forms.Button mAnimationStopButton;
         private System.Windows.Forms.ToolStripMenuItem rescaleAnimationPacksInDirectoryToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem convertAnimationsToP5InDirectoryToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem convertMaterialInDirectoryToolStripMenuItem;
     }
 }
