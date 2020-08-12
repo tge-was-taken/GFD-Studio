@@ -542,6 +542,9 @@ namespace GFDLibrary.Materials
             if (specularTexture == null)
                 specularTexture = material.DiffuseMap;
 
+            if (diffuseTexture == null) 
+                return material;
+
             switch (options.MaterialPreset)
             {
                 case MaterialPreset.FieldTerrain:
