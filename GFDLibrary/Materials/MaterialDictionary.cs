@@ -46,39 +46,44 @@ namespace GFDLibrary.Materials
                 if (specularTexture == null)
                     specularTexture = material.DiffuseMap;
 
-                switch (options.MaterialPreset)
+                if (diffuseTexture == null)
+                    newMaterial = material;
+                else
                 {
-                    case MaterialPreset.FieldTerrain:
-                        {
-                            newMaterial = MaterialFactory.CreateFieldTerrainMaterial(materialName, diffuseTexture.Name, false);
-                        }
-                        break;
-                    case MaterialPreset.FieldTerrainCastShadow:
-                        {
-                            newMaterial = MaterialFactory.CreateFieldTerrainCastShadowMaterial(materialName, diffuseTexture.Name, false);
-                        }
-                        break;
-                    case MaterialPreset.CharacterSkinP5:
-                    case MaterialPreset.CharacterSkinFB:
-                        {
-                            if (options.MaterialPreset == MaterialPreset.CharacterSkinP5)
-                                newMaterial = MaterialFactory.CreateCharacterSkinP5Material(materialName, diffuseTexture.Name, shadowTexture.Name, false);
-                            else
-                                newMaterial = MaterialFactory.CreateCharacterSkinFBMaterial(materialName, diffuseTexture.Name, shadowTexture.Name, false);
-                        }
-                        break;
+                    switch (options.MaterialPreset)
+                    {
+                        case MaterialPreset.FieldTerrain:
+                            {
+                                newMaterial = MaterialFactory.CreateFieldTerrainMaterial(materialName, diffuseTexture.Name, false);
+                            }
+                            break;
+                        case MaterialPreset.FieldTerrainCastShadow:
+                            {
+                                newMaterial = MaterialFactory.CreateFieldTerrainCastShadowMaterial(materialName, diffuseTexture.Name, false);
+                            }
+                            break;
+                        case MaterialPreset.CharacterSkinP5:
+                        case MaterialPreset.CharacterSkinFB:
+                            {
+                                if (options.MaterialPreset == MaterialPreset.CharacterSkinP5)
+                                    newMaterial = MaterialFactory.CreateCharacterSkinP5Material(materialName, diffuseTexture.Name, shadowTexture.Name, false);
+                                else
+                                    newMaterial = MaterialFactory.CreateCharacterSkinFBMaterial(materialName, diffuseTexture.Name, shadowTexture.Name, false);
+                            }
+                            break;
 
-                    case MaterialPreset.PersonaSkinP5:
-                        {
-                            newMaterial = MaterialFactory.CreatePersonaSkinP5Material(materialName, diffuseTexture.Name, specularTexture.Name, shadowTexture.Name);
-                        }
-                        break;
+                        case MaterialPreset.PersonaSkinP5:
+                            {
+                                newMaterial = MaterialFactory.CreatePersonaSkinP5Material(materialName, diffuseTexture.Name, specularTexture.Name, shadowTexture.Name);
+                            }
+                            break;
 
-                    case MaterialPreset.CharacterClothP4D:
-                        {
-                            newMaterial = MaterialFactory.CreateCharacterClothP4DMaterial(materialName, diffuseTexture.Name, false);
-                        }
-                        break;
+                        case MaterialPreset.CharacterClothP4D:
+                            {
+                                newMaterial = MaterialFactory.CreateCharacterClothP4DMaterial(materialName, diffuseTexture.Name, false);
+                            }
+                            break;
+                    }
                 }
                 newMaterialDictionary.Add(newMaterial);
             }
