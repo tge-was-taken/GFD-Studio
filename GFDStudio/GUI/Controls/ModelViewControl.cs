@@ -328,7 +328,7 @@ namespace GFDStudio.GUI.Controls
         /// <param name="e"></param>
         protected override void OnPaint( PaintEventArgs e )
         {
-            if ( !mCanRender )
+            if ( !mCanRender || mCamera == null)
                 return;
 
             ExecuteTimedCallback( () =>

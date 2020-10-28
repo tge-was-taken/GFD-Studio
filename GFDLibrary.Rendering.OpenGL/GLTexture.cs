@@ -119,7 +119,7 @@ namespace GFDLibrary.Rendering.OpenGL
                     return PixelInternalFormat.Rgba8;
 
                 default:
-                    throw new NotImplementedException( format.ToString() );
+                    throw new NotImplementedException( "Unsupported texture format: " + format.ToString() );
             }
         }
 
