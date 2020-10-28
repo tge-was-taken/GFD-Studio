@@ -162,7 +162,8 @@ namespace GFDLibrary.Common
 
         public void Add( string key, UserProperty value )
         {
-            mDictionary.Add( key, value );
+            if (!mDictionary.ContainsKey(key))
+                mDictionary.Add( key, value );
         }
 
         public void Add( KeyValuePair<string, UserProperty> item )
