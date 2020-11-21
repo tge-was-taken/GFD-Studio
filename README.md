@@ -1,5 +1,8 @@
 # GFD Studio
 **GFD Studio** is a tool for viewing, editing and converting models in **GMD**/**GFS** format.
+## Latest builds
+Latest debug/release builds can be found here:
+https://ci.appveyor.com/project/TGEnigma/gfd-studio/build/artifacts
 ## Features
 - View a rendered preview of the opened model
 - View, export, replace and add **Textures** (automatic conversion to and from PNG/DDS)
