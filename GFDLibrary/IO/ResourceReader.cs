@@ -9,7 +9,7 @@ namespace GFDLibrary.IO
 {
     public class ResourceReader : EndianBinaryReader
     {
-        private static readonly Encoding sSJISEncoding = Encoding.GetEncoding( 932 );
+        private static readonly Encoding sSJISEncoding = CodePagesEncodingProvider.Instance.GetEncoding( 932 );
 
         public bool EndOfStream => Position >= BaseStream.Length;
 

@@ -9,18 +9,18 @@ using GFDLibrary;
 using GFDLibrary.Common;
 using GFDLibrary.Textures;
 using OpenTK;
-using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
-using OpenTK.Input;
 using GFDLibrary.Animations;
 using GFDLibrary.Models;
 using GFDLibrary.Rendering.OpenGL;
 using GFDStudio.DataManagement;
 using Color = System.Drawing.Color;
-using Key = OpenTK.Input.Key;
 using Quaternion = OpenTK.Quaternion;
 using Vector3 = OpenTK.Vector3;
 using Vector4 = OpenTK.Vector4;
+using OpenTK.Graphics;
+using OpenTK.Input;
+using Key = OpenTK.Input.Key;
 
 namespace GFDStudio.GUI.Controls
 {

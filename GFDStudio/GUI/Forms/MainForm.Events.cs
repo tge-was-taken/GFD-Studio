@@ -14,6 +14,7 @@ using GFDStudio.GUI.Controls;
 using GFDStudio.GUI.DataViewNodes;
 using GFDStudio.IO;
 using Ookii.Dialogs;
+using Ookii.Dialogs.Wpf;
 
 namespace GFDStudio.GUI.Forms
 {
@@ -180,16 +181,16 @@ namespace GFDStudio.GUI.Forms
                                             MessageBoxIcon.Question, MessageBoxDefaultButton.Button2 ) == DialogResult.Yes;
 
             string directoryPath;
-            using ( var dialog = new VistaFolderBrowserDialog() )
+            var browserDialog = new VistaFolderBrowserDialog();
             {
-                dialog.Description =
+                browserDialog.Description =
                     "Select a directory containing GAP files, or subdirectories containing GAP files to retarget to the new model.\n" +
                     "Note that this will replace the original files.";
 
-                if ( dialog.ShowDialog() != DialogResult.OK )
+                if ( browserDialog.ShowDialog() != true )
                     return;
 
-                directoryPath = dialog.SelectedPath;
+                directoryPath = browserDialog.SelectedPath;
             }
 
             var failures = new ConcurrentBag<string>();
@@ -240,16 +241,16 @@ namespace GFDStudio.GUI.Forms
         private void HandleConvertAnimationsToolStripMenuItemClick(object sender, EventArgs e)
         {
             string directoryPath;
-            using (var dialog = new VistaFolderBrowserDialog())
+            var folderDIalog = new VistaFolderBrowserDialog();
             {
-                dialog.Description =
+                folderDIalog.Description =
                     "Select a directory containing GAP files, or subdirectories containing GAP files to convert the animations.\n" +
                     "Note that this will replace the original files.";
 
-                if (dialog.ShowDialog() != DialogResult.OK)
+                if (folderDIalog.ShowDialog() != true)
                     return;
 
-                directoryPath = dialog.SelectedPath;
+                directoryPath = folderDIalog.SelectedPath;
             }
 
             var failures = new ConcurrentBag<string>();
@@ -300,16 +301,16 @@ namespace GFDStudio.GUI.Forms
         private void HandleConvertMaterialsToolStripMenuItemClick(object sender, EventArgs e)
         {
             string directoryPath;
-            using (var dialog = new VistaFolderBrowserDialog())
+            var folderDialog = new VistaFolderBrowserDialog();
             {
-                dialog.Description =
+                folderDialog.Description =
                     "Select a directory containing GMD files, or subdirectories containing GMD files to convert the materials.\n" +
                     "Note that this will replace the original files.";
 
-                if (dialog.ShowDialog() != DialogResult.OK)
+                if (folderDialog.ShowDialog() != true)
                     return;
 
-                directoryPath = dialog.SelectedPath;
+                directoryPath = folderDialog.SelectedPath;
             }
 
             var failures = new ConcurrentBag<string>();
@@ -377,16 +378,16 @@ namespace GFDStudio.GUI.Forms
         private void HandleRescaleAnimationsToolStripMenuItemClick( object sender, EventArgs e)
         {
             string directoryPath;
-            using (var dialog = new VistaFolderBrowserDialog())
+            var folderDialog = new VistaFolderBrowserDialog();
             {
-                dialog.Description =
+                folderDialog.Description =
                     "Select a directory containing GAP files, or subdirectories containing GAP files to rescale.\n" +
                     "Note that this will replace the original files.";
 
-                if (dialog.ShowDialog() != DialogResult.OK)
+                if (folderDialog.ShowDialog() != true)
                     return;
 
-                directoryPath = dialog.SelectedPath;
+                directoryPath = folderDialog.SelectedPath;
             }
 
             Vector3 scale;

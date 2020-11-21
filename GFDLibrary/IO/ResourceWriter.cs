@@ -10,7 +10,7 @@ namespace GFDLibrary.IO
 {
     public class ResourceWriter : EndianBinaryWriter
     {
-        private static readonly Encoding sSJISEncoding = Encoding.GetEncoding( 932 );
+        private static readonly Encoding sSJISEncoding = CodePagesEncodingProvider.Instance.GetEncoding( 932 );
 
         public ResourceWriter( Stream stream, bool leaveOpen ) : base( stream, Encoding.Default, leaveOpen, Endianness.BigEndian )
         {

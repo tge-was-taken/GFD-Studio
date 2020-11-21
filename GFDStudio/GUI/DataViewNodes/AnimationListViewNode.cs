@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using GFDLibrary;
 using GFDLibrary.Animations;
 using Ookii.Dialogs;
+using Ookii.Dialogs.Wpf;
 
 namespace GFDStudio.GUI.DataViewNodes
 {
@@ -26,9 +27,9 @@ namespace GFDStudio.GUI.DataViewNodes
             } );
             RegisterCustomHandler( "Export", "All", () =>
             {
-                using ( var dialog = new VistaFolderBrowserDialog() )
+                var dialog = new VistaFolderBrowserDialog();
                 {
-                    if ( dialog.ShowDialog() != DialogResult.OK )
+                    if ( dialog.ShowDialog() != true )
                         return;
 
                     foreach ( AnimationViewNode animationViewModel in Nodes )

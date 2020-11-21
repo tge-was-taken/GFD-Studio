@@ -156,7 +156,7 @@ namespace GFDLibrary.Rendering.OpenGL
                 int mipSize = ( ( mipWidth * mipHeight ) / 16 ) * blockSize;
 
                 if ( mipSize > blockSize )
-                    GL.CompressedTexImage2D( TextureTarget.Texture2D, mipLevel, format, mipWidth, mipHeight, 0, mipSize, data + mipOffset );
+                    GL.CompressedTexImage2D( TextureTarget.Texture2D, mipLevel, (InternalFormat)format, mipWidth, mipHeight, 0, mipSize, data + mipOffset );
 
                 mipOffset += mipSize;
                 mipWidth  /= 2;
