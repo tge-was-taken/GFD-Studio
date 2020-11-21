@@ -115,6 +115,7 @@ namespace GFDLibrary.Textures
     {
         Invalid = 0,
         DDS = 1,
-        GXT = 6
+        GXT = 6,
+        GNF = 9
     }
 }
