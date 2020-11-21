@@ -83,6 +83,12 @@ namespace GFDLibrary.Materials
                                 newMaterial = MaterialFactory.CreateCharacterClothP4DMaterial(materialName, diffuseTexture.Name, false);
                             }
                             break;
+
+                        case MaterialPreset.CharacterSkinP3DP5D:
+                            {
+                                newMaterial = MaterialFactory.CreateCharacterSkinP3DP5DMaterial(materialName, diffuseTexture.Name, false);
+                            }
+                            break;
                     }
                 }
                 newMaterialDictionary.Add(newMaterial);

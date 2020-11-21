@@ -170,6 +170,17 @@ namespace GFDLibrary.Models.Conversion
                         }
                     }
                     break;
+
+                case MaterialPreset.CharacterSkinP3DP5D:
+                    {
+                        if (diffuseTexture != null)
+                        {
+                            textureDictionary.Add(diffuseTexture.Texture);
+                            material = MaterialFactory.CreateCharacterSkinP3DP5DMaterial(materialName, diffuseTexture.Name,
+                                                                                       HasAlpha(diffuseTexture.PixelFormat));
+                        }
+                    }
+                    break;
             }
 
             // Create dummy material if none was created
