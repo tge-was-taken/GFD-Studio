@@ -352,7 +352,7 @@ namespace GFDLibrary.Materials
             Field70 = reader.ReadUInt32();
             Field50 = reader.ReadInt16();
 
-            if ( Version <= 0x1105070 || Version >= 0x1105090 )
+            if ( Version <= 0x1105070 || Version >= 0x1105090 || Version == 0x1105080 )
             {
                 Field98 = reader.ReadUInt32();
             }
