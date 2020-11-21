@@ -1,0 +1,17 @@
+version: 0.4.9.{build}
+image: Visual Studio 2019
+clone_folder: c:\project
+build_script:
+- cmd: >-
+    git submodule update --init --recursive
+
+    dotnet restore
+
+    dotnet publish -c Debug -o c:\project\build\debug GFDStudio\GFDStudio.csproj
+
+    dotnet publish -c Release -o c:\project\build\release GFDStudio\GFDStudio.csproj
+artifacts:
+- path: build/release
+  name: release
+- path: build/debug
+  name: debug
