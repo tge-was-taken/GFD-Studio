@@ -1,9 +1,9 @@
-﻿using System;
+﻿using GFDLibrary.IO.Common;
+using GFDLibrary.Textures.DDS;
+using System;
 using System.Drawing;
 using System.IO;
 using System.Text;
-using GFDLibrary.IO.Common;
-using GFDLibrary.Textures.DDS;
 
 namespace GFDLibrary.Textures
 {
@@ -48,11 +48,11 @@ namespace GFDLibrary.Textures
 
             if ( format == TexturePixelFormat.BC2 )
             {
-                Flags |= FieldTextureFlags.DXT3;
+                Flags |= FieldTextureFlags.BC2;
             }
             else if ( format == TexturePixelFormat.BC3 )
             {
-                Flags |= FieldTextureFlags.DXT5;
+                Flags |= FieldTextureFlags.BC3;
             }
 
             MipMapCount = mipMapCount;
@@ -72,16 +72,16 @@ namespace GFDLibrary.Textures
             Field0C = 0x00000000;
             Flags   = FieldTextureFlags.Flag2 | FieldTextureFlags.Flag4 | FieldTextureFlags.Flag80;
 
-            var ddsFormat = DDSCodec.DetermineBestCompressedFormat( bitmap );
-            var data = DDSCodec.CompressPixelData( bitmap, ddsFormat );
+            var format = DDSCodec.DetermineBestDXGIFormat( bitmap );
+            var texture = DDSCodec.Compress( bitmap, format );
 
-            if ( ddsFormat == DDSPixelFormatFourCC.DXT3 )
+            if ( format == DXGIFormat.BC2_TYPELESS || format == DXGIFormat.BC2_UNORM || format == DXGIFormat.BC2_UNORM_SRGB )
             {
-                Flags |= FieldTextureFlags.DXT3;
+                Flags |= FieldTextureFlags.BC2;
             }
-            else if ( ddsFormat == DDSPixelFormatFourCC.DXT5 )
+            else if ( format == DXGIFormat.BC3_TYPELESS || format == DXGIFormat.BC3_UNORM || format == DXGIFormat.BC3_UNORM_SRGB )
             {
-                Flags |= FieldTextureFlags.DXT5;
+                Flags |= FieldTextureFlags.BC3;
             }
 
             MipMapCount = ( byte )1;
@@ -91,7 +91,7 @@ namespace GFDLibrary.Textures
             Width       = ( short )bitmap.Width;
             Height      = ( short )bitmap.Height;
             Field24     = 1;
-            Data        = data;
+            Data        = texture.Pixels.ToArray();
         }
 
         public FieldTexturePS3( byte[] ddsData )
@@ -106,11 +106,11 @@ namespace GFDLibrary.Textures
 
             if ( ddsHeader.PixelFormat.FourCC == DDSPixelFormatFourCC.DXT3 )
             {
-                Flags |= FieldTextureFlags.DXT3;
+                Flags |= FieldTextureFlags.BC2;
             }
             else if ( ddsHeader.PixelFormat.FourCC == DDSPixelFormatFourCC.DXT5 )
             {
-                Flags |= FieldTextureFlags.DXT5;
+                Flags |= FieldTextureFlags.BC3;
             }
 
             MipMapCount = ( byte )ddsHeader.MipMapCount;
@@ -206,10 +206,10 @@ namespace GFDLibrary.Textures
     [Flags]
     public enum FieldTextureFlags
     {
-        DXT3   = 1 << 0,
+        BC2   = 1 << 0,
         Flag2  = 1 << 1,
         Flag4  = 1 << 2,
-        DXT5   = 1 << 3,
+        BC3   = 1 << 3,
         Flag10 = 1 << 4,
         Flag20 = 1 << 5,
         Flag40 = 1 << 6,

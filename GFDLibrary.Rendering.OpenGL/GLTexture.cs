@@ -126,11 +126,11 @@ namespace GFDLibrary.Rendering.OpenGL
         private static PixelInternalFormat GetPixelInternalFormat( FieldTextureFlags flags )
         {
             PixelInternalFormat format = PixelInternalFormat.CompressedRgbaS3tcDxt1Ext;
-            if ( flags.HasFlag( FieldTextureFlags.DXT3 ) )
+            if ( flags.HasFlag( FieldTextureFlags.BC2 ) )
             {
                 format = PixelInternalFormat.CompressedRgbaS3tcDxt3Ext;
             }
-            else if ( flags.HasFlag( FieldTextureFlags.DXT5 ) )
+            else if ( flags.HasFlag( FieldTextureFlags.BC3 ) )
             {
                 format = PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
             }

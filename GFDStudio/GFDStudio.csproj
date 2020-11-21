@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -10,6 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="DirectXTexNet" Version="1.0.0" />
     <PackageReference Include="Ookii.Dialogs.Wpf" Version="3.0.1" />
     <PackageReference Include="OpenTK" Version="3.1.0" />
     <PackageReference Include="OpenTK.GLControl" Version="3.1.0" />

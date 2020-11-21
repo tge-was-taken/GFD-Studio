@@ -214,35 +214,39 @@ namespace GFDLibrary.Textures.GNF
 
         public GNFTexture( Bitmap bitmap )
         {
-            var ddsFormat = DDSCodec.DetermineBestCompressedFormat( bitmap );
-            var dds = DDSCodec.CompressPixelData( bitmap, ddsFormat );
-            var surfaceFormat = GetSurfaceFormat( ddsFormat );
-            Init( surfaceFormat, 1, ( short )bitmap.Width, ( short )bitmap.Height, dds, false );
+            var texture = DDSCodec.Compress( bitmap, DXGIFormat.UNKNOWN );
+            var surfaceFormat = GetSurfaceFormat( texture.Format );
+            Init( surfaceFormat, 1, (short)bitmap.Width, (short)bitmap.Height, texture.Pixels.ToArray(), false );
         }
 
-        private static SurfaceFormat GetSurfaceFormat( DDSPixelFormatFourCC ddsFormat )
+        private static SurfaceFormat GetSurfaceFormat( DXGIFormat ddsFormat )
         {
             SurfaceFormat surfaceFormat;
             switch ( ddsFormat )
             {
-                case DDSPixelFormatFourCC.DXT1:
+                case DXGIFormat.BC1_TYPELESS:
+                case DXGIFormat.BC1_UNORM:
+                case DXGIFormat.BC1_UNORM_SRGB:
                     surfaceFormat = SurfaceFormat.BC1;
                     break;
-                case DDSPixelFormatFourCC.DXT2:
-                case DDSPixelFormatFourCC.DXT3:
+                case DXGIFormat.BC2_TYPELESS:
+                case DXGIFormat.BC2_UNORM:
+                case DXGIFormat.BC2_UNORM_SRGB:
                     surfaceFormat = SurfaceFormat.BC2;
                     break;
-
-                case DDSPixelFormatFourCC.DXT4:
-                case DDSPixelFormatFourCC.DXT5:
+                case DXGIFormat.BC3_TYPELESS:
+                case DXGIFormat.BC3_UNORM:
+                case DXGIFormat.BC3_UNORM_SRGB:
                     surfaceFormat = SurfaceFormat.BC3;
                     break;
-
-                case DDSPixelFormatFourCC.ATI1:
+                case DXGIFormat.BC4_SNORM:
+                case DXGIFormat.BC4_TYPELESS:
+                case DXGIFormat.BC4_UNORM:
                     surfaceFormat = SurfaceFormat.BC4;
                     break;
-
-                case DDSPixelFormatFourCC.ATI2N_3Dc:
+                case DXGIFormat.BC5_SNORM:
+                case DXGIFormat.BC5_TYPELESS:
+                case DXGIFormat.BC5_UNORM:
                     surfaceFormat = SurfaceFormat.BC5;
                     break;
 
@@ -255,7 +259,7 @@ namespace GFDLibrary.Textures.GNF
 
         public GNFTexture( DDSStream dds )
         {
-            var surfaceFormat = GetSurfaceFormat( dds.PixelFormat.FourCC );
+            var surfaceFormat = GetSurfaceFormat( dds.PixelFormat.FourCC.ToDXGIFormat() );
             Init( surfaceFormat, ( byte ) dds.MipMapCount, ( short ) dds.Width, ( short ) dds.Height, dds.GetPixelData(), false );
         }
 

@@ -167,7 +167,7 @@ namespace GFDStudio.FormatModules
             {
                 return GetBitmapCore( obj );
             }
-            catch ( Exception )
+            catch ( Exception e )
             {
                 return new Bitmap( 32, 32 );
             }

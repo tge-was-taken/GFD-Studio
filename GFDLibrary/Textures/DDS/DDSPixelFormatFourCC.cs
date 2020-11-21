@@ -2,7 +2,7 @@
 {
     /// <summary>
     /// Old method of identifying Compressed textures.
-    /// DX10 indicates new texture, the DX10 Additional header will contain the true format. See <see cref="DXGI_FORMAT"/>.
+    /// DX10 indicates new texture, the DX10 Additional header will contain the true format. See <see cref="DXGIFormat"/>.
     /// </summary>
     public enum DDSPixelFormatFourCC
     {
@@ -116,5 +116,131 @@
         G32R32F,
         A32B32G32R32F,
         CxV8U8,
+    }
+
+    public static class DDS3PixelFormatFourCCExtensions
+    {
+        public static DXGIFormat ToDXGIFormat(this DDSPixelFormatFourCC f)
+        {
+            switch ( f )
+            {
+                case DDSPixelFormatFourCC.DXT1:
+                    return DXGIFormat.BC1_UNORM;
+                case DDSPixelFormatFourCC.DXT2:
+                    return DXGIFormat.BC2_UNORM;
+                case DDSPixelFormatFourCC.DXT3:
+                    return DXGIFormat.BC2_UNORM;
+                case DDSPixelFormatFourCC.DXT4:
+                    return DXGIFormat.BC3_UNORM;
+                case DDSPixelFormatFourCC.DXT5:
+                    return DXGIFormat.BC3_UNORM;
+                case DDSPixelFormatFourCC.ATI1:
+                    return DXGIFormat.BC4_UNORM;
+                case DDSPixelFormatFourCC.ATI2N_3Dc:
+                    return DXGIFormat.BC5_UNORM;
+                case DDSPixelFormatFourCC.R8G8B8:
+                    return DXGIFormat.B8G8R8X8_UNORM;
+                case DDSPixelFormatFourCC.A8R8G8B8:
+                    return DXGIFormat.B8G8R8A8_UNORM;
+                case DDSPixelFormatFourCC.X8R8G8B8:
+                    return DXGIFormat.B8G8R8X8_UNORM;
+                case DDSPixelFormatFourCC.R5G6B5:
+                    return DXGIFormat.B5G6R5_UNORM;
+                case DDSPixelFormatFourCC.X1R5G5B5:
+                    return DXGIFormat.B5G5R5A1_UNORM;
+                case DDSPixelFormatFourCC.A1R5G5B5:
+                    return DXGIFormat.B5G5R5A1_UNORM;
+                case DDSPixelFormatFourCC.A4R4G4B4:
+                    return DXGIFormat.B4G4R4A4_UNORM;
+                case DDSPixelFormatFourCC.R3G3B2:
+                    return DXGIFormat.UNKNOWN;
+                case DDSPixelFormatFourCC.A8:
+                    return DXGIFormat.A8_UNORM;
+                case DDSPixelFormatFourCC.A8R3G3B2:
+                    return DXGIFormat.UNKNOWN;
+                case DDSPixelFormatFourCC.X4R4G4B4:
+                    return DXGIFormat.B4G4R4A4_UNORM;
+                case DDSPixelFormatFourCC.A2B10G10R10:
+                    return DXGIFormat.R10G10B10A2_UNORM;
+                case DDSPixelFormatFourCC.A8B8G8R8:
+                    return DXGIFormat.R8G8B8A8_UNORM;
+                case DDSPixelFormatFourCC.X8B8G8R8:
+                    return DXGIFormat.R8G8B8A8_UNORM;
+                case DDSPixelFormatFourCC.G16R16:
+                    return DXGIFormat.R16G16_UNORM;
+                case DDSPixelFormatFourCC.A2R10G10B10:
+                    return DXGIFormat.R10G10B10A2_UNORM;
+                case DDSPixelFormatFourCC.A16B16G16R16:
+                    return DXGIFormat.R16G16B16A16_UNORM;
+                case DDSPixelFormatFourCC.A8P8:
+                    return DXGIFormat.A8P8;
+                case DDSPixelFormatFourCC.P8:
+                    return DXGIFormat.P8;
+                case DDSPixelFormatFourCC.L8:
+                    return DXGIFormat.UNKNOWN;
+                case DDSPixelFormatFourCC.A8L8:
+                    return DXGIFormat.UNKNOWN;
+                case DDSPixelFormatFourCC.A4L4:
+                    return DXGIFormat.UNKNOWN;
+                case DDSPixelFormatFourCC.V8U8:
+                    return DXGIFormat.UNKNOWN;
+                case DDSPixelFormatFourCC.L6V5U5:
+                    return DXGIFormat.UNKNOWN;
+                case DDSPixelFormatFourCC.X8L8V8U8:
+                    return DXGIFormat.UNKNOWN;
+                case DDSPixelFormatFourCC.Q8W8V8U8:
+                    return DXGIFormat.UNKNOWN;
+                case DDSPixelFormatFourCC.V16U16:
+                    return DXGIFormat.UNKNOWN;
+                case DDSPixelFormatFourCC.A2W10V10U10:
+                    return DXGIFormat.UNKNOWN;
+                case DDSPixelFormatFourCC.UYVY:
+                    return DXGIFormat.UNKNOWN;
+                case DDSPixelFormatFourCC.R8G8_B8G8:
+                    return DXGIFormat.R8G8_B8G8_UNORM;
+                case DDSPixelFormatFourCC.YUY2:
+                    return DXGIFormat.YUY2;
+                case DDSPixelFormatFourCC.G8R8_G8B8:
+                    return DXGIFormat.G8R8_G8B8_UNORM;
+                case DDSPixelFormatFourCC.D16_LOCKABLE:
+                    return DXGIFormat.D16_UNORM;
+                case DDSPixelFormatFourCC.D32:
+                    return DXGIFormat.D32_FLOAT;
+                case DDSPixelFormatFourCC.D15S1:
+                    return DXGIFormat.D16_UNORM;
+                case DDSPixelFormatFourCC.D24S8:
+                    return DXGIFormat.D24_UNORM_S8_UINT;
+                case DDSPixelFormatFourCC.D24X8:
+                    return DXGIFormat.D24_UNORM_S8_UINT;
+                case DDSPixelFormatFourCC.D24X4S4:
+                    return DXGIFormat.D24_UNORM_S8_UINT;
+                case DDSPixelFormatFourCC.D16:
+                    return DXGIFormat.D16_UNORM;
+                case DDSPixelFormatFourCC.D32F_LOCKABLE:
+                    return DXGIFormat.D32_FLOAT;
+                case DDSPixelFormatFourCC.D24FS8:
+                    return DXGIFormat.D32_FLOAT_S8X24_UINT;
+                case DDSPixelFormatFourCC.L16:
+                    return DXGIFormat.UNKNOWN;
+                case DDSPixelFormatFourCC.Q16Q16V16U16:
+                    return DXGIFormat.UNKNOWN;
+                case DDSPixelFormatFourCC.R16F:
+                    return DXGIFormat.R16_FLOAT;
+                case DDSPixelFormatFourCC.G16R16F:
+                    return DXGIFormat.R16G16_FLOAT;
+                case DDSPixelFormatFourCC.A16B16G16R16F:
+                    return DXGIFormat.R16G16B16A16_FLOAT;
+                case DDSPixelFormatFourCC.R32F:
+                    return DXGIFormat.R32_FLOAT;
+                case DDSPixelFormatFourCC.G32R32F:
+                    return DXGIFormat.R32G32_FLOAT;
+                case DDSPixelFormatFourCC.A32B32G32R32F:
+                    return DXGIFormat.R32G32B32A32_FLOAT;
+                case DDSPixelFormatFourCC.CxV8U8:
+                    return DXGIFormat.UNKNOWN;
+                default:
+                    return DXGIFormat.UNKNOWN;
+            }
+        }
     }
 }

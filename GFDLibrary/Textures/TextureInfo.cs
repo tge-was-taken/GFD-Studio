@@ -77,7 +77,7 @@ namespace GFDLibrary.Textures
                         var bitmap = BitmapHelper.Create( pixelData, ddsHeader.Width, ddsHeader.Height );
 
                         // Convert bitmap to DDS
-                        texture.Data = DDSCodec.CompressImage( bitmap );
+                        texture.Data = DDSCodec.Compress( bitmap, DXGIFormat.UNKNOWN ).Data;
                         return GetTextureInfo( texture );
                     }
                     else

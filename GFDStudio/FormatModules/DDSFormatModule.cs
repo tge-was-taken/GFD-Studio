@@ -41,7 +41,7 @@ namespace GFDStudio.FormatModules
 
         protected override Bitmap GetBitmapCore( DDSStream obj )
         {
-            return DDSCodec.DecompressImage( obj );
+            return DDSCodec.Decompress( obj );
         }
     }
 }
