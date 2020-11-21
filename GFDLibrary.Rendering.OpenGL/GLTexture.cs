@@ -42,7 +42,7 @@ namespace GFDLibrary.Rendering.OpenGL
                         else
                             format = PixelInternalFormat.Rgb;
 
-                        UploadDDSTextureData( ddsHeader.Width, ddsHeader.Height, format, mipMapCount, texture.Data, 0x80 );
+                        UploadDDSTextureData( ddsHeader.Width, ddsHeader.Height, format, 1, texture.Data, 0x80 );
                     }
                     break;
 
