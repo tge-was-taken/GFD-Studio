@@ -18,7 +18,8 @@ namespace GFDStudio.GUI.DataViewNodes
         // 0C
         [ Browsable( true ) ]
         [ TypeConverter( typeof( Vector4TypeConverter ) ) ]
-        public Vector4 Field0C
+        [DisplayName("Inner Glow")]
+        public Vector4 InnerGlow
         {
             get => GetDataProperty<Vector4>();
             set => SetDataProperty( value );
