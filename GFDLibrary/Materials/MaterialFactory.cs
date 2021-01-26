@@ -159,7 +159,7 @@ namespace GFDLibrary.Materials
                 {
                     new MaterialAttributeType1
                     {
-                        Field0C = new Vector4(0.2352941f, 0.5960785f, 1, 1),
+                        InnerGlow = new Vector4(0.2352941f, 0.5960785f, 1, 1),
                         Field1C = 0.85f,
                         Field20 = 2,
                         Field24 = new Vector4(0, 0, 0, 0),

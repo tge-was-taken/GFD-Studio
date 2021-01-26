@@ -378,6 +378,15 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         //
+        // Expand all nodes method
+        //
+        public void ExpandAllNodes()
+        {
+            DataTreeView.ExpandAll();
+            DataTreeView.Nodes[0].EnsureVisible();
+        }
+
+        //
         // Delete method
         //
         public void Delete()
@@ -705,6 +714,14 @@ namespace GFDStudio.GUI.DataViewNodes
                 });
             }
 
+            if (ContextMenuFlags.HasFlag(DataViewNodeMenuFlags.Expand))
+            {
+                ContextMenuStrip.Items.Add(new ToolStripMenuItem("&Expand All", null, CreateEventHandler(() => ExpandAllNodes()), Keys.Control | Keys.A)
+                {
+                    Name = "Expand All"
+                });
+            }
+
             foreach ( (string menuPath, ToolStripMenuItem item) in mCustomHandlers.Where( x => x.Menu != null ) )
             {
                 // Add custom handlers with a menu path
@@ -840,5 +857,6 @@ namespace GFDStudio.GUI.DataViewNodes
         Move = 0b00001000,
         Rename = 0b00010000,
         Delete = 0b00100000,
+        Expand = 0b01000000,
     }
 }

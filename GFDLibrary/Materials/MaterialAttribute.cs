@@ -264,7 +264,7 @@ namespace GFDLibrary.Materials
     public sealed class MaterialAttributeType1 : MaterialAttribute
     {
         // 10
-        public Vector4 Field0C { get; set; }
+        public Vector4 InnerGlow { get; set; }
 
         // 1C
         public float Field1C { get; set; }
@@ -294,7 +294,7 @@ namespace GFDLibrary.Materials
 
         internal override void Read( ResourceReader reader, long endPosition = -1 )
         {
-            Field0C = reader.ReadVector4();
+            InnerGlow = reader.ReadVector4();
             Field1C = reader.ReadSingle();
             Field20 = reader.ReadSingle();
             Field24 = reader.ReadVector4();
@@ -332,7 +332,7 @@ namespace GFDLibrary.Materials
 
         internal override void Write( ResourceWriter writer )
         {
-            writer.WriteVector4( Field0C );
+            writer.WriteVector4( InnerGlow );
             writer.WriteSingle( Field1C );
             writer.WriteSingle( Field20 );
             writer.WriteVector4( Field24 );
