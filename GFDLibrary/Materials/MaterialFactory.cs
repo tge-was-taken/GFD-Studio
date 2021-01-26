@@ -170,7 +170,7 @@ namespace GFDLibrary.Materials
                     },
                     new MaterialAttributeType2
                     {
-                        InnerGlow = 1,
+                        Field0C = 1,
                         Field10 = 121,
                         Flags = MaterialAttributeFlags.Flag1
                     }

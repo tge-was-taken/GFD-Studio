@@ -377,10 +377,11 @@ namespace GFDStudio.GUI.DataViewNodes
                 DataTreeView.SelectedNode = this;
         }
 
-        public void Expand()
+        //
+        // Expand all nodes method
+        //
+        public void ExpandAllNodes()
         {
-
-            // Expand all nodes
             DataTreeView.ExpandAll();
             DataTreeView.Nodes[0].EnsureVisible();
         }
@@ -715,7 +716,7 @@ namespace GFDStudio.GUI.DataViewNodes
 
             if (ContextMenuFlags.HasFlag(DataViewNodeMenuFlags.Expand))
             {
-                ContextMenuStrip.Items.Add(new ToolStripMenuItem("&Expand", null, CreateEventHandler(() => Expand()), Keys.Control | Keys.A)
+                ContextMenuStrip.Items.Add(new ToolStripMenuItem("&Expand All", null, CreateEventHandler(() => ExpandAllNodes()), Keys.Control | Keys.A)
                 {
                     Name = "Expand All"
                 });
