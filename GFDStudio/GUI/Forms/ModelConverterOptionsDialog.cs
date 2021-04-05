@@ -40,6 +40,11 @@ namespace GFDStudio.GUI.Forms
             get => GenerateVertexColorsCheckBox.Checked;
         }
 
+        public bool MinimalVertexAttributes
+        {
+            get => MinimalVertexAttributesCheckBox.Checked;
+        }
+
         public ModelConverterOptionsDialog( bool showSceneOptionsOnly )
         {
             InitializeComponent();
