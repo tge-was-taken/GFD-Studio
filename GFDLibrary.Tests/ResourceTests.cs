@@ -413,7 +413,7 @@ namespace GFDLibrary.Tests
                             var a2 = ( MaterialAttributeType1 )a[i];
                             var b2 = ( MaterialAttributeType1 )b[i];
 
-                            Assert.AreEqual( a2.Field0C, b2.Field0C );
+                            Assert.AreEqual( a2.Field0C, b2.Field0C);
                             Assert.AreEqual( a2.Field1C, b2.Field1C );
                             Assert.AreEqual( a2.Field20, b2.Field20 );
                             Assert.AreEqual( a2.Field24, b2.Field24 );
