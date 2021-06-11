@@ -263,6 +263,9 @@ namespace GFDLibrary.Materials
 
     public sealed class MaterialAttributeType1 : MaterialAttribute
     {
+        // 0C
+        public float Field0C { get; set; }
+        
         // 10
         public Vector4 InnerGlow { get; set; }
 
