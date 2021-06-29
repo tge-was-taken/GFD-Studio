@@ -194,7 +194,7 @@ namespace GFDLibrary.Materials
         {
             var material = new Material( name )
             {
-                Flags = MaterialFlags.Flag1 | MaterialFlags.Flag2 | MaterialFlags.Flag10Crash | MaterialFlags.Flag20 | MaterialFlags.Flag100 |
+                Flags = MaterialFlags.Flag1 | MaterialFlags.Flag2 | MaterialFlags.EnableVertColors | MaterialFlags.Flag20 | MaterialFlags.Flag100 |
                         MaterialFlags.EnableLight2 | MaterialFlags.CastShadow,
                 AmbientColor = new Vector4( 0.6f, 0.6f, 0.6f, 0 ),
                 Attributes = new List< MaterialAttribute >
