@@ -552,6 +552,11 @@ namespace GFDLibrary.Materials
                         newMaterial = MaterialFactory.CreateFieldTerrainMaterial(materialName, diffuseTexture.Name, false);
                     }
                     break;
+                case MaterialPreset.FieldTerrainVertexColors:
+                    {
+                        newMaterial = MaterialFactory.CreateFieldTerrainVertexColorsMaterial(materialName, diffuseTexture.Name, false);
+                    }
+                    break;    
                 case MaterialPreset.FieldTerrainCastShadow:
                     {
                         newMaterial = MaterialFactory.CreateFieldTerrainCastShadowMaterial(materialName, diffuseTexture.Name, false);
@@ -596,7 +601,7 @@ namespace GFDLibrary.Materials
         Flag2            = 1 << 01,
         Flag4            = 1 << 02,
         Flag8            = 1 << 03,
-        Flag10Crash      = 1 << 04,
+        EnableVertColors = 1 << 04,
         Flag20           = 1 << 05,
         Flag40           = 1 << 06,
         EnableLight      = 1 << 07,
