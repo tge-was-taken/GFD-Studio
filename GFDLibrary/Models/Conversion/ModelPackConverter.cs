@@ -100,6 +100,15 @@ namespace GFDLibrary.Models.Conversion
                         }
                     }
                     break;
+                case MaterialPreset.FieldTerrainVertexColors:
+                    {
+                        if (diffuseTexture != null)
+                        {
+                            textureDictionary.Add(diffuseTexture.Texture);
+                            material = MaterialFactory.CreateFieldTerrainVertexColorsMaterial(materialName, diffuseTexture.Name, HasAlpha(diffuseTexture.PixelFormat));
+                        }
+                    }
+                    break;                    
                 case MaterialPreset.FieldTerrainCastShadow:
                     {
                         if ( diffuseTexture != null )
