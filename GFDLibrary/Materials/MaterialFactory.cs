@@ -53,7 +53,15 @@ namespace GFDLibrary.Materials
 
             return material;
         }
+        
+        public static Material CreateFieldTerrainVertexColorsMaterial(string name, string diffuseMapName, bool hasTransparency = false)
+        {
+            var material = CreateFieldTerrainMaterial(name, diffuseMapName, hasTransparency);
+            material.Flags |= MaterialFlags.EnableVertColors;
 
+            return material;
+        }
+        
         public static Material CreateFieldTerrainCastShadowMaterial( string name, string diffuseMapName, bool hasTransparency = false )
         {
             var material = CreateFieldTerrainMaterial( name, diffuseMapName, hasTransparency );
@@ -186,7 +194,7 @@ namespace GFDLibrary.Materials
         {
             var material = new Material( name )
             {
-                Flags = MaterialFlags.Flag1 | MaterialFlags.Flag2 | MaterialFlags.Flag10Crash | MaterialFlags.Flag20 | MaterialFlags.Flag100 |
+                Flags = MaterialFlags.Flag1 | MaterialFlags.Flag2 | MaterialFlags.EnableVertColors | MaterialFlags.Flag20 | MaterialFlags.Flag100 |
                         MaterialFlags.EnableLight2 | MaterialFlags.CastShadow,
                 AmbientColor = new Vector4( 0.6f, 0.6f, 0.6f, 0 ),
                 Attributes = new List< MaterialAttribute >
@@ -395,6 +403,7 @@ namespace GFDLibrary.Materials
     {
         None,
         FieldTerrain,
+        FieldTerrainVertexColors,
         FieldTerrainCastShadow,
         CharacterSkinP5,
         PersonaSkinP5,
