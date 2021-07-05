@@ -121,6 +121,8 @@ namespace GFDLibrary.Textures
                     return DecodeDDS( data );
                 case TextureFormat.GXT:
                     return DecodeGXT( data );
+                case TextureFormat.GNF:
+                    return DecodeGNF(data);
                 default:
                     throw new NotSupportedException();
             }
@@ -180,6 +182,12 @@ namespace GFDLibrary.Textures
             var gxt = new Scarlet.IO.ImageFormats.GXT();
             gxt.Open( new MemoryStream( data ), Scarlet.IO.Endian.LittleEndian );
             return gxt.GetBitmap();
+        }
+        private static Bitmap DecodeGNF(byte[] data)
+        {
+            var gnf = new Scarlet.IO.ImageFormats.GNF();
+            gnf.Open(new MemoryStream(data), Scarlet.IO.Endian.LittleEndian);
+            return gnf.GetBitmap();
         }
     }
 }

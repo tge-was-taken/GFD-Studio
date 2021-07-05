@@ -31,9 +31,18 @@ namespace GFDLibrary.Rendering.OpenGL
 
                         SetTextureParameters( TextureWrapMode.Repeat, TextureWrapMode.Repeat, TextureMagFilter.Linear, TextureMinFilter.Linear, mipMapCount );
 
-                        var format = GetPixelInternalFormat( ddsHeader.PixelFormat.FourCC );
+                        var format = (PixelInternalFormat)0;
 
-                        UploadDDSTextureData( ddsHeader.Width, ddsHeader.Height, format, mipMapCount, texture.Data, 0x80 );
+                        if ( ddsHeader.PixelFormat.FourCC != 0 ||
+                            !ddsHeader.PixelFormat.Flags.HasFlag( DDSPixelFormatFlags.RGB ) ||
+                            ddsHeader.PixelFormat.RGBBitCount != 32 )
+                            format = GetPixelInternalFormat( ddsHeader.PixelFormat.FourCC );
+                        else if ( ddsHeader.PixelFormat.Flags.HasFlag( DDSPixelFormatFlags.AlphaPixels ) )
+                            format = PixelInternalFormat.Rgba;
+                        else
+                            format = PixelInternalFormat.Rgb;
+
+                        UploadDDSTextureData( ddsHeader.Width, ddsHeader.Height, format, 1, texture.Data, 0x80 );
                     }
                     break;
 
@@ -119,7 +128,7 @@ namespace GFDLibrary.Rendering.OpenGL
                     return PixelInternalFormat.Rgba8;
 
                 default:
-                    throw new NotImplementedException( "Unsupported texture format: " + format.ToString() );
+                    throw new NotImplementedException( format.ToString() );
             }
         }
 
@@ -151,12 +160,28 @@ namespace GFDLibrary.Rendering.OpenGL
             int blockSize = ( format == PixelInternalFormat.CompressedRgbaS3tcDxt1Ext ) ? 8 : 16;
             int mipOffset = 0;
 
+            if (format == PixelInternalFormat.Rgb || format == PixelInternalFormat.Rgba)
+                blockSize = 8;
+
             for ( int mipLevel = 0; mipLevel < mipMapCount; mipLevel++ )
             {
                 int mipSize = ( ( mipWidth * mipHeight ) / 16 ) * blockSize;
 
-                if ( mipSize > blockSize )
-                    GL.CompressedTexImage2D( TextureTarget.Texture2D, mipLevel, format, mipWidth, mipHeight, 0, mipSize, data + mipOffset );
+                if ( mipSize > blockSize)
+                {
+                    switch ( format )
+                    {
+                        case PixelInternalFormat.Rgb:
+                        //    GL.TexImage2D(TextureTarget.Texture2D, mipLevel, format, mipWidth, mipHeight, 0, PixelFormat.Bgra, PixelType.UnsignedByte, data + mipOffset);
+                        //    break;
+                        case PixelInternalFormat.Rgba:
+                            GL.TexImage2D(TextureTarget.Texture2D, mipLevel, format, mipWidth, mipHeight, 0, PixelFormat.Bgra, PixelType.UnsignedByte, data + mipOffset);
+                            break;
+                        default:
+                            GL.CompressedTexImage2D(TextureTarget.Texture2D, mipLevel, (InternalFormat)format, mipWidth, mipHeight, 0, mipSize, data + mipOffset);
+                            break;
+                    }
+                }
 
                 mipOffset += mipSize;
                 mipWidth  /= 2;

@@ -16,7 +16,7 @@ void main()
 	vec4 diffuseColor = vec4( 1.0, 1.0, 1.0, 1.0 );
 
 	if ( uMatHasDiffuse )
-		diffuseColor = texture2D( uDiffuse, fTex0 );
+		diffuseColor = texture( uDiffuse, fTex0 );
 
 	oColor = diffuseColor;
 } 

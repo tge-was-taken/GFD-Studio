@@ -34,6 +34,7 @@ namespace GFDLibrary.Models.Conversion
                 Version = options.Version,
                 ConvertSkinToZUp = options.ConvertSkinToZUp,
                 GenerateVertexColors = options.GenerateVertexColors,
+                MinimalVertexAttributes = options.MinimalVertexAttributes,
             };
 
             model.Model = ModelConverter.ConvertFromAssimpScene( aiScene, sceneConverterOptions );
@@ -99,6 +100,15 @@ namespace GFDLibrary.Models.Conversion
                         }
                     }
                     break;
+                case MaterialPreset.FieldTerrainVertexColors:
+                    {
+                        if (diffuseTexture != null)
+                        {
+                            textureDictionary.Add(diffuseTexture.Texture);
+                            material = MaterialFactory.CreateFieldTerrainVertexColorsMaterial(materialName, diffuseTexture.Name, HasAlpha(diffuseTexture.PixelFormat));
+                        }
+                    }
+                    break;                    
                 case MaterialPreset.FieldTerrainCastShadow:
                     {
                         if ( diffuseTexture != null )
@@ -170,6 +180,17 @@ namespace GFDLibrary.Models.Conversion
                         }
                     }
                     break;
+
+                case MaterialPreset.CharacterSkinP3DP5D:
+                    {
+                        if (diffuseTexture != null)
+                        {
+                            textureDictionary.Add(diffuseTexture.Texture);
+                            material = MaterialFactory.CreateCharacterSkinP3DP5DMaterial(materialName, diffuseTexture.Name,
+                                                                                       HasAlpha(diffuseTexture.PixelFormat));
+                        }
+                    }
+                    break;
             }
 
             // Create dummy material if none was created
@@ -232,12 +253,18 @@ namespace GFDLibrary.Models.Conversion
         /// </summary>
         public bool GenerateVertexColors { get; set; }
 
+        /// <summary>
+        /// Sometimes extra vertex attributes are generated for one reason or another, on games using the GFD formats after P5 this causes problems if the data for the attributes does not exist, this sets the minimal amount of attributes to circumvent this issue.
+        /// </summary>
+        public bool MinimalVertexAttributes { get; set; }
+
         public ModelPackConverterOptions()
         {
             MaterialPreset = MaterialPreset.CharacterSkinP5;
             Version = ResourceVersion.Persona5;
             ConvertSkinToZUp = false;
             GenerateVertexColors = false;
+            MinimalVertexAttributes = true;
         }
     }
 }

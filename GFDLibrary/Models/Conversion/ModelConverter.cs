@@ -445,21 +445,21 @@ namespace GFDLibrary.Models.Conversion
                                                    .ToArray();
             }
 
-            if ( aiMesh.HasTextureCoords( 1 ) )
+            if ( aiMesh.HasTextureCoords( 1 ) && !options.MinimalVertexAttributes )
             {
                 geometry.TexCoordsChannel1 = aiMesh.TextureCoordinateChannels[1]
                                                    .Select( x => new Vector2( x.X, x.Y ) )
                                                    .ToArray();
             }
 
-            if ( aiMesh.HasTextureCoords( 2 ) )
+            if ( aiMesh.HasTextureCoords( 2) && !options.MinimalVertexAttributes )
             {
                 geometry.TexCoordsChannel2 = aiMesh.TextureCoordinateChannels[2]
                                                    .Select( x => new Vector2( x.X, x.Y ) )
                                                    .ToArray();
             }
 
-            if ( aiMesh.HasVertexColors( 0 ) )
+            if ( aiMesh.HasVertexColors( 0) && !options.MinimalVertexAttributes)
             {
                 geometry.ColorChannel0 = aiMesh.VertexColorChannels[ 0 ]
                                                .Select( x => ( uint ) ( ( byte ) ( x.B * 255f ) | ( byte ) ( x.G * 255f ) << 8 | ( byte ) ( x.R * 255f ) << 16 | ( byte ) ( x.A * 255f ) << 24 ) )
@@ -472,7 +472,7 @@ namespace GFDLibrary.Models.Conversion
                     geometry.ColorChannel0[i] = 0xFFFFFFFF;
             }
 
-            if ( aiMesh.HasVertexColors( 1 ) )
+            if ( aiMesh.HasVertexColors( 1) && !options.MinimalVertexAttributes)
             {
                 geometry.ColorChannel1 = aiMesh.VertexColorChannels[1]
                                                .Select( x => ( uint )( ( byte )( x.B * 255f ) | ( byte )( x.G * 255f ) << 8 | ( byte )( x.R * 255f ) << 16 | ( byte )( x.A * 255f ) << 24 ) )
@@ -615,6 +615,11 @@ namespace GFDLibrary.Models.Conversion
         /// </summary>
         public bool GenerateVertexColors { get; set; }
 
+        /// <summary>
+        /// Gets or sets whether to generate dummy (white) vertex colors if they're not already present. Some material shaders rely on vertex colors being present, and the lack of them will cause graphics corruption.
+        /// </summary>
+        public bool MinimalVertexAttributes { get; set; }
+
         public bool SetFullBodyNodeProperties { get; set; }
 
         public ModelConverterOptions()
@@ -622,6 +627,7 @@ namespace GFDLibrary.Models.Conversion
             Version = ResourceVersion.Persona5;
             ConvertSkinToZUp = false;
             GenerateVertexColors = false;
+            MinimalVertexAttributes = true;
             SetFullBodyNodeProperties = false;
         }
     }

@@ -15,13 +15,6 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         [Browsable( false )]
-        public override ContextMenu ContextMenu
-        {
-            get => base.ContextMenu;
-            set => base.ContextMenu = value;
-        }
-
-        [Browsable( false )]
         public override ContextMenuStrip ContextMenuStrip
         {
             get => base.ContextMenuStrip;

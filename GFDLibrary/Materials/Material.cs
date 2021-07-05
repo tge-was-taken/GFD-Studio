@@ -352,7 +352,7 @@ namespace GFDLibrary.Materials
             Field70 = reader.ReadUInt32();
             Field50 = reader.ReadInt16();
 
-            if ( Version <= 0x1105070 || Version >= 0x1105090 )
+            if ( Version <= 0x1105070 || Version >= 0x1105090 || Version == 0x1105080 )
             {
                 Field98 = reader.ReadUInt32();
             }
@@ -552,6 +552,11 @@ namespace GFDLibrary.Materials
                         newMaterial = MaterialFactory.CreateFieldTerrainMaterial(materialName, diffuseTexture.Name, false);
                     }
                     break;
+                case MaterialPreset.FieldTerrainVertexColors:
+                    {
+                        newMaterial = MaterialFactory.CreateFieldTerrainVertexColorsMaterial(materialName, diffuseTexture.Name, false);
+                    }
+                    break;    
                 case MaterialPreset.FieldTerrainCastShadow:
                     {
                         newMaterial = MaterialFactory.CreateFieldTerrainCastShadowMaterial(materialName, diffuseTexture.Name, false);
@@ -578,6 +583,12 @@ namespace GFDLibrary.Materials
                         newMaterial = MaterialFactory.CreateCharacterClothP4DMaterial(materialName, diffuseTexture.Name, false);
                     }
                     break;
+
+                case MaterialPreset.CharacterSkinP3DP5D:
+                    {
+                        newMaterial = MaterialFactory.CreateCharacterSkinP3DP5DMaterial(materialName, diffuseTexture.Name, false);
+                    }
+                    break;
             }
             return newMaterial;
         }
@@ -590,7 +601,7 @@ namespace GFDLibrary.Materials
         Flag2            = 1 << 01,
         Flag4            = 1 << 02,
         Flag8            = 1 << 03,
-        Flag10Crash      = 1 << 04,
+        EnableVertColors = 1 << 04,
         Flag20           = 1 << 05,
         Flag40           = 1 << 06,
         EnableLight      = 1 << 07,

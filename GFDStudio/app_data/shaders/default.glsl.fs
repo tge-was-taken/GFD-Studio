@@ -35,7 +35,7 @@ void main()
 	
 	if ( uMatHasDiffuse )
 	{
-		diffuseColor = texture2D( uDiffuse, fTex0 );
+		diffuseColor = texture( uDiffuse, fTex0 );
 		if ( uMatHasAlphaTransparency && diffuseColor.a < 0.1 )
 			discard;
 	}

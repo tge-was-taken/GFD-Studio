@@ -13,7 +13,8 @@ namespace GFDStudio.GUI.DataViewNodes
     {
         public override DataViewNodeMenuFlags ContextMenuFlags =>
             DataViewNodeMenuFlags.Export | DataViewNodeMenuFlags.Replace |
-            DataViewNodeMenuFlags.Move | DataViewNodeMenuFlags.Delete;
+            DataViewNodeMenuFlags.Move | DataViewNodeMenuFlags.Delete |
+            DataViewNodeMenuFlags.Expand;
 
         public override DataViewNodeFlags NodeFlags => DataViewNodeFlags.Branch;
 
