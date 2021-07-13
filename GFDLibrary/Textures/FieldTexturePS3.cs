@@ -44,15 +44,18 @@ namespace GFDLibrary.Textures
             Field00 = 0x020200FF;
             Field08 = 0x00000001;
             Field0C = 0x00000000;
-            Flags = FieldTextureFlags.Flag2 | FieldTextureFlags.Flag4 | FieldTextureFlags.Flag80;
+            if (format != TexturePixelFormat.BC2 && format != TexturePixelFormat.BC3)
+            {
+                Flags = FieldTextureFlags.Flag2 | FieldTextureFlags.Flag4 | FieldTextureFlags.Flag80;
+            }
 
             if ( format == TexturePixelFormat.BC2 )
             {
-                Flags |= FieldTextureFlags.DXT3;
+                Flags |= FieldTextureFlags.DXT3 | FieldTextureFlags.Flag80;
             }
             else if ( format == TexturePixelFormat.BC3 )
             {
-                Flags |= FieldTextureFlags.DXT5;
+                Flags |= FieldTextureFlags.DXT5 | FieldTextureFlags.Flag80;
             }
 
             MipMapCount = mipMapCount;
