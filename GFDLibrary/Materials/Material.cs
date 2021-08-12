@@ -84,7 +84,7 @@ namespace GFDLibrary.Materials
         public uint Field70 { get; set; }
 
         // 0x50
-        public short Field50 { get; set; }
+        public short DisableBackfaceCulling { get; set; }
 
         // 0x98
         public uint Field98 { get; set; }
@@ -350,7 +350,7 @@ namespace GFDLibrary.Materials
             Field5C = reader.ReadInt16();
             Field6C = reader.ReadUInt32();
             Field70 = reader.ReadUInt32();
-            Field50 = reader.ReadInt16();
+            DisableBackfaceCulling = reader.ReadInt16();
 
             if ( Version <= 0x1105070 || Version >= 0x1105090 || Version == 0x1105080 )
             {
@@ -468,7 +468,7 @@ namespace GFDLibrary.Materials
             writer.WriteInt16( Field5C );
             writer.WriteUInt32( Field6C );
             writer.WriteUInt32( Field70 );
-            writer.WriteInt16( Field50 );
+            writer.WriteInt16(DisableBackfaceCulling);
 
             if ( Version <= 0x1105070 || Version >= 0x1105090 )
             {

@@ -113,12 +113,13 @@ namespace GFDLibrary.Animations
             {
                 switch ( layer.KeyType )
                 {
+                    case KeyType.NodePRHalf:
+                    case KeyType.NodePRHalf_2:
                     case KeyType.Type31:
                     case KeyType.NodeRHalf:
                     case KeyType.NodeSHalf:
-                    case KeyType.NodePRHalf:
-                    case KeyType.NodeRSHalf:
                     case KeyType.NodePSHalf:
+                    case KeyType.NodeRSHalf:
                         break;
                     default:
                         return null;
