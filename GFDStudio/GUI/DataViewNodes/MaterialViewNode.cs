@@ -205,7 +205,8 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         [Browsable( true )]
-        public short Field50
+        [DisplayName("Disable Backface Culling")]
+        public short DisableBackfaceCulling
         {
             get => GetDataProperty<short>();
             set => SetDataProperty( value );
