@@ -438,6 +438,14 @@ namespace GFDLibrary.Models.Conversion
                                          .ToArray();
             }
 
+
+            if (aiMesh.HasTangentBasis)
+            {
+                geometry.Tangents = aiMesh.Tangents
+                                         .Select(x => new Vector3(x.X, x.Y, x.Z))
+                                         .ToArray();
+            }
+
             if ( aiMesh.HasTextureCoords( 0 ) )
             {
                 geometry.TexCoordsChannel0 = aiMesh.TextureCoordinateChannels[0]
