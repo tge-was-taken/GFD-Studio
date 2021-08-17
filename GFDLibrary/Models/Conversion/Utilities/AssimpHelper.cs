@@ -323,7 +323,7 @@ namespace GFDLibrary.Models.Conversion.Utilities
             var texCoord2 = mesh.HasTextureCoords( 1 ) ? mesh.TextureCoordinateChannels[1][i] : new Vector3D();
             var color     = mesh.HasVertexColors( 0 ) ? mesh.VertexColorChannels[0][i] : new Color4D();
             var weights   = mesh.HasBones ? vertexWeights[i] : new List<(Assimp.Bone, float)>();
-            var cacheIndex = vertexCache.FindIndex( y => y.Position == position && y.Normal == normal && y.Tangent == normal && y.TexCoord == texCoord &&
+            var cacheIndex = vertexCache.FindIndex( y => y.Position == position && y.Normal == normal && y.Tangent == tangent && y.TexCoord == texCoord &&
                                                          y.TexCoord2 == texCoord2 && y.Color == color &&
                                                          y.Weights.SequenceEqual( weights ) );
 
