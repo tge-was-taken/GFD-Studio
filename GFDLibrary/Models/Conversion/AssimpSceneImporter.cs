@@ -15,7 +15,7 @@ namespace GFDLibrary.Models.Conversion
 
             // Apply ALL the optimizations
             var postProcessSteps = Ai.PostProcessSteps.ImproveCacheLocality | Ai.PostProcessSteps.FindInvalidData | Ai.PostProcessSteps.FlipUVs | Ai.PostProcessSteps.JoinIdenticalVertices |
-                                   Ai.PostProcessSteps.LimitBoneWeights | Ai.PostProcessSteps.Triangulate | Ai.PostProcessSteps.GenerateSmoothNormals | Ai.PostProcessSteps.OptimizeMeshes;
+                                   Ai.PostProcessSteps.LimitBoneWeights | Ai.PostProcessSteps.Triangulate | Ai.PostProcessSteps.GenerateSmoothNormals | Ai.PostProcessSteps.OptimizeMeshes | Ai.PostProcessSteps.CalculateTangentSpace;
 
             var aiScene = aiContext.ImportFile( filePath, postProcessSteps );
 

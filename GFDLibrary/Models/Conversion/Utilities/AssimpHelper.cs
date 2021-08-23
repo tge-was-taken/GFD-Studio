@@ -318,15 +318,16 @@ namespace GFDLibrary.Models.Conversion.Utilities
         {
             var position  = mesh.HasVertices ? mesh.Vertices[i] : new Vector3D();
             var normal    = mesh.HasNormals ? mesh.Normals[i] : new Vector3D();
+            var tangent   = mesh.HasTangentBasis ? mesh.Tangents[i] : new Vector3D();
             var texCoord  = mesh.HasTextureCoords( 0 ) ? mesh.TextureCoordinateChannels[0][i] : new Vector3D();
             var texCoord2 = mesh.HasTextureCoords( 1 ) ? mesh.TextureCoordinateChannels[1][i] : new Vector3D();
             var color     = mesh.HasVertexColors( 0 ) ? mesh.VertexColorChannels[0][i] : new Color4D();
             var weights   = mesh.HasBones ? vertexWeights[i] : new List<(Assimp.Bone, float)>();
-            var cacheIndex = vertexCache.FindIndex( y => y.Position == position && y.Normal == normal && y.TexCoord == texCoord &&
+            var cacheIndex = vertexCache.FindIndex( y => y.Position == position && y.Normal == normal && y.Tangent == tangent && y.TexCoord == texCoord &&
                                                          y.TexCoord2 == texCoord2 && y.Color == color &&
                                                          y.Weights.SequenceEqual( weights ) );
 
-            vertex = new Vertex( position, normal, texCoord, texCoord2, color, weights );
+            vertex = new Vertex( position, normal, tangent, texCoord, texCoord2, color, weights );
             return cacheIndex;
         }
 
@@ -341,6 +342,9 @@ namespace GFDLibrary.Models.Conversion.Utilities
 
                 if ( mesh.HasNormals )
                     subMesh.Normals.Add( vertex.Normal );
+                
+                if ( mesh.HasTangentBasis )
+                    subMesh.Tangents.Add( vertex.Tangent );
 
                 if ( mesh.HasTextureCoords( 0 ) )
                     subMesh.TextureCoordinateChannels[0].Add( vertex.TexCoord );
@@ -393,15 +397,17 @@ namespace GFDLibrary.Models.Conversion.Utilities
         {
             public readonly Vector3D Position;
             public readonly Vector3D Normal;
+            public readonly Vector3D Tangent;
             public readonly Vector3D TexCoord;
             public readonly Vector3D TexCoord2;
             public readonly Color4D Color;
             public readonly List<(Assimp.Bone Bone, float Weight)> Weights;
 
-            public Vertex( Vector3D position, Vector3D normal, Vector3D texCoord, Vector3D texCoord2, Color4D color, List<(Assimp.Bone, float)> weights )
+            public Vertex( Vector3D position, Vector3D normal, Vector3D tangent, Vector3D texCoord, Vector3D texCoord2, Color4D color, List<(Assimp.Bone, float)> weights )
             {
                 Position = position;
                 Normal = normal;
+                Tangent = tangent;
                 TexCoord = texCoord;
                 TexCoord2 = texCoord2;
                 Color = color;

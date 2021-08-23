@@ -331,7 +331,7 @@ namespace GFDLibrary.Tests
             Assert.AreEqual( a.Field5C, b.Field5C );
             Assert.AreEqual( a.Field6C, b.Field6C );
             Assert.AreEqual( a.Field70, b.Field70 );
-            Assert.AreEqual( a.Field50, b.Field50 );
+            Assert.AreEqual( a.DisableBackfaceCulling, b.DisableBackfaceCulling);
             Assert.AreEqual( a.Field98, b.Field98 );
 
             CompareTextureMap( a.DiffuseMap, b.DiffuseMap );

@@ -22,7 +22,7 @@ namespace GFDLibrary.Materials
                 Field4B = 1,
                 Field4C = 0,
                 Field4D = 2,
-                Field50 = 0,
+                DisableBackfaceCulling = 0,
                 Field5C = 0,
                 Field6C = 0xfffffff8,
                 Field70 = 0xfffffff8,
@@ -72,14 +72,13 @@ namespace GFDLibrary.Materials
 
         public static Material CreateCharacterSkinP5Material( string name, string diffuseMapName, string shadowMapName, bool hasTransparency = false )
         {
-            // based off c0001_body_1_skin_kubi_low
             var material =  new Material( name )
             {
-                AmbientColor = new Vector4( 0.7254902f, 0.6f, 0.7843138f, 1f ),
-                DiffuseColor = new Vector4( 0.0784313753f, 0.0784313753f, 0.0784313753f, 1 ),
-                SpecularColor = new Vector4( 0.117647067f, 0.117647067f, 0.117647067f, 1 ),
+                AmbientColor = new Vector4( 0.6f, 0.6f, 0.6f, 0f ),
+                DiffuseColor = new Vector4(0.3f, 0.3f, 0.3f, 1 ),
+                SpecularColor = new Vector4( 0f, 0f, 0f, 1 ),
                 EmissiveColor = new Vector4( 0, 0, 0, 0 ),
-                Field40 = 1,
+                Field40 = 0.5f,
                 Field44 = 0,
                 DrawMethod = MaterialDrawMethod.Opaque,
                 Field49 = 1,
@@ -87,23 +86,22 @@ namespace GFDLibrary.Materials
                 Field4B = 1,
                 Field4C = 0,
                 Field4D = 1,
-                Field50 = 0,
+                DisableBackfaceCulling = 0,
                 Field5C = 2,
-                Field6C = 0xf8fffff8,
-                Field70 = 0xf8fffff8,
+                Field6C = 0xFFFFFFF8,
+                Field70 = 0xFFFFFFF8,
                 Field90 = 0,
                 Field92 = 4,
                 Field94 = 4,
                 Field96 = 0,
                 DiffuseMap = new TextureMap( diffuseMapName ),
-                ShadowMap = new TextureMap( shadowMapName ),
                 Flags = MaterialFlags.Flag1 | MaterialFlags.Flag2 | MaterialFlags.Flag20 | MaterialFlags.Flag100 | MaterialFlags.EnableLight2 | 
-                        MaterialFlags.ReceiveShadow | MaterialFlags.CastShadow | MaterialFlags.HasAttributes | MaterialFlags.Flag20000Crash | MaterialFlags.HasDiffuseMap | MaterialFlags.HasShadowMap,
+                        MaterialFlags.ReceiveShadow | MaterialFlags.CastShadow | MaterialFlags.HasAttributes |  MaterialFlags.HasDiffuseMap,
                 Attributes = new List< MaterialAttribute >
                 {
                     new MaterialAttributeType0
                     {
-                        Color = new Vector4( 0.980392337f, 0.980392337f, 0.980392337f, 0.392156869f ),
+                        Color = new Vector4( 0.98039234f, 0.98039234f, 0.98039234f, 0.39215687f ),
                         Field1C = 0.6f,
                         Field20 = 14,
                         Field24 = 0.6f,
@@ -111,12 +109,6 @@ namespace GFDLibrary.Materials
                         Field2C = 1.5f,
                         Flags = MaterialAttributeFlags.Flag1,
                         Type0Flags = ( MaterialAttributeType0Flags ) 0x00000045
-                    },
-                    new MaterialAttributeType2
-                    {
-                        Field0C = 0,
-                        Field10 = 100,
-                        Flags = MaterialAttributeFlags.Flag1
                     }
                 }
             };
@@ -150,7 +142,7 @@ namespace GFDLibrary.Materials
                 Field4B = 1,
                 Field4C = 0,
                 Field4D = 1,
-                Field50 = 0,
+                DisableBackfaceCulling = 0,
                 Field5C = 3,
                 Field6C = 0xF8FFFE38,
                 Field70 = 0xF8FFFE38,
@@ -223,7 +215,7 @@ namespace GFDLibrary.Materials
                 Field4B = 1,
                 Field4C = 0,
                 Field4D = 1,
-                Field50 = 0,
+                DisableBackfaceCulling = 0,
                 Field5C = 2,
                 Field6C = 0xfffffff8,
                 Field70 = 0xfffffff8,
@@ -287,7 +279,7 @@ namespace GFDLibrary.Materials
                 Field4B = 1,
                 Field4C = 0,
                 Field4D = 1,
-                Field50 = 0,
+                DisableBackfaceCulling = 0,
                 Field5C = 2,
                 Field6C = 0xfffffff8,
                 Field70 = 0xfffffff8,
@@ -366,7 +358,7 @@ namespace GFDLibrary.Materials
                 Field4B = 1,
                 Field4C = 0,
                 Field4D = 1,
-                Field50 = 0,
+                DisableBackfaceCulling = 0,
                 Field5C = 0x68,
                 Field6C = 0xf8fffff8,
                 Field70 = 0xf8fffff8,

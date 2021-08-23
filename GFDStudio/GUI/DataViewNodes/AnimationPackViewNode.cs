@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Windows.Forms;
 using GFDLibrary;
 using GFDLibrary.Animations;
@@ -69,6 +70,10 @@ namespace GFDStudio.GUI.DataViewNodes
             {
                 Data.ConvertToP5();
             });
+            RegisterCustomHandler("Tools", "Fix IDs", () =>
+            {
+                ImportModelAndFixTargetIds(Data);
+            });
         }
 
         protected override void InitializeViewCore()
@@ -88,6 +93,33 @@ namespace GFDStudio.GUI.DataViewNodes
 
             AddChildNode( Animations );
             AddChildNode( BlendAnimations );
+        }
+        private static void ImportModelAndFixTargetIds(AnimationPack pack)
+        {
+            using (var dialog = new OpenFileDialog())
+            {
+                dialog.Filter = ModuleFilterGenerator.GenerateFilter(new[] { FormatModuleUsageFlags.Import }, typeof(ModelPack)).Filter;
+                dialog.AutoUpgradeEnabled = true;
+                dialog.CheckPathExists = true;
+                dialog.Title = "Select a model file.";
+                dialog.ValidateNames = true;
+                dialog.AddExtension = true;
+
+                if (dialog.ShowDialog() != DialogResult.OK)
+                    return;
+
+                foreach (var animation in pack.Animations)
+                    try
+                    {
+                        var model = Resource.Load<ModelPack>(dialog.FileName);
+                        if (model.Model != null)
+                            animation.FixTargetIds(model.Model);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e);
+                    }
+            }
         }
     }
 }
