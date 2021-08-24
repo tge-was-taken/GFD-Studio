@@ -392,12 +392,14 @@ namespace GFDStudio.GUI.Forms
 
             Vector3 scale;
             Vector3 position;
+            Quaternion rotation;
             using (var scaleDialog = new SetScaleValueDialog())
             {
                 if (scaleDialog.ShowDialog() != DialogResult.OK)
                     return;
                 scale = scaleDialog.Result.Scale;
                 position = scaleDialog.Result.Position;
+                rotation = scaleDialog.Result.Rotation;
             }
 
             var failures = new ConcurrentBag<string>();
@@ -426,7 +428,7 @@ namespace GFDStudio.GUI.Forms
                         try
                         {
                             var animationPack = Resource.Load<AnimationPack>(filePath);
-                            animationPack.Rescale(scale, position);
+                            animationPack.Rescale(scale, position, rotation);
                             animationPack.Save(filePath);
                         }
                         catch (Exception)

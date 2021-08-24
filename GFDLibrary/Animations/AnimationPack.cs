@@ -152,7 +152,7 @@ namespace GFDLibrary.Animations
             ExtraData?.Retarget( originalNodeLookup, newNodeLookup, fixArms );
         }
 
-        public void Rescale(Vector3 scale, Vector3 position)
+        public void Rescale(Vector3 scale, Vector3 position, Quaternion rotation)
         {
             for (int w = 0; w < this.Animations.Count; w++)
             {
@@ -176,7 +176,7 @@ namespace GFDLibrary.Animations
                                     {
                                         Time = prsKey.Time,
                                         Position = (prsKey.Position * layer.PositionScale) + position,
-                                        Rotation = prsKey.Rotation,
+                                        Rotation = rotation,
                                         Scale = (prsKey.Scale * layer.ScaleScale) * scale
                                     };
 
