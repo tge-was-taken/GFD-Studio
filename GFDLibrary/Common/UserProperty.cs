@@ -24,6 +24,8 @@ namespace GFDLibrary.Common
             return $"{Name} = {ValueToUserPropertyString()}";
         }
 
+        public string GetUserPropertyValueString() => ValueToUserPropertyString();
+
         protected abstract string ValueToUserPropertyString();
     }
 

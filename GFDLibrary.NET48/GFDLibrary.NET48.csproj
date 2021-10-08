@@ -1,0 +1,472 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{68FABEC8-D9A9-4752-A4FE-87D6797D7749}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>GFDLibrary</RootNamespace>
+    <AssemblyName>GFDLibrary</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;NET48</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;NET48</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AssimpNet, Version=5.0.0.0, Culture=neutral, PublicKeyToken=0d51b391f59f42a6, processorArchitecture=MSIL">
+      <HintPath>..\packages\AssimpNet.5.0.0-beta1\lib\net40\AssimpNet.dll</HintPath>
+    </Reference>
+    <Reference Include="CSharpImageLibrary, Version=4.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\CSharpImageLibrary.4.2.0\lib\net462\CSharpImageLibrary.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Drawing.Design" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.6.0.0-preview.7.21377.19\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\GFDLibrary\Animations\Animation.cs">
+      <Link>Animations\Animation.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Animations\AnimationController.cs">
+      <Link>Animations\AnimationController.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Animations\AnimationExtraData.cs">
+      <Link>Animations\AnimationExtraData.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Animations\AnimationFlag10000000DataEntry.cs">
+      <Link>Animations\AnimationFlag10000000DataEntry.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Animations\AnimationFlag80000000Data.cs">
+      <Link>Animations\AnimationFlag80000000Data.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Animations\AnimationFlags.cs">
+      <Link>Animations\AnimationFlags.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Animations\AnimationLayer.cs">
+      <Link>Animations\AnimationLayer.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Animations\AnimationPack.cs">
+      <Link>Animations\AnimationPack.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Animations\AnimationPackFlags.cs">
+      <Link>Animations\AnimationPackFlags.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Animations\Conversion\AnimationConverter.cs">
+      <Link>Animations\Conversion\AnimationConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Animations\Key.cs">
+      <Link>Animations\Key.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Animations\Keys\IKeyType31.cs">
+      <Link>Animations\Keys\IKeyType31.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Animations\Keys\KeyType22.cs">
+      <Link>Animations\Keys\KeyType22.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Animations\Keys\KeyType31Dancing.cs">
+      <Link>Animations\Keys\KeyType31Dancing.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Animations\Keys\KeyType31FullBody.cs">
+      <Link>Animations\Keys\KeyType31FullBody.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Animations\Keys\KeyType31Type.cs">
+      <Link>Animations\Keys\KeyType31Type.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Animations\Keys\PRSByteKey.cs">
+      <Link>Animations\Keys\PRSByteKey.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Animations\Keys\PRSKey.cs">
+      <Link>Animations\Keys\PRSKey.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Animations\Keys\QuaternionKey.cs">
+      <Link>Animations\Keys\QuaternionKey.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Animations\Keys\Single4ByteKey.cs">
+      <Link>Animations\Keys\Single4ByteKey.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Animations\Keys\Single5Key.cs">
+      <Link>Animations\Keys\Single5Key.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Animations\Keys\SingleByteKey.cs">
+      <Link>Animations\Keys\SingleByteKey.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Animations\Keys\SingleKey.cs">
+      <Link>Animations\Keys\SingleKey.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Animations\Keys\Vector3Key.cs">
+      <Link>Animations\Keys\Vector3Key.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Animations\KeyType.cs">
+      <Link>Animations\KeyType.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Animations\TargetKind.cs">
+      <Link>Animations\TargetKind.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Api\FlatApi.cs">
+      <Link>Api\FlatApi.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Cameras\Camera.cs">
+      <Link>Cameras\Camera.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Common\Archive.cs">
+      <Link>Common\Archive.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Common\BoundingBox.cs">
+      <Link>Common\BoundingBox.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Common\BoundingSphere.cs">
+      <Link>Common\BoundingSphere.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Common\ByteVector3.cs">
+      <Link>Common\ByteVector3.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Common\ByteVector4.cs">
+      <Link>Common\ByteVector4.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Common\StringHasher.cs">
+      <Link>Common\StringHasher.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Common\UserProperty.cs">
+      <Link>Common\UserProperty.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Common\UserPropertyDictionary.cs">
+      <Link>Common\UserPropertyDictionary.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Effects\Epl.cs">
+      <Link>Effects\Epl.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Effects\EplAnimation.cs">
+      <Link>Effects\EplAnimation.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Effects\EplEnums.cs">
+      <Link>Effects\EplEnums.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Effects\EplLeaf.cs">
+      <Link>Effects\EplLeaf.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Graphics\Color.cs">
+      <Link>Graphics\Color.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\IO\Common\AlignmentUtilities.cs">
+      <Link>IO\Common\AlignmentUtilities.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\IO\Common\EndianBinaryReader.cs">
+      <Link>IO\Common\EndianBinaryReader.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\IO\Common\EndianBinaryWriter.cs">
+      <Link>IO\Common\EndianBinaryWriter.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\IO\Common\Endianness.cs">
+      <Link>IO\Common\Endianness.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\IO\Common\EndiannessSwapUtility.cs">
+      <Link>IO\Common\EndiannessSwapUtility.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\IO\Common\FileUtils.cs">
+      <Link>IO\Common\FileUtils.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\IO\Common\StreamExtensions.cs">
+      <Link>IO\Common\StreamExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\IO\Common\StreamView.cs">
+      <Link>IO\Common\StreamView.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\IO\Common\StringBinaryFormat.cs">
+      <Link>IO\Common\StringBinaryFormat.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\IO\Common\UnsafeUtilities.cs">
+      <Link>IO\Common\UnsafeUtilities.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\IO\ResourceChunkHeader.cs">
+      <Link>IO\ResourceChunkHeader.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\IO\ResourceChunkType.cs">
+      <Link>IO\ResourceChunkType.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\IO\ResourceFileHeader.cs">
+      <Link>IO\ResourceFileHeader.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\IO\ResourceFileIdentifier.cs">
+      <Link>IO\ResourceFileIdentifier.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\IO\ResourceReader.cs">
+      <Link>IO\ResourceReader.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\IO\ResourceWriter.cs">
+      <Link>IO\ResourceWriter.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Lights\Light.cs">
+      <Link>Lights\Light.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Materials\Material.cs">
+      <Link>Materials\Material.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Materials\MaterialAttribute.cs">
+      <Link>Materials\MaterialAttribute.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Materials\MaterialDictionary.cs">
+      <Link>Materials\MaterialDictionary.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Materials\MaterialFactory.cs">
+      <Link>Materials\MaterialFactory.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Misc\ChunkType000100F8.cs">
+      <Link>Misc\ChunkType000100F8.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Misc\ChunkType000100F9.cs">
+      <Link>Misc\ChunkType000100F9.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Misc\ChunkType000100F9Entry1.cs">
+      <Link>Misc\ChunkType000100F9Entry1.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Misc\ChunkType000100F9Entry2.cs">
+      <Link>Misc\ChunkType000100F9Entry2.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Misc\ChunkType000100F9Entry3.cs">
+      <Link>Misc\ChunkType000100F9Entry3.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\ModelPack.cs">
+      <Link>ModelPack.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Models\Bone.cs">
+      <Link>Models\Bone.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Models\BonePalette.cs">
+      <Link>Models\BonePalette.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Models\Conversion\AssimpConverterCommon.cs">
+      <Link>Models\Conversion\AssimpConverterCommon.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Models\Conversion\AssimpSceneImporter.cs">
+      <Link>Models\Conversion\AssimpSceneImporter.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Models\Conversion\ModelConverter.cs">
+      <Link>Models\Conversion\ModelConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Models\Conversion\ModelPackConverter.cs">
+      <Link>Models\Conversion\ModelPackConverter.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Models\Conversion\ModelPackExporter.cs">
+      <Link>Models\Conversion\ModelPackExporter.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Models\Conversion\Utilities\AssimpExtensions.cs">
+      <Link>Models\Conversion\Utilities\AssimpExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Models\Conversion\Utilities\AssimpHelper.cs">
+      <Link>Models\Conversion\Utilities\AssimpHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Models\Mesh.cs">
+      <Link>Models\Mesh.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Models\Model.cs">
+      <Link>Models\Model.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Models\Morph.cs">
+      <Link>Models\Morph.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Models\MorphTarget.cs">
+      <Link>Models\MorphTarget.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Models\MorphTargetList.cs">
+      <Link>Models\MorphTargetList.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Models\Node.cs">
+      <Link>Models\Node.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Models\NodeAttachment.cs">
+      <Link>Models\NodeAttachment.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Models\TextureMap.cs">
+      <Link>Models\TextureMap.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Models\Triangle.cs">
+      <Link>Models\Triangle.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Models\VertexWeight.cs">
+      <Link>Models\VertexWeight.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Resource.cs">
+      <Link>Resource.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\ResourceType.cs">
+      <Link>ResourceType.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\ResourceVersion.cs">
+      <Link>ResourceVersion.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Shaders\Shader.cs">
+      <Link>Shaders\Shader.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Shaders\ShaderCache.cs">
+      <Link>Shaders\ShaderCache.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Textures\DDS\DDSCodec.cs">
+      <Link>Textures\DDS\DDSCodec.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Textures\DDS\DDSFormatDetails.cs">
+      <Link>Textures\DDS\DDSFormatDetails.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Textures\DDS\DDSHeader.cs">
+      <Link>Textures\DDS\DDSHeader.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Textures\DDS\DDSHeaderCaps.cs">
+      <Link>Textures\DDS\DDSHeaderCaps.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Textures\DDS\DDSHeaderFlags.cs">
+      <Link>Textures\DDS\DDSHeaderFlags.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Textures\DDS\DDSHelper.cs">
+      <Link>Textures\DDS\DDSHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Textures\DDS\DDSPixelFormat.cs">
+      <Link>Textures\DDS\DDSPixelFormat.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Textures\DDS\DDSPixelFormatFlags.cs">
+      <Link>Textures\DDS\DDSPixelFormatFlags.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Textures\DDS\DDSPixelFormatFourCC.cs">
+      <Link>Textures\DDS\DDSPixelFormatFourCC.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Textures\DDS\DDSStream.cs">
+      <Link>Textures\DDS\DDSStream.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Textures\FieldTexturePS3.cs">
+      <Link>Textures\FieldTexturePS3.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Textures\GNF\ChannelType.cs">
+      <Link>Textures\GNF\ChannelType.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Textures\GNF\GNFTexture.cs">
+      <Link>Textures\GNF\GNFTexture.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Textures\GNF\SamplerModulationFactor.cs">
+      <Link>Textures\GNF\SamplerModulationFactor.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Textures\GNF\SurfaceFormat.cs">
+      <Link>Textures\GNF\SurfaceFormat.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Textures\GNF\TextureChannel.cs">
+      <Link>Textures\GNF\TextureChannel.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Textures\GNF\TextureType.cs">
+      <Link>Textures\GNF\TextureType.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Textures\GNF\TileMode.cs">
+      <Link>Textures\GNF\TileMode.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Textures\Swizzle\INullSwizzleAlgorithm.cs">
+      <Link>Textures\Swizzle\INullSwizzleAlgorithm.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Textures\Swizzle\ISwizzleAlgorithm.cs">
+      <Link>Textures\Swizzle\ISwizzleAlgorithm.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Textures\Swizzle\PS3SwizzleAlgorithm.cs">
+      <Link>Textures\Swizzle\PS3SwizzleAlgorithm.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Textures\Swizzle\PS4SwizzleAlgorithm.cs">
+      <Link>Textures\Swizzle\PS4SwizzleAlgorithm.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Textures\Swizzle\SwitchSwizzleAlgorithm.cs">
+      <Link>Textures\Swizzle\SwitchSwizzleAlgorithm.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Textures\Swizzle\Swizzler.cs">
+      <Link>Textures\Swizzle\Swizzler.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Textures\Swizzle\SwizzleUtilities.cs">
+      <Link>Textures\Swizzle\SwizzleUtilities.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Textures\Texture.cs">
+      <Link>Textures\Texture.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Textures\TextureDecoder.cs">
+      <Link>Textures\TextureDecoder.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Textures\TextureDictionary.cs">
+      <Link>Textures\TextureDictionary.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Textures\TextureEncoder.cs">
+      <Link>Textures\TextureEncoder.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Textures\TextureInfo.cs">
+      <Link>Textures\TextureInfo.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Textures\TexturePixelFormat.cs">
+      <Link>Textures\TexturePixelFormat.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Textures\TextureUtilities.cs">
+      <Link>Textures\TextureUtilities.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Textures\Utilities\BitmapHelper.cs">
+      <Link>Textures\Utilities\BitmapHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Textures\Utilities\ImageFormatHelper.cs">
+      <Link>Textures\Utilities\ImageFormatHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Utilities\MathHelper.cs">
+      <Link>Utilities\MathHelper.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Utilities\Matrix4x4Extensions.cs">
+      <Link>Utilities\Matrix4x4Extensions.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Utilities\QuaternionExtensions.cs">
+      <Link>Utilities\QuaternionExtensions.cs</Link>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Dependencies\Scarlet\Scarlet.IO.ImageFormats\Scarlet.IO.ImageFormats.csproj">
+      <Project>{4e7b19c8-1983-41fe-98e4-0532137638fc}</Project>
+      <Name>Scarlet.IO.ImageFormats</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Dependencies\Scarlet\Scarlet\Scarlet.csproj">
+      <Project>{b1cc2b0e-4226-4ac5-9940-900a8847201a}</Project>
+      <Name>Scarlet</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\AssimpNet.5.0.0-beta1\build\AssimpNet.targets" Condition="Exists('..\packages\AssimpNet.5.0.0-beta1\build\AssimpNet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\AssimpNet.5.0.0-beta1\build\AssimpNet.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\AssimpNet.5.0.0-beta1\build\AssimpNet.targets'))" />
+  </Target>
+</Project>

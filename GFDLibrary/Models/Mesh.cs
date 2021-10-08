@@ -254,6 +254,9 @@ namespace GFDLibrary.Models
 
         public float FieldD8 { get; set; }
 
+        public Vector2[][] TexCoordChannels => new[] { mTexCoordsChannel0, mTexCoordsChannel1, mTexCoordsChannel2 };
+        public uint[][] ColorChannels => new[] { mColorChannel0, mColorChannel1 };
+
         public Mesh()
         {
             TriangleIndexFormat = TriangleIndexFormat.UInt16;
@@ -271,7 +274,8 @@ namespace GFDLibrary.Models
         /// <param name="nodes"></param>
         /// <param name="usedBones"></param>
         /// <returns></returns>
-        public (Vector3[] Vertices, Vector3[] Normals) Transform( Node parentNode, List<Node> nodes, List<Bone> usedBones )
+        public (Vector3[] Vertices, Vector3[] Normals) Transform( Node parentNode, IList<Node> nodes, List<Bone> usedBones,
+            bool includeWeights = true, bool includeParentTransform = false, Matrix4x4? offsetTransform = null )
         {
             var vertices = new Vector3[VertexCount];
             Vector3[] normals = null;
@@ -279,36 +283,70 @@ namespace GFDLibrary.Models
             if ( Normals != null )
                 normals = new Vector3[VertexCount];
 
-            Matrix4x4.Invert( parentNode.WorldTransform, out var parentNodeWorldTransformInv );
+            var parentNodeWorldTransform = parentNode.WorldTransform;
+            Matrix4x4.Invert(parentNodeWorldTransform, out var parentNodeWorldTransformInv );
 
             for ( int i = 0; i < VertexCount; i++ )
             {
                 var position = Vertices[i];
                 var normal = Normals?[i] ?? Vector3.Zero;
-
                 var newPosition = Vector3.Zero;
                 var newNormal = Vector3.Zero;
 
-                for ( int j = 0; j < 4; j++ )
+                if (includeWeights)
                 {
-                    var weight = VertexWeights[i].Weights[j];
-                    if ( weight == 0 )
-                        continue;
+                    for (int j = 0; j < 4; j++)
+                    {
+                        var weight = VertexWeights[i].Weights[j];
+                        if (weight == 0)
+                            continue;
 
-                    var boneIndex = VertexWeights[i].Indices[j];
-                    var boneNodeIndex = usedBones[boneIndex].NodeIndex;
-                    var boneNode = nodes[boneNodeIndex];
-                    var inverseBindMatrix = usedBones[boneIndex].InverseBindMatrix;
-                    var bindMatrix = boneNode.WorldTransform;
-                    newPosition += Vector3.Transform( Vector3.Transform( position, inverseBindMatrix ), bindMatrix * weight );
-                    newNormal += Vector3.TransformNormal( Vector3.TransformNormal( normal, inverseBindMatrix ), bindMatrix * weight );
+                        var boneIndex = VertexWeights[i].Indices[j];
+                        var boneNodeIndex = usedBones[boneIndex].NodeIndex;
+                        var boneNode = nodes[boneNodeIndex];
+                        var inverseBindMatrix = usedBones[boneIndex].InverseBindMatrix;
+                        var bindMatrix = boneNode.WorldTransform;
+                        newPosition += Vector3.Transform(Vector3.Transform(position, inverseBindMatrix), bindMatrix * weight);
+                        newNormal += Vector3.TransformNormal(Vector3.TransformNormal(normal, inverseBindMatrix), bindMatrix * weight);
+                    }
+
+                    if (!includeParentTransform)
+                    {
+                        newPosition = Vector3.Transform(newPosition, parentNodeWorldTransformInv);
+
+                        if (normals != null)
+                            newNormal =
+                                Vector3.Normalize(Vector3.TransformNormal(newNormal, parentNodeWorldTransformInv));
+                    }
+                }
+                else
+                {
+                    newPosition = position;
+                    newNormal = normal;
+
+                    if (includeParentTransform)
+                    {
+                        newPosition = Vector3.Transform(newPosition, parentNodeWorldTransform );
+
+                        if (normals != null)
+                            newNormal =
+                                Vector3.Normalize(Vector3.TransformNormal(newNormal, parentNodeWorldTransform));
+
+                    }
                 }
 
-                vertices[i] = Vector3.Transform( newPosition, parentNodeWorldTransformInv );
+                if (offsetTransform != null)
+                {
+                    newPosition = Vector3.Transform(newPosition, offsetTransform.Value);
 
-                if ( normals != null )
-                    normals[i] =
-                        Vector3.Normalize( Vector3.TransformNormal( newNormal, parentNodeWorldTransformInv ) );
+                    if (normals != null)
+                        newNormal =
+                            Vector3.Normalize(Vector3.TransformNormal(newNormal, offsetTransform.Value));
+                }
+
+                vertices[i] = newPosition;
+                if (normals != null)
+                    normals[i] = newNormal;
             }
 
             return (vertices, normals);

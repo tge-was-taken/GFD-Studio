@@ -18,7 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GFDLibrary.Rendering.OpenGL\GFDLibrary.Rendering.OpenGL.csproj" />
-    <ProjectReference Include="..\GFDLibrary\GFDLibrary.csproj" />
+    <ProjectReference Include="..\GFDLibrary\GFDLibrary.NET5.csproj" />
   </ItemGroup>
 
   <ItemGroup>
