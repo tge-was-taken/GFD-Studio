@@ -251,7 +251,7 @@ namespace GFDLibrary.Materials
             Field4A = 0;
             Field4C = 0;
             Field5C = 0;
-            Flags = MaterialFlags.Flag1 | MaterialFlags.Flag2;
+            Flags = MaterialFlags.Bit0 | MaterialFlags.Bit1;
             Field92 = 4;
             Field70 = 0xFFFFFFFF;
             Field98 = 0xFFFFFFFF;
@@ -597,20 +597,20 @@ namespace GFDLibrary.Materials
     [Flags]
     public enum MaterialFlags : uint
     {
-        Flag1            = 1 << 00,
-        Flag2            = 1 << 01,
-        Flag4            = 1 << 02,
-        Flag8            = 1 << 03,
+        Bit0            = 1 << 00,
+        Bit1            = 1 << 01,
+        Bit2            = 1 << 02,
+        Bit3            = 1 << 03,
         EnableVertColors = 1 << 04,
-        Flag20           = 1 << 05,
-        Flag40           = 1 << 06,
+        Bit5           = 1 << 05,
+        Bit6           = 1 << 06,
         EnableLight      = 1 << 07,
-        Flag100          = 1 << 08,
-        Flag200          = 1 << 09,
-        Flag400          = 1 << 10,
+        Bit8          = 1 << 08,
+        Bit9          = 1 << 09,
+        Bit10          = 1 << 10,
         EnableLight2     = 1 << 11,
         PurpleWireframe  = 1 << 12,
-        Flag2000         = 1 << 13,
+        Bit13         = 1 << 13,
         ReceiveShadow    = 1 << 14,
         CastShadow       = 1 << 15,
         HasAttributes    = 1 << 16,
@@ -627,8 +627,8 @@ namespace GFDLibrary.Materials
         HasDetailMap     = 1 << 27,
         HasShadowMap     = 1 << 28,
         Flag20000000Crash= 1 << 29,
-        Flag40000000     = 1 << 30,
-        Flag80000000     = 1u << 31
+        Bit30     = 1 << 30,
+        Bit31     = 1u << 31
     }
 
     public enum MaterialDrawMethod

@@ -117,7 +117,7 @@ namespace GFDLibrary.Materials
 
     public enum MaterialAttributeFlags : ushort
     {
-        Flag1 = 1,
+        Bit0 = 1,
     }
 
     public enum MaterialAttributeType : ushort
@@ -156,7 +156,7 @@ namespace GFDLibrary.Materials
         // 30
         public MaterialAttributeType0Flags Type0Flags { get; set; }
 
-        public MaterialAttributeType0() : base( MaterialAttributeFlags.Flag1, MaterialAttributeType.Type0 ) { }
+        public MaterialAttributeType0() : base( MaterialAttributeFlags.Bit0, MaterialAttributeType.Type0 ) { }
 
         internal MaterialAttributeType0( uint privateFlags, uint version ) : base( privateFlags, version ) { }
 
@@ -186,18 +186,18 @@ namespace GFDLibrary.Materials
                 Field2C = reader.ReadSingle();
 
                 if ( reader.ReadBoolean() )
-                    Type0Flags |= MaterialAttributeType0Flags.Flag1;
+                    Type0Flags |= MaterialAttributeType0Flags.Bit0;
 
                 if ( reader.ReadBoolean() )
-                    Type0Flags |= MaterialAttributeType0Flags.Flag2;
+                    Type0Flags |= MaterialAttributeType0Flags.Bit1;
 
                 if ( reader.ReadBoolean() )
-                    Type0Flags |= MaterialAttributeType0Flags.Flag4;
+                    Type0Flags |= MaterialAttributeType0Flags.Bit2;
 
                 if ( Version > 0x1104260 )
                 {
                     if ( reader.ReadBoolean() )
-                        Type0Flags |= MaterialAttributeType0Flags.Flag8;
+                        Type0Flags |= MaterialAttributeType0Flags.Bit3;
                 }
             }
             else
@@ -232,13 +232,13 @@ namespace GFDLibrary.Materials
                 writer.WriteSingle( Field28 );
                 writer.WriteSingle( Field2C );
 
-                writer.WriteBoolean( Type0Flags.HasFlag( MaterialAttributeType0Flags.Flag1 ) );
-                writer.WriteBoolean( Type0Flags.HasFlag( MaterialAttributeType0Flags.Flag2 ) );
-                writer.WriteBoolean( Type0Flags.HasFlag( MaterialAttributeType0Flags.Flag4 ) );
+                writer.WriteBoolean( Type0Flags.HasFlag( MaterialAttributeType0Flags.Bit0 ) );
+                writer.WriteBoolean( Type0Flags.HasFlag( MaterialAttributeType0Flags.Bit1 ) );
+                writer.WriteBoolean( Type0Flags.HasFlag( MaterialAttributeType0Flags.Bit2 ) );
 
                 if ( Version > 0x1104260 )
                 {
-                    writer.WriteBoolean( Type0Flags.HasFlag( MaterialAttributeType0Flags.Flag8 ) );
+                    writer.WriteBoolean( Type0Flags.HasFlag( MaterialAttributeType0Flags.Bit3 ) );
                 }
             }
             else
@@ -255,10 +255,10 @@ namespace GFDLibrary.Materials
     [Flags]
     public enum MaterialAttributeType0Flags
     {
-        Flag1 = 0b0001,
-        Flag2 = 0b0010,
-        Flag4 = 0b0100,
-        Flag8 = 0b1000,
+        Bit0 = 0b0001,
+        Bit1 = 0b0010,
+        Bit2 = 0b0100,
+        Bit3 = 0b1000,
     }
 
     public sealed class MaterialAttributeType1 : MaterialAttribute
@@ -287,7 +287,7 @@ namespace GFDLibrary.Materials
         // 3C
         public MaterialAttributeType1Flags Type1Flags { get; set; }
 
-        public MaterialAttributeType1() : base( MaterialAttributeFlags.Flag1, MaterialAttributeType.Type1 ) { }
+        public MaterialAttributeType1() : base( MaterialAttributeFlags.Bit0, MaterialAttributeType.Type1 ) { }
 
         internal MaterialAttributeType1( uint privateFlags, uint version ) : base( privateFlags, version ) { }
 
@@ -307,24 +307,24 @@ namespace GFDLibrary.Materials
             if ( Version <= 0x1104500 )
             {
                 if ( reader.ReadBoolean() )
-                    Type1Flags |= MaterialAttributeType1Flags.Flag1;
+                    Type1Flags |= MaterialAttributeType1Flags.Bit0;
 
                 if ( Version > 0x1104180 )
                 {
                     if ( reader.ReadBoolean() )
-                        Type1Flags |= MaterialAttributeType1Flags.Flag2;
+                        Type1Flags |= MaterialAttributeType1Flags.Bit1;
                 }
 
                 if ( Version > 0x1104210 )
                 {
                     if ( reader.ReadBoolean() )
-                        Type1Flags |= MaterialAttributeType1Flags.Flag4;
+                        Type1Flags |= MaterialAttributeType1Flags.Bit2;
                 }
 
                 if ( Version > 0x1104400 )
                 {
                     if ( reader.ReadBoolean() )
-                        Type1Flags |= MaterialAttributeType1Flags.Flag8;
+                        Type1Flags |= MaterialAttributeType1Flags.Bit3;
                 }
             }
             else
@@ -344,21 +344,21 @@ namespace GFDLibrary.Materials
 
             if ( Version <= 0x1104500 )
             {
-                writer.WriteBoolean( Type1Flags.HasFlag( MaterialAttributeType1Flags.Flag1 ) );
+                writer.WriteBoolean( Type1Flags.HasFlag( MaterialAttributeType1Flags.Bit0 ) );
 
                 if ( Version > 0x1104180 )
                 {
-                    writer.WriteBoolean( Type1Flags.HasFlag( MaterialAttributeType1Flags.Flag2 ) );
+                    writer.WriteBoolean( Type1Flags.HasFlag( MaterialAttributeType1Flags.Bit1 ) );
                 }
 
                 if ( Version > 0x1104210 )
                 {
-                    writer.WriteBoolean( Type1Flags.HasFlag( MaterialAttributeType1Flags.Flag4 ) );
+                    writer.WriteBoolean( Type1Flags.HasFlag( MaterialAttributeType1Flags.Bit2 ) );
                 }
 
                 if ( Version > 0x1104400 )
                 {
-                    writer.WriteBoolean( Type1Flags.HasFlag( MaterialAttributeType1Flags.Flag8 ) );
+                    writer.WriteBoolean( Type1Flags.HasFlag( MaterialAttributeType1Flags.Bit3 ) );
                 }
             }
             else
@@ -371,10 +371,10 @@ namespace GFDLibrary.Materials
     [Flags]
     public enum MaterialAttributeType1Flags
     {
-        Flag1 = 0b0001,
-        Flag2 = 0b0010,
-        Flag4 = 0b0100,
-        Flag8 = 0b1000,
+        Bit0 = 0b0001,
+        Bit1 = 0b0010,
+        Bit2 = 0b0100,
+        Bit3 = 0b1000,
     }
 
     public sealed class MaterialAttributeType2 : MaterialAttribute
@@ -385,7 +385,7 @@ namespace GFDLibrary.Materials
         // 10
         public int Field10 { get; set; }
 
-        public MaterialAttributeType2() : base( MaterialAttributeFlags.Flag1, MaterialAttributeType.Type2 ) { }
+        public MaterialAttributeType2() : base( MaterialAttributeFlags.Bit0, MaterialAttributeType.Type2 ) { }
 
         internal MaterialAttributeType2( uint privateFlags, uint version ) : base( privateFlags, version ) { }
 
@@ -447,7 +447,7 @@ namespace GFDLibrary.Materials
         // 3C
         public int Field3C { get; set; }
 
-        public MaterialAttributeType3() : base( MaterialAttributeFlags.Flag1, MaterialAttributeType.Type3 ) { }
+        public MaterialAttributeType3() : base( MaterialAttributeFlags.Bit0, MaterialAttributeType.Type3 ) { }
 
         internal MaterialAttributeType3( uint privateFlags, uint version ) : base( privateFlags, version ) { }
 
@@ -537,7 +537,7 @@ namespace GFDLibrary.Materials
         // 5C
         public int Field5C { get; set; }
 
-        public MaterialAttributeType4() : base( MaterialAttributeFlags.Flag1, MaterialAttributeType.Type4 ) { }
+        public MaterialAttributeType4() : base( MaterialAttributeFlags.Bit0, MaterialAttributeType.Type4 ) { }
 
         internal MaterialAttributeType4( uint privateFlags, uint version ) : base( privateFlags, version ) { }
 
@@ -610,7 +610,7 @@ namespace GFDLibrary.Materials
 
         public Vector4 Field48 { get; set; }
 
-        public MaterialAttributeType5() : base( MaterialAttributeFlags.Flag1, MaterialAttributeType.Type5 ) { }
+        public MaterialAttributeType5() : base( MaterialAttributeFlags.Bit0, MaterialAttributeType.Type5 ) { }
 
         internal MaterialAttributeType5( uint privateFlags, uint version ) : base( privateFlags, version ) { }
 
@@ -657,7 +657,7 @@ namespace GFDLibrary.Materials
 
         public int Field14 { get; set; }
 
-        public MaterialAttributeType6() : base( MaterialAttributeFlags.Flag1, MaterialAttributeType.Type6 ) { }
+        public MaterialAttributeType6() : base( MaterialAttributeFlags.Bit0, MaterialAttributeType.Type6 ) { }
 
         internal MaterialAttributeType6( uint privateFlags, uint version ) : base( privateFlags, version ) { }
 
@@ -682,7 +682,7 @@ namespace GFDLibrary.Materials
 
     public sealed class MaterialAttributeType7 : MaterialAttribute
     {
-        public MaterialAttributeType7() : base( MaterialAttributeFlags.Flag1, MaterialAttributeType.Type7 ) { }
+        public MaterialAttributeType7() : base( MaterialAttributeFlags.Bit0, MaterialAttributeType.Type7 ) { }
 
         internal MaterialAttributeType7( uint privateFlags, uint version ) : base( privateFlags, version ) { }
 
@@ -725,7 +725,7 @@ namespace GFDLibrary.Materials
 
         public MaterialAttributeType8Flags Type8Flags { get; set; }
 
-        public MaterialAttributeType8() : base( MaterialAttributeFlags.Flag1, MaterialAttributeType.Type8 ) { }
+        public MaterialAttributeType8() : base( MaterialAttributeFlags.Bit0, MaterialAttributeType.Type8 ) { }
 
         internal MaterialAttributeType8( uint privateFlags, uint version ) : base( privateFlags, version ) { }
 

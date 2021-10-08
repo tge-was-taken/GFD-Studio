@@ -46,16 +46,16 @@ namespace GFDLibrary.Textures
             Field0C = 0x00000000;
             if (format != TexturePixelFormat.BC2 && format != TexturePixelFormat.BC3)
             {
-                Flags = FieldTextureFlags.Flag2 | FieldTextureFlags.Flag4 | FieldTextureFlags.Flag80;
+                Flags = FieldTextureFlags.Bit1 | FieldTextureFlags.Bit2 | FieldTextureFlags.Bit7;
             }
 
             if ( format == TexturePixelFormat.BC2 )
             {
-                Flags |= FieldTextureFlags.DXT3 | FieldTextureFlags.Flag80;
+                Flags |= FieldTextureFlags.DXT3 | FieldTextureFlags.Bit7;
             }
             else if ( format == TexturePixelFormat.BC3 )
             {
-                Flags |= FieldTextureFlags.DXT5 | FieldTextureFlags.Flag80;
+                Flags |= FieldTextureFlags.DXT5 | FieldTextureFlags.Bit7;
             }
 
             MipMapCount = mipMapCount;
@@ -73,7 +73,7 @@ namespace GFDLibrary.Textures
             Field00 = 0x020200FF;
             Field08 = 0x00000001;
             Field0C = 0x00000000;
-            Flags   = FieldTextureFlags.Flag2 | FieldTextureFlags.Flag4 | FieldTextureFlags.Flag80;
+            Flags   = FieldTextureFlags.Bit1 | FieldTextureFlags.Bit2 | FieldTextureFlags.Bit7;
 
             var ddsFormat = DDSCodec.DetermineBestCompressedFormat( bitmap );
             var data = DDSCodec.CompressPixelData( bitmap, ddsFormat );
@@ -102,7 +102,7 @@ namespace GFDLibrary.Textures
             Field00 = 0x020200FF;
             Field08 = 0x00000001;
             Field0C = 0x00000000;
-            Flags   = FieldTextureFlags.Flag2 | FieldTextureFlags.Flag4 | FieldTextureFlags.Flag80;
+            Flags   = FieldTextureFlags.Bit1 | FieldTextureFlags.Bit2 | FieldTextureFlags.Bit7;
             var ddsHeader = new DDSHeader( ddsData );
             var data = new byte[ddsData.Length - ddsHeader.Size - 4];
             Array.Copy( ddsData, ddsHeader.Size + 4, data, 0, data.Length );
@@ -210,12 +210,12 @@ namespace GFDLibrary.Textures
     public enum FieldTextureFlags
     {
         DXT3   = 1 << 0,
-        Flag2  = 1 << 1,
-        Flag4  = 1 << 2,
+        Bit1  = 1 << 1,
+        Bit2  = 1 << 2,
         DXT5   = 1 << 3,
-        Flag10 = 1 << 4,
-        Flag20 = 1 << 5,
-        Flag40 = 1 << 6,
-        Flag80 = 1 << 7,
+        Bit4 = 1 << 4,
+        Bit5 = 1 << 5,
+        Bit6 = 1 << 6,
+        Bit7 = 1 << 7,
     }
 }

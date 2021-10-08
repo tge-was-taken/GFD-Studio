@@ -47,7 +47,7 @@ namespace GFDLibrary.Animations
             get => mField10;
             set
             {
-                Flags = FlagsHelper.ClearOrSet( Flags, AnimationFlags.Flag10000000, value );
+                Flags = FlagsHelper.ClearOrSet( Flags, AnimationFlags.Bit28, value );
                 mField10 = value;
             }
         }
@@ -60,7 +60,7 @@ namespace GFDLibrary.Animations
             get => mField14;
             set
             {
-                Flags = FlagsHelper.ClearOrSet( Flags, AnimationFlags.Flag20000000, value );
+                Flags = FlagsHelper.ClearOrSet( Flags, AnimationFlags.Bit29, value );
                 mField14 = value;
             }
         }
@@ -82,7 +82,7 @@ namespace GFDLibrary.Animations
             get => mField1C;
             set
             {
-                Flags = FlagsHelper.ClearOrSet( Flags, AnimationFlags.Flag80000000, value );
+                Flags = FlagsHelper.ClearOrSet( Flags, AnimationFlags.Bit31, value );
                 mField1C = value;
             }
         }
@@ -111,7 +111,7 @@ namespace GFDLibrary.Animations
 
         public Animation( uint version ) : base(version)
         {
-            Flags = AnimationFlags.Flag1 | AnimationFlags.Flag2;
+            Flags = AnimationFlags.Bit0 | AnimationFlags.Bit1;
             Controllers = new List< AnimationController >();
         }
 
@@ -142,7 +142,7 @@ namespace GFDLibrary.Animations
                 Controllers.Add( controller );
             }
 
-            if ( Flags.HasFlag( AnimationFlags.Flag10000000 ) )
+            if ( Flags.HasFlag( AnimationFlags.Bit28 ) )
             {
                 // This contains particle data... let's hack our way around that
                 var start = reader.Position;
@@ -199,10 +199,10 @@ namespace GFDLibrary.Animations
                 //}
             }
 
-            if ( Flags.HasFlag( AnimationFlags.Flag20000000 ) )
+            if ( Flags.HasFlag( AnimationFlags.Bit29 ) )
                 Field14 = reader.ReadResource<AnimationExtraData>( Version );
 
-            if ( Flags.HasFlag( AnimationFlags.Flag80000000 ) )
+            if ( Flags.HasFlag( AnimationFlags.Bit31 ) )
             {
                 Field1C = new AnimationFlag80000000Data
                 {
@@ -247,7 +247,7 @@ namespace GFDLibrary.Animations
                 return;
             }
 
-            if ( Flags.HasFlag( AnimationFlags.Flag10000000 ) )
+            if ( Flags.HasFlag( AnimationFlags.Bit28 ) )
             {
                 writer.WriteInt32( Field10.Count );
                 foreach ( var entry in Field10 )
@@ -257,10 +257,10 @@ namespace GFDLibrary.Animations
                 }
             }
 
-            if ( Flags.HasFlag( AnimationFlags.Flag20000000 ) )
+            if ( Flags.HasFlag( AnimationFlags.Bit29 ) )
                 writer.WriteResource( Field14 );
 
-            if ( Flags.HasFlag( AnimationFlags.Flag80000000 ) )
+            if ( Flags.HasFlag( AnimationFlags.Bit31 ) )
             {
                 writer.WriteInt32( Field1C.Field00 );
                 writer.WriteStringWithHash( Version, Field1C.Field04, true );

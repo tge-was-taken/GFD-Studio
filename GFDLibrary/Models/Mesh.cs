@@ -468,7 +468,7 @@ namespace GFDLibrary.Models
                 BoundingSphere = reader.ReadBoundingSphere();
             }
 
-            if ( Flags.HasFlag( GeometryFlags.Flag1000 ) )
+            if ( Flags.HasFlag( GeometryFlags.Bit12 ) )
             {
                 FieldD4 = reader.ReadSingle();
                 FieldD8 = reader.ReadSingle();
@@ -632,7 +632,7 @@ namespace GFDLibrary.Models
                 writer.WriteBoundingSphere( BoundingSphere.Value );
             }
 
-            if ( Flags.HasFlag( GeometryFlags.Flag1000 ) )
+            if ( Flags.HasFlag( GeometryFlags.Bit12 ) )
             {
                 writer.WriteSingle( FieldD4 );
                 writer.WriteSingle( FieldD8 );
@@ -655,44 +655,44 @@ namespace GFDLibrary.Models
         HasTriangles      = 1 << 2,
         HasBoundingBox    = 1 << 3,
         HasBoundingSphere = 1 << 4,
-        Flag20            = 1 << 5, // render flag
+        Bit5            = 1 << 5, // render flag
         HasMorphTargets   = 1 << 6,
-        Flag80            = 1 << 7, // render flag
-        Flag100           = 1 << 8,
-        Flag200           = 1 << 9,
-        Flag400           = 1 << 10,
-        Flag800           = 1 << 11,
-        Flag1000          = 1 << 12, // 2 floats
-        Flag2000          = 1 << 13,
-        Flag4000          = 1 << 14, // render flag
-        Flag8000          = 1 << 15,
-        Flag10000         = 1 << 16,
-        Flag20000         = 1 << 17,
-        Flag40000         = 1 << 18,
-        Flag80000         = 1 << 19,
-        Flag100000        = 1 << 20,
-        Flag200000        = 1 << 21,
-        Flag400000        = 1 << 22,
-        Flag800000        = 1 << 23,
-        Flag1000000       = 1 << 24,
-        Flag2000000       = 1 << 25,
-        Flag4000000       = 1 << 26,
-        Flag8000000       = 1 << 27,
-        Flag10000000      = 1 << 28,
-        Flag20000000      = 1 << 29,
-        Flag40000000      = 1 << 30, // r7 |= 8
-        Flag80000000      = 1u << 31,
+        Bit7            = 1 << 7, // render flag
+        Bit8           = 1 << 8,
+        Bit9           = 1 << 9,
+        Bit10           = 1 << 10,
+        Bit11           = 1 << 11,
+        Bit12          = 1 << 12, // 2 floats
+        Bit13          = 1 << 13,
+        Bit14          = 1 << 14, // render flag
+        Bit15          = 1 << 15,
+        Bit16         = 1 << 16,
+        Bit17         = 1 << 17,
+        Bit18         = 1 << 18,
+        Bit19         = 1 << 19,
+        Bit20        = 1 << 20,
+        Bit21        = 1 << 21,
+        Bit22        = 1 << 22,
+        Bit23        = 1 << 23,
+        Bit24       = 1 << 24,
+        Bit25       = 1 << 25,
+        Bit26       = 1 << 26,
+        Bit27       = 1 << 27,
+        Bit28      = 1 << 28,
+        Bit29      = 1 << 29,
+        Bit30      = 1 << 30, // r7 |= 8
+        Bit31      = 1u << 31,
     }
 
     [Flags]
     public enum VertexAttributeFlags : uint
     {
         Position     = 1 << 1,
-        Flag4        = 1 << 2,
-        Flag8        = 1 << 3,
+        Bit2        = 1 << 2,
+        Bit3        = 1 << 3,
         Normal       = 1 << 4, // might be normals. maybe normal should be position
         Color0       = 1 << 6,
-        Flag40       = 1 << 7,
+        Bit6       = 1 << 7,
         TexCoord0    = 1 << 8,
         TexCoord1    = 1 << 9,
         TexCoord2    = 1 << 10,
@@ -701,21 +701,21 @@ namespace GFDLibrary.Models
         TexCoord5    = 1 << 13,
         TexCoord6    = 1 << 14,
         TexCoord7    = 1 << 15,
-        Flag10000    = 1 << 16,
-        Flag20000    = 1 << 17,
-        Flag40000    = 1 << 18,
-        Flag80000    = 1 << 19,
-        Flag100000   = 1 << 20,
-        Flag200000   = 1 << 21,
-        Flag400000   = 1 << 22,
-        Flag800000   = 1 << 23,
-        Flag1000000  = 1 << 24,
-        Flag2000000  = 1 << 25,
-        Flag4000000  = 1 << 26,
-        Flag8000000  = 1 << 27,
+        Bit16    = 1 << 16,
+        Bit17    = 1 << 17,
+        Bit18    = 1 << 18,
+        Bit19    = 1 << 19,
+        Bit20   = 1 << 20,
+        Bit21   = 1 << 21,
+        Bit22   = 1 << 22,
+        Bit23   = 1 << 23,
+        Bit24  = 1 << 24,
+        Bit25  = 1 << 25,
+        Bit26  = 1 << 26,
+        Bit27  = 1 << 27,
         Tangent      = 1 << 28,
         Binormal     = 1 << 29, // 12 bytes, after tangent -- binormal?
         Color1       = 1 << 30, // 4 bytes, after tex coord 2
-        Flag80000000 = 1u << 31, // 20 bytes, after HasBoundingBox
+        Bit31 = 1u << 31, // 20 bytes, after HasBoundingBox
     }
 }

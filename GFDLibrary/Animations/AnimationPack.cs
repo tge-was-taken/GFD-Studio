@@ -32,7 +32,7 @@ namespace GFDLibrary.Animations
 
         public AnimationPack()
         {
-            Flags = AnimationPackFlags.Flag8;
+            Flags = AnimationPackFlags.Bit3;
             Animations = new List<Animation>();
             BlendAnimations = new List<Animation>();
         }
@@ -55,7 +55,7 @@ namespace GFDLibrary.Animations
             {
                 ErrorsOccuredDuringLoad = true;
 
-                if ( Flags.HasFlag( AnimationPackFlags.Flag4 ) )
+                if ( Flags.HasFlag( AnimationPackFlags.Bit2 ) )
                 {
                     // If it failed, and the extra data flag is set then try reading it as extra data instead
                     BlendAnimations = new List<Animation>();
@@ -71,13 +71,13 @@ namespace GFDLibrary.Animations
             try
             {
                 // Try reading extra data if present
-                if ( Flags.HasFlag( AnimationPackFlags.Flag4 ) )
+                if ( Flags.HasFlag( AnimationPackFlags.Bit2 ) )
                     ExtraData = reader.ReadResource<AnimationExtraData>( Version );
             }
             catch ( Exception )
             {
                 // Make sure to clear the flag for the extra data so we don't crash during writing
-                Flags &= ~AnimationPackFlags.Flag4;
+                Flags &= ~AnimationPackFlags.Bit2;
                 ErrorsOccuredDuringLoad = true;
             }
         }
@@ -123,7 +123,7 @@ namespace GFDLibrary.Animations
             writer.WriteResourceList( Animations );
             writer.WriteResourceList( BlendAnimations );
 
-            if ( Flags.HasFlag( AnimationPackFlags.Flag4 ) )
+            if ( Flags.HasFlag( AnimationPackFlags.Bit2 ) )
                 writer.WriteResource( ExtraData );
         }
 
