@@ -83,7 +83,11 @@ namespace GFDLibrary.Rendering.OpenGL
                 for ( var i = 0; i < glNode.Meshes.Count; i++ )
                 {
                     var oldGlMesh = glNode.Meshes[i];
-                    glNode.Meshes[i] = new GLMesh( oldGlMesh.Mesh, glNode.WorldTransform, ModelPack.Model.Bones, Nodes, Materials );
+                    if (oldGlMesh.Mesh != null)
+                    {
+                        glNode.Meshes[i] = new GLMesh( oldGlMesh.Mesh, glNode.WorldTransform, ModelPack.Model.Bones, Nodes, Materials );
+                    }
+
                     oldGlMesh.Dispose();
                 }
             }

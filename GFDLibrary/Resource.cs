@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.Diagnostics;
+using System.IO;
 using GFDLibrary.Animations;
 using GFDLibrary.Cameras;
 using GFDLibrary.Common;
@@ -121,7 +123,7 @@ namespace GFDLibrary
                         res = new Model( header.Version );
                         break;
                     case ResourceType.Node:
-                        return Node.ReadRecursive( reader, header.Version, stream.Length );
+                        return Node.ReadRecursive( reader, header.Version );
                     case ResourceType.UserPropertyDictionary:
                         res = new UserPropertyDictionary( header.Version );
                         break;
@@ -161,12 +163,8 @@ namespace GFDLibrary
                         break;
                     case ResourceType.Epl:
                         {
-                            return new Epl
-                            {
-                                // Make sure to also read the extra boolean we wrote to the file to keep track of this.
-                                IncludesProperties = reader.ReadBoolean(),
-                                RawData = reader.ReadBytes( ( int ) ( stream.Length - stream.Position ) )
-                            };
+                            res = new Epl( header.Version );
+                            break;
                         }
                     case ResourceType.EplLeaf:
                         res = new EplLeaf( header.Version );
@@ -174,8 +172,8 @@ namespace GFDLibrary
                     case ResourceType.Animation:
                         res = new Animation( header.Version );
                         break;
-                    case ResourceType.AnimationExtraData:
-                        res = new AnimationExtraData( header.Version );
+                    case ResourceType.AnimationBit29Data:
+                        res = new AnimationBit29Data( header.Version );
                         break;
                     case ResourceType.AnimationLayer:
                         res = new AnimationLayer( header.Version );
@@ -187,7 +185,7 @@ namespace GFDLibrary
                         throw new InvalidDataException( "Unknown/Invalid resource type" );
                 }
 
-                res.Read( reader, stream.Length );
+                res.ReadCore( reader );
 
                 if ( res.ResourceType == ResourceType.ModelPack )
                 {
@@ -234,7 +232,7 @@ namespace GFDLibrary
                 {
                     case ResourceType.Epl:
                         // We have to write this to the file so we can remember it when we load it.
-                        writer.WriteBoolean( ( ( Epl ) this ).IncludesProperties );
+                        //writer.WriteBoolean( ( ( Epl ) this ).IncludesProperties );
                         break;
 
                     case ResourceType.Node:
@@ -250,11 +248,74 @@ namespace GFDLibrary
                         }
                 }
 
-                Write( writer );
+                WriteCore( writer );
             }
         }
 
-        internal abstract void Read( ResourceReader reader, long endPosition = -1 );
-        internal abstract void Write( ResourceWriter writer );
+        internal void Read( ResourceReader reader )
+        {
+            Logger.Debug( $"Resource: reading {ResourceType} @ 0x{reader.Position:X8}" );
+            Logger.Indent();
+            ReadCore( reader );
+            Logger.Unindent();
+        }
+
+        internal void Write( ResourceWriter writer )
+        {
+            Logger.Debug( $"Resource: writing {ResourceType} @ 0x{writer.Position:X8}" );
+            Logger.Indent();
+            WriteCore( writer );
+            Logger.Unindent();
+        }
+
+        protected abstract void ReadCore( ResourceReader reader );
+        protected abstract void WriteCore( ResourceWriter writer );
+    }
+
+    public enum LogSeverity
+    {
+        Debug,
+        Info
+    }
+
+    public class LogEventArgs
+    {
+        public LogSeverity Severity {  get; set;}
+        public string Message {  get; set;}
+    }
+
+    public static class Logger
+    {
+        private static int sIndent = 0;
+        private static string sPrefix = "";
+        public static EventHandler<LogEventArgs> Log;
+
+        [Conditional("DEBUG")]
+        public static void Debug( string message )
+        {
+            LogMessage( LogSeverity.Debug, message );
+        }
+
+        public static void Info( string message )
+        {
+            LogMessage( LogSeverity.Info, message );
+        }
+
+        public static void LogMessage( LogSeverity severity, string message )
+        {
+            Log?.Invoke( null, new LogEventArgs() { Severity = severity, Message = sPrefix + message } );
+        }
+
+        public static void Indent()
+        {
+            sIndent++;
+            sPrefix = new string( '\t', sIndent );
+        }
+
+        public static void Unindent()
+        {
+            sIndent--;
+            sPrefix = new string( '\t', sIndent );
+        }
     }
 }

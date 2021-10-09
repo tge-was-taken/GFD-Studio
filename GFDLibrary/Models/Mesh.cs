@@ -352,7 +352,7 @@ namespace GFDLibrary.Models
             return (vertices, normals);
         }
 
-        internal override void Read( ResourceReader reader, long endPosition = -1 )
+        protected override void ReadCore( ResourceReader reader )
         {
             var flags = ( GeometryFlags )reader.ReadInt32();
             Flags = flags;
@@ -530,7 +530,7 @@ namespace GFDLibrary.Models
             }
         }
 
-        internal override void Write( ResourceWriter writer )
+        protected override void WriteCore( ResourceWriter writer )
         {
             writer.WriteInt32( ( int )Flags );
             writer.WriteInt32( ( int )VertexAttributeFlags );
@@ -650,72 +650,72 @@ namespace GFDLibrary.Models
     [Flags]
     public enum GeometryFlags : uint
     {
-        HasVertexWeights  = 1 << 0,
-        HasMaterial       = 1 << 1,
-        HasTriangles      = 1 << 2,
-        HasBoundingBox    = 1 << 3,
+        HasVertexWeights = 1 << 0,
+        HasMaterial = 1 << 1,
+        HasTriangles = 1 << 2,
+        HasBoundingBox = 1 << 3,
         HasBoundingSphere = 1 << 4,
-        Bit5            = 1 << 5, // render flag
-        HasMorphTargets   = 1 << 6,
-        Bit7            = 1 << 7, // render flag
-        Bit8           = 1 << 8,
-        Bit9           = 1 << 9,
-        Bit10           = 1 << 10,
-        Bit11           = 1 << 11,
-        Bit12          = 1 << 12, // 2 floats
-        Bit13          = 1 << 13,
-        Bit14          = 1 << 14, // render flag
-        Bit15          = 1 << 15,
-        Bit16         = 1 << 16,
-        Bit17         = 1 << 17,
-        Bit18         = 1 << 18,
-        Bit19         = 1 << 19,
-        Bit20        = 1 << 20,
-        Bit21        = 1 << 21,
-        Bit22        = 1 << 22,
-        Bit23        = 1 << 23,
-        Bit24       = 1 << 24,
-        Bit25       = 1 << 25,
-        Bit26       = 1 << 26,
-        Bit27       = 1 << 27,
-        Bit28      = 1 << 28,
-        Bit29      = 1 << 29,
-        Bit30      = 1 << 30, // r7 |= 8
-        Bit31      = 1u << 31,
+        Bit5 = 1 << 5, // render flag
+        HasMorphTargets = 1 << 6,
+        Bit7 = 1 << 7, // render flag
+        Bit8 = 1 << 8,
+        Bit9 = 1 << 9,
+        Bit10 = 1 << 10,
+        Bit11 = 1 << 11,
+        Bit12 = 1 << 12, // 2 floats
+        Bit13 = 1 << 13,
+        Bit14 = 1 << 14, // render flag
+        Bit15 = 1 << 15,
+        Bit16 = 1 << 16,
+        Bit17 = 1 << 17,
+        Bit18 = 1 << 18,
+        Bit19 = 1 << 19,
+        Bit20 = 1 << 20,
+        Bit21 = 1 << 21,
+        Bit22 = 1 << 22,
+        Bit23 = 1 << 23,
+        Bit24 = 1 << 24,
+        Bit25 = 1 << 25,
+        Bit26 = 1 << 26,
+        Bit27 = 1 << 27,
+        Bit28 = 1 << 28,
+        Bit29 = 1 << 29,
+        Bit30 = 1 << 30, // r7 |= 8
+        Bit31 = 1u << 31,
     }
 
     [Flags]
     public enum VertexAttributeFlags : uint
     {
-        Position     = 1 << 1,
-        Bit2        = 1 << 2,
-        Bit3        = 1 << 3,
-        Normal       = 1 << 4, // might be normals. maybe normal should be position
-        Color0       = 1 << 6,
-        Bit6       = 1 << 7,
-        TexCoord0    = 1 << 8,
-        TexCoord1    = 1 << 9,
-        TexCoord2    = 1 << 10,
-        TexCoord3    = 1 << 11,
-        TexCoord4    = 1 << 12,
-        TexCoord5    = 1 << 13,
-        TexCoord6    = 1 << 14,
-        TexCoord7    = 1 << 15,
-        Bit16    = 1 << 16,
-        Bit17    = 1 << 17,
-        Bit18    = 1 << 18,
-        Bit19    = 1 << 19,
-        Bit20   = 1 << 20,
-        Bit21   = 1 << 21,
-        Bit22   = 1 << 22,
-        Bit23   = 1 << 23,
-        Bit24  = 1 << 24,
-        Bit25  = 1 << 25,
-        Bit26  = 1 << 26,
-        Bit27  = 1 << 27,
-        Tangent      = 1 << 28,
-        Binormal     = 1 << 29, // 12 bytes, after tangent -- binormal?
-        Color1       = 1 << 30, // 4 bytes, after tex coord 2
+        Position = 1 << 1,
+        Bit2 = 1 << 2,
+        Bit3 = 1 << 3,
+        Normal = 1 << 4, // might be normals. maybe normal should be position
+        Color0 = 1 << 6,
+        Bit6 = 1 << 7,
+        TexCoord0 = 1 << 8,
+        TexCoord1 = 1 << 9,
+        TexCoord2 = 1 << 10,
+        TexCoord3 = 1 << 11,
+        TexCoord4 = 1 << 12,
+        TexCoord5 = 1 << 13,
+        TexCoord6 = 1 << 14,
+        TexCoord7 = 1 << 15,
+        Bit16 = 1 << 16,
+        Bit17 = 1 << 17,
+        Bit18 = 1 << 18,
+        Bit19 = 1 << 19,
+        Bit20 = 1 << 20,
+        Bit21 = 1 << 21,
+        Bit22 = 1 << 22,
+        Bit23 = 1 << 23,
+        Bit24 = 1 << 24,
+        Bit25 = 1 << 25,
+        Bit26 = 1 << 26,
+        Bit27 = 1 << 27,
+        Tangent = 1 << 28,
+        Binormal = 1 << 29, // 12 bytes, after tangent -- binormal?
+        Color1 = 1 << 30, // 4 bytes, after tex coord 2
         Bit31 = 1u << 31, // 20 bytes, after HasBoundingBox
     }
 }

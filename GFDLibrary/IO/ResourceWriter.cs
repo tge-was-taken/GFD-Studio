@@ -93,7 +93,7 @@ namespace GFDLibrary.IO
             if ( isCatherineFullBodyData && withPadding )
                 WriteByte( 0 ); // padding byte
 
-            if ( version > 0x1080000 )
+            if ( value.Length > 0 && version > 0x1080000 )
                 WriteInt32( StringHasher.GenerateStringHash( value ) );
         }
 

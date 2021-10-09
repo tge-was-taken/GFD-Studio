@@ -61,17 +61,17 @@
     <Compile Include="..\GFDLibrary\Animations\Animation.cs">
       <Link>Animations\Animation.cs</Link>
     </Compile>
+    <Compile Include="..\GFDLibrary\Animations\AnimationBit28DataEntry.cs">
+      <Link>Animations\AnimationBit28DataEntry.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Animations\AnimationBit29Data.cs">
+      <Link>Animations\AnimationBit29Data.cs</Link>
+    </Compile>
+    <Compile Include="..\GFDLibrary\Animations\AnimationBit31Data.cs">
+      <Link>Animations\AnimationBit31Data.cs</Link>
+    </Compile>
     <Compile Include="..\GFDLibrary\Animations\AnimationController.cs">
       <Link>Animations\AnimationController.cs</Link>
-    </Compile>
-    <Compile Include="..\GFDLibrary\Animations\AnimationExtraData.cs">
-      <Link>Animations\AnimationExtraData.cs</Link>
-    </Compile>
-    <Compile Include="..\GFDLibrary\Animations\AnimationFlag10000000DataEntry.cs">
-      <Link>Animations\AnimationFlag10000000DataEntry.cs</Link>
-    </Compile>
-    <Compile Include="..\GFDLibrary\Animations\AnimationFlag80000000Data.cs">
-      <Link>Animations\AnimationFlag80000000Data.cs</Link>
     </Compile>
     <Compile Include="..\GFDLibrary\Animations\AnimationFlags.cs">
       <Link>Animations\AnimationFlags.cs</Link>
@@ -169,14 +169,8 @@
     <Compile Include="..\GFDLibrary\Effects\Epl.cs">
       <Link>Effects\Epl.cs</Link>
     </Compile>
-    <Compile Include="..\GFDLibrary\Effects\EplAnimation.cs">
-      <Link>Effects\EplAnimation.cs</Link>
-    </Compile>
     <Compile Include="..\GFDLibrary\Effects\EplEnums.cs">
       <Link>Effects\EplEnums.cs</Link>
-    </Compile>
-    <Compile Include="..\GFDLibrary\Effects\EplLeaf.cs">
-      <Link>Effects\EplLeaf.cs</Link>
     </Compile>
     <Compile Include="..\GFDLibrary\Graphics\Color.cs">
       <Link>Graphics\Color.cs</Link>

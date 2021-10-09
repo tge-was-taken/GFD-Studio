@@ -15,12 +15,12 @@ namespace GFDLibrary.Misc
         {
         }
 
-        internal override void Read( ResourceReader reader, long endPosition = -1 )
+        protected override void ReadCore( ResourceReader reader )
         {
             throw new System.NotImplementedException();
         }
 
-        internal override void Write( ResourceWriter writer )
+        protected override void WriteCore( ResourceWriter writer )
         {
             if ( Data != null )
                 writer.WriteBytes( Data );

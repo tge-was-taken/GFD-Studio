@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using GFDLibrary;
 using GFDStudio.GUI.Forms;
 
 namespace GFDStudio
@@ -19,6 +22,18 @@ namespace GFDStudio
         [STAThread]
         private static void Main( string[] args )
         {
+#if WINDOWS && DEBUG
+            AllocConsole();
+#endif
+            Logger.Log += ( s, e ) =>
+            {
+                var fmt = $"{DateTime.Now} {e.Severity} {e.Message}\n";
+#if WINDOWS && DEBUG
+                Console.WriteLine( fmt );
+#endif
+                File.AppendAllTextAsync( "GFDStudio.log", fmt );
+            };
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault( false );
 
@@ -30,5 +45,11 @@ namespace GFDStudio
                 Application.Run( mainForm );
             }
         }
+
+#if WINDOWS
+        [DllImport( "kernel32.dll", SetLastError = true )]
+        [return: MarshalAs( UnmanagedType.Bool )]
+        static extern bool AllocConsole();
+#endif
     }
 }

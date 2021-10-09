@@ -19,7 +19,7 @@
         MaterialVector3_5,
         Single_5,
         Single_6,
-        PRSByte,
+        NodePRSByte,
         Single4Byte,
         SingleByte,
         Single5_2,

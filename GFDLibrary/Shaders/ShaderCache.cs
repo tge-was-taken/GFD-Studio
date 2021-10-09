@@ -30,7 +30,7 @@ namespace GFDLibrary.Shaders
             CacheVersion = cacheVersion;
         }
 
-        internal override void Read( ResourceReader reader, long endPosition = -1 )
+        protected override void ReadCore( ResourceReader reader )
         {
             var header = reader.ReadFileHeader();
             if ( header.Identifier != ResourceFileIdentifier.ShaderCache )
@@ -45,7 +45,7 @@ namespace GFDLibrary.Shaders
             }
         }
 
-        internal override void Write( ResourceWriter writer )
+        protected override void WriteCore( ResourceWriter writer )
         {
             writer.WriteFileHeader( ResourceFileIdentifier.ShaderCache, CacheVersion, ResourceType );
             foreach ( var shader in this )

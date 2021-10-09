@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using GFDLibrary.Common;
+using GFDLibrary.Effects;
 using GFDLibrary.IO;
 using GFDLibrary.Models;
 
@@ -18,10 +19,10 @@ namespace GFDLibrary.Animations
             "Bip01 R Clavicle",
         };
 
-        private List<AnimationFlag10000000DataEntry> mField10;
-        private AnimationExtraData mField14;
+        private List<AnimationBit28DataEntry> mField10;
+        private AnimationBit29Data mField14;
         private BoundingBox? mBoundingBox;
-        private AnimationFlag80000000Data mField1C;
+        private AnimationBit31Data mField1C;
         private UserPropertyDictionary mProperties;
         private float? mSpeed;
         private int mUnknown2;
@@ -42,7 +43,7 @@ namespace GFDLibrary.Animations
         public List<AnimationController> Controllers { get; set; }
 
         // 10
-        public List<AnimationFlag10000000DataEntry> Field10
+        public List<AnimationBit28DataEntry> Field10
         {
             get => mField10;
             set
@@ -55,7 +56,7 @@ namespace GFDLibrary.Animations
         public byte[] Flag10000000Data { get; set; }
 
         // 14
-        public AnimationExtraData Field14
+        public AnimationBit29Data Field14
         {
             get => mField14;
             set
@@ -77,7 +78,7 @@ namespace GFDLibrary.Animations
         }
 
         // 1C
-        public AnimationFlag80000000Data Field1C
+        public AnimationBit31Data Field1C
         {
             get => mField1C;
             set
@@ -119,8 +120,9 @@ namespace GFDLibrary.Animations
         {          
         }
 
-        internal override void Read( ResourceReader reader, long endPosition = -1 )
+        protected override void ReadCore( ResourceReader reader )
         {
+            Logger.Debug( $"Animation: Reading" );
             var animationStart = reader.Position;
 
             if ( Version > 0x1104110 )
@@ -136,75 +138,43 @@ namespace GFDLibrary.Animations
                 Trace.Assert( unknown1 == controllerCount, "unknown1 != controllerCount" );
             }
 
+            Logger.Debug( $"Animation: Reading {controllerCount} controllers" );
             for ( var i = 0; i < controllerCount; i++ )
             {
+                Logger.Debug( $"Animation: Reading animation controller #{i}" );
                 var controller = reader.ReadResource<AnimationController>( Version );
                 Controllers.Add( controller );
             }
 
             if ( Flags.HasFlag( AnimationFlags.Bit28 ) )
             {
-                // This contains particle data... let's hack our way around that
-                var start = reader.Position;
+                Field10 = new List<AnimationBit28DataEntry>();
 
-                while ( true )
+                var count = reader.ReadInt32();
+                Logger.Debug( $"Animation: Reading {count} bit 28 data entries" );
+                for ( var i = 0; i < count; i++ )
                 {
-                    var next = reader.Position + 1;
-
-                    // 0x0001000 is a good match for the controller target type and part of the target ID
-                    if ( reader.ReadUInt32() == 0x00010000 && reader.ReadInt16() < 255 )
+                    Logger.Debug( $"Animation: Reading animation bit 28 data entry #{i}" );
+                    var epl = new Epl( Version );
+                    epl.Read( reader );
+                    Field10.Add( new AnimationBit28DataEntry
                     {
-                        // Try and read the controller target name
-                        var nameLength = reader.ReadInt16();
-                        var nextAnimationOffset = reader.Position - 12 - nameLength;
-                        if ( nameLength > 0 && nameLength < 32 && reader.ReadBytes( nameLength ).All( x => x != 0 ) )
-                        {
-                            // If the controller target name is valid, we might be onto something
-                            // Now verify if the data associated with the next animation makes somewhat sense
-                            reader.SeekBegin( nextAnimationOffset + 4 );
-                            var nextAnimationDuration = reader.ReadSingle();
-                            var nextAnimationControllerCount = reader.ReadInt32();
-                            if ( ( nextAnimationDuration == 0f || ( nextAnimationDuration >= 0.01f && nextAnimationDuration <= 1000f ) ) && nextAnimationControllerCount > 0 && nextAnimationControllerCount <= 1000 )
-                            {
-                                // If the length of the name isn't 8 (RootNode), usually there's a problem
-                                //if ( nameLength != 8 )
-                                //    Debugger.Break();
-
-                                // Just read the remainder of the animation data as raw bytes so we can write it back later
-                                reader.SeekBegin( start );
-                                Flag10000000Data = reader.ReadBytes( ( int ) ( nextAnimationOffset - start ) );
-                                return;
-                            }
-                            else
-                            {
-                                // This is just here for setting breakpoints
-                            }
-                        }
-                    }
-
-                    // Try again at the next position
-                    reader.SeekBegin( next );
+                        Field00 = epl,
+                        Field04 = reader.ReadStringWithHash( Version )
+                    } );;
                 }
-
-                //Field10 = new List<AnimationFlag10000000DataEntry>();
-
-                //var count = reader.ReadInt32();
-                //for ( var i = 0; i < count; i++ )
-                //{
-                //    Field10.Add( new AnimationFlag10000000DataEntry
-                //    {
-                //        Field00 = Epl.Read( reader, Version, out _ ),
-                //        Field04 = reader.ReadStringWithHash( Version )
-                //    } );
-                //}
             }
 
             if ( Flags.HasFlag( AnimationFlags.Bit29 ) )
-                Field14 = reader.ReadResource<AnimationExtraData>( Version );
+            {
+                Logger.Debug( $"Animation: Reading bit 29 data" );
+                Field14 = reader.ReadResource<AnimationBit29Data>( Version );
+            }
 
             if ( Flags.HasFlag( AnimationFlags.Bit31 ) )
             {
-                Field1C = new AnimationFlag80000000Data
+                Logger.Debug( $"Animation: Reading bit 31 data" );
+                Field1C = new AnimationBit31Data
                 {
                     Field00 = reader.ReadInt32(),
                     Field04 = reader.ReadStringWithHash( Version, true ),
@@ -222,7 +192,7 @@ namespace GFDLibrary.Animations
                 Properties = reader.ReadResource<UserPropertyDictionary>( Version );
         }
 
-        internal override void Write( ResourceWriter writer )
+        protected override void WriteCore( ResourceWriter writer )
         {
             if ( Version > 0x1104110 )
                 writer.WriteInt32( ( int ) Flags );
@@ -238,14 +208,6 @@ namespace GFDLibrary.Animations
 
             foreach ( var controller in Controllers )
                 writer.WriteResource( controller );
-
-            if ( Flag10000000Data != null )
-            {
-                // If we have data associated with flag 10000000, we write it and stop there 
-                // because it contains the rest of the animation data until the end.
-                writer.WriteBytes( Flag10000000Data );
-                return;
-            }
 
             if ( Flags.HasFlag( AnimationFlags.Bit28 ) )
             {

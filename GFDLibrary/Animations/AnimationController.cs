@@ -4,6 +4,7 @@ using System.Linq;
 using GFDLibrary.IO;
 using GFDLibrary.Models;
 using System.Numerics;
+using System.Diagnostics;
 
 namespace GFDLibrary.Animations
 {
@@ -47,15 +48,16 @@ namespace GFDLibrary.Animations
             return $"{TargetKind} {TargetId} {TargetName}";
         }
 
-        internal override void Read( ResourceReader reader, long endPosition = -1 )
+        protected override void ReadCore( ResourceReader reader )
         {
             TargetKind = ( TargetKind )reader.ReadInt16();
             TargetId = reader.ReadInt32();
             TargetName = reader.ReadStringWithHash( Version, true );
+            Logger.Debug( $"AnimationController: Reading {TargetName} kind:{TargetKind} id:{TargetId}" );
             Layers = reader.ReadResourceList<AnimationLayer>( Version );
         }
 
-        internal override void Write( ResourceWriter writer )
+        protected override void WriteCore( ResourceWriter writer )
         {
             writer.WriteInt16( ( short ) TargetKind );
             writer.WriteInt32( TargetId );

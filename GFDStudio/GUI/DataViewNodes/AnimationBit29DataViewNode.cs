@@ -4,7 +4,7 @@ using GFDLibrary.Animations;
 
 namespace GFDStudio.GUI.DataViewNodes
 {
-    public class AnimationExtraDataViewNode : DataViewNode<AnimationExtraData>
+    public class AnimationBit29DataViewNode : DataViewNode<AnimationBit29Data>
     {
         public override DataViewNodeMenuFlags ContextMenuFlags =>
             DataViewNodeMenuFlags.Delete | DataViewNodeMenuFlags.Export | DataViewNodeMenuFlags.Replace;
@@ -47,15 +47,15 @@ namespace GFDStudio.GUI.DataViewNodes
             set => SetDataProperty( value );
         }
 
-        protected internal AnimationExtraDataViewNode( string text, AnimationExtraData data ) : base( text, data )
+        protected internal AnimationBit29DataViewNode( string text, AnimationBit29Data data ) : base( text, data )
         {
         }
 
         protected override void InitializeCore()
         {
-            RegisterExportHandler<AnimationExtraData>( path => Data.Save( path ) );
-            RegisterReplaceHandler<AnimationExtraData>( Resource.Load<AnimationExtraData> );
-            RegisterModelUpdateHandler( () => new AnimationExtraData
+            RegisterExportHandler<AnimationBit29Data>( path => Data.Save( path ) );
+            RegisterReplaceHandler<AnimationBit29Data>( Resource.Load<AnimationBit29Data> );
+            RegisterModelUpdateHandler( () => new AnimationBit29Data
             {
                 Field00 = Field00.Data,
                 Field10 = Field10,

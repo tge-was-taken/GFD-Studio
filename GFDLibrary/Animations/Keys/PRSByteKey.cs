@@ -6,7 +6,7 @@ namespace GFDLibrary.Animations
     {
         public byte Byte { get; set; }
 
-        public PRSByteKey() : base( KeyType.PRSByte ) { }
+        public PRSByteKey() : base( KeyType.NodePRSByte ) { }
 
         internal override void Read( ResourceReader reader )
         {

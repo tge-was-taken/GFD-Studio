@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace GFDLibrary.Effects
 {
-    public enum EEplFlags
+    public enum EplFlags
     {
 
     }
 
-    public enum EEplLeafFlags
+    public enum EplLeafFlags
     {
 
     }

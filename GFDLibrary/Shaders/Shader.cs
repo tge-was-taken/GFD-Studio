@@ -28,7 +28,7 @@ namespace GFDLibrary.Shaders
         {
         }
 
-        internal override void Read( ResourceReader reader, long endPosition = -1 )
+        protected override void ReadCore( ResourceReader reader )
         {
             ShaderType = ( ShaderType )reader.ReadUInt16();
             int size = reader.ReadInt32();
@@ -41,7 +41,7 @@ namespace GFDLibrary.Shaders
             Data = reader.ReadBytes( size );
         }
 
-        internal override void Write( ResourceWriter writer )
+        protected override void WriteCore( ResourceWriter writer )
         {
             writer.WriteUInt16( ( ushort ) ShaderType );
             writer.WriteInt32( Data.Length );
@@ -98,16 +98,16 @@ namespace GFDLibrary.Shaders
         {    
         }
 
-        internal override void Read( ResourceReader reader, long endPosition = -1 )
+        protected override void ReadCore( ResourceReader reader )
         {
             ShaderType2 = reader.ReadUInt32();
-            base.Read( reader, endPosition );
+            base.ReadCore( reader );
         }
 
-        internal override void Write( ResourceWriter writer )
+        protected override void WriteCore( ResourceWriter writer )
         {
             writer.WriteUInt32( ShaderType2 );
-            base.Write( writer );
+            base.WriteCore( writer );
         }
     }
 

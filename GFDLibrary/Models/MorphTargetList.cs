@@ -23,7 +23,7 @@ namespace GFDLibrary.Models
             mList = new List<MorphTarget>();
         }
 
-        internal override void Read( ResourceReader reader, long endPosition = -1 )
+        protected override void ReadCore( ResourceReader reader )
         {
             Flags = reader.ReadInt32();
             int morphCount = reader.ReadInt32();
@@ -35,7 +35,7 @@ namespace GFDLibrary.Models
             }
         }
 
-        internal override void Write( ResourceWriter writer )
+        protected override void WriteCore( ResourceWriter writer )
         {
             writer.WriteInt32( Flags );
             writer.WriteInt32( Count );

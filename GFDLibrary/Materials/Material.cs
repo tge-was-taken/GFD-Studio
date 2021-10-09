@@ -292,7 +292,7 @@ namespace GFDLibrary.Materials
             }
         }
 
-        internal override void Read( ResourceReader reader, long endPosition = -1 )
+        protected override void ReadCore( ResourceReader reader )
         {
             // Read material header
             Name = reader.ReadStringWithHash( Version );
@@ -418,7 +418,7 @@ namespace GFDLibrary.Materials
             Trace.Assert( Flags == flags, "Material flags don't match flags from file" );
         }
 
-        internal override void Write( ResourceWriter writer )
+        protected override void WriteCore( ResourceWriter writer )
         {
             writer.WriteStringWithHash( Version, Name );
             writer.WriteUInt32( ( uint )Flags );
@@ -614,8 +614,8 @@ namespace GFDLibrary.Materials
         ReceiveShadow    = 1 << 14,
         CastShadow       = 1 << 15,
         HasAttributes    = 1 << 16,
-        Flag20000Crash   = 1 << 17,
-        Flag40000Crash   = 1 << 18,
+        Bit17   = 1 << 17,
+        Bit18   = 1 << 18,
         DisableBloom     = 1 << 19,
         HasDiffuseMap    = 1 << 20,
         HasNormalMap     = 1 << 21,
@@ -626,7 +626,7 @@ namespace GFDLibrary.Materials
         HasNightMap      = 1 << 26,
         HasDetailMap     = 1 << 27,
         HasShadowMap     = 1 << 28,
-        Flag20000000Crash= 1 << 29,
+        Bit29= 1 << 29,
         Bit30     = 1 << 30,
         Bit31     = 1u << 31
     }

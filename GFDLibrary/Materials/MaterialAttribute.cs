@@ -93,7 +93,7 @@ namespace GFDLibrary.Materials
                     break;
             }
 
-            attribute.Read( reader );
+            attribute.ReadCore( reader );
 
             return attribute;
         }
@@ -164,7 +164,7 @@ namespace GFDLibrary.Materials
         {
         }
 
-        internal override void Read( ResourceReader reader, long endPosition = -1 )
+        protected override void ReadCore( ResourceReader reader )
         {
             if ( Version > 0x1104500 )
             {
@@ -211,7 +211,7 @@ namespace GFDLibrary.Materials
             }
         }
 
-        internal override void Write( ResourceWriter writer )
+        protected override void WriteCore( ResourceWriter writer )
         {
             if ( Version > 0x1104500 )
             {
@@ -295,7 +295,7 @@ namespace GFDLibrary.Materials
         {
         }
 
-        internal override void Read( ResourceReader reader, long endPosition = -1 )
+        protected override void ReadCore( ResourceReader reader )
         {
             InnerGlow = reader.ReadVector4();
             Field1C = reader.ReadSingle();
@@ -333,7 +333,7 @@ namespace GFDLibrary.Materials
             }
         }
 
-        internal override void Write( ResourceWriter writer )
+        protected override void WriteCore( ResourceWriter writer )
         {
             writer.WriteVector4( InnerGlow );
             writer.WriteSingle( Field1C );
@@ -393,13 +393,13 @@ namespace GFDLibrary.Materials
         {
         }
 
-        internal override void Read( ResourceReader reader, long endPosition = -1 )
+        protected override void ReadCore( ResourceReader reader )
         {
             Field0C = reader.ReadInt32();
             Field10 = reader.ReadInt32();
         }
 
-        internal override void Write( ResourceWriter writer )
+        protected override void WriteCore( ResourceWriter writer )
         {
             writer.WriteInt32( Field0C );
             writer.WriteInt32( Field10 );
@@ -455,7 +455,7 @@ namespace GFDLibrary.Materials
         {
         }
 
-        internal override void Read( ResourceReader reader, long endPosition = -1 )
+        protected override void ReadCore( ResourceReader reader )
         {
             Field0C = reader.ReadSingle();
             Field10 = reader.ReadSingle();
@@ -472,7 +472,7 @@ namespace GFDLibrary.Materials
             Field3C = reader.ReadInt32();
         }
 
-        internal override void Write( ResourceWriter writer )
+        protected override void WriteCore( ResourceWriter writer )
         {
             writer.WriteSingle( Field0C );
             writer.WriteSingle( Field10 );
@@ -545,7 +545,7 @@ namespace GFDLibrary.Materials
         {
         }
 
-        internal override void Read( ResourceReader reader, long endPosition = -1 )
+        protected override void ReadCore( ResourceReader reader )
         {
             Field0C = reader.ReadVector4();
             Field1C = reader.ReadSingle();
@@ -564,7 +564,7 @@ namespace GFDLibrary.Materials
             Field5C = reader.ReadInt32();
         }
 
-        internal override void Write( ResourceWriter writer )
+        protected override void WriteCore( ResourceWriter writer )
         {
             writer.WriteVector4( Field0C );
             writer.WriteSingle( Field1C );
@@ -618,7 +618,7 @@ namespace GFDLibrary.Materials
         {
         }
 
-        internal override void Read( ResourceReader reader, long endPosition = -1 )
+        protected override void ReadCore( ResourceReader reader )
         {
             Field0C = reader.ReadInt32();
             Field10 = reader.ReadInt32();
@@ -633,7 +633,7 @@ namespace GFDLibrary.Materials
             Field48 = reader.ReadVector4();
         }
 
-        internal override void Write( ResourceWriter writer )
+        protected override void WriteCore( ResourceWriter writer )
         {
             writer.WriteInt32( Field0C );
             writer.WriteInt32( Field10 );
@@ -665,14 +665,14 @@ namespace GFDLibrary.Materials
         {
         }
 
-        internal override void Read( ResourceReader reader, long endPosition = -1 )
+        protected override void ReadCore( ResourceReader reader )
         {
             Field0C = reader.ReadInt32();
             Field10 = reader.ReadInt32();
             Field14 = reader.ReadInt32();
         }
 
-        internal override void Write( ResourceWriter writer )
+        protected override void WriteCore( ResourceWriter writer )
         {
             writer.WriteInt32( Field0C );
             writer.WriteInt32( Field10 );
@@ -690,11 +690,11 @@ namespace GFDLibrary.Materials
         {
         }
 
-        internal override void Read( ResourceReader reader, long endPosition = -1 )
+        protected override void ReadCore( ResourceReader reader )
         {
         }
 
-        internal override void Write( ResourceWriter writer )
+        protected override void WriteCore( ResourceWriter writer )
         {
         }
     }
@@ -733,7 +733,7 @@ namespace GFDLibrary.Materials
         {
         }
 
-        internal override void Read( ResourceReader reader, long endPosition = -1 )
+        protected override void ReadCore( ResourceReader reader )
         {
             Field00 = reader.ReadVector3();
             Field0C = reader.ReadSingle();
@@ -749,7 +749,7 @@ namespace GFDLibrary.Materials
             Type8Flags = ( MaterialAttributeType8Flags )reader.ReadInt32();
         }
 
-        internal override void Write( ResourceWriter writer )
+        protected override void WriteCore( ResourceWriter writer )
         {
             writer.WriteVector3( Field00 );
             writer.WriteSingle( Field0C );

@@ -4,9 +4,9 @@ using GFDLibrary.Models;
 
 namespace GFDLibrary.Animations
 {
-    public sealed class AnimationExtraData : Resource
+    public sealed class AnimationBit29Data : Resource
     {
-        public override ResourceType ResourceType => ResourceType.AnimationExtraData;
+        public override ResourceType ResourceType => ResourceType.AnimationBit29Data;
 
         public Animation Field00 { get; set; }
 
@@ -24,16 +24,16 @@ namespace GFDLibrary.Animations
 
         public float Field1C { get; set; }
 
-        public AnimationExtraData()
+        public AnimationBit29Data()
         {
         }
 
-        public AnimationExtraData(uint version) : base(version)
+        public AnimationBit29Data(uint version) : base(version)
         {
             
         }
 
-        internal override void Read( ResourceReader reader, long endPosition = -1 )
+        protected override void ReadCore( ResourceReader reader )
         {
             Field00 = reader.ReadResource<Animation>( Version );
             Field10 = reader.ReadSingle();
@@ -45,7 +45,7 @@ namespace GFDLibrary.Animations
             Field1C = reader.ReadSingle();
         }
 
-        internal override void Write( ResourceWriter writer )
+        protected override void WriteCore( ResourceWriter writer )
         {
             writer.WriteResource( Field00 );
             writer.WriteSingle( Field10 );

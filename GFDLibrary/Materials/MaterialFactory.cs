@@ -154,7 +154,7 @@ namespace GFDLibrary.Materials
                 SpecularMap = new TextureMap(specularMapName),
                 ShadowMap = new TextureMap(shadowMapName),
                 Flags = MaterialFlags.Bit0 | MaterialFlags.Bit1 | MaterialFlags.Bit2 | MaterialFlags.Bit5 | MaterialFlags.Bit6 | MaterialFlags.EnableLight2 |
-                        MaterialFlags.CastShadow | MaterialFlags.HasAttributes | MaterialFlags.Flag20000Crash | MaterialFlags.HasDiffuseMap | MaterialFlags.HasSpecularMap | MaterialFlags.HasShadowMap,
+                        MaterialFlags.CastShadow | MaterialFlags.HasAttributes | MaterialFlags.Bit17 | MaterialFlags.HasDiffuseMap | MaterialFlags.HasSpecularMap | MaterialFlags.HasShadowMap,
                 Attributes = new List<MaterialAttribute>
                 {
                     new MaterialAttributeType1
