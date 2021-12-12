@@ -262,9 +262,9 @@ namespace GFDLibrary.Models
             TriangleIndexFormat = TriangleIndexFormat.UInt16;
         }
 
-        public Mesh(uint version):base(version)
+        public Mesh( uint version ) : base( version )
         {
-            
+
         }
 
         /// <summary>
@@ -277,28 +277,31 @@ namespace GFDLibrary.Models
         public (Vector3[] Vertices, Vector3[] Normals) Transform( Node parentNode, IList<Node> nodes, List<Bone> usedBones,
             bool includeWeights = true, bool includeParentTransform = false, Matrix4x4? offsetTransform = null )
         {
+            if ( nodes == null ) throw new ArgumentNullException( nameof( nodes ) );
+            if ( VertexWeights != null && usedBones == null ) throw new ArgumentNullException( nameof( usedBones ) );
+
             var vertices = new Vector3[VertexCount];
             Vector3[] normals = null;
 
             if ( Normals != null )
                 normals = new Vector3[VertexCount];
 
-            var parentNodeWorldTransform = parentNode.WorldTransform;
-            Matrix4x4.Invert(parentNodeWorldTransform, out var parentNodeWorldTransformInv );
+            var parentNodeWorldTransform = parentNode != null ? parentNode.WorldTransform : Matrix4x4.Identity;
+            Matrix4x4.Invert( parentNodeWorldTransform, out var parentNodeWorldTransformInv );
 
             for ( int i = 0; i < VertexCount; i++ )
             {
                 var position = Vertices[i];
-                var normal = Normals?[i] ?? Vector3.Zero;
+                var normal = Normals != null ? Normals[i] : Vector3.Zero;
                 var newPosition = Vector3.Zero;
                 var newNormal = Vector3.Zero;
 
-                if (includeWeights)
+                if ( includeWeights && VertexWeights != null )
                 {
-                    for (int j = 0; j < 4; j++)
+                    for ( int j = 0; j < 4; j++ )
                     {
                         var weight = VertexWeights[i].Weights[j];
-                        if (weight == 0)
+                        if ( weight == 0 )
                             continue;
 
                         var boneIndex = VertexWeights[i].Indices[j];
@@ -306,17 +309,18 @@ namespace GFDLibrary.Models
                         var boneNode = nodes[boneNodeIndex];
                         var inverseBindMatrix = usedBones[boneIndex].InverseBindMatrix;
                         var bindMatrix = boneNode.WorldTransform;
-                        newPosition += Vector3.Transform(Vector3.Transform(position, inverseBindMatrix), bindMatrix * weight);
-                        newNormal += Vector3.TransformNormal(Vector3.TransformNormal(normal, inverseBindMatrix), bindMatrix * weight);
+                        newPosition += Vector3.Transform( Vector3.Transform( position, inverseBindMatrix ), bindMatrix * weight );
+                        if ( normals != null )
+                            newNormal += Vector3.TransformNormal( Vector3.TransformNormal( normal, inverseBindMatrix ), bindMatrix * weight );
                     }
 
-                    if (!includeParentTransform)
+                    if ( !includeParentTransform )
                     {
-                        newPosition = Vector3.Transform(newPosition, parentNodeWorldTransformInv);
+                        newPosition = Vector3.Transform( newPosition, parentNodeWorldTransformInv );
 
-                        if (normals != null)
+                        if ( normals != null )
                             newNormal =
-                                Vector3.Normalize(Vector3.TransformNormal(newNormal, parentNodeWorldTransformInv));
+                                Vector3.Normalize( Vector3.TransformNormal( newNormal, parentNodeWorldTransformInv ) );
                     }
                 }
                 else
@@ -324,28 +328,28 @@ namespace GFDLibrary.Models
                     newPosition = position;
                     newNormal = normal;
 
-                    if (includeParentTransform)
+                    if ( includeParentTransform )
                     {
-                        newPosition = Vector3.Transform(newPosition, parentNodeWorldTransform );
+                        newPosition = Vector3.Transform( newPosition, parentNodeWorldTransform );
 
-                        if (normals != null)
+                        if ( normals != null )
                             newNormal =
-                                Vector3.Normalize(Vector3.TransformNormal(newNormal, parentNodeWorldTransform));
+                                Vector3.Normalize( Vector3.TransformNormal( newNormal, parentNodeWorldTransform ) );
 
                     }
                 }
 
-                if (offsetTransform != null)
+                if ( offsetTransform != null )
                 {
-                    newPosition = Vector3.Transform(newPosition, offsetTransform.Value);
+                    newPosition = Vector3.Transform( newPosition, offsetTransform.Value );
 
-                    if (normals != null)
+                    if ( normals != null )
                         newNormal =
-                            Vector3.Normalize(Vector3.TransformNormal(newNormal, offsetTransform.Value));
+                            Vector3.Normalize( Vector3.TransformNormal( newNormal, offsetTransform.Value ) );
                 }
 
                 vertices[i] = newPosition;
-                if (normals != null)
+                if ( normals != null )
                     normals[i] = newNormal;
             }
 
@@ -354,16 +358,16 @@ namespace GFDLibrary.Models
 
         protected override void ReadCore( ResourceReader reader )
         {
-            var flags = ( GeometryFlags )reader.ReadInt32();
+            var flags = (GeometryFlags)reader.ReadInt32();
             Flags = flags;
-            VertexAttributeFlags = ( VertexAttributeFlags )reader.ReadInt32();
+            VertexAttributeFlags = (VertexAttributeFlags)reader.ReadInt32();
 
             int triangleCount = 0;
 
             if ( Flags.HasFlag( GeometryFlags.HasTriangles ) )
             {
                 triangleCount = reader.ReadInt32();
-                TriangleIndexFormat = ( TriangleIndexFormat )reader.ReadInt16();
+                TriangleIndexFormat = (TriangleIndexFormat)reader.ReadInt16();
                 Triangles = new Triangle[triangleCount];
             }
 
@@ -421,7 +425,7 @@ namespace GFDLibrary.Models
                     for ( int j = 0; j < VertexWeights[i].Indices.Length; j++ )
                     {
                         int shift = j * 8;
-                        VertexWeights[i].Indices[j] = ( byte )( ( indices & ( 0xFF << shift ) ) >> shift );
+                        VertexWeights[i].Indices[j] = (byte)( ( indices & ( 0xFF << shift ) ) >> shift );
                     }
                 }
             }
@@ -532,13 +536,13 @@ namespace GFDLibrary.Models
 
         protected override void WriteCore( ResourceWriter writer )
         {
-            writer.WriteInt32( ( int )Flags );
-            writer.WriteInt32( ( int )VertexAttributeFlags );
+            writer.WriteInt32( (int)Flags );
+            writer.WriteInt32( (int)VertexAttributeFlags );
 
             if ( Flags.HasFlag( GeometryFlags.HasTriangles ) )
             {
                 writer.WriteInt32( TriangleCount );
-                writer.WriteInt16( ( short )TriangleIndexFormat );
+                writer.WriteInt16( (short)TriangleIndexFormat );
             }
 
             writer.WriteInt32( VertexCount );
@@ -602,9 +606,9 @@ namespace GFDLibrary.Models
                     switch ( TriangleIndexFormat )
                     {
                         case TriangleIndexFormat.UInt16:
-                            writer.WriteUInt16( ( ushort )Triangles[i].A );
-                            writer.WriteUInt16( ( ushort )Triangles[i].B );
-                            writer.WriteUInt16( ( ushort )Triangles[i].C );
+                            writer.WriteUInt16( (ushort)Triangles[i].A );
+                            writer.WriteUInt16( (ushort)Triangles[i].B );
+                            writer.WriteUInt16( (ushort)Triangles[i].C );
                             break;
                         case TriangleIndexFormat.UInt32:
                             writer.WriteUInt32( Triangles[i].A );

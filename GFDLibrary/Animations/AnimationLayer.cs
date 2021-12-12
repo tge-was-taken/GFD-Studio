@@ -56,6 +56,31 @@ namespace GFDLibrary.Animations
             }
         }
 
+        public bool HasSingleKeyFrames
+        {
+            get
+            {
+                switch ( KeyType )
+                {
+                    case KeyType.Single:
+                    case KeyType.Single_2:
+                    case KeyType.Single_3:
+                    case KeyType.MaterialSingle_4:
+                    case KeyType.Single_5:
+                    case KeyType.Single_6:
+                    case KeyType.CameraFieldOfView:
+                    case KeyType.Single_8:
+                    case KeyType.SingleAlt_2:
+                    case KeyType.MaterialSingle_9:
+                    case KeyType.SingleAlt_3:
+                        return true;
+
+                    default:
+                        return false;
+                }
+            }
+        }
+
         public AnimationLayer(uint version) : base(version)
         {
             Keys = new List< Key >();

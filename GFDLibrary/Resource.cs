@@ -34,12 +34,12 @@ namespace GFDLibrary
 
         public static T Load<T>( string path ) where T : Resource
         {
-            return Load( path ) as T;
+            return Load( path, typeof( T ) ) as T;
         }
 
         public static T Load<T>( Stream stream, bool leaveOpen = false ) where T : Resource
         {
-            return Load( stream, leaveOpen ) as T;
+            return Load( stream, leaveOpen, typeof(T) ) as T;
         }
 
         public static ResourceType GetResourceType( Stream stream )
@@ -61,6 +61,11 @@ namespace GFDLibrary
 
         public static Resource Load( string path )
         {
+            return Load( path, null );
+        }
+
+        private static Resource Load( string path, Type type )
+        {
             using ( var stream = File.OpenRead( path ) )
             {
                 // Copy file to memory for faster reading
@@ -68,11 +73,16 @@ namespace GFDLibrary
                 stream.CopyTo( memoryStream );
                 memoryStream.Position = 0;
 
-                return Load( memoryStream, false );
+                return Load( memoryStream, false, type );
             }
         }
 
         public static Resource Load( Stream stream, bool leaveOpen )
+        {
+            return Load( stream, leaveOpen, null ); 
+        }
+
+        private static Resource Load( Stream stream, bool leaveOpen, Type type )
         {
             if ( stream.Length < ResourceFileHeader.SIZE )
                 throw new InvalidDataException( "Stream is too small to be a valid resource file." );
@@ -187,7 +197,7 @@ namespace GFDLibrary
 
                 res.ReadCore( reader );
 
-                if ( res.ResourceType == ResourceType.ModelPack )
+                if ( res.ResourceType == ResourceType.ModelPack && type == typeof(AnimationPack) )
                 {
                     // Identify AnimationPack from a file with a model resource header
                     var model = ( ModelPack )res;

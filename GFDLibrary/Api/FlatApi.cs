@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Scarlet.Platform.Sony;
 using GFDLibrary.Materials;
+using GFDLibrary.Animations;
 
 namespace GFDLibrary.Api
 {
@@ -120,7 +121,7 @@ namespace GFDLibrary.Api
                 includeWeights: true, includeParentTransform: true, offsetTransform: transform );
             return new float[][][] { 
                 vertices.Select( Vector3ToFloatArray ).ToArray(), 
-                normals?.Select( Vector3ToFloatArray ).ToArray() };
+                normals?.Select( Vector3ToFloatArray )?.ToArray() ?? null };
         }
 
         public static uint[][] GetMeshTriangles( Mesh mesh, int baseIndex )
@@ -281,6 +282,97 @@ namespace GFDLibrary.Api
         public static float[] QuaternionToFloatArray( Quaternion v )
         {
             return new float[] { v.X, v.Y, v.Z, v.W };
+        }
+
+        public static bool IsValidFile( string filePath )
+        {
+            if ( !File.Exists( filePath ) ) return false;
+            using ( var stream = File.OpenRead( filePath ) )
+                return Resource.GetResourceType( stream ) == ResourceType.ModelPack;
+        }
+
+        public static Animation[] GetAnimations(  AnimationPack ap )
+        {
+            if ( ap == null ) return Array.Empty<Animation>();
+            if ( ap.Animations == null ) return Array.Empty<Animation>();
+            return ap.Animations.ToArray();
+        }
+
+        public static Animation[] GetBlendAnimations( AnimationPack ap )
+        {
+            if ( ap == null ) return Array.Empty<Animation>();
+            if ( ap.BlendAnimations == null ) return Array.Empty<Animation>();
+            return ap.BlendAnimations.ToArray();
+        }
+
+        public static Animation GetAnimationByIndex( AnimationPack animationPack, int index )
+        {
+            if ( animationPack == null || animationPack.Animations == null || index > animationPack.Animations.Count )
+                return null;
+
+            return animationPack.Animations[index];
+        }
+
+        public static Animation GetBlendAnimationByIndex( AnimationPack animationPack, int index )
+        {
+            if ( animationPack == null || animationPack.BlendAnimations == null || index > animationPack.BlendAnimations.Count )
+                return null;
+
+            return animationPack.BlendAnimations[index];
+        }
+
+        public static AnimationController[] GetAnimationControllers( Animation a )
+        {
+            return a.Controllers.ToArray();
+        }
+
+        public static AnimationLayer[] GetAnimationLayers( AnimationController c )
+        {
+            return c.Layers.ToArray();
+        }
+
+        public static int GetAnimationControllerTargetKind( AnimationController c )
+        {
+            return (int)c.TargetKind;
+        }
+
+        public static int GetAnimationLayerKeyType( AnimationLayer l )
+        {
+            return (int)l.KeyType;
+        }
+
+        public static bool GetAnimationLayerHasPRSKeyFrames( AnimationLayer l )
+        {
+            return l.HasPRSKeyFrames;
+        }
+
+        public static float[][] GetAnimationLayerPRSKeyFrameData( AnimationLayer l, bool invertRotation )
+        {
+            if ( !l.HasPRSKeyFrames ) return Array.Empty<float[]>();
+            return l.Keys
+                .Select( x => (PRSKey)x )
+                .Select( x => new { 
+                    Time = x.Time, 
+                    Position = x.Position * l.PositionScale, 
+                    Rotation = invertRotation ? Quaternion.Inverse( x.Rotation ) : x.Rotation, 
+                    Scale = x.Scale * l.ScaleScale })
+                .Select( x => new[] { x.Time, 
+                    x.Position.X, x.Position.Y, x.Position.Z, 
+                    x.Rotation.X, x.Rotation.Y, x.Rotation.Z, x.Rotation.W, 
+                    x.Scale.X, x.Scale.Y, x.Scale.Z } )
+                .ToArray();
+        }
+
+        public static float[][] GetAnimationLayerSingleKeyFrameData( AnimationLayer l )
+        {
+
+            if ( l.HasSingleKeyFrames )
+                return Array.Empty<float[]>();
+
+            return l.Keys
+                .Select( x => (SingleKey)x )
+                .Select( x => new[] { x.Time, x.Value } )
+                .ToArray();
         }
     }
 }
