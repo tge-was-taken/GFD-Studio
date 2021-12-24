@@ -1388,7 +1388,7 @@ namespace GFDLibrary.Effects
         public float Field138 { get; set; }
         public EplLeafCommonData2 Field10 { get; set; }
         public EplLeafCommonData2 Field74 { get; set; }
-        public EplLeafCommonData2 FieldD8 { get; set; }
+        public EplLeafCommonData FieldD8 { get; set; }
         public EplParticleEmitter Field140 { get; set; }
         public bool HasEmbeddedFile { get; set; }
         public EplEmbeddedFile EmbeddedFile { get; set; }
@@ -1415,7 +1415,7 @@ namespace GFDLibrary.Effects
                 Field138 = reader.ReadSingle();
             Field10 = reader.ReadResource<EplLeafCommonData2>( Version );
             Field74 = reader.ReadResource<EplLeafCommonData2>( Version );
-            FieldD8 = reader.ReadResource<EplLeafCommonData2>( Version );
+            FieldD8 = reader.ReadResource<EplLeafCommonData>( Version );
             Field140 = EplParticleEmitter.Read( reader, Version, Type );
             HasEmbeddedFile = reader.ReadBoolean();
             if ( HasEmbeddedFile )
