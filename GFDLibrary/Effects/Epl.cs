@@ -1998,8 +1998,8 @@ namespace GFDLibrary.Effects
         public Vector2 Field14 { get; set; }
         public EplLeafCommonData FieldEC { get; set; }
         public float Field1C { get; set; }
-        public EplLeafCommonData Field24 { get; set; }
-        public EplLeafCommonData Field88 { get; set; }
+        public EplLeafCommonData2 Field24 { get; set; }
+        public EplLeafCommonData2 Field88 { get; set; }
         public float Field140 { get; set; }
         public float Field144 { get; set; }
         public float Field148 { get; set; }
@@ -2026,8 +2026,8 @@ namespace GFDLibrary.Effects
             Field14 = reader.ReadVector2();
             FieldEC = reader.ReadResource<EplLeafCommonData>( Version );
             Field1C = reader.ReadSingle();
-            Field24 = reader.ReadResource<EplLeafCommonData>( Version );
-            Field88 = reader.ReadResource<EplLeafCommonData>( Version );
+            Field24 = reader.ReadResource<EplLeafCommonData2>( Version );
+            Field88 = reader.ReadResource<EplLeafCommonData2>( Version );
             Field140 = reader.ReadSingle();
             Field144 = reader.ReadSingle();
             Field148 = reader.ReadSingle();
