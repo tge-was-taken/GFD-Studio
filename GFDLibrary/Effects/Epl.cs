@@ -1388,7 +1388,7 @@ namespace GFDLibrary.Effects
         public float Field138 { get; set; }
         public EplLeafCommonData2 Field10 { get; set; }
         public EplLeafCommonData2 Field74 { get; set; }
-        public EplLeafCommonData2 FieldD8 { get; set; }
+        public EplLeafCommonData FieldD8 { get; set; }
         public EplParticleEmitter Field140 { get; set; }
         public bool HasEmbeddedFile { get; set; }
         public EplEmbeddedFile EmbeddedFile { get; set; }
@@ -1415,7 +1415,7 @@ namespace GFDLibrary.Effects
                 Field138 = reader.ReadSingle();
             Field10 = reader.ReadResource<EplLeafCommonData2>( Version );
             Field74 = reader.ReadResource<EplLeafCommonData2>( Version );
-            FieldD8 = reader.ReadResource<EplLeafCommonData2>( Version );
+            FieldD8 = reader.ReadResource<EplLeafCommonData>( Version );
             Field140 = EplParticleEmitter.Read( reader, Version, Type );
             HasEmbeddedFile = reader.ReadBoolean();
             if ( HasEmbeddedFile )
@@ -1998,8 +1998,8 @@ namespace GFDLibrary.Effects
         public Vector2 Field14 { get; set; }
         public EplLeafCommonData FieldEC { get; set; }
         public float Field1C { get; set; }
-        public EplLeafCommonData Field24 { get; set; }
-        public EplLeafCommonData Field88 { get; set; }
+        public EplLeafCommonData2 Field24 { get; set; }
+        public EplLeafCommonData2 Field88 { get; set; }
         public float Field140 { get; set; }
         public float Field144 { get; set; }
         public float Field148 { get; set; }
@@ -2026,8 +2026,8 @@ namespace GFDLibrary.Effects
             Field14 = reader.ReadVector2();
             FieldEC = reader.ReadResource<EplLeafCommonData>( Version );
             Field1C = reader.ReadSingle();
-            Field24 = reader.ReadResource<EplLeafCommonData>( Version );
-            Field88 = reader.ReadResource<EplLeafCommonData>( Version );
+            Field24 = reader.ReadResource<EplLeafCommonData2>( Version );
+            Field88 = reader.ReadResource<EplLeafCommonData2>( Version );
             Field140 = reader.ReadSingle();
             Field144 = reader.ReadSingle();
             Field148 = reader.ReadSingle();
