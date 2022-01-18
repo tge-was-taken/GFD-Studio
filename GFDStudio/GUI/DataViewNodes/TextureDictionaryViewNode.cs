@@ -22,8 +22,7 @@ namespace GFDStudio.GUI.DataViewNodes
 
         protected override void InitializeCore()
         {
-            RegisterExportHandler<TextureDictionary>( path => Data.Save(  path ) );
-            RegisterReplaceHandler<TextureDictionary>( Resource.Load<TextureDictionary> );
+            base.InitializeCore();
 
             RegisterAddHandler<Bitmap>( path => Data.Add( TextureEncoder.Encode( Path.GetFileNameWithoutExtension( path ) + ".dds",
                                                                                  TextureFormat.DDS, new Bitmap( path ) ) ) );
