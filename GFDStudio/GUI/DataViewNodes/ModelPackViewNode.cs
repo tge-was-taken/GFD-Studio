@@ -42,6 +42,7 @@ namespace GFDStudio.GUI.DataViewNodes
 
         protected override void InitializeCore()
         {
+            base.InitializeCore();
             RegisterExportHandler< ModelPack >( ( path ) =>
             {
                 var modelPack = Data;

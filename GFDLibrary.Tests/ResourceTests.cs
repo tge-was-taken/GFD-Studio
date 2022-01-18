@@ -34,6 +34,14 @@ namespace GFDLibrary.Tests
         }
 
         [TestMethod()]
+        public void yaml_roundtrip()
+        {
+            var res = Resource.Load( Model_P5PlayerModel_Path );
+            res.SaveYamlFile( "test.yml" );
+            var newRes = YamlSerializer.LoadYamlFile<ModelPack>( "test.yml" );
+        }
+
+        [TestMethod()]
         public void loading_epl_from_file_should_not_throw()
         {
             using ( var fileStream = File.OpenRead( PATH_EPL_FE00 ) )

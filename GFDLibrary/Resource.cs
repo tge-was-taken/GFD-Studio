@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using GFDLibrary.Animations;
 using GFDLibrary.Cameras;
 using GFDLibrary.Common;
@@ -99,7 +99,10 @@ namespace GFDLibrary
                         break;
 
                     case ResourceType.ShaderCachePS3:
-                        res = new ShaderCachePS3( header.Version );
+                        if ( type == typeof( Epl ) )
+                            res = new Epl( header.Version );
+                        else
+                            res = new ShaderCachePS3( header.Version );
                         break;
 
                     case ResourceType.ShaderCachePSP2:
@@ -280,52 +283,5 @@ namespace GFDLibrary
 
         protected abstract void ReadCore( ResourceReader reader );
         protected abstract void WriteCore( ResourceWriter writer );
-    }
-
-    public enum LogSeverity
-    {
-        Debug,
-        Info
-    }
-
-    public class LogEventArgs
-    {
-        public LogSeverity Severity {  get; set;}
-        public string Message {  get; set;}
-    }
-
-    public static class Logger
-    {
-        private static int sIndent = 0;
-        private static string sPrefix = "";
-        public static EventHandler<LogEventArgs> Log;
-
-        [Conditional("DEBUG")]
-        public static void Debug( string message )
-        {
-            LogMessage( LogSeverity.Debug, message );
-        }
-
-        public static void Info( string message )
-        {
-            LogMessage( LogSeverity.Info, message );
-        }
-
-        public static void LogMessage( LogSeverity severity, string message )
-        {
-            Log?.Invoke( null, new LogEventArgs() { Severity = severity, Message = sPrefix + message } );
-        }
-
-        public static void Indent()
-        {
-            sIndent++;
-            sPrefix = new string( '\t', sIndent );
-        }
-
-        public static void Unindent()
-        {
-            sIndent--;
-            sPrefix = new string( '\t', sIndent );
-        }
     }
 }

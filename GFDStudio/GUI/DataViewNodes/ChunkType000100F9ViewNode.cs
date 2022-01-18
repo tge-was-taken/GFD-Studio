@@ -62,8 +62,7 @@ namespace GFDStudio.GUI.DataViewNodes
 
         protected override void InitializeCore()
         {
-            RegisterExportHandler<ChunkType000100F9>( path => Data.Save(  path ) );
-            RegisterReplaceHandler<ChunkType000100F9>( Resource.Load<ChunkType000100F9> );
+            base.InitializeCore();
             RegisterModelUpdateHandler( () =>
             {
                 var resource = new ChunkType000100F9( Version )

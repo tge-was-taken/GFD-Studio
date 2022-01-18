@@ -439,6 +439,9 @@
     <Compile Include="..\GFDLibrary\Utilities\QuaternionExtensions.cs">
       <Link>Utilities\QuaternionExtensions.cs</Link>
     </Compile>
+    <Compile Include="..\GFDLibrary\Logger.cs">
+      <Link>Logger.cs</Link>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

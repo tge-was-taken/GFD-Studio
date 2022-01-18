@@ -25,8 +25,7 @@ namespace GFDStudio.GUI.DataViewNodes
 
         protected override void InitializeCore()
         {
-            RegisterExportHandler<MaterialDictionary>( path => Data.Save( path ) );
-            RegisterReplaceHandler<MaterialDictionary>( Resource.Load<MaterialDictionary> );
+            base.InitializeCore();
             RegisterAddHandler<Material>( path => Data.Add( Resource.Load<Material>( path ) ) );
             RegisterCustomHandler( "Add", "New material", () =>
             {

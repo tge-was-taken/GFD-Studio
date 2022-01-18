@@ -36,8 +36,7 @@ namespace GFDStudio.GUI.DataViewNodes
 
         protected override void InitializeCore()
         {
-            RegisterExportHandler<AnimationPack>( path => Data.Save( path ) );
-            RegisterReplaceHandler<AnimationPack>( Resource.Load<AnimationPack> );
+            base.InitializeCore();
             RegisterModelUpdateHandler( () =>
             {
                 var model = new AnimationPack( Version );

@@ -1,4 +1,4 @@
-version: 0.4.9.{build}
+version: 0.6.{build}
 image: Visual Studio 2019
 clone_folder: c:\project
 build_script:
