@@ -1,8 +1,8 @@
-# GFD Studio
+# GFD Studio [![Build status](https://ci.appveyor.com/api/projects/status/l3p8joj4frjkn753?svg=true)](https://ci.appveyor.com/project/tge/gfd-studio)
 **GFD Studio** is a tool for viewing, editing and converting models in **GMD**/**GFS** format.
 ## Latest builds
 Latest debug/release builds can be found here:
-https://ci.appveyor.com/project/TGEnigma/gfd-studio/build/artifacts
+https://ci.appveyor.com/project/tge/gfd-studio/build/artifacts
 ## Features
 - View a rendered preview of the opened model
 - View, export, replace and add **Textures** (automatic conversion to and from PNG/DDS)
@@ -13,7 +13,7 @@ https://ci.appveyor.com/project/TGEnigma/gfd-studio/build/artifacts
 (This is required for compiling shaders)
 ## Usage
 ### Model Conversion
-For best results, use the [GMD Maxscript](https://github.com/TGEnigma/GFD-Studio/blob/master/Resources/GfdImporter/GfdImporter.ms) to import models directly into 3ds Max.
+For best results, use the [GMD Maxscript](https://github.com/tge-was-taken/GFD-Studio/blob/master/Resources/GfdImporter/GfdImporter.ms) to import models directly into 3ds Max.
 Alternatively, you can use GFD studio to export as DAE, which you can import into your program of choice.
 1. Skin your new model to the existing bones and export as an **ASCII 2011 FBX**.
 2. In GFD Studio, navigate to **New > Model** and select your FBX.
