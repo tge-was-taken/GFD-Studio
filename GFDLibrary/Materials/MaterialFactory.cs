@@ -246,18 +246,18 @@ namespace GFDLibrary.Materials
             return material;
         }
 
-        public static Material CreateCharacterSkinP3DP5DMaterial(string name, string diffuseMapName, bool hasTransparency = false)
+        public static Material CreateCharacterSkinDancingMaterial(string name, string diffuseMapName, bool hasTransparency = false)
         {
             var material = new Material(name)
             {
-                Flags = MaterialFlags.Bit0 | MaterialFlags.Bit1 | MaterialFlags.Bit5 | MaterialFlags.Bit8 |
+                Flags = MaterialFlags.Bit0 | MaterialFlags.Bit1 | MaterialFlags.Bit2 | MaterialFlags.Bit5 | MaterialFlags.Bit8 |
                         MaterialFlags.EnableLight2 | MaterialFlags.CastShadow | MaterialFlags.HasAttributes | MaterialFlags.HasDiffuseMap,
                 AmbientColor = new Vector4(0.6f, 0.6f, 0.6f, 0),
                 Attributes = new List<MaterialAttribute>
                 {
                     new MaterialAttributeType0
                     {
-                        Color = new Vector4( 0.9799954f, 0.9799954f, 0.9799954f, 0.5882353f ),
+                        Color = new Vector4( 0.98f, 0.98f, 0.98f, 0.5882353f ),
                         Field1C = 0.8f,
                         Field20 = 30,
                         Field24 = 1,
@@ -268,10 +268,10 @@ namespace GFDLibrary.Materials
                         Type0Flags = 0,
                     }
                 },
-                DiffuseColor = new Vector4(0.38f, 0.38f, 0.38f, 1f),
+                DiffuseColor = new Vector4(0.3f, 0.3f, 0.3f, 1f),
                 DiffuseMap = new TextureMap(diffuseMapName),
                 DrawMethod = MaterialDrawMethod.Opaque,
-                EmissiveColor = new Vector4(0f, 0f, 0f, 0f),
+                EmissiveColor = new Vector4(1f, 1f, 1f, 0f),
                 Field40 = 1,
                 Field44 = 0,
                 Field49 = 1,
@@ -399,8 +399,7 @@ namespace GFDLibrary.Materials
         FieldTerrainCastShadow,
         CharacterSkinP5,
         PersonaSkinP5,
-        CharacterClothP4D,
-        CharacterSkinP3DP5D,
+        CharacterSkinDancing,
         CharacterSkinFB
     }
 }

@@ -24,7 +24,6 @@ namespace GFDStudio.GUI.Forms
             }
         }
 
-
         private FileHistoryList mFileHistoryList;
 
         public DataTreeView ModelEditorTreeView

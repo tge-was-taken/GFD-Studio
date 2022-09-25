@@ -11,6 +11,9 @@ namespace GFDStudio.GUI.Forms
         public MaterialPreset MaterialPreset 
             => ( MaterialPreset )MaterialPresetComboBox.SelectedIndex;
 
+        string CurrentPath = System.IO.Path.GetDirectoryName( Application.ExecutablePath );
+
+
         public uint Version
         {
             get

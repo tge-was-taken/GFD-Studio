@@ -47,6 +47,11 @@ namespace GFDStudio.GUI.Forms
             this.convertAnimationsToP5InDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.convertMaterialInDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.retainTexNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.thereIsNoHelpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.perishToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mPropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.mContentPanel = new System.Windows.Forms.Panel();
             this.tabControl1 = new System.Windows.Forms.TabControl();
@@ -71,10 +76,13 @@ namespace GFDStudio.GUI.Forms
             this.mMainMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.mFileToolStripMenuItem,
             this.animationToolStripMenuItem,
-            this.toolsToolStripMenuItem});
+            this.toolsToolStripMenuItem,
+            this.optionsToolStripMenuItem,
+            this.helpToolStripMenuItem});
             this.mMainMenuStrip.Location = new System.Drawing.Point(0, 0);
             this.mMainMenuStrip.Name = "mMainMenuStrip";
-            this.mMainMenuStrip.Size = new System.Drawing.Size(1252, 24);
+            this.mMainMenuStrip.Padding = new System.Windows.Forms.Padding(7, 2, 0, 2);
+            this.mMainMenuStrip.Size = new System.Drawing.Size(1461, 24);
             this.mMainMenuStrip.TabIndex = 0;
             this.mMainMenuStrip.Text = "menuStrip1";
             // 
@@ -151,7 +159,7 @@ namespace GFDStudio.GUI.Forms
             this.rescaleAnimationPacksInDirectoryToolStripMenuItem,
             this.convertAnimationsToP5InDirectoryToolStripMenuItem,
             this.convertMaterialInDirectoryToolStripMenuItem,
-            this.copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem} );
+            this.copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem});
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(46, 20);
             this.toolsToolStripMenuItem.Text = "Tools";
@@ -159,47 +167,88 @@ namespace GFDStudio.GUI.Forms
             // makeRelativeToolStripMenuItem
             // 
             this.makeRelativeToolStripMenuItem.Name = "makeRelativeToolStripMenuItem";
-            this.makeRelativeToolStripMenuItem.Size = new System.Drawing.Size(327, 22);
+            this.makeRelativeToolStripMenuItem.Size = new System.Drawing.Size(336, 22);
             this.makeRelativeToolStripMenuItem.Text = "Retarget animation packs in directory";
             this.makeRelativeToolStripMenuItem.Click += new System.EventHandler(this.HandleRetargetAnimationsToolStripMenuItemClick);
             // 
             // rescaleAnimationPacksInDirectoryToolStripMenuItem
             // 
             this.rescaleAnimationPacksInDirectoryToolStripMenuItem.Name = "rescaleAnimationPacksInDirectoryToolStripMenuItem";
-            this.rescaleAnimationPacksInDirectoryToolStripMenuItem.Size = new System.Drawing.Size(327, 22);
+            this.rescaleAnimationPacksInDirectoryToolStripMenuItem.Size = new System.Drawing.Size(336, 22);
             this.rescaleAnimationPacksInDirectoryToolStripMenuItem.Text = "Rescale/Reposition animation packs in directory";
             this.rescaleAnimationPacksInDirectoryToolStripMenuItem.Click += new System.EventHandler(this.HandleRescaleAnimationsToolStripMenuItemClick);
             // 
             // convertAnimationsToP5InDirectoryToolStripMenuItem
             // 
             this.convertAnimationsToP5InDirectoryToolStripMenuItem.Name = "convertAnimationsToP5InDirectoryToolStripMenuItem";
-            this.convertAnimationsToP5InDirectoryToolStripMenuItem.Size = new System.Drawing.Size(327, 22);
+            this.convertAnimationsToP5InDirectoryToolStripMenuItem.Size = new System.Drawing.Size(336, 22);
             this.convertAnimationsToP5InDirectoryToolStripMenuItem.Text = "Convert P5R animations to P5 in directory";
             this.convertAnimationsToP5InDirectoryToolStripMenuItem.Click += new System.EventHandler(this.HandleConvertAnimationsToolStripMenuItemClick);
             // 
             // convertMaterialInDirectoryToolStripMenuItem
             // 
             this.convertMaterialInDirectoryToolStripMenuItem.Name = "convertMaterialInDirectoryToolStripMenuItem";
-            this.convertMaterialInDirectoryToolStripMenuItem.Size = new System.Drawing.Size(327, 22);
+            this.convertMaterialInDirectoryToolStripMenuItem.Size = new System.Drawing.Size(336, 22);
             this.convertMaterialInDirectoryToolStripMenuItem.Text = "Convert model materials in directory";
             this.convertMaterialInDirectoryToolStripMenuItem.Click += new System.EventHandler(this.HandleConvertMaterialsToolStripMenuItemClick);
             // 
             // copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem
             // 
             this.copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem.Name = "copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem";
-            this.copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem.Size = new System.Drawing.Size(327, 22);
+            this.copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem.Size = new System.Drawing.Size(336, 22);
             this.copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem.Text = "Copy P5 Split GAP to multiple models in directory";
-            this.copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem.Click += new System.EventHandler(this.copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem_Click );
+            this.copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem.Click += new System.EventHandler(this.copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem_Click);
+            // 
+            // optionsToolStripMenuItem
+            // 
+            this.optionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.retainTexNameToolStripMenuItem});
+            this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
+            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
+            this.optionsToolStripMenuItem.Text = "Options";
+            // 
+            // retainTexNameToolStripMenuItem
+            // 
+            this.retainTexNameToolStripMenuItem.Checked = true;
+            this.retainTexNameToolStripMenuItem.CheckOnClick = true;
+            this.retainTexNameToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.retainTexNameToolStripMenuItem.Name = "retainTexNameToolStripMenuItem";
+            this.retainTexNameToolStripMenuItem.Size = new System.Drawing.Size(366, 22);
+            this.retainTexNameToolStripMenuItem.Text = "Retain original material\'s texture names when replacing";
+            // 
+            // helpToolStripMenuItem
+            // 
+            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.thereIsNoHelpToolStripMenuItem,
+            this.perishToolStripMenuItem});
+            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.helpToolStripMenuItem.Text = "Help";
+            // 
+            // thereIsNoHelpToolStripMenuItem
+            // 
+            this.thereIsNoHelpToolStripMenuItem.Enabled = false;
+            this.thereIsNoHelpToolStripMenuItem.Name = "thereIsNoHelpToolStripMenuItem";
+            this.thereIsNoHelpToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.thereIsNoHelpToolStripMenuItem.Text = "There is no help.";
+            // 
+            // perishToolStripMenuItem
+            // 
+            this.perishToolStripMenuItem.Enabled = false;
+            this.perishToolStripMenuItem.Name = "perishToolStripMenuItem";
+            this.perishToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
+            this.perishToolStripMenuItem.Text = "Perish.";
             // 
             // mPropertyGrid
             // 
             this.mPropertyGrid.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.mPropertyGrid.LineColor = System.Drawing.SystemColors.ControlDark;
-            this.mPropertyGrid.Location = new System.Drawing.Point(743, 445);
+            this.mPropertyGrid.Location = new System.Drawing.Point(867, 513);
+            this.mPropertyGrid.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.mPropertyGrid.Name = "mPropertyGrid";
             this.mPropertyGrid.PropertySort = System.Windows.Forms.PropertySort.NoSort;
-            this.mPropertyGrid.Size = new System.Drawing.Size(497, 292);
+            this.mPropertyGrid.Size = new System.Drawing.Size(580, 337);
             this.mPropertyGrid.TabIndex = 2;
             // 
             // mContentPanel
@@ -208,9 +257,10 @@ namespace GFDStudio.GUI.Forms
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.mContentPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.mContentPanel.Location = new System.Drawing.Point(12, 28);
+            this.mContentPanel.Location = new System.Drawing.Point(14, 32);
+            this.mContentPanel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.mContentPanel.Name = "mContentPanel";
-            this.mContentPanel.Size = new System.Drawing.Size(725, 668);
+            this.mContentPanel.Size = new System.Drawing.Size(846, 770);
             this.mContentPanel.TabIndex = 3;
             // 
             // tabControl1
@@ -218,19 +268,21 @@ namespace GFDStudio.GUI.Forms
             this.tabControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
-            this.tabControl1.Location = new System.Drawing.Point(743, 28);
+            this.tabControl1.Location = new System.Drawing.Point(867, 32);
+            this.tabControl1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(497, 411);
+            this.tabControl1.Size = new System.Drawing.Size(580, 474);
             this.tabControl1.TabIndex = 4;
             // 
             // tabPage1
             // 
             this.tabPage1.Controls.Add(this.mModelEditorTreeView);
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Location = new System.Drawing.Point(4, 24);
+            this.tabPage1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(489, 385);
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tabPage1.Size = new System.Drawing.Size(572, 446);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Model Editor";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -239,20 +291,22 @@ namespace GFDStudio.GUI.Forms
             // 
             this.mModelEditorTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.mModelEditorTreeView.ImageIndex = 0;
-            this.mModelEditorTreeView.Location = new System.Drawing.Point(6, 6);
+            this.mModelEditorTreeView.Location = new System.Drawing.Point(7, 7);
+            this.mModelEditorTreeView.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.mModelEditorTreeView.Name = "mModelEditorTreeView";
             this.mModelEditorTreeView.SelectedImageIndex = 0;
-            this.mModelEditorTreeView.Size = new System.Drawing.Size(477, 373);
+            this.mModelEditorTreeView.Size = new System.Drawing.Size(556, 430);
             this.mModelEditorTreeView.TabIndex = 1;
             this.mModelEditorTreeView.TopNode = null;
             // 
             // tabPage2
             // 
             this.tabPage2.Controls.Add(this.mAnimationListTreeView);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Location = new System.Drawing.Point(4, 24);
+            this.tabPage2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(489, 385);
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.tabPage2.Size = new System.Drawing.Size(572, 446);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Animation List";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -261,10 +315,11 @@ namespace GFDStudio.GUI.Forms
             // 
             this.mAnimationListTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.mAnimationListTreeView.ImageIndex = 0;
-            this.mAnimationListTreeView.Location = new System.Drawing.Point(6, 6);
+            this.mAnimationListTreeView.Location = new System.Drawing.Point(7, 7);
+            this.mAnimationListTreeView.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.mAnimationListTreeView.Name = "mAnimationListTreeView";
             this.mAnimationListTreeView.SelectedImageIndex = 0;
-            this.mAnimationListTreeView.Size = new System.Drawing.Size(477, 373);
+            this.mAnimationListTreeView.Size = new System.Drawing.Size(556, 430);
             this.mAnimationListTreeView.TabIndex = 2;
             this.mAnimationListTreeView.TopNode = null;
             // 
@@ -279,24 +334,26 @@ namespace GFDStudio.GUI.Forms
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 70F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 139F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 82F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 164F));
             this.tableLayoutPanel1.Controls.Add(this.mAnimationStopButton, 7, 0);
             this.tableLayoutPanel1.Controls.Add(this.mAnimationPlaybackButton, 6, 0);
             this.tableLayoutPanel1.Controls.Add(this.mAnimationTrackBar, 0, 0);
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(12, 702);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(14, 810);
+            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 1;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(725, 35);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(846, 40);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // mAnimationStopButton
             // 
             this.mAnimationStopButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mAnimationStopButton.Location = new System.Drawing.Point(583, 3);
+            this.mAnimationStopButton.Location = new System.Drawing.Point(686, 3);
+            this.mAnimationStopButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.mAnimationStopButton.Name = "mAnimationStopButton";
-            this.mAnimationStopButton.Size = new System.Drawing.Size(139, 29);
+            this.mAnimationStopButton.Size = new System.Drawing.Size(156, 34);
             this.mAnimationStopButton.TabIndex = 2;
             this.mAnimationStopButton.Text = "Stop";
             this.mAnimationStopButton.UseVisualStyleBackColor = true;
@@ -305,9 +362,10 @@ namespace GFDStudio.GUI.Forms
             // mAnimationPlaybackButton
             // 
             this.mAnimationPlaybackButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mAnimationPlaybackButton.Location = new System.Drawing.Point(513, 3);
+            this.mAnimationPlaybackButton.Location = new System.Drawing.Point(604, 3);
+            this.mAnimationPlaybackButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.mAnimationPlaybackButton.Name = "mAnimationPlaybackButton";
-            this.mAnimationPlaybackButton.Size = new System.Drawing.Size(64, 29);
+            this.mAnimationPlaybackButton.Size = new System.Drawing.Size(74, 34);
             this.mAnimationPlaybackButton.TabIndex = 0;
             this.mAnimationPlaybackButton.Text = "Play ";
             this.mAnimationPlaybackButton.UseVisualStyleBackColor = true;
@@ -316,16 +374,17 @@ namespace GFDStudio.GUI.Forms
             // 
             this.tableLayoutPanel1.SetColumnSpan(this.mAnimationTrackBar, 6);
             this.mAnimationTrackBar.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mAnimationTrackBar.Location = new System.Drawing.Point(3, 3);
+            this.mAnimationTrackBar.Location = new System.Drawing.Point(4, 3);
+            this.mAnimationTrackBar.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.mAnimationTrackBar.Name = "mAnimationTrackBar";
-            this.mAnimationTrackBar.Size = new System.Drawing.Size(504, 29);
+            this.mAnimationTrackBar.Size = new System.Drawing.Size(592, 34);
             this.mAnimationTrackBar.TabIndex = 1;
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1252, 749);
+            this.ClientSize = new System.Drawing.Size(1461, 864);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.mPropertyGrid);
@@ -333,6 +392,7 @@ namespace GFDStudio.GUI.Forms
             this.Controls.Add(this.mContentPanel);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.mMainMenuStrip;
+            this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.Name = "MainForm";
             this.Text = "GFD Studio";
             this.mMainMenuStrip.ResumeLayout(false);
@@ -376,5 +436,10 @@ namespace GFDStudio.GUI.Forms
         private System.Windows.Forms.ToolStripMenuItem convertAnimationsToP5InDirectoryToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem convertMaterialInDirectoryToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem thereIsNoHelpToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem perishToolStripMenuItem;
+        public System.Windows.Forms.ToolStripMenuItem retainTexNameToolStripMenuItem;
     }
 }

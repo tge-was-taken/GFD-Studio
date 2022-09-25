@@ -170,23 +170,12 @@ namespace GFDLibrary.Models.Conversion
                     }
                     break;
 
-                case MaterialPreset.CharacterClothP4D:
-                    {
-                        if ( diffuseTexture != null )
-                        {
-                            textureDictionary.Add( diffuseTexture.Texture );
-                            material = MaterialFactory.CreateCharacterClothP4DMaterial( materialName, diffuseTexture.Name,
-                                                                                       HasAlpha( diffuseTexture.PixelFormat ) );
-                        }
-                    }
-                    break;
-
-                case MaterialPreset.CharacterSkinP3DP5D:
+                case MaterialPreset.CharacterSkinDancing:
                     {
                         if (diffuseTexture != null)
                         {
                             textureDictionary.Add(diffuseTexture.Texture);
-                            material = MaterialFactory.CreateCharacterSkinP3DP5DMaterial(materialName, diffuseTexture.Name,
+                            material = MaterialFactory.CreateCharacterSkinDancingMaterial(materialName, diffuseTexture.Name,
                                                                                        HasAlpha(diffuseTexture.PixelFormat));
                         }
                     }
