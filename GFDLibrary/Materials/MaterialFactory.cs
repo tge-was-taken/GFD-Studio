@@ -31,7 +31,7 @@ namespace GFDLibrary.Materials
                 Field94 = 1,
                 Field96 = 0,
                 Field98 = 0xffffffff,
-                Flags = MaterialFlags.Flag1 | MaterialFlags.Flag2 | MaterialFlags.Flag20 | MaterialFlags.Flag40 | MaterialFlags.EnableLight2 | MaterialFlags.ReceiveShadow | MaterialFlags.HasDiffuseMap,
+                Flags = MaterialFlags.Bit0 | MaterialFlags.Bit1 | MaterialFlags.Bit5 | MaterialFlags.Bit6 | MaterialFlags.EnableLight2 | MaterialFlags.ReceiveShadow | MaterialFlags.HasDiffuseMap,
                 GlowMap = null,
                 HighlightMap = null,
                 NightMap = null,
@@ -95,7 +95,7 @@ namespace GFDLibrary.Materials
                 Field94 = 4,
                 Field96 = 0,
                 DiffuseMap = new TextureMap( diffuseMapName ),
-                Flags = MaterialFlags.Flag1 | MaterialFlags.Flag2 | MaterialFlags.Flag20 | MaterialFlags.Flag100 | MaterialFlags.EnableLight2 | 
+                Flags = MaterialFlags.Bit0 | MaterialFlags.Bit1 | MaterialFlags.Bit5 | MaterialFlags.Bit8 | MaterialFlags.EnableLight2 | 
                         MaterialFlags.ReceiveShadow | MaterialFlags.CastShadow | MaterialFlags.HasAttributes |  MaterialFlags.HasDiffuseMap,
                 Attributes = new List< MaterialAttribute >
                 {
@@ -107,7 +107,7 @@ namespace GFDLibrary.Materials
                         Field24 = 0.6f,
                         Field28 = 0.4f,
                         Field2C = 1.5f,
-                        Flags = MaterialAttributeFlags.Flag1,
+                        Flags = MaterialAttributeFlags.Bit0,
                         Type0Flags = ( MaterialAttributeType0Flags ) 0x00000045
                     }
                 }
@@ -153,8 +153,8 @@ namespace GFDLibrary.Materials
                 DiffuseMap = new TextureMap(diffuseMapName),
                 SpecularMap = new TextureMap(specularMapName),
                 ShadowMap = new TextureMap(shadowMapName),
-                Flags = MaterialFlags.Flag1 | MaterialFlags.Flag2 | MaterialFlags.Flag4 | MaterialFlags.Flag20 | MaterialFlags.Flag40 | MaterialFlags.EnableLight2 |
-                        MaterialFlags.CastShadow | MaterialFlags.HasAttributes | MaterialFlags.Flag20000Crash | MaterialFlags.HasDiffuseMap | MaterialFlags.HasSpecularMap | MaterialFlags.HasShadowMap,
+                Flags = MaterialFlags.Bit0 | MaterialFlags.Bit1 | MaterialFlags.Bit2 | MaterialFlags.Bit5 | MaterialFlags.Bit6 | MaterialFlags.EnableLight2 |
+                        MaterialFlags.CastShadow | MaterialFlags.HasAttributes | MaterialFlags.Bit17 | MaterialFlags.HasDiffuseMap | MaterialFlags.HasSpecularMap | MaterialFlags.HasShadowMap,
                 Attributes = new List<MaterialAttribute>
                 {
                     new MaterialAttributeType1
@@ -165,14 +165,14 @@ namespace GFDLibrary.Materials
                         Field24 = new Vector4(0, 0, 0, 0),
                         Field34 = 0,
                         Field38 = 0,
-                        Flags = MaterialAttributeFlags.Flag1,
-                        Type1Flags = MaterialAttributeType1Flags.Flag2
+                        Flags = MaterialAttributeFlags.Bit0,
+                        Type1Flags = MaterialAttributeType1Flags.Bit1
                     },
                     new MaterialAttributeType2
                     {
                         Field0C = 1,
                         Field10 = 121,
-                        Flags = MaterialAttributeFlags.Flag1
+                        Flags = MaterialAttributeFlags.Bit0
                     }
                 }
             };
@@ -186,7 +186,7 @@ namespace GFDLibrary.Materials
         {
             var material = new Material( name )
             {
-                Flags = MaterialFlags.Flag1 | MaterialFlags.Flag2 | MaterialFlags.EnableVertColors | MaterialFlags.Flag20 | MaterialFlags.Flag100 |
+                Flags = MaterialFlags.Bit0 | MaterialFlags.Bit1 | MaterialFlags.EnableVertColors | MaterialFlags.Bit5 | MaterialFlags.Bit8 |
                         MaterialFlags.EnableLight2 | MaterialFlags.CastShadow,
                 AmbientColor = new Vector4( 0.6f, 0.6f, 0.6f, 0 ),
                 Attributes = new List< MaterialAttribute >
@@ -199,7 +199,7 @@ namespace GFDLibrary.Materials
                         Field24 = 1,
                         Field28 = 0,
                         Field2C = 0,
-                        Flags = MaterialAttributeFlags.Flag1,
+                        Flags = MaterialAttributeFlags.Bit0,
                         AttributeType = MaterialAttributeType.Type0,
                         Type0Flags = 0,
                     }
@@ -250,7 +250,7 @@ namespace GFDLibrary.Materials
         {
             var material = new Material(name)
             {
-                Flags = MaterialFlags.Flag1 | MaterialFlags.Flag2 | MaterialFlags.Flag20 | MaterialFlags.Flag100 |
+                Flags = MaterialFlags.Bit0 | MaterialFlags.Bit1 | MaterialFlags.Bit5 | MaterialFlags.Bit8 |
                         MaterialFlags.EnableLight2 | MaterialFlags.CastShadow | MaterialFlags.HasAttributes | MaterialFlags.HasDiffuseMap,
                 AmbientColor = new Vector4(0.6f, 0.6f, 0.6f, 0),
                 Attributes = new List<MaterialAttribute>
@@ -263,7 +263,7 @@ namespace GFDLibrary.Materials
                         Field24 = 1,
                         Field28 = 0,
                         Field2C = 0,
-                        Flags = MaterialAttributeFlags.Flag1,
+                        Flags = MaterialAttributeFlags.Bit0,
                         AttributeType = MaterialAttributeType.Type0,
                         Type0Flags = 0,
                     }
@@ -307,7 +307,7 @@ namespace GFDLibrary.Materials
 
             if (material.Name.ToLower().Contains("outline") && material.Version == 0x01105090)
             {
-                material.Flags = MaterialFlags.Flag1 | MaterialFlags.Flag2 | MaterialFlags.Flag4 | MaterialFlags.Flag8 | MaterialFlags.Flag20 | MaterialFlags.Flag100
+                material.Flags = MaterialFlags.Bit0 | MaterialFlags.Bit1 | MaterialFlags.Bit2 | MaterialFlags.Bit3 | MaterialFlags.Bit5 | MaterialFlags.Bit8
                     | MaterialFlags.EnableLight2;
                 material.AmbientColor = new Vector4(0.149f, 0.039187f, 0.149f, 0);
                 material.DiffuseColor = new Vector4(0f, 0f, 0f, 0.7f);
@@ -324,7 +324,7 @@ namespace GFDLibrary.Materials
         {
             var material = new Material( name )
             {
-                Flags = MaterialFlags.Flag1 | MaterialFlags.Flag2 | MaterialFlags.Flag20 | MaterialFlags.Flag100 |
+                Flags = MaterialFlags.Bit0 | MaterialFlags.Bit1 | MaterialFlags.Bit5 | MaterialFlags.Bit8 |
                         MaterialFlags.EnableLight2 | MaterialFlags.CastShadow,
                 AmbientColor = new Vector4( 0.4901961f, 0.4901961f, 0.4901961f, 1f ),
                 Attributes = new List<MaterialAttribute>
@@ -342,7 +342,7 @@ namespace GFDLibrary.Materials
                         Field30 = 0,
                         Field34 = 0,
                         Field38 = 0,
-                        Flags = MaterialAttributeFlags.Flag1,
+                        Flags = MaterialAttributeFlags.Bit0,
                         Type8Flags = MaterialAttributeType8Flags.Bit0 | MaterialAttributeType8Flags.Bit8,
                         Version = 0x01105090
                     }

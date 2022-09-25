@@ -565,7 +565,7 @@ namespace GFDLibrary.Models.Conversion
             geometry.MaterialName = AssimpConverterCommon.UnescapeName( material.Name );
             geometry.BoundingBox = BoundingBox.Calculate( geometry.Vertices );
             geometry.BoundingSphere = BoundingSphere.Calculate( geometry.BoundingBox.Value, geometry.Vertices );
-            geometry.Flags |= GeometryFlags.Flag80000000;
+            geometry.Flags |= GeometryFlags.Bit31;
 
             return geometry;
         }

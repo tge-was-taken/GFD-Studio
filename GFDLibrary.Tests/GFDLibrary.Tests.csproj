@@ -2,7 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-
+	<Version>0.6.1</Version>
+	<Authors>TGE</Authors>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
@@ -14,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\GFDLibrary\GFDLibrary.csproj" />
+    <ProjectReference Include="..\GFDLibrary\GFDLibrary.NET5.csproj" />
   </ItemGroup>
 
 </Project>

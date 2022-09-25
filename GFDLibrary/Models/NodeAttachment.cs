@@ -84,8 +84,8 @@ namespace GFDLibrary.Models
                     return new NodeLightAttachment( reader.ReadResource<Light>( version ) );
                 case NodeAttachmentType.Epl:
                     return new NodeEplAttachment( reader.ReadResource<Epl>( version ) );
-                //case NodeAttachmentType.EplLeaf:
-                //    return new NodeEplLeafAttachment( ReadEplLeaf( version ) );
+                case NodeAttachmentType.EplLeaf:
+                    return new NodeEplLeafAttachment( reader.ReadResource<EplLeaf>( version ) );
                 case NodeAttachmentType.Morph:
                     return new NodeMorphAttachment( reader.ReadResource<Morph>( version ) );
                 default:

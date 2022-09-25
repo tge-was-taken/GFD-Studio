@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Reflection;
 using GFDLibrary.Animations;
 using GFDLibrary.Cameras;
 using GFDLibrary.Common;
@@ -32,12 +34,12 @@ namespace GFDLibrary
 
         public static T Load<T>( string path ) where T : Resource
         {
-            return Load( path ) as T;
+            return Load( path, typeof( T ) ) as T;
         }
 
         public static T Load<T>( Stream stream, bool leaveOpen = false ) where T : Resource
         {
-            return Load( stream, leaveOpen ) as T;
+            return Load( stream, leaveOpen, typeof(T) ) as T;
         }
 
         public static ResourceType GetResourceType( Stream stream )
@@ -59,6 +61,11 @@ namespace GFDLibrary
 
         public static Resource Load( string path )
         {
+            return Load( path, null );
+        }
+
+        private static Resource Load( string path, Type type )
+        {
             using ( var stream = File.OpenRead( path ) )
             {
                 // Copy file to memory for faster reading
@@ -66,11 +73,16 @@ namespace GFDLibrary
                 stream.CopyTo( memoryStream );
                 memoryStream.Position = 0;
 
-                return Load( memoryStream, false );
+                return Load( memoryStream, false, type );
             }
         }
 
         public static Resource Load( Stream stream, bool leaveOpen )
+        {
+            return Load( stream, leaveOpen, null ); 
+        }
+
+        private static Resource Load( Stream stream, bool leaveOpen, Type type )
         {
             if ( stream.Length < ResourceFileHeader.SIZE )
                 throw new InvalidDataException( "Stream is too small to be a valid resource file." );
@@ -87,7 +99,10 @@ namespace GFDLibrary
                         break;
 
                     case ResourceType.ShaderCachePS3:
-                        res = new ShaderCachePS3( header.Version );
+                        if ( type == typeof( Epl ) )
+                            res = new Epl( header.Version );
+                        else
+                            res = new ShaderCachePS3( header.Version );
                         break;
 
                     case ResourceType.ShaderCachePSP2:
@@ -121,7 +136,7 @@ namespace GFDLibrary
                         res = new Model( header.Version );
                         break;
                     case ResourceType.Node:
-                        return Node.ReadRecursive( reader, header.Version, stream.Length );
+                        return Node.ReadRecursive( reader, header.Version );
                     case ResourceType.UserPropertyDictionary:
                         res = new UserPropertyDictionary( header.Version );
                         break;
@@ -161,12 +176,8 @@ namespace GFDLibrary
                         break;
                     case ResourceType.Epl:
                         {
-                            return new Epl
-                            {
-                                // Make sure to also read the extra boolean we wrote to the file to keep track of this.
-                                IncludesProperties = reader.ReadBoolean(),
-                                RawData = reader.ReadBytes( ( int ) ( stream.Length - stream.Position ) )
-                            };
+                            res = new Epl( header.Version );
+                            break;
                         }
                     case ResourceType.EplLeaf:
                         res = new EplLeaf( header.Version );
@@ -174,8 +185,8 @@ namespace GFDLibrary
                     case ResourceType.Animation:
                         res = new Animation( header.Version );
                         break;
-                    case ResourceType.AnimationExtraData:
-                        res = new AnimationExtraData( header.Version );
+                    case ResourceType.AnimationBit29Data:
+                        res = new AnimationBit29Data( header.Version );
                         break;
                     case ResourceType.AnimationLayer:
                         res = new AnimationLayer( header.Version );
@@ -187,9 +198,9 @@ namespace GFDLibrary
                         throw new InvalidDataException( "Unknown/Invalid resource type" );
                 }
 
-                res.Read( reader, stream.Length );
+                res.ReadCore( reader );
 
-                if ( res.ResourceType == ResourceType.ModelPack )
+                if ( res.ResourceType == ResourceType.ModelPack && type == typeof(AnimationPack) )
                 {
                     // Identify AnimationPack from a file with a model resource header
                     var model = ( ModelPack )res;
@@ -234,7 +245,7 @@ namespace GFDLibrary
                 {
                     case ResourceType.Epl:
                         // We have to write this to the file so we can remember it when we load it.
-                        writer.WriteBoolean( ( ( Epl ) this ).IncludesProperties );
+                        //writer.WriteBoolean( ( ( Epl ) this ).IncludesProperties );
                         break;
 
                     case ResourceType.Node:
@@ -250,11 +261,27 @@ namespace GFDLibrary
                         }
                 }
 
-                Write( writer );
+                WriteCore( writer );
             }
         }
 
-        internal abstract void Read( ResourceReader reader, long endPosition = -1 );
-        internal abstract void Write( ResourceWriter writer );
+        internal void Read( ResourceReader reader )
+        {
+            Logger.Debug( $"Resource: reading {ResourceType} @ 0x{reader.Position:X8}" );
+            Logger.Indent();
+            ReadCore( reader );
+            Logger.Unindent();
+        }
+
+        internal void Write( ResourceWriter writer )
+        {
+            Logger.Debug( $"Resource: writing {ResourceType} @ 0x{writer.Position:X8}" );
+            Logger.Indent();
+            WriteCore( writer );
+            Logger.Unindent();
+        }
+
+        protected abstract void ReadCore( ResourceReader reader );
+        protected abstract void WriteCore( ResourceWriter writer );
     }
 }

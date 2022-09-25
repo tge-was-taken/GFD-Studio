@@ -251,7 +251,12 @@ namespace GFDStudio.GUI.DataViewNodes
         protected override void InitializeCore()
         {
             RegisterExportHandler<Material>( path => Data.Save(  path ) );
-            RegisterReplaceHandler<Material>( Resource.Load<Material> );
+            RegisterReplaceHandler<Material>( path =>
+            {
+                var temp = Resource.Load<Material>( path );
+                temp.Name = Data.Name;
+                return temp;
+            } );
             RegisterCustomHandler("Convert to", "Material preset", () => { ConvertToMaterialPreset(); });
             RegisterModelUpdateHandler( () =>
             {

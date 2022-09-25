@@ -17,8 +17,7 @@ namespace GFDStudio.GUI.DataViewNodes
 
         protected override void InitializeCore()
         {
-            RegisterExportHandler<ChunkType000100F8>( ( path ) => Data.Save( path ) );
-            RegisterReplaceHandler<ChunkType000100F8>( Resource.Load<ChunkType000100F8> );
+            base.InitializeCore();
         }
     }
 }

@@ -41,7 +41,7 @@ namespace GFDLibrary.Common
             Remove( property.Name );
         }
 
-        internal override void Read( ResourceReader reader, long endPosition = -1 )
+        protected override void ReadCore( ResourceReader reader )
         {
             int propertyCount = reader.ReadInt32();
 
@@ -89,7 +89,7 @@ namespace GFDLibrary.Common
             }
         }
 
-        internal override void Write( ResourceWriter writer )
+        protected override void WriteCore( ResourceWriter writer )
         {
             writer.WriteInt32( Count );
 

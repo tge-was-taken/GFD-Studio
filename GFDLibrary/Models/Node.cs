@@ -259,16 +259,16 @@ namespace GFDLibrary.Models
             return $"{Name}";
         }
 
-        internal static Node ReadRecursive( ResourceReader reader, uint version, long endPosition )
+        internal static Node ReadRecursive( ResourceReader reader, uint version )
         {
             var node = reader.ReadResource<Node>( version );
 
             int childCount = reader.ReadInt32();
 
             var childStack = new Stack<Node>();
-            for ( int i = 0; i < childCount && reader.Position < endPosition; i++ )
+            for ( int i = 0; i < childCount; i++ )
             {
-                var childNode = ReadRecursive( reader, version, endPosition );
+                var childNode = ReadRecursive( reader, version );
                 childStack.Push( childNode );
             }
 
@@ -289,7 +289,7 @@ namespace GFDLibrary.Models
             }
         }
 
-        internal override void Read( ResourceReader reader, long endPosition = -1 )
+        protected override void ReadCore( ResourceReader reader )
         {
             Name = reader.ReadStringWithHash( Version );
             Translation = reader.ReadVector3();
@@ -306,13 +306,13 @@ namespace GFDLibrary.Models
                 var attachment = NodeAttachment.Read( reader, Version );
                 Attachments.Add( attachment );
 
-                if ( attachment.Type == NodeAttachmentType.Epl && attachment.GetValue<Epl>().IncludesProperties )
-                {
-                    // If we read an EPL attachment that includes node property data, we can't continue.
-                    // We must also remember to skip reading the properties, as they are contained in the EPL data.
-                    skipProperties = true;
-                    break;
-                }
+                //if ( attachment.Type == NodeAttachmentType.Epl && attachment.GetValue<Epl>().IncludesProperties )
+                //{
+                //    // If we read an EPL attachment that includes node property data, we can't continue.
+                //    // We must also remember to skip reading the properties, as they are contained in the EPL data.
+                //    skipProperties = true;
+                //    break;
+                //}
             }
 
             // Don't read properties if we read an EPL that contains the data
@@ -335,7 +335,7 @@ namespace GFDLibrary.Models
                 FieldE0 = reader.ReadSingle();
         }
 
-        internal override void Write( ResourceWriter writer )
+        protected override void WriteCore( ResourceWriter writer )
         {
             writer.WriteStringWithHash( Version, Name );
             writer.WriteVector3( Translation );
@@ -350,7 +350,7 @@ namespace GFDLibrary.Models
                 attachment.Write( writer );
 
             // Dont read properties if we have an EPL attachment that contains our property data
-            if ( Version > 0x1060000 && !Attachments.Any( x => x.Type == NodeAttachmentType.Epl && x.GetValue<Epl>().IncludesProperties ) )
+            if ( Version > 0x1060000 /*&& !Attachments.Any( x => x.Type == NodeAttachmentType.Epl && x.GetValue<Epl>().IncludesProperties )*/ )
             {
                 writer.WriteBoolean( HasProperties );
                 if ( HasProperties )

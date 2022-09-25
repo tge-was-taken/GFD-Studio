@@ -28,7 +28,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public AnimationListViewNode BlendAnimations { get; set; }
 
         [Browsable( false )]
-        public AnimationExtraDataViewNode ExtraData { get; set; }
+        public AnimationBit29DataViewNode Bit29Data { get; set; }
 
         protected internal AnimationPackViewNode( string text, AnimationPack data ) : base( text, data )
         {
@@ -36,16 +36,15 @@ namespace GFDStudio.GUI.DataViewNodes
 
         protected override void InitializeCore()
         {
-            RegisterExportHandler<AnimationPack>( path => Data.Save( path ) );
-            RegisterReplaceHandler<AnimationPack>( Resource.Load<AnimationPack> );
+            base.InitializeCore();
             RegisterModelUpdateHandler( () =>
             {
                 var model = new AnimationPack( Version );
                 model.Animations = Animations.Data;
                 model.BlendAnimations = BlendAnimations.Data;
 
-                if ( ExtraData != null && Nodes.Contains( ExtraData ) )
-                    model.ExtraData = ExtraData.Data;
+                if ( Bit29Data != null && Nodes.Contains( Bit29Data ) )
+                    model.Bit29Data = Bit29Data.Data;
 
                 return model;
             });
@@ -85,10 +84,10 @@ namespace GFDStudio.GUI.DataViewNodes
             Animations = ( AnimationListViewNode )DataViewNodeFactory.Create( "Animations", Data.Animations, new[] { new ListItemNameProvider<Animation>(( x, i ) => $"Animation {i}" ) });
             BlendAnimations = ( AnimationListViewNode )DataViewNodeFactory.Create( "Blend Animations", Data.BlendAnimations, new[] { new ListItemNameProvider<Animation>( ( x, i ) => $"Animation {i}" ) } );
 
-            if ( ExtraData != null )
+            if ( Bit29Data != null )
             {
-                ExtraData = ( AnimationExtraDataViewNode ) DataViewNodeFactory.Create( "Extra Data", Data.ExtraData );
-                AddChildNode( ExtraData );
+                Bit29Data = ( AnimationBit29DataViewNode ) DataViewNodeFactory.Create( "Bit 29 Data", Data.Bit29Data );
+                AddChildNode( Bit29Data );
             }
 
             AddChildNode( Animations );

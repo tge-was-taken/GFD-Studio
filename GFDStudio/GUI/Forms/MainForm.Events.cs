@@ -375,6 +375,80 @@ namespace GFDStudio.GUI.Forms
             }
         }
 
+        private void copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem_Click( object sender, EventArgs e )
+        {
+            var aGap = ModuleImportUtilities.SelectImportFile<AnimationPack>( "Select the gap file ending with a." );
+            if ( aGap == null )
+                return;
+
+            var bGap = ModuleImportUtilities.SelectImportFile<AnimationPack>( "Select the gap file ending with b." );
+            if ( bGap == null )
+                return;
+
+            var cGap = ModuleImportUtilities.SelectImportFile<AnimationPack>( "Select the gap file ending with c." );
+            if ( cGap == null )
+                return;
+
+            bool isGAP52 = MessageBox.Show( "GAP ID 52? If unsure, select No.", "Question", MessageBoxButtons.YesNo,
+                                            MessageBoxIcon.Question, MessageBoxDefaultButton.Button2 ) == DialogResult.Yes;
+
+            string directoryPath;
+            var browserDialog = new VistaFolderBrowserDialog();
+            {
+                browserDialog.Description =
+                    "Select a directory containing Model files, or subdirectories containing model files to make the new GAP files for.\n" +
+                    "Note that this will replace the original files.";
+
+                if ( browserDialog.ShowDialog() != true )
+                    return;
+
+                directoryPath = browserDialog.SelectedPath;
+            }
+
+            var failures = new ConcurrentBag<string>();
+
+            string GAP_ID = "_051_";
+
+            if ( isGAP52 )
+            {
+                GAP_ID = "_052_";
+            }    
+
+            var filePaths = Directory.EnumerateFiles( directoryPath, "*.GMD", SearchOption.AllDirectories ).ToList();
+            foreach ( string filePath in filePaths )
+            {
+                var targetCharID = Path.GetFileName( filePath ).Split( "_" )[0].Remove( 0, 1 ); // get character ID from model
+                var targetGAPname = Path.GetFileName( filePath ).Split( "_" )[1]; // get model ID from model
+                var targetGAPDir = Path.Join( Path.GetDirectoryName( filePath ), "battle"); // directory of model
+                try
+                {
+                    var targetModel = ModuleImportUtilities.ImportFile<ModelPack>( filePath )?.Model;
+
+                    if ( targetModel == null )
+                        return;
+
+                    aGap.FixTargetIds( targetModel );
+                    aGap.Save( Path.Join( targetGAPDir, "bb" + targetCharID + GAP_ID + targetGAPname + "a.GAP" ));
+
+                    bGap.FixTargetIds( targetModel );
+                    bGap.Save( Path.Join( targetGAPDir, "bb" + targetCharID + GAP_ID + targetGAPname + "b.GAP" ) );
+
+                    cGap.FixTargetIds( targetModel );
+                    cGap.Save( Path.Join( targetGAPDir, "bb" + targetCharID + GAP_ID + targetGAPname + "c.GAP" ) );
+                }
+                catch ( Exception )
+                {
+                    failures.Add( filePath );
+                }
+            }
+
+            if ( failures.Count > 0 )
+            {
+                MessageBox.Show( "An error occured while processing the following files:\n" + string.Join( "\n", failures ) );
+            }
+            else MessageBox.Show( "All split GAPs successfully generated!" );
+        }
+
         private void HandleRescaleAnimationsToolStripMenuItemClick( object sender, EventArgs e)
         {
             string directoryPath;
@@ -392,12 +466,14 @@ namespace GFDStudio.GUI.Forms
 
             Vector3 scale;
             Vector3 position;
+            Quaternion rotation;
             using (var scaleDialog = new SetScaleValueDialog())
             {
                 if (scaleDialog.ShowDialog() != DialogResult.OK)
                     return;
                 scale = scaleDialog.Result.Scale;
                 position = scaleDialog.Result.Position;
+                rotation = scaleDialog.Result.Rotation;
             }
 
             var failures = new ConcurrentBag<string>();
@@ -426,7 +502,7 @@ namespace GFDStudio.GUI.Forms
                         try
                         {
                             var animationPack = Resource.Load<AnimationPack>(filePath);
-                            animationPack.Rescale(scale, position);
+                            animationPack.Rescale(scale, position, rotation);
                             animationPack.Save(filePath);
                         }
                         catch (Exception)

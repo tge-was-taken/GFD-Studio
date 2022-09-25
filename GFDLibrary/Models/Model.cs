@@ -84,7 +84,7 @@ namespace GFDLibrary.Models
         {
         }
 
-        internal override void Read( ResourceReader reader, long endPosition = -1 )
+        protected override void ReadCore( ResourceReader reader )
         {
             var flags = ( ModelFlags ) reader.ReadInt32();
 
@@ -111,11 +111,11 @@ namespace GFDLibrary.Models
             if ( flags.HasFlag( ModelFlags.HasBoundingSphere ) )
                 BoundingSphere = reader.ReadBoundingSphere();
 
-            RootNode = Node.ReadRecursive( reader, Version, endPosition );
+            RootNode = Node.ReadRecursive( reader, Version );
             Flags = flags;
         }
 
-        internal override void Write( ResourceWriter writer )
+        protected override void WriteCore( ResourceWriter writer )
         {
             writer.WriteInt32( ( int ) Flags );
 

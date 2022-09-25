@@ -1,4 +1,7 @@
 ﻿using System.ComponentModel;
+using System.Windows.Forms;
+using GFDLibrary;
+using GFDStudio.FormatModules;
 using GFDStudio.GUI.TypeConverters;
 
 namespace GFDStudio.GUI.DataViewNodes
@@ -16,6 +19,12 @@ namespace GFDStudio.GUI.DataViewNodes
 
         protected internal ResourceViewNode( string text, T data ) : base( text, data )
         {
+        }
+
+        protected override void InitializeCore()
+        {
+            RegisterExportHandler<T>( ( path ) => Data.Save( path ) );
+            RegisterReplaceHandler<T>( Resource.Load<T> );
         }
     }
 }

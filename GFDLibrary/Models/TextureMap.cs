@@ -111,7 +111,7 @@ namespace GFDLibrary.Models
             Field88 = 0;
         }
 
-        internal override void Read( ResourceReader reader, long endPosition = -1 )
+        protected override void ReadCore( ResourceReader reader )
         {
             Name = reader.ReadStringWithHash( Version );
             Field44 = reader.ReadInt32();
@@ -137,7 +137,7 @@ namespace GFDLibrary.Models
             Field88 = reader.ReadSingle();
         }
 
-        internal override void Write( ResourceWriter writer )
+        protected override void WriteCore( ResourceWriter writer )
         {
             writer.WriteStringWithHash( Version, Name );
             writer.WriteInt32( Field44 );

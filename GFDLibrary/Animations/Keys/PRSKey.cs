@@ -65,9 +65,10 @@ namespace GFDLibrary.Animations
             {
                 case KeyType.NodePR:
                 case KeyType.NodePRS:
+                case KeyType.NodePRSByte:
                     Position = reader.ReadVector3();
                     Rotation = reader.ReadQuaternion();
-                    if (Type == KeyType.NodePRS) Scale = reader.ReadVector3();
+                    if ( Type == KeyType.NodePRS || Type == KeyType.NodePRSByte ) Scale = reader.ReadVector3();
                     break;
 
                 case KeyType.NodePRHalf:
@@ -107,9 +108,10 @@ namespace GFDLibrary.Animations
             {
                 case KeyType.NodePR:
                 case KeyType.NodePRS:
+                case KeyType.NodePRSByte:
                     writer.WriteVector3( Position );
                     writer.WriteQuaternion( Rotation );
-                    if ( Type == KeyType.NodePRS )
+                    if ( Type == KeyType.NodePRS || Type == KeyType.NodePRSByte )
                         writer.WriteVector3( Scale );
                     break;
                 case KeyType.NodePRHalf:

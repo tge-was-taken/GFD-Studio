@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-    <Version>0.4.9</Version>
+    <Version>0.6.1</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\GFDLibrary\GFDLibrary.csproj" />
+    <ProjectReference Include="..\GFDLibrary\GFDLibrary.NET5.csproj" />
   </ItemGroup>
 
 </Project>

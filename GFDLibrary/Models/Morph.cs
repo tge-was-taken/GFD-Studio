@@ -22,7 +22,7 @@ namespace GFDLibrary.Models
                 
         }
 
-        internal override void Read( ResourceReader reader, long endPosition = -1 )
+        protected override void ReadCore( ResourceReader reader )
         {
             int morphTargetCount = reader.ReadInt32();
 
@@ -33,7 +33,7 @@ namespace GFDLibrary.Models
             NodeName = reader.ReadStringWithHash( Version );
         }
 
-        internal override void Write( ResourceWriter writer )
+        protected override void WriteCore( ResourceWriter writer )
         {
             writer.WriteInt32( TargetCount );
 

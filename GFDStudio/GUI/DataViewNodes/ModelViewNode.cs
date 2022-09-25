@@ -50,8 +50,7 @@ namespace GFDStudio.GUI.DataViewNodes
 
         protected override void InitializeCore()
         {
-            RegisterExportHandler< Model >( path => Data.Save(  path ) );
-            RegisterReplaceHandler<Model>( Resource.Load< Model > );
+            base.InitializeCore();
             RegisterReplaceHandler<Assimp.Scene>( path =>
             {
                 using ( var dialog = new ModelConverterOptionsDialog( true ) )

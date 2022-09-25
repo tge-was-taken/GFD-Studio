@@ -10,7 +10,11 @@ namespace GFDLibrary.IO
 {
     public class ResourceWriter : EndianBinaryWriter
     {
+#if NETCOREAPP1_0_OR_GREATER
         private static readonly Encoding sSJISEncoding = CodePagesEncodingProvider.Instance.GetEncoding( 932 );
+#else
+        private static readonly Encoding sSJISEncoding = Encoding.GetEncoding( 932 );
+#endif
 
         public ResourceWriter( Stream stream, bool leaveOpen ) : base( stream, Encoding.Default, leaveOpen, Endianness.BigEndian )
         {
@@ -89,7 +93,7 @@ namespace GFDLibrary.IO
             if ( isCatherineFullBodyData && withPadding )
                 WriteByte( 0 ); // padding byte
 
-            if ( version > 0x1080000 )
+            if ( value.Length > 0 && version > 0x1080000 )
                 WriteInt32( StringHasher.GenerateStringHash( value ) );
         }
 

@@ -86,7 +86,7 @@ namespace GFDLibrary
             }
         }
 
-        internal override void Read( ResourceReader reader, long endPosition = -1 )
+        protected override void ReadCore( ResourceReader reader )
         {
             while ( ( reader.Position + ResourceChunkHeader.SIZE ) < reader.BaseStream.Length )
             {
@@ -101,23 +101,23 @@ namespace GFDLibrary
                 switch ( chunk.Type )
                 {
                     case ResourceChunkType.TextureDictionary:
-                        Textures = reader.ReadResource<TextureDictionary>( chunk.Version, chunkDataEnd );
+                        Textures = reader.ReadResource<TextureDictionary>( chunk.Version );
                         break;
                     case ResourceChunkType.MaterialDictionary:
-                        Materials = reader.ReadResource<MaterialDictionary>( chunk.Version, chunkDataEnd );
+                        Materials = reader.ReadResource<MaterialDictionary>( chunk.Version );
                         break;
                     case ResourceChunkType.Model:
-                        Model = reader.ReadResource<Model>( chunk.Version, chunkDataEnd );
+                        Model = reader.ReadResource<Model>( chunk.Version );
                         break;
                     case ResourceChunkType.ChunkType000100F9:
-                        ChunkType000100F9 = reader.ReadResource<ChunkType000100F9>( chunk.Version, chunkDataEnd );
+                        ChunkType000100F9 = reader.ReadResource<ChunkType000100F9>( chunk.Version );
                         break;
                     case ResourceChunkType.ChunkType000100F8:
                         ChunkType000100F8 = new ChunkType000100F8( chunk.Version ) { Data = reader.ReadBytes( chunkDataLength ) };
                         break;
                     case ResourceChunkType.AnimationPack:
                         {
-                            AnimationPack = reader.ReadResource<AnimationPack>( chunk.Version, chunkDataEnd );
+                            AnimationPack = reader.ReadResource<AnimationPack>( chunk.Version );
 
                             if ( AnimationPack.ErrorsOccuredDuringLoad && Model != null )
                             {
@@ -134,7 +134,7 @@ namespace GFDLibrary
             }
         }
 
-        internal override void Write( ResourceWriter writer )
+        protected override void WriteCore( ResourceWriter writer )
         {
             if ( Textures != null )
                 writer.WriteResourceChunk( Textures );

@@ -52,13 +52,13 @@ namespace GFDLibrary.Textures
                     break;
                 case DDSPixelFormatFourCC.Unknown:
                     // Maybe from a screen ripping tool, or something else
-                    Debug.WriteLine( $"{nameof(GetTextureInfo)}({texture}): DDS FourCC not set" );
+                    Logger.Debug( $"{nameof(GetTextureInfo)}({texture}): DDS FourCC not set" );
 
                     if ( ddsHeader.PixelFormat.Flags.HasFlag( DDSPixelFormatFlags.RGB ) &&
                          ddsHeader.PixelFormat.Flags.HasFlag( DDSPixelFormatFlags.AlphaPixels ) &&
                          ddsHeader.PixelFormat.RGBBitCount == 32 )
                     {
-                        Debug.WriteLine( "Converting RGBA pixels to DDS" );
+                        Logger.Debug( "Converting RGBA pixels to DDS" );
 
                         // Read pixel colors
                         var pixelData = new Graphics.Color[( texture.Data.Length - DDSHeader.SIZE ) / 4];

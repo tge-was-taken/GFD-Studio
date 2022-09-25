@@ -125,6 +125,7 @@ namespace GFDStudio.GUI.Forms
 
         public void OpenFile( string filePath )
         {
+            Logger.Debug( $"MainForm: Open file {filePath}" );
             if ( !DataViewNodeFactory.TryCreate( filePath, out var node ) )
             {
                 MessageBox.Show( "Hee file could not be loaded, ho.", "Error", MessageBoxButtons.OK );

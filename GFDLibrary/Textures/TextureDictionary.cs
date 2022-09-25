@@ -121,7 +121,7 @@ namespace GFDLibrary.Textures
                 Remove( s );
         }
 
-        internal override void Read( ResourceReader reader, long endPosition = -1 )
+        protected override void ReadCore( ResourceReader reader )
         {
             var textureCount = reader.ReadInt32();
             for ( int i = 0; i < textureCount; i++ )
@@ -131,7 +131,7 @@ namespace GFDLibrary.Textures
             }
         }
 
-        internal override void Write( ResourceWriter writer )
+        protected override void WriteCore( ResourceWriter writer )
         {
             writer.WriteInt32( Count );
             foreach ( var texture in Textures )

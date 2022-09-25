@@ -2,7 +2,7 @@
 
 namespace GFDLibrary.Animations
 {
-    public class AnimationFlag10000000DataEntry
+    public class AnimationBit28DataEntry
     {
         public Epl Field00 { get; set; }
 

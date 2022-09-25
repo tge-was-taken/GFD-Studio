@@ -9,7 +9,11 @@ namespace GFDLibrary.IO
 {
     public class ResourceReader : EndianBinaryReader
     {
+#if NETCOREAPP1_0_OR_GREATER
         private static readonly Encoding sSJISEncoding = CodePagesEncodingProvider.Instance.GetEncoding( 932 );
+#else
+        private static readonly Encoding sSJISEncoding = Encoding.GetEncoding( 932 );
+#endif
 
         public bool EndOfStream => Position >= BaseStream.Length;
 
@@ -34,12 +38,14 @@ namespace GFDLibrary.IO
         public new string ReadString()
         {
             var length = ReadUInt16();
+            if ( length == 0 ) return "";
             var bytes = ReadBytes( length );
             return sSJISEncoding.GetString( bytes );
         }
 
         public string ReadString( int length )
         {
+            if ( length == 0 ) return "";
             var bytes = ReadBytes( length );
             return sSJISEncoding.GetString( bytes );
         }
@@ -51,7 +57,7 @@ namespace GFDLibrary.IO
             if ( isCatherineFullBodyData && withPadding )
                 SeekCurrent( 1 ); // padding byte
 
-            if ( version > 0x1080000 )
+            if ( str.Length > 0 && version > 0x1080000 )
             {
                 // hash
                 ReadUInt32();
@@ -223,29 +229,38 @@ namespace GFDLibrary.IO
             return value;
         }
 
-        public T ReadResource<T>( uint version, long endPosition = -1 ) where T : Resource, new()
+        public T ReadResource<T>( uint version ) where T : Resource, new()
         {
             var obj = new T();
             obj.Version = version;
-            obj.Read( this, endPosition );
+            obj.Read( this );
             return obj;
         }
 
-        public void ReadResources<T>( uint version, IList<T> list, int count, long endPosition = -1 ) where T : Resource, new()
+        public List<T> ReadResources<T>( uint version, int count ) where T : Resource, new()
+        {
+            var list = new List<T>();
+            ReadResources<T>( version, list, count );
+            return list;
+        }
+
+        public void ReadResources<T>( uint version, IList<T> list, int count ) where T : Resource, new()
         {
             for ( int i = 0; i < count; i++ )
             {
-                list[ i ] = ReadResource<T>( version, endPosition );
+                var res = ReadResource<T>( version );
+                if ( i + 1 > list.Count ) list.Add( res );
+                else list[i] = res; 
             }
         }
 
-        public List<T> ReadResourceList<T>( uint version, long endPosition = -1 ) where T : Resource, new()
+        public List<T> ReadResourceList<T>( uint version ) where T : Resource, new()
         {
             var count = ReadInt32();
             var list = new List<T>( count );
             for ( int i = 0; i < count; i++ )
             {
-                list.Add( ReadResource<T>( version, endPosition ) );
+                list.Add( ReadResource<T>( version ) );
             }
 
             return list;

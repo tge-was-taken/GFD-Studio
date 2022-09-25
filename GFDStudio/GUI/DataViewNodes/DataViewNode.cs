@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
+using GFDLibrary;
 using GFDStudio.DataManagement;
 using GFDStudio.FormatModules;
 
@@ -566,6 +567,50 @@ namespace GFDStudio.GUI.DataViewNodes
             // check for double initialization
             if ( IsInitialized )
                 throw new Exception( $"{nameof( Initialize )} was called twice" );
+
+            // Register default handlers
+            RegisterCustomHandler( "Export", "YAML", () =>
+            {
+                using ( var dialog = new SaveFileDialog() )
+                {
+                    dialog.AutoUpgradeEnabled = true;
+                    dialog.CheckPathExists = true;
+                    dialog.FileName = Text;
+                    dialog.Filter = "YAML files (*.yml)|*.yml";
+                    dialog.OverwritePrompt = true;
+                    dialog.Title = "Select a file to export to.";
+                    dialog.ValidateNames = true;
+                    dialog.AddExtension = true;
+
+                    if ( dialog.ShowDialog() != DialogResult.OK )
+                    {
+                        return;
+                    }
+
+                    YamlSerializer.SaveYamlFile( Data, dialog.FileName );
+                }
+            } );
+            RegisterCustomHandler( "Replace", "YAML", () =>
+            {
+                using ( var dialog = new OpenFileDialog() )
+                {
+                    dialog.AutoUpgradeEnabled = true;
+                    dialog.CheckPathExists = true;
+                    dialog.FileName = Text;
+                    dialog.Filter = "YAML files (*.yml)|*.yml";
+                    dialog.Title = "Select a file to export to.";
+                    dialog.ValidateNames = true;
+                    dialog.AddExtension = true;
+
+                    if ( dialog.ShowDialog() != DialogResult.OK )
+                    {
+                        return;
+                    }
+
+                    var data = YamlSerializer.LoadYamlFile( dialog.FileName, DataType );
+                    Replace( data );
+                }
+            } );
 
             // initialize the derived view model
             InitializeCore();

@@ -46,6 +46,7 @@ namespace GFDStudio.GUI.Forms
             this.rescaleAnimationPacksInDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.convertAnimationsToP5InDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.convertMaterialInDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mPropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.mContentPanel = new System.Windows.Forms.Panel();
             this.tabControl1 = new System.Windows.Forms.TabControl();
@@ -149,7 +150,8 @@ namespace GFDStudio.GUI.Forms
             this.makeRelativeToolStripMenuItem,
             this.rescaleAnimationPacksInDirectoryToolStripMenuItem,
             this.convertAnimationsToP5InDirectoryToolStripMenuItem,
-            this.convertMaterialInDirectoryToolStripMenuItem});
+            this.convertMaterialInDirectoryToolStripMenuItem,
+            this.copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem} );
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(46, 20);
             this.toolsToolStripMenuItem.Text = "Tools";
@@ -181,6 +183,13 @@ namespace GFDStudio.GUI.Forms
             this.convertMaterialInDirectoryToolStripMenuItem.Size = new System.Drawing.Size(327, 22);
             this.convertMaterialInDirectoryToolStripMenuItem.Text = "Convert model materials in directory";
             this.convertMaterialInDirectoryToolStripMenuItem.Click += new System.EventHandler(this.HandleConvertMaterialsToolStripMenuItemClick);
+            // 
+            // copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem
+            // 
+            this.copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem.Name = "copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem";
+            this.copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem.Size = new System.Drawing.Size(327, 22);
+            this.copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem.Text = "Copy P5 Split GAP to multiple models in directory";
+            this.copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem.Click += new System.EventHandler(this.copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem_Click );
             // 
             // mPropertyGrid
             // 
@@ -366,5 +375,6 @@ namespace GFDStudio.GUI.Forms
         private System.Windows.Forms.ToolStripMenuItem rescaleAnimationPacksInDirectoryToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem convertAnimationsToP5InDirectoryToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem convertMaterialInDirectoryToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem;
     }
 }

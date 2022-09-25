@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using GFDLibrary;
-using GFDLibrary.Animations;
+﻿using GFDLibrary.Animations;
 using GFDLibrary.Cameras;
 using GFDLibrary.Common;
 using GFDLibrary.Effects;
@@ -13,23 +8,44 @@ using GFDLibrary.Models;
 using GFDLibrary.Shaders;
 using GFDLibrary.Textures;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace GFDLibrary.Tests
 {
     [TestClass()]
     public class ResourceTests
     {
-        public const string Model_P5PlayerModel_Path          = @"D:\Modding\Persona 5 EU\Main game\Extracted\data\model\character\0001\c0001_051_00.GMD";
-        public const string Model_P4DFaceModel_Path           = @"D:\Modding\Persona 4 Dancing CPK RIP\data\dance\player\pc001_f1.GMD";
-        public const string Model_P5FieldLevelModel_Path      = @"D:\Modding\Persona 5 EU\Main game\Extracted\data\model\field_tex\f013_014_0.GFS";
-        public const string ShaderCache_GFDPS3PRESET_Path     = @"D:\Modding\Persona 5 EU\Main game\Extracted\ps3\GFDPS3PRESET.GSC";
-        public const string ShaderCache_GFDPS3_Path           = @"D:\Modding\Persona 5 EU\Main game\Extracted\ps3\GFDPS3.GSC";
-        public const string ShaderCache_GFDPSP2PRESET_Path    = @"D:\Modding\Persona 4 Dancing CPK RIP\data\GFDPSP2PRESET.GSC";
-        public const string ShaderCache_GFDPSP2_Path          = @"D:\Modding\Persona 4 Dancing CPK RIP\data\GFDPSP2.GSC";
+        public const string PATH_RESOURCE_BASE = "resources/";
+        public const string Model_P5PlayerModel_Path            = PATH_RESOURCE_BASE + "c0001_051_00.GMD";
+        public const string Model_P4DFaceModel_Path             = PATH_RESOURCE_BASE + "pc001_f1.GMD";
+        public const string Model_P5FieldLevelModel_Path        = PATH_RESOURCE_BASE + "f013_014_0.GFS";
+        public const string ShaderCache_GFDPS3PRESET_Path       = PATH_RESOURCE_BASE + "GFDPS3PRESET.GSC";
+        public const string ShaderCache_GFDPS3_Path             = PATH_RESOURCE_BASE + "GFDPS3.GSC";
+        public const string ShaderCache_GFDPSP2PRESET_Path      = PATH_RESOURCE_BASE + "GFDPSP2PRESET.GSC";
+        public const string ShaderCache_GFDPSP2_Path            = PATH_RESOURCE_BASE + "GFDPSP2.GSC";
+        public const string PATH_EPL_FE00                       = PATH_RESOURCE_BASE + "fe000.EPL";
 
         private string GetNewPath( string path )
         {
             return Path.Combine( Path.GetDirectoryName( path ), Path.GetFileNameWithoutExtension( path ) + "_new" + Path.GetExtension( path ) );
+        }
+
+        [TestMethod()]
+        public void yaml_roundtrip()
+        {
+            var res = Resource.Load( Model_P5PlayerModel_Path );
+            res.SaveYamlFile( "test.yml" );
+            var newRes = YamlSerializer.LoadYamlFile<ModelPack>( "test.yml" );
+        }
+
+        [TestMethod()]
+        public void loading_epl_from_file_should_not_throw()
+        {
+            using ( var fileStream = File.OpenRead( PATH_EPL_FE00 ) )
+                Resource.Load<Epl>( fileStream );
         }
 
         // Model tests ( Persona 5 protagonist battle model )

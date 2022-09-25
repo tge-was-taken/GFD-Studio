@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using GFDLibrary.IO;
@@ -21,7 +22,7 @@ namespace GFDLibrary.Animations
 
         public List<Animation> BlendAnimations { get; set; }
 
-        public AnimationExtraData ExtraData { get; set; }
+        public AnimationBit29Data Bit29Data { get; set; }
 
         public AnimationPack( uint version )
             : base( version )
@@ -32,12 +33,12 @@ namespace GFDLibrary.Animations
 
         public AnimationPack()
         {
-            Flags = AnimationPackFlags.Flag8;
+            Flags = AnimationPackFlags.Bit3;
             Animations = new List<Animation>();
             BlendAnimations = new List<Animation>();
         }
 
-        internal override void Read( ResourceReader reader, long endPosition = -1 )
+        protected override void ReadCore( ResourceReader reader )
         {
             if ( Version > 0x1104950 )
                 Flags = ( AnimationPackFlags )reader.ReadInt32(); // r26
@@ -46,40 +47,40 @@ namespace GFDLibrary.Animations
 
             // TODO: fix this mess
             var start = reader.Position;
-            try
+            //try
             {
                 // Try to read blend animations
                 BlendAnimations = ReadAnimations( reader );
             }
-            catch ( Exception )
-            {
-                ErrorsOccuredDuringLoad = true;
+            //catch ( Exception )
+            //{
+            //    ErrorsOccuredDuringLoad = true;
 
-                if ( Flags.HasFlag( AnimationPackFlags.Flag4 ) )
-                {
-                    // If it failed, and the extra data flag is set then try reading it as extra data instead
-                    BlendAnimations = new List<Animation>();
-                    reader.SeekBegin( start - 8 );
-                }
-                else
-                {
-                    // We tried
-                    return;
-                }
-            }
+            //    if ( Flags.HasFlag( AnimationPackFlags.Bit2 ) )
+            //    {
+            //        // If it failed, and the extra data flag is set then try reading it as extra data instead
+            //        BlendAnimations = new List<Animation>();
+            //        reader.SeekBegin( start - 8 );
+            //    }
+            //    else
+            //    {
+            //        // We tried
+            //        return;
+            //    }
+            //}
 
-            try
+            //try
             {
                 // Try reading extra data if present
-                if ( Flags.HasFlag( AnimationPackFlags.Flag4 ) )
-                    ExtraData = reader.ReadResource<AnimationExtraData>( Version );
+                if ( Flags.HasFlag( AnimationPackFlags.Bit2 ) )
+                    Bit29Data = reader.ReadResource<AnimationBit29Data>( Version );
             }
-            catch ( Exception )
-            {
-                // Make sure to clear the flag for the extra data so we don't crash during writing
-                Flags &= ~AnimationPackFlags.Flag4;
-                ErrorsOccuredDuringLoad = true;
-            }
+            //catch ( Exception )
+            //{
+            //    // Make sure to clear the flag for the extra data so we don't crash during writing
+            //    Flags &= ~AnimationPackFlags.Bit2;
+            //    ErrorsOccuredDuringLoad = true;
+            //}
         }
 
         private List<Animation> ReadAnimations( ResourceReader reader )
@@ -91,25 +92,26 @@ namespace GFDLibrary.Animations
                 // Animations are super broken at the moment
                 // so try to read one, and give up if it doesn't work out
                 // usually the exception will happen at either the last, or the second to last animation
-                try
+                //try
                 {
+                    Logger.Debug( $"AnimationPack: Reading animation #{i}" );
                     list.Add( reader.ReadResource<Animation>( Version ) );
                 }
-                catch ( Exception )
-                {
-                    ErrorsOccuredDuringLoad = true;
+                //catch ( Exception )
+                //{
+                //    ErrorsOccuredDuringLoad = true;
 
-                    while ( i++ < count )
-                        list.Add( new Animation() );
+                //    while ( i++ < count )
+                //        list.Add( new Animation() );
 
-                    break;
-                }
+                //    break;
+                //}
             }
 
             return list;
         }
 
-        internal override void Write( ResourceWriter writer )
+        protected override void WriteCore( ResourceWriter writer )
         {
             if ( RawData != null )
             {
@@ -123,8 +125,8 @@ namespace GFDLibrary.Animations
             writer.WriteResourceList( Animations );
             writer.WriteResourceList( BlendAnimations );
 
-            if ( Flags.HasFlag( AnimationPackFlags.Flag4 ) )
-                writer.WriteResource( ExtraData );
+            if ( Flags.HasFlag( AnimationPackFlags.Bit2 ) )
+                writer.WriteResource( Bit29Data );
         }
 
         public void FixTargetIds( Model model )
@@ -135,7 +137,7 @@ namespace GFDLibrary.Animations
             foreach ( var animation in BlendAnimations )
                 animation.FixTargetIds( model );
 
-            ExtraData?.FixTargetIds( model );
+            Bit29Data?.FixTargetIds( model );
         }
 
         public void Retarget( Model originalModel, Model newModel, bool fixArms )
@@ -149,10 +151,10 @@ namespace GFDLibrary.Animations
             foreach ( var animation in BlendAnimations )
                 animation.FixTargetIds( newModel.Nodes ); // blend animations are already relative, they only need their ids fixed
 
-            ExtraData?.Retarget( originalNodeLookup, newNodeLookup, fixArms );
+            Bit29Data?.Retarget( originalNodeLookup, newNodeLookup, fixArms );
         }
 
-        public void Rescale(Vector3 scale, Vector3 position)
+        public void Rescale(Vector3 scale, Vector3 position, Quaternion rotation)
         {
             for (int w = 0; w < this.Animations.Count; w++)
             {
@@ -176,7 +178,7 @@ namespace GFDLibrary.Animations
                                     {
                                         Time = prsKey.Time,
                                         Position = (prsKey.Position * layer.PositionScale) + position,
-                                        Rotation = prsKey.Rotation,
+                                        Rotation = rotation,
                                         Scale = (prsKey.Scale * layer.ScaleScale) * scale
                                     };
 

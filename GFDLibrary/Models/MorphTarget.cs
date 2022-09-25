@@ -28,7 +28,7 @@ namespace GFDLibrary.Models
             Vertices = new List<Vector3>();
         }
 
-        internal override void Read( ResourceReader reader, long endPosition = -1 )
+        protected override void ReadCore( ResourceReader reader )
         {
             Flags = reader.ReadInt32();
             int vertexCount = reader.ReadInt32();
@@ -40,7 +40,7 @@ namespace GFDLibrary.Models
             }
         }
 
-        internal override void Write( ResourceWriter writer )
+        protected override void WriteCore( ResourceWriter writer )
         {
             writer.WriteInt32( Flags );
             writer.WriteInt32( VertexCount );

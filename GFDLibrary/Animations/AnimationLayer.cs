@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Numerics;
 using GFDLibrary.IO;
@@ -55,6 +56,31 @@ namespace GFDLibrary.Animations
             }
         }
 
+        public bool HasSingleKeyFrames
+        {
+            get
+            {
+                switch ( KeyType )
+                {
+                    case KeyType.Single:
+                    case KeyType.Single_2:
+                    case KeyType.Single_3:
+                    case KeyType.MaterialSingle_4:
+                    case KeyType.Single_5:
+                    case KeyType.Single_6:
+                    case KeyType.CameraFieldOfView:
+                    case KeyType.Single_8:
+                    case KeyType.SingleAlt_2:
+                    case KeyType.MaterialSingle_9:
+                    case KeyType.SingleAlt_3:
+                        return true;
+
+                    default:
+                        return false;
+                }
+            }
+        }
+
         public AnimationLayer(uint version) : base(version)
         {
             Keys = new List< Key >();
@@ -66,12 +92,14 @@ namespace GFDLibrary.Animations
         {         
         }
 
-        internal override void Read( ResourceReader reader, long endPosition = -1 )
+        protected override void ReadCore( ResourceReader reader )
         {
             KeyType = ( KeyType )reader.ReadInt32();
 
             var keyCount = reader.ReadInt32();
             var keyTimings = reader.ReadSingles( keyCount );
+
+            Logger.Debug( $"AnimationLayer: Reading type {KeyType} with {keyCount} keys" );
 
             for ( int i = 0; i < keyCount; i++ )
             {
@@ -119,7 +147,7 @@ namespace GFDLibrary.Animations
                     case KeyType.Single5Alt:
                         key = new Single5Key( KeyType );
                         break;
-                    case KeyType.PRSByte:
+                    case KeyType.NodePRSByte:
                         key = new PRSByteKey();
                         break;
                     case KeyType.Single4Byte:
@@ -161,7 +189,7 @@ namespace GFDLibrary.Animations
             }
         }
 
-        internal override void Write( ResourceWriter writer )
+        protected override void WriteCore( ResourceWriter writer )
         {
             writer.WriteInt32( ( int ) KeyType );
             writer.WriteInt32( Keys.Count );

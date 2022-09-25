@@ -254,14 +254,17 @@ namespace GFDLibrary.Models
 
         public float FieldD8 { get; set; }
 
+        public Vector2[][] TexCoordChannels => new[] { mTexCoordsChannel0, mTexCoordsChannel1, mTexCoordsChannel2 };
+        public uint[][] ColorChannels => new[] { mColorChannel0, mColorChannel1 };
+
         public Mesh()
         {
             TriangleIndexFormat = TriangleIndexFormat.UInt16;
         }
 
-        public Mesh(uint version):base(version)
+        public Mesh( uint version ) : base( version )
         {
-            
+
         }
 
         /// <summary>
@@ -271,61 +274,100 @@ namespace GFDLibrary.Models
         /// <param name="nodes"></param>
         /// <param name="usedBones"></param>
         /// <returns></returns>
-        public (Vector3[] Vertices, Vector3[] Normals) Transform( Node parentNode, List<Node> nodes, List<Bone> usedBones )
+        public (Vector3[] Vertices, Vector3[] Normals) Transform( Node parentNode, IList<Node> nodes, List<Bone> usedBones,
+            bool includeWeights = true, bool includeParentTransform = false, Matrix4x4? offsetTransform = null )
         {
+            if ( nodes == null ) throw new ArgumentNullException( nameof( nodes ) );
+            if ( VertexWeights != null && usedBones == null ) throw new ArgumentNullException( nameof( usedBones ) );
+
             var vertices = new Vector3[VertexCount];
             Vector3[] normals = null;
 
             if ( Normals != null )
                 normals = new Vector3[VertexCount];
 
-            Matrix4x4.Invert( parentNode.WorldTransform, out var parentNodeWorldTransformInv );
+            var parentNodeWorldTransform = parentNode != null ? parentNode.WorldTransform : Matrix4x4.Identity;
+            Matrix4x4.Invert( parentNodeWorldTransform, out var parentNodeWorldTransformInv );
 
             for ( int i = 0; i < VertexCount; i++ )
             {
                 var position = Vertices[i];
-                var normal = Normals?[i] ?? Vector3.Zero;
-
+                var normal = Normals != null ? Normals[i] : Vector3.Zero;
                 var newPosition = Vector3.Zero;
                 var newNormal = Vector3.Zero;
 
-                for ( int j = 0; j < 4; j++ )
+                if ( includeWeights && VertexWeights != null )
                 {
-                    var weight = VertexWeights[i].Weights[j];
-                    if ( weight == 0 )
-                        continue;
+                    for ( int j = 0; j < 4; j++ )
+                    {
+                        var weight = VertexWeights[i].Weights[j];
+                        if ( weight == 0 )
+                            continue;
 
-                    var boneIndex = VertexWeights[i].Indices[j];
-                    var boneNodeIndex = usedBones[boneIndex].NodeIndex;
-                    var boneNode = nodes[boneNodeIndex];
-                    var inverseBindMatrix = usedBones[boneIndex].InverseBindMatrix;
-                    var bindMatrix = boneNode.WorldTransform;
-                    newPosition += Vector3.Transform( Vector3.Transform( position, inverseBindMatrix ), bindMatrix * weight );
-                    newNormal += Vector3.TransformNormal( Vector3.TransformNormal( normal, inverseBindMatrix ), bindMatrix * weight );
+                        var boneIndex = VertexWeights[i].Indices[j];
+                        var boneNodeIndex = usedBones[boneIndex].NodeIndex;
+                        var boneNode = nodes[boneNodeIndex];
+                        var inverseBindMatrix = usedBones[boneIndex].InverseBindMatrix;
+                        var bindMatrix = boneNode.WorldTransform;
+                        newPosition += Vector3.Transform( Vector3.Transform( position, inverseBindMatrix ), bindMatrix * weight );
+                        if ( normals != null )
+                            newNormal += Vector3.TransformNormal( Vector3.TransformNormal( normal, inverseBindMatrix ), bindMatrix * weight );
+                    }
+
+                    if ( !includeParentTransform )
+                    {
+                        newPosition = Vector3.Transform( newPosition, parentNodeWorldTransformInv );
+
+                        if ( normals != null )
+                            newNormal =
+                                Vector3.Normalize( Vector3.TransformNormal( newNormal, parentNodeWorldTransformInv ) );
+                    }
+                }
+                else
+                {
+                    newPosition = position;
+                    newNormal = normal;
+
+                    if ( includeParentTransform )
+                    {
+                        newPosition = Vector3.Transform( newPosition, parentNodeWorldTransform );
+
+                        if ( normals != null )
+                            newNormal =
+                                Vector3.Normalize( Vector3.TransformNormal( newNormal, parentNodeWorldTransform ) );
+
+                    }
                 }
 
-                vertices[i] = Vector3.Transform( newPosition, parentNodeWorldTransformInv );
+                if ( offsetTransform != null )
+                {
+                    newPosition = Vector3.Transform( newPosition, offsetTransform.Value );
 
+                    if ( normals != null )
+                        newNormal =
+                            Vector3.Normalize( Vector3.TransformNormal( newNormal, offsetTransform.Value ) );
+                }
+
+                vertices[i] = newPosition;
                 if ( normals != null )
-                    normals[i] =
-                        Vector3.Normalize( Vector3.TransformNormal( newNormal, parentNodeWorldTransformInv ) );
+                    normals[i] = newNormal;
             }
 
             return (vertices, normals);
         }
 
-        internal override void Read( ResourceReader reader, long endPosition = -1 )
+        protected override void ReadCore( ResourceReader reader )
         {
-            var flags = ( GeometryFlags )reader.ReadInt32();
+            var flags = (GeometryFlags)reader.ReadInt32();
             Flags = flags;
-            VertexAttributeFlags = ( VertexAttributeFlags )reader.ReadInt32();
+            VertexAttributeFlags = (VertexAttributeFlags)reader.ReadInt32();
 
             int triangleCount = 0;
 
             if ( Flags.HasFlag( GeometryFlags.HasTriangles ) )
             {
                 triangleCount = reader.ReadInt32();
-                TriangleIndexFormat = ( TriangleIndexFormat )reader.ReadInt16();
+                TriangleIndexFormat = (TriangleIndexFormat)reader.ReadInt16();
                 Triangles = new Triangle[triangleCount];
             }
 
@@ -383,7 +425,7 @@ namespace GFDLibrary.Models
                     for ( int j = 0; j < VertexWeights[i].Indices.Length; j++ )
                     {
                         int shift = j * 8;
-                        VertexWeights[i].Indices[j] = ( byte )( ( indices & ( 0xFF << shift ) ) >> shift );
+                        VertexWeights[i].Indices[j] = (byte)( ( indices & ( 0xFF << shift ) ) >> shift );
                     }
                 }
             }
@@ -430,7 +472,7 @@ namespace GFDLibrary.Models
                 BoundingSphere = reader.ReadBoundingSphere();
             }
 
-            if ( Flags.HasFlag( GeometryFlags.Flag1000 ) )
+            if ( Flags.HasFlag( GeometryFlags.Bit12 ) )
             {
                 FieldD4 = reader.ReadSingle();
                 FieldD8 = reader.ReadSingle();
@@ -492,15 +534,15 @@ namespace GFDLibrary.Models
             }
         }
 
-        internal override void Write( ResourceWriter writer )
+        protected override void WriteCore( ResourceWriter writer )
         {
-            writer.WriteInt32( ( int )Flags );
-            writer.WriteInt32( ( int )VertexAttributeFlags );
+            writer.WriteInt32( (int)Flags );
+            writer.WriteInt32( (int)VertexAttributeFlags );
 
             if ( Flags.HasFlag( GeometryFlags.HasTriangles ) )
             {
                 writer.WriteInt32( TriangleCount );
-                writer.WriteInt16( ( short )TriangleIndexFormat );
+                writer.WriteInt16( (short)TriangleIndexFormat );
             }
 
             writer.WriteInt32( VertexCount );
@@ -564,9 +606,9 @@ namespace GFDLibrary.Models
                     switch ( TriangleIndexFormat )
                     {
                         case TriangleIndexFormat.UInt16:
-                            writer.WriteUInt16( ( ushort )Triangles[i].A );
-                            writer.WriteUInt16( ( ushort )Triangles[i].B );
-                            writer.WriteUInt16( ( ushort )Triangles[i].C );
+                            writer.WriteUInt16( (ushort)Triangles[i].A );
+                            writer.WriteUInt16( (ushort)Triangles[i].B );
+                            writer.WriteUInt16( (ushort)Triangles[i].C );
                             break;
                         case TriangleIndexFormat.UInt32:
                             writer.WriteUInt32( Triangles[i].A );
@@ -594,7 +636,7 @@ namespace GFDLibrary.Models
                 writer.WriteBoundingSphere( BoundingSphere.Value );
             }
 
-            if ( Flags.HasFlag( GeometryFlags.Flag1000 ) )
+            if ( Flags.HasFlag( GeometryFlags.Bit12 ) )
             {
                 writer.WriteSingle( FieldD4 );
                 writer.WriteSingle( FieldD8 );
@@ -612,72 +654,72 @@ namespace GFDLibrary.Models
     [Flags]
     public enum GeometryFlags : uint
     {
-        HasVertexWeights  = 1 << 0,
-        HasMaterial       = 1 << 1,
-        HasTriangles      = 1 << 2,
-        HasBoundingBox    = 1 << 3,
+        HasVertexWeights = 1 << 0,
+        HasMaterial = 1 << 1,
+        HasTriangles = 1 << 2,
+        HasBoundingBox = 1 << 3,
         HasBoundingSphere = 1 << 4,
-        Flag20            = 1 << 5, // render flag
-        HasMorphTargets   = 1 << 6,
-        Flag80            = 1 << 7, // render flag
-        Flag100           = 1 << 8,
-        Flag200           = 1 << 9,
-        Flag400           = 1 << 10,
-        Flag800           = 1 << 11,
-        Flag1000          = 1 << 12, // 2 floats
-        Flag2000          = 1 << 13,
-        Flag4000          = 1 << 14, // render flag
-        Flag8000          = 1 << 15,
-        Flag10000         = 1 << 16,
-        Flag20000         = 1 << 17,
-        Flag40000         = 1 << 18,
-        Flag80000         = 1 << 19,
-        Flag100000        = 1 << 20,
-        Flag200000        = 1 << 21,
-        Flag400000        = 1 << 22,
-        Flag800000        = 1 << 23,
-        Flag1000000       = 1 << 24,
-        Flag2000000       = 1 << 25,
-        Flag4000000       = 1 << 26,
-        Flag8000000       = 1 << 27,
-        Flag10000000      = 1 << 28,
-        Flag20000000      = 1 << 29,
-        Flag40000000      = 1 << 30, // r7 |= 8
-        Flag80000000      = 1u << 31,
+        Bit5 = 1 << 5, // render flag
+        HasMorphTargets = 1 << 6,
+        Bit7 = 1 << 7, // render flag
+        Bit8 = 1 << 8,
+        Bit9 = 1 << 9,
+        Bit10 = 1 << 10,
+        Bit11 = 1 << 11,
+        Bit12 = 1 << 12, // 2 floats
+        Bit13 = 1 << 13,
+        Bit14 = 1 << 14, // render flag
+        Bit15 = 1 << 15,
+        Bit16 = 1 << 16,
+        Bit17 = 1 << 17,
+        Bit18 = 1 << 18,
+        Bit19 = 1 << 19,
+        Bit20 = 1 << 20,
+        Bit21 = 1 << 21,
+        Bit22 = 1 << 22,
+        Bit23 = 1 << 23,
+        Bit24 = 1 << 24,
+        Bit25 = 1 << 25,
+        Bit26 = 1 << 26,
+        Bit27 = 1 << 27,
+        Bit28 = 1 << 28,
+        Bit29 = 1 << 29,
+        Bit30 = 1 << 30, // r7 |= 8
+        Bit31 = 1u << 31,
     }
 
     [Flags]
     public enum VertexAttributeFlags : uint
     {
-        Position     = 1 << 1,
-        Flag4        = 1 << 2,
-        Flag8        = 1 << 3,
-        Normal       = 1 << 4, // might be normals. maybe normal should be position
-        Color0       = 1 << 6,
-        Flag40       = 1 << 7,
-        TexCoord0    = 1 << 8,
-        TexCoord1    = 1 << 9,
-        TexCoord2    = 1 << 10,
-        TexCoord3    = 1 << 11,
-        TexCoord4    = 1 << 12,
-        TexCoord5    = 1 << 13,
-        TexCoord6    = 1 << 14,
-        TexCoord7    = 1 << 15,
-        Flag10000    = 1 << 16,
-        Flag20000    = 1 << 17,
-        Flag40000    = 1 << 18,
-        Flag80000    = 1 << 19,
-        Flag100000   = 1 << 20,
-        Flag200000   = 1 << 21,
-        Flag400000   = 1 << 22,
-        Flag800000   = 1 << 23,
-        Flag1000000  = 1 << 24,
-        Flag2000000  = 1 << 25,
-        Flag4000000  = 1 << 26,
-        Flag8000000  = 1 << 27,
-        Tangent      = 1 << 28,
-        Binormal     = 1 << 29, // 12 bytes, after tangent -- binormal?
-        Color1       = 1 << 30, // 4 bytes, after tex coord 2
-        Flag80000000 = 1u << 31, // 20 bytes, after HasBoundingBox
+        Position = 1 << 1,
+        Bit2 = 1 << 2,
+        Bit3 = 1 << 3,
+        Normal = 1 << 4, // might be normals. maybe normal should be position
+        Color0 = 1 << 6,
+        Bit6 = 1 << 7,
+        TexCoord0 = 1 << 8,
+        TexCoord1 = 1 << 9,
+        TexCoord2 = 1 << 10,
+        TexCoord3 = 1 << 11,
+        TexCoord4 = 1 << 12,
+        TexCoord5 = 1 << 13,
+        TexCoord6 = 1 << 14,
+        TexCoord7 = 1 << 15,
+        Bit16 = 1 << 16,
+        Bit17 = 1 << 17,
+        Bit18 = 1 << 18,
+        Bit19 = 1 << 19,
+        Bit20 = 1 << 20,
+        Bit21 = 1 << 21,
+        Bit22 = 1 << 22,
+        Bit23 = 1 << 23,
+        Bit24 = 1 << 24,
+        Bit25 = 1 << 25,
+        Bit26 = 1 << 26,
+        Bit27 = 1 << 27,
+        Tangent = 1 << 28,
+        Binormal = 1 << 29, // 12 bytes, after tangent -- binormal?
+        Color1 = 1 << 30, // 4 bytes, after tex coord 2
+        Bit31 = 1u << 31, // 20 bytes, after HasBoundingBox
     }
 }

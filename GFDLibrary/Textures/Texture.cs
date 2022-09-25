@@ -83,7 +83,7 @@ namespace GFDLibrary.Textures
             return new Texture( name, TextureFormat.DDS, sDummyTextureData ) { IsDefaultTexture = true };
         }
 
-        internal override void Read( ResourceReader reader, long endPosition = -1 )
+        protected override void ReadCore( ResourceReader reader )
         {
             Name = reader.ReadString();
             Format = ( TextureFormat )reader.ReadInt16();
@@ -96,7 +96,7 @@ namespace GFDLibrary.Textures
             Field1F = reader.ReadByte();
         }
 
-        internal override void Write( ResourceWriter writer )
+        protected override void WriteCore( ResourceWriter writer )
         {
             writer.WriteString( Name );
             writer.WriteInt16( ( short ) Format );
@@ -115,6 +115,8 @@ namespace GFDLibrary.Textures
     {
         Invalid = 0,
         DDS = 1,
+		TGA = 2,
+		TMX = 3,
         GXT = 6,
         GNF = 9
     }
