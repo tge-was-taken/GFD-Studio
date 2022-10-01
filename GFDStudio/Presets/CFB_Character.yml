@@ -1,0 +1,131 @@
+!Material
+ResourceType: Material
+Name: c0001_body_jyake2_low
+Flags: Bit0, Bit1, Bit5, Bit8, EnableLight2, CastShadow, HasAttributes, HasDiffuseMap, HasShadowMap
+AmbientColor: &o0
+  X: 0.4901961088180542
+  Y: 0.4901961088180542
+  Z: 0.4901961088180542
+  W: 1
+DiffuseColor:
+  X: 0
+  Y: 0
+  Z: 0
+  W: 1
+SpecularColor: *o0
+EmissiveColor:
+  X: 0
+  Y: 0
+  Z: 0
+  W: 0
+Field40: 1
+Field44: 0
+DrawMethod: Opaque
+Field49: 1
+Field4A: 0
+Field4B: 1
+Field4C: 0
+Field4D: 1
+Field90: 0
+Field92: 4
+Field94: 5
+Field96: 0
+Field5C: 104
+Field6C: 4177526776
+Field70: 4177526776
+DisableBackfaceCulling: 0
+Field98: 4294967295
+DiffuseMap: &o1 !TextureMap
+  ResourceType: TextureMap
+  Name: pc201_03_body00.dds
+  Field44: 0
+  Field48: 1
+  Field49: 1
+  Field4A: 0
+  Field4B: 0
+  Field4C: 1
+  Field50: 0
+  Field54: 0
+  Field58: 0
+  Field5C: 0
+  Field60: 1
+  Field64: 0
+  Field68: 0
+  Field6C: 0
+  Field70: 0
+  Field74: 0
+  Field78: 0
+  Field7C: 0
+  Field80: 0
+  Field84: 0
+  Field88: 0
+  Version: 17846384
+NormalMap: 
+SpecularMap: 
+ReflectionMap: 
+HighlightMap: 
+GlowMap: 
+NightMap: 
+DetailMap: 
+ShadowMap: &o2 !TextureMap
+  ResourceType: TextureMap
+  Name: pc201_03_body00.dds
+  Field44: 0
+  Field48: 1
+  Field49: 1
+  Field4A: 0
+  Field4B: 0
+  Field4C: 1
+  Field50: 0
+  Field54: 0
+  Field58: 0
+  Field5C: 0
+  Field60: 1
+  Field64: 0
+  Field68: 0
+  Field6C: 0
+  Field70: 0
+  Field74: 0
+  Field78: 0
+  Field7C: 0
+  Field80: 0
+  Field84: 0
+  Field88: 0
+  Version: 17846384
+TextureMaps:
+- *o1
+- 
+- 
+- 
+- 
+- 
+- 
+- 
+- *o2
+Attributes:
+- !MaterialAttributeType8
+  Field00:
+    X: 0.9803922176361084
+    Y: 0.9803922176361084
+    Z: 0.9803922176361084
+  Field0C: 0.47058823704719543
+  Field10: 0.64999997615814209
+  Field14: 30
+  Field18: 100
+  Field1C:
+    X: 0
+    Y: 0
+    Z: 0
+  Field28: 0.34999999403953552
+  Field2C: 0
+  Field30: 0
+  Field34: 0
+  Field38: 0
+  Type8Flags: Bit0, Bit8
+  ResourceType: MaterialAttribute
+  RawFlags: 65544
+  Flags: Bit0
+  AttributeType: Type8
+  Version: 17846416
+IsPresetMaterial: true
+Version: 17846528

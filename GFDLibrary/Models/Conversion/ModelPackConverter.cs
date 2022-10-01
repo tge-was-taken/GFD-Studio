@@ -249,7 +249,7 @@ namespace GFDLibrary.Models.Conversion
 
         public ModelPackConverterOptions()
         {
-            MaterialPreset = MaterialPreset.CharacterSkinP5;
+            // MaterialPreset = MaterialPreset.CharacterSkinP5;
             Version = ResourceVersion.Persona5;
             ConvertSkinToZUp = false;
             GenerateVertexColors = false;
