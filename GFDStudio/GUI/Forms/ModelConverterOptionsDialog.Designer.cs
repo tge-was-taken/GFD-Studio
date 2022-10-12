@@ -242,7 +242,6 @@
             // 
             this.NewPresetButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.NewPresetButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.NewPresetButton.Enabled = false;
             this.NewPresetButton.Location = new System.Drawing.Point(13, 177);
             this.NewPresetButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.NewPresetButton.Name = "NewPresetButton";

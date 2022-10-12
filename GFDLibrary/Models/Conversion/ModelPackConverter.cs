@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using GFDLibrary.Materials;
@@ -26,6 +27,8 @@ namespace GFDLibrary.Models.Conversion
             {
                 var material = ConvertMaterialAndTextures( aiSceneMaterial, options, baseDirectoryPath, model.Textures );
                 model.Materials.Add( material );
+
+                Trace.TraceInformation( "ModelPackConverter -> Material added: " + material );
             }
 
             // Create scene
@@ -86,105 +89,15 @@ namespace GFDLibrary.Models.Conversion
                 reflectionTexture = ConvertTexture( aiMaterial.TextureReflection, baseDirectoryPath );
 
             // Convert material
-            Material material = null;
+            Material material = (Material)options.MaterialPreset;
             string materialName = AssimpConverterCommon.UnescapeName( aiMaterial.Name );
+            material.Name = materialName;
 
-            switch ( options.MaterialPreset )
+            if ( diffuseTexture != null )
             {
-                case MaterialPreset.FieldTerrain:
-                    {
-                        if ( diffuseTexture != null )
-                        {
-                            textureDictionary.Add( diffuseTexture.Texture );
-                            material = MaterialFactory.CreateFieldTerrainMaterial( materialName, diffuseTexture.Name, HasAlpha( diffuseTexture.PixelFormat ) );
-                        }
-                    }
-                    break;
-                case MaterialPreset.FieldTerrainVertexColors:
-                    {
-                        if (diffuseTexture != null)
-                        {
-                            textureDictionary.Add(diffuseTexture.Texture);
-                            material = MaterialFactory.CreateFieldTerrainVertexColorsMaterial(materialName, diffuseTexture.Name, HasAlpha(diffuseTexture.PixelFormat));
-                        }
-                    }
-                    break;                    
-                case MaterialPreset.FieldTerrainCastShadow:
-                    {
-                        if ( diffuseTexture != null )
-                        {
-                            textureDictionary.Add( diffuseTexture.Texture );
-                            material = MaterialFactory.CreateFieldTerrainCastShadowMaterial( materialName, diffuseTexture.Name, HasAlpha( diffuseTexture.PixelFormat ) );
-                        }
-                    }
-                    break;
-                case MaterialPreset.CharacterSkinP5:
-                case MaterialPreset.CharacterSkinFB:
-                    {
-                        if ( diffuseTexture != null )
-                        {
-                            textureDictionary.Add( diffuseTexture.Texture );
-                            string shadowTextureName = diffuseTexture.Name;
-
-                            if ( ambientTexture != null )
-                            {
-                                textureDictionary.Add( ambientTexture.Texture );
-                                shadowTextureName = ambientTexture.Name;
-                            }
-
-                            // TODO: transparency
-                            var hasTransparency = HasAlpha( diffuseTexture.PixelFormat );
-
-                            if ( options.MaterialPreset == MaterialPreset.CharacterSkinP5 )
-                                material = MaterialFactory.CreateCharacterSkinP5Material( materialName, diffuseTexture.Name, shadowTextureName,
-                                                                                          hasTransparency );
-                            else
-                                material = MaterialFactory.CreateCharacterSkinFBMaterial( materialName, diffuseTexture.Name, shadowTextureName,
-                                                                                          hasTransparency );
-                        }
-                    }
-                    break;
-
-                case MaterialPreset.PersonaSkinP5:
-                    {
-                        if (diffuseTexture != null)
-                        {
-                            textureDictionary.Add(diffuseTexture.Texture);
-                            string shadowTextureName = diffuseTexture.Name;
-                            string specularTextureName = diffuseTexture.Name;
-
-                            if (ambientTexture != null)
-                            {
-                                textureDictionary.Add(ambientTexture.Texture);
-                                shadowTextureName = ambientTexture.Name;
-                            }
-
-                            if (specularTexture != null)
-                            {
-                                textureDictionary.Add(specularTexture.Texture);
-                                specularTextureName = specularTexture.Name;
-                            }
-
-                            material = MaterialFactory.CreatePersonaSkinP5Material(materialName, diffuseTexture.Name, specularTextureName, shadowTextureName);
-                        }
-                    }
-                    break;
-
-                case MaterialPreset.CharacterSkinDancing:
-                    {
-                        if (diffuseTexture != null)
-                        {
-                            textureDictionary.Add(diffuseTexture.Texture);
-                            material = MaterialFactory.CreateCharacterSkinDancingMaterial(materialName, diffuseTexture.Name,
-                                                                                       HasAlpha(diffuseTexture.PixelFormat));
-                        }
-                    }
-                    break;
+                textureDictionary.Add( diffuseTexture.Texture );
+                material.DiffuseMap = new TextureMap( diffuseTexture.Name );
             }
-
-            // Create dummy material if none was created
-            if ( material == null )
-                material = new Material( materialName );
 
             return material;
         }
@@ -225,7 +138,7 @@ namespace GFDLibrary.Models.Conversion
         /// <summary>
         /// Gets or sets the material preset that should be used while converting the materials.
         /// </summary>
-        public MaterialPreset MaterialPreset { get; set; }
+        public object MaterialPreset { get; set; }
 
         /// <summary>
         /// Gets or sets the version to use for the converted resources.

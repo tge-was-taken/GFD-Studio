@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data.Common;
+using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
 using GFDLibrary;
@@ -50,6 +51,7 @@ namespace GFDStudio.GUI.DataViewNodes
                 var materialDictionary = new MaterialDictionary( Version );
                 foreach ( MaterialViewNode adapter in Nodes )
                     materialDictionary[adapter.Name] = adapter.Data;
+                    
 
                 return materialDictionary;
             } );

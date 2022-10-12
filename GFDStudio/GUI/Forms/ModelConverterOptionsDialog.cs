@@ -7,18 +7,16 @@ using System.Linq;
 using GFDLibrary;
 using GFDLibrary.Materials;
 
-
 namespace GFDStudio.GUI.Forms
 {
     public partial class ModelConverterOptionsDialog : Form
     {
 
-        static string PresetLibraryPath = System.IO.Path.GetDirectoryName( Application.ExecutablePath ) + @"\Presets";
+        private static string PresetLibraryPath = System.IO.Path.GetDirectoryName( Application.ExecutablePath ) + @"\Presets";
         private string[] Presets = Directory.GetFiles( PresetLibraryPath, "*.yml" ).Select( file => Path.GetFileName( file ) ).ToArray();
 
-
-        public MaterialPreset MaterialPreset 
-            => ( MaterialPreset )MaterialPresetComboBox.SelectedIndex;
+        public object MaterialPreset 
+            => YamlSerializer.LoadYamlFile<Material>( PresetLibraryPath + @"\" + Presets[MaterialPresetComboBox.SelectedIndex] );
 
 
         public uint Version
@@ -60,10 +58,10 @@ namespace GFDStudio.GUI.Forms
             Presets = Directory.GetFiles( PresetLibraryPath, "*.yml" ).Select( file => Path.GetFileName( file ) ).ToArray();
         }
 
-        private void OpenEditPreset( string name )
+        private void OpenEditPreset( string preset )
         {
             Process PresetEdit = new Process();
-            PresetEdit.StartInfo = new ProcessStartInfo( name )
+            PresetEdit.StartInfo = new ProcessStartInfo( preset )
             {
                 UseShellExecute = true
             };
@@ -98,23 +96,27 @@ namespace GFDStudio.GUI.Forms
         {
             using ( var dialog = new SaveFileDialog() )
             {
+                dialog.InitialDirectory = PresetLibraryPath;
                 dialog.AutoUpgradeEnabled = true;
                 dialog.CheckPathExists = true;
                 dialog.FileName = Text;
                 dialog.Filter = "YAML files (*.yml)|*.yml";
                 dialog.OverwritePrompt = true;
-                dialog.Title = "Select a file to export to.";
+                dialog.Title = "Name of the new preset.";
                 dialog.ValidateNames = true;
                 dialog.AddExtension = true;
+
 
                 if ( dialog.ShowDialog() != DialogResult.OK )
                 {
                     return;
                 }
 
-                YamlSerializer.SaveYamlFile( Data, dialog.FileName );
-                OpenEditPreset( PresetLibraryPath + @"\" + dialog.FileName );
+                // Copy the default material template
+                var data = YamlSerializer.LoadYamlFile<Material>( PresetLibraryPath + @"\gfdDefaultMat0.yml" );
+                YamlSerializer.SaveYamlFile( data, dialog.FileName );
                 RefreshPresetList();
+                OpenEditPreset( dialog.FileName );
             }
         }
     }

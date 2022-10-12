@@ -76,6 +76,9 @@
     <None Update="Presets\Dancing_Character.yml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Presets\1_gfdDefaultMat0.yml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Presets\P5_Character.yml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
