@@ -273,6 +273,7 @@ namespace GFDStudio.GUI.DataViewNodes
                     GFDLibrary.Materials.Material ReplacementMat = (GFDLibrary.Materials.Material)replacement;
 
                     // Retain original mat's texture names
+                    ReplacementMat.Name = OriginalMat.Name;
                     if ( OriginalMat.DiffuseMap != null && ReplacementMat.DiffuseMap != null ) ReplacementMat.DiffuseMap.Name = OriginalMat.DiffuseMap.Name;
                     if ( OriginalMat.NormalMap != null && ReplacementMat.NormalMap != null ) ReplacementMat.NormalMap.Name = OriginalMat.NormalMap.Name;
                     if ( OriginalMat.SpecularMap != null && ReplacementMat.SpecularMap != null ) ReplacementMat.SpecularMap.Name = OriginalMat.SpecularMap.Name;
