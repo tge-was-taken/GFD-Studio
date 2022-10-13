@@ -643,7 +643,7 @@ namespace GFDStudio.GUI.DataViewNodes
                     }
 
                     var data = YamlSerializer.LoadYamlFile( dialog.FileName, DataType );
-                    Replace( data );
+                    ReplaceProcessing( DataType, data );
                 }
             } );
 
