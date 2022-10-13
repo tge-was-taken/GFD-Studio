@@ -16,7 +16,7 @@ namespace GFDStudio.GUI.DataViewNodes
     {
         public override DataViewNodeMenuFlags ContextMenuFlags =>
             DataViewNodeMenuFlags.Export | DataViewNodeMenuFlags.Replace | DataViewNodeMenuFlags.Move |
-            DataViewNodeMenuFlags.Delete | DataViewNodeMenuFlags.Add;
+            DataViewNodeMenuFlags.Delete | DataViewNodeMenuFlags.Add | DataViewNodeMenuFlags.Convert;
 
         public override DataViewNodeFlags NodeFlags => DataViewNodeFlags.Branch;
 
@@ -33,7 +33,7 @@ namespace GFDStudio.GUI.DataViewNodes
                 Data.Add( new Material( "New material" ) );
                 InitializeView( true );
             } );
-            RegisterCustomHandler("Convert to", "Material preset", () => { ConvertToMaterialPreset(); });
+            RegisterCustomHandler("Convert to", "Material preset (All)", () => { ConvertAllToMaterialPreset(); });
             RegisterCustomHandler( "Export", "All", () =>
             {
                 var dialog = new VistaFolderBrowserDialog();
@@ -57,7 +57,7 @@ namespace GFDStudio.GUI.DataViewNodes
             } );
         }
 
-        private void ConvertToMaterialPreset()
+        private void ConvertAllToMaterialPreset()
         {
             using (var dialog = new ModelConverterOptionsDialog(false))
             {
@@ -69,7 +69,7 @@ namespace GFDStudio.GUI.DataViewNodes
                     MaterialPreset = dialog.MaterialPreset,
                     Version = dialog.Version
                 };
-                Replace(MaterialDictionary.ConvertToMaterialPreset(Data, options));
+                Replace(MaterialDictionary.ConvertAllToMaterialPreset(Data, options));
             }
         }
 

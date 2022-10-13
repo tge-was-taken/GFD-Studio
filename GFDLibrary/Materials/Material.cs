@@ -544,7 +544,7 @@ namespace GFDLibrary.Materials
 
             if ( diffuseTexture == null ) newMaterial = material;
 
-            else newMaterial = (Material)options.MaterialPreset;
+            else newMaterial = MaterialFactory.CreateMaterial( materialName, diffuseTexture.Name, options );
 
             return newMaterial;
         }

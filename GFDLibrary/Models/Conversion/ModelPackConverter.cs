@@ -25,10 +25,11 @@ namespace GFDLibrary.Models.Conversion
 
             foreach ( var aiSceneMaterial in aiScene.Materials )
             {
-                var material = ConvertMaterialAndTextures( aiSceneMaterial, options, baseDirectoryPath, model.Textures );
-                model.Materials.Add( material );
+                var optionsTemp = options;
+                Material mat = ConvertMaterialAndTextures( aiSceneMaterial, optionsTemp, baseDirectoryPath, model.Textures );
+                model.Materials.Add( mat );
 
-                Trace.TraceInformation( "ModelPackConverter -> Material added: " + material );
+                Trace.TraceInformation( "ModelPackConverter -> Material added: " + mat );
             }
 
             // Create scene
@@ -89,14 +90,13 @@ namespace GFDLibrary.Models.Conversion
                 reflectionTexture = ConvertTexture( aiMaterial.TextureReflection, baseDirectoryPath );
 
             // Convert material
-            Material material = (Material)options.MaterialPreset;
             string materialName = AssimpConverterCommon.UnescapeName( aiMaterial.Name );
-            material.Name = materialName;
+            Material material = new Material( materialName );
 
             if ( diffuseTexture != null )
             {
                 textureDictionary.Add( diffuseTexture.Texture );
-                material.DiffuseMap = new TextureMap( diffuseTexture.Name );
+                material = MaterialFactory.CreateMaterial( materialName, diffuseTexture.Name, options ); 
             }
 
             return material;
