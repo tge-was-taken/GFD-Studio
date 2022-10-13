@@ -35,27 +35,27 @@ namespace GFDLibrary.Materials
                 Field94 = MaterialPreset.Field94,
                 Field96 = MaterialPreset.Field96,
                 Field98 = MaterialPreset.Field98,
-                DiffuseMap = MaterialPreset.DiffuseMap,
-                GlowMap = MaterialPreset.GlowMap,
-                HighlightMap = MaterialPreset.HighlightMap,
-                NightMap = MaterialPreset.NightMap,
-                NormalMap = MaterialPreset.NormalMap,
-                ReflectionMap = MaterialPreset.ReflectionMap,
-                ShadowMap = MaterialPreset.ShadowMap,
-                SpecularMap = MaterialPreset.SpecularMap,
+                DiffuseMap = null,
+                GlowMap = null,
+                HighlightMap = null,
+                NightMap = null,
+                NormalMap = null,
+                ReflectionMap = null,
+                ShadowMap = null,
+                SpecularMap = null,
                 Flags = MaterialPreset.Flags,
                 Attributes = MaterialPreset.Attributes
             };
 
             // TODO: which one is which
-            if ( material.DiffuseMap != null ) material.DiffuseMap.Name = diffuseMapName;
-            // if ( material.GlowMap != null ) material.GlowMap.Name = diffuseMapName;
-            // if ( material.HighlightMap != null ) material.HighlightMap.Name = diffuseMapName;
-            // if ( material.NightMap != null ) material.NightMap.Name = diffuseMapName;
-            if ( material.NormalMap != null ) material.NormalMap.Name = normalMapName;
-            if ( material.ReflectionMap != null ) material.ReflectionMap.Name = reflectionMapName;
-            // if ( material.ShadowMap != null ) material.ShadowMap.Name = diffuseMapName;
-            if ( material.SpecularMap != null ) material.SpecularMap.Name = specularMapName;
+            if ( MaterialPreset.DiffuseMap != null ) material.DiffuseMap = new TextureMap( diffuseMapName );
+            // if ( MaterialPreset.GlowMap != null ) material.GlowMap = new TextureMap( diffuseMapName );
+            // if ( MaterialPreset.HighlightMap != null ) material.HighlightMap = new TextureMap( diffuseMapName );
+            // if ( MaterialPreset.NightMap != null ) material.NightMap = new TextureMap( diffuseMapName );
+            if ( MaterialPreset.NormalMap != null ) material.NormalMap = new TextureMap( normalMapName );
+            if ( MaterialPreset.ReflectionMap != null ) material.ReflectionMap = new TextureMap( reflectionMapName );
+            // if ( MaterialPreset.ShadowMap != null ) material.ShadowMap = new TextureMap( diffuseMapName );
+            if ( MaterialPreset.SpecularMap != null ) material.SpecularMap = new TextureMap( specularMapName );
 
             material.IsPresetMaterial = false;
 

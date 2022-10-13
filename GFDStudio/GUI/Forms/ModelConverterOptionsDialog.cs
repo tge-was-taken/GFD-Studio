@@ -12,11 +12,11 @@ namespace GFDStudio.GUI.Forms
     public partial class ModelConverterOptionsDialog : Form
     {
 
-        private static string PresetLibraryPath = System.IO.Path.GetDirectoryName( Application.ExecutablePath ) + @"\Presets";
+        private static string PresetLibraryPath = System.IO.Path.GetDirectoryName( Application.ExecutablePath ) + @"\Presets\";
         private string[] Presets = Directory.GetFiles( PresetLibraryPath, "*.yml" ).Select( file => Path.GetFileName( file ) ).ToArray();
 
         public object MaterialPreset 
-            => YamlSerializer.LoadYamlFile<Material>( PresetLibraryPath + @"\" + Presets[MaterialPresetComboBox.SelectedIndex] );
+            => YamlSerializer.LoadYamlFile<Material>( PresetLibraryPath + Presets[MaterialPresetComboBox.SelectedIndex] );
 
 
         public uint Version
@@ -87,7 +87,7 @@ namespace GFDStudio.GUI.Forms
 
         private void EditPresetButton_Click( object sender, EventArgs e )
         {
-            string pre = PresetLibraryPath + @"\" + Presets[MaterialPresetComboBox.SelectedIndex];
+            string pre = PresetLibraryPath + Presets[MaterialPresetComboBox.SelectedIndex];
 
             OpenEditPreset( pre );
         }
@@ -113,7 +113,7 @@ namespace GFDStudio.GUI.Forms
                 }
 
                 // Copy the default material template
-                var data = YamlSerializer.LoadYamlFile<Material>( PresetLibraryPath + @"\gfdDefaultMat0.yml" );
+                var data = YamlSerializer.LoadYamlFile<Material>( PresetLibraryPath + @"gfdDefaultMat0.yml" );
                 YamlSerializer.SaveYamlFile( data, dialog.FileName );
                 RefreshPresetList();
                 OpenEditPreset( dialog.FileName );
