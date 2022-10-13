@@ -41,11 +41,12 @@ namespace GFDLibrary.Rendering.OpenGL
                             format = PixelInternalFormat.Rgba;
                         else
                             format = PixelInternalFormat.Rgb;
-
+                        if ( format == PixelInternalFormat.CompressedRgbaBptcUnorm )
+                            goto default;
                         UploadDDSTextureData( ddsHeader.Width, ddsHeader.Height, format, 1, texture.Data, 0x80 );
                     }
                     break;
-
+                    
                 default:
                     {
                         // rip hardware acceleration
@@ -126,6 +127,9 @@ namespace GFDLibrary.Rendering.OpenGL
 
                 case DDSPixelFormatFourCC.A8R8G8B8:
                     return PixelInternalFormat.Rgba8;
+
+                case DDSPixelFormatFourCC.DX10:
+                    return PixelInternalFormat.CompressedRgbaBptcUnorm;
 
                 default:
                     throw new NotImplementedException( format.ToString() );
