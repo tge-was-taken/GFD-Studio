@@ -76,8 +76,6 @@ namespace GFDStudio.GUI.Forms
             if ( showSceneOptionsOnly )
             {
                 MaterialPresetComboBox.Enabled = false;
-                EditPresetButton.Enabled = false;
-                NewPresetButton.Enabled = false;
             }
             else
             {
@@ -85,39 +83,14 @@ namespace GFDStudio.GUI.Forms
             }
         }
 
-        private void EditPresetButton_Click( object sender, EventArgs e )
+        private void OpenPresetButton_Click( object sender, EventArgs e )
         {
-            string pre = PresetLibraryPath + Presets[MaterialPresetComboBox.SelectedIndex];
-
-            OpenEditPreset( pre );
-        }
-
-        private void NewPresetButton_Click( object sender, EventArgs e )
-        {
-            using ( var dialog = new SaveFileDialog() )
+            Process OpenPreset = new Process();
+            OpenPreset.StartInfo = new ProcessStartInfo( PresetLibraryPath )
             {
-                dialog.InitialDirectory = PresetLibraryPath;
-                dialog.AutoUpgradeEnabled = true;
-                dialog.CheckPathExists = true;
-                dialog.FileName = Text;
-                dialog.Filter = "YAML files (*.yml)|*.yml";
-                dialog.OverwritePrompt = true;
-                dialog.Title = "Name of the new preset.";
-                dialog.ValidateNames = true;
-                dialog.AddExtension = true;
-
-
-                if ( dialog.ShowDialog() != DialogResult.OK )
-                {
-                    return;
-                }
-
-                // Copy the default material template
-                var data = YamlSerializer.LoadYamlFile<Material>( PresetLibraryPath + @"gfdDefaultMat0.yml" );
-                YamlSerializer.SaveYamlFile( data, dialog.FileName );
-                RefreshPresetList();
-                OpenEditPreset( dialog.FileName );
-            }
+                UseShellExecute = true
+            };
+            OpenPreset.Start();
         }
     }
 }

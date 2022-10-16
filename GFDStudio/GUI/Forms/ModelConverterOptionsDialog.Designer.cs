@@ -31,7 +31,6 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ModelConverterOptionsDialog));
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.EditPresetButton = new System.Windows.Forms.Button();
             this.VersionLabel = new System.Windows.Forms.Label();
             this.MaterialPresetLabel = new System.Windows.Forms.Label();
             this.MaterialPresetComboBox = new System.Windows.Forms.ComboBox();
@@ -45,7 +44,7 @@
             this.ConvertButton = new System.Windows.Forms.Button();
             this.CancelButton = new System.Windows.Forms.Button();
             this.descriptionTooltip = new System.Windows.Forms.ToolTip(this.components);
-            this.NewPresetButton = new System.Windows.Forms.Button();
+            this.OpenPresetButton = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -53,11 +52,9 @@
             // 
             this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.tableLayoutPanel1.ColumnCount = 3;
+            this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 86F));
-            this.tableLayoutPanel1.Controls.Add(this.EditPresetButton, 2, 1);
             this.tableLayoutPanel1.Controls.Add(this.VersionLabel, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.MaterialPresetLabel, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.MaterialPresetComboBox, 1, 1);
@@ -77,18 +74,8 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 20F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(428, 143);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(385, 143);
             this.tableLayoutPanel1.TabIndex = 0;
-            // 
-            // EditPresetButton
-            // 
-            this.EditPresetButton.Location = new System.Drawing.Point(345, 31);
-            this.EditPresetButton.Name = "EditPresetButton";
-            this.EditPresetButton.Size = new System.Drawing.Size(75, 22);
-            this.EditPresetButton.TabIndex = 3;
-            this.EditPresetButton.Text = "Edit";
-            this.EditPresetButton.UseVisualStyleBackColor = true;
-            this.EditPresetButton.Click += new System.EventHandler(this.EditPresetButton_Click);
             // 
             // VersionLabel
             // 
@@ -123,7 +110,7 @@
             this.MaterialPresetComboBox.Location = new System.Drawing.Point(151, 31);
             this.MaterialPresetComboBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.MaterialPresetComboBox.Name = "MaterialPresetComboBox";
-            this.MaterialPresetComboBox.Size = new System.Drawing.Size(187, 23);
+            this.MaterialPresetComboBox.Size = new System.Drawing.Size(226, 23);
             this.MaterialPresetComboBox.TabIndex = 1;
             // 
             // VersionTextBox
@@ -132,7 +119,7 @@
             this.VersionTextBox.Location = new System.Drawing.Point(151, 3);
             this.VersionTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.VersionTextBox.Name = "VersionTextBox";
-            this.VersionTextBox.Size = new System.Drawing.Size(187, 23);
+            this.VersionTextBox.Size = new System.Drawing.Size(226, 23);
             this.VersionTextBox.TabIndex = 3;
             // 
             // ConvertSkinToZUpLabel
@@ -212,7 +199,7 @@
             this.ConvertButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.ConvertButton.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.ConvertButton.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.ConvertButton.Location = new System.Drawing.Point(346, 177);
+            this.ConvertButton.Location = new System.Drawing.Point(303, 177);
             this.ConvertButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.ConvertButton.Name = "ConvertButton";
             this.ConvertButton.Size = new System.Drawing.Size(88, 27);
@@ -224,7 +211,7 @@
             // 
             this.CancelButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.CancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.CancelButton.Location = new System.Drawing.Point(250, 177);
+            this.CancelButton.Location = new System.Drawing.Point(207, 177);
             this.CancelButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.CancelButton.Name = "CancelButton";
             this.CancelButton.Size = new System.Drawing.Size(88, 27);
@@ -238,25 +225,25 @@
             this.descriptionTooltip.InitialDelay = 500;
             this.descriptionTooltip.ReshowDelay = 100;
             // 
-            // NewPresetButton
+            // OpenPresetButton
             // 
-            this.NewPresetButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.NewPresetButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.NewPresetButton.Location = new System.Drawing.Point(13, 177);
-            this.NewPresetButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.NewPresetButton.Name = "NewPresetButton";
-            this.NewPresetButton.Size = new System.Drawing.Size(88, 27);
-            this.NewPresetButton.TabIndex = 3;
-            this.NewPresetButton.Text = "New preset";
-            this.NewPresetButton.UseVisualStyleBackColor = true;
-            this.NewPresetButton.Click += new System.EventHandler(this.NewPresetButton_Click);
+            this.OpenPresetButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.OpenPresetButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.OpenPresetButton.Location = new System.Drawing.Point(14, 177);
+            this.OpenPresetButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.OpenPresetButton.Name = "OpenPresetButton";
+            this.OpenPresetButton.Size = new System.Drawing.Size(120, 27);
+            this.OpenPresetButton.TabIndex = 3;
+            this.OpenPresetButton.Text = "Open preset folder";
+            this.OpenPresetButton.UseVisualStyleBackColor = true;
+            this.OpenPresetButton.Click += new System.EventHandler(this.OpenPresetButton_Click);
             // 
             // ModelConverterOptionsDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(447, 216);
-            this.Controls.Add(this.NewPresetButton);
+            this.ClientSize = new System.Drawing.Size(404, 216);
+            this.Controls.Add(this.OpenPresetButton);
             this.Controls.Add(this.CancelButton);
             this.Controls.Add(this.ConvertButton);
             this.Controls.Add(this.tableLayoutPanel1);
@@ -282,10 +269,9 @@
         private System.Windows.Forms.Label GenerateVertexColorsLabel;
         private System.Windows.Forms.Button ConvertButton;
         private new System.Windows.Forms.Button CancelButton;
-        private System.Windows.Forms.CheckBox MinimalVertexAttributesCheckBox;
-        private System.Windows.Forms.Label minVertexAttributesLabel;
         private System.Windows.Forms.ToolTip descriptionTooltip;
-        private System.Windows.Forms.Button EditPresetButton;
-        private System.Windows.Forms.Button NewPresetButton;
+        private System.Windows.Forms.Button OpenPresetButton;
+        private System.Windows.Forms.Label minVertexAttributesLabel;
+        private System.Windows.Forms.CheckBox MinimalVertexAttributesCheckBox;
     }
 }
