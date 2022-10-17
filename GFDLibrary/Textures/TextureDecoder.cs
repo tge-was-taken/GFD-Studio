@@ -118,9 +118,12 @@ namespace GFDLibrary.Textures
             switch ( format )
             {
                 case TextureFormat.DDS:
+                case TextureFormat.EPT:
                     return DecodeDDS( data );
                 case TextureFormat.TMX:
                     return DecodeTMX( data );
+                case TextureFormat.TGA:
+                    return DecodeTGA( data );
                 case TextureFormat.GXT:
                     return DecodeGXT( data );
                 case TextureFormat.GNF:
@@ -184,6 +187,10 @@ namespace GFDLibrary.Textures
             var tmx = new Scarlet.IO.ImageFormats.TMX();
             tmx.Open( new MemoryStream( data ), Scarlet.IO.Endian.LittleEndian );
             return tmx.GetBitmap();
+        }
+        private static Bitmap DecodeTGA( byte[] data )
+        {
+            return TgaDecoderTest.TgaDecoder.FromBinary( data );
         }
         private static Bitmap DecodeGXT( byte[] data )
         {

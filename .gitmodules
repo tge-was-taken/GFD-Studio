@@ -3,4 +3,4 @@
 	url = https://github.com/xdanieldzd/Scarlet
 [submodule "tga-decoder-cs"]
 	path = tga-decoder-cs
-	url = https://github.com/wertrain/tga-decoder-cs
+	url = https://github.com/Ariq139/tga-decoder-cs
