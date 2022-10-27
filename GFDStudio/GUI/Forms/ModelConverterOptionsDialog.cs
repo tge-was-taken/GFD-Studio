@@ -19,6 +19,9 @@ namespace GFDStudio.GUI.Forms
             => YamlSerializer.LoadYamlFile<Material>( PresetLibraryPath + Presets[MaterialPresetComboBox.SelectedIndex] );
 
 
+        string CurrentPath = System.IO.Path.GetDirectoryName( Application.ExecutablePath );
+
+
         public uint Version
         {
             get

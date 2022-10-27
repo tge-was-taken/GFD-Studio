@@ -541,11 +541,8 @@ namespace GFDLibrary.Materials
             var specularTexture = material.SpecularMap;
             if (specularTexture == null)
                 specularTexture = material.DiffuseMap;
-
             if ( diffuseTexture == null ) newMaterial = material;
-
             else newMaterial = MaterialFactory.CreateMaterial( materialName, diffuseTexture.Name, options );
-
             return newMaterial;
         }
     }
