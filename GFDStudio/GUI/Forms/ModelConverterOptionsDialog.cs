@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Globalization;
 using System.Windows.Forms;
+using System.IO;
+using System.Diagnostics;
+using System.Linq;
 using GFDLibrary;
 using GFDLibrary.Materials;
 
@@ -8,8 +11,13 @@ namespace GFDStudio.GUI.Forms
 {
     public partial class ModelConverterOptionsDialog : Form
     {
-        public MaterialPreset MaterialPreset 
-            => ( MaterialPreset )MaterialPresetComboBox.SelectedIndex;
+
+        private static string PresetLibraryPath = System.IO.Path.GetDirectoryName( Application.ExecutablePath ) + @"\Presets\";
+        private string[] Presets = Directory.GetFiles( PresetLibraryPath, "*.yml" ).Select( file => Path.GetFileName( file ) ).ToArray();
+
+        public object MaterialPreset 
+            => YamlSerializer.LoadYamlFile<Material>( PresetLibraryPath + Presets[MaterialPresetComboBox.SelectedIndex] );
+
 
         string CurrentPath = System.IO.Path.GetDirectoryName( Application.ExecutablePath );
 
@@ -48,10 +56,25 @@ namespace GFDStudio.GUI.Forms
             get => MinimalVertexAttributesCheckBox.Checked;
         }
 
+        private void RefreshPresetList()
+        {
+            Presets = Directory.GetFiles( PresetLibraryPath, "*.yml" ).Select( file => Path.GetFileName( file ) ).ToArray();
+        }
+
+        private void OpenEditPreset( string preset )
+        {
+            Process PresetEdit = new Process();
+            PresetEdit.StartInfo = new ProcessStartInfo( preset )
+            {
+                UseShellExecute = true
+            };
+            PresetEdit.Start();
+        }
+
         public ModelConverterOptionsDialog( bool showSceneOptionsOnly )
         {
             InitializeComponent();
-            VersionTextBox.Text = $"0x{ResourceVersion.Persona5:X8}";
+            VersionTextBox.Text = $"0x{ResourceVersion.Persona5Dancing:X8}";
 
             if ( showSceneOptionsOnly )
             {
@@ -59,9 +82,18 @@ namespace GFDStudio.GUI.Forms
             }
             else
             {
-                MaterialPresetComboBox.DataSource = Enum.GetNames( typeof( MaterialPreset ) );
-                MaterialPresetComboBox.SelectedIndex = ( int )MaterialPreset.CharacterSkinP5;
+                MaterialPresetComboBox.DataSource = Presets;
             }
+        }
+
+        private void OpenPresetButton_Click( object sender, EventArgs e )
+        {
+            Process OpenPreset = new Process();
+            OpenPreset.StartInfo = new ProcessStartInfo( PresetLibraryPath )
+            {
+                UseShellExecute = true
+            };
+            OpenPreset.Start();
         }
     }
 }

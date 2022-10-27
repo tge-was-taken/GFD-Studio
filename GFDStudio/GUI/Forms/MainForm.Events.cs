@@ -355,7 +355,7 @@ namespace GFDStudio.GUI.Forms
                         {
                             var model = Resource.Load<ModelPack>(filePath);
                             var materials = model.Materials;
-                            var materialsConverted = MaterialDictionary.ConvertToMaterialPreset(materials, option);
+                            var materialsConverted = MaterialDictionary.ConvertAllToMaterialPreset(materials, option);
                             model.Materials = materialsConverted;
                             model.Save(filePath);
                         }

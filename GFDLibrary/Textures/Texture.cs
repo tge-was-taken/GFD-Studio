@@ -118,6 +118,7 @@ namespace GFDLibrary.Textures
 		TGA = 2,
 		TMX = 3,
         GXT = 6,
-        GNF = 9
+        GNF = 9,
+        EPT = 12
     }
 }

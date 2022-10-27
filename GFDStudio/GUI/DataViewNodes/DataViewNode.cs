@@ -939,5 +939,6 @@ namespace GFDStudio.GUI.DataViewNodes
         Rename = 0b00010000,
         Delete = 0b00100000,
         Expand = 0b01000000,
+        Convert = 0b10000000
     }
 }

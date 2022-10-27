@@ -20,6 +20,7 @@ namespace GFDLibrary.Rendering.OpenGL
                 case TextureFormat.DDS:
                     {
                         var ddsHeader = new DDSHeader( new MemoryStream( texture.Data ) );
+                        var dataOffset = 0x4 + 0x7C; // 4 + 124, INFO + HEADER
 
                         // todo: identify and retrieve values from texture
                         // todo: disable mipmaps for now, they often break and show up as black ( eg after replacing a texture )
@@ -42,7 +43,9 @@ namespace GFDLibrary.Rendering.OpenGL
                         else
                             format = PixelInternalFormat.Rgb;
 
-                        UploadDDSTextureData( ddsHeader.Width, ddsHeader.Height, format, 1, texture.Data, 0x80 );
+                        if ( format == PixelInternalFormat.CompressedRgbaBptcUnorm ) dataOffset += 0x14; //DX10 have an additional 20 bytes of header
+
+                        UploadDDSTextureData( ddsHeader.Width, ddsHeader.Height, format, 1, texture.Data, dataOffset );
                     }
                     break;
 
@@ -126,6 +129,9 @@ namespace GFDLibrary.Rendering.OpenGL
 
                 case DDSPixelFormatFourCC.A8R8G8B8:
                     return PixelInternalFormat.Rgba8;
+
+                case DDSPixelFormatFourCC.DX10:
+                    return PixelInternalFormat.CompressedRgbaBptcUnorm;
 
                 default:
                     throw new NotImplementedException( format.ToString() );

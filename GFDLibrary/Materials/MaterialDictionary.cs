@@ -30,7 +30,7 @@ namespace GFDLibrary.Materials
             set => mDictionary[name] = value;
         }
 
-        public static MaterialDictionary ConvertToMaterialPreset( MaterialDictionary materialDictionary, ModelPackConverterOptions options )
+        public static MaterialDictionary ConvertAllToMaterialPreset( MaterialDictionary materialDictionary, ModelPackConverterOptions options )
         {
             Material newMaterial = null;
             var newMaterialDictionary = new MaterialDictionary(options.Version);
@@ -45,52 +45,9 @@ namespace GFDLibrary.Materials
                 var specularTexture = material.SpecularMap;
                 if (specularTexture == null)
                     specularTexture = material.DiffuseMap;
+                if (diffuseTexture == null) newMaterial = material;
 
-                if (diffuseTexture == null)
-                    newMaterial = material;
-                else
-                {
-                    switch (options.MaterialPreset)
-                    {
-                        case MaterialPreset.FieldTerrain:
-                            {
-                                newMaterial = MaterialFactory.CreateFieldTerrainMaterial(materialName, diffuseTexture.Name, false);
-                            }
-                            break;
-                        case MaterialPreset.FieldTerrainVertexColors:
-                            {
-                                newMaterial = MaterialFactory.CreateFieldTerrainVertexColorsMaterial(materialName, diffuseTexture.Name, false);
-                            }
-                            break;
-                        case MaterialPreset.FieldTerrainCastShadow:
-                            {
-                                newMaterial = MaterialFactory.CreateFieldTerrainCastShadowMaterial(materialName, diffuseTexture.Name, false);
-                            }
-                            break;
-                        case MaterialPreset.CharacterSkinP5:
-                        case MaterialPreset.CharacterSkinFB:
-                            {
-                                if (options.MaterialPreset == MaterialPreset.CharacterSkinP5)
-                                    newMaterial = MaterialFactory.CreateCharacterSkinP5Material(materialName, diffuseTexture.Name, shadowTexture.Name, false);
-                                else
-                                    newMaterial = MaterialFactory.CreateCharacterSkinFBMaterial(materialName, diffuseTexture.Name, shadowTexture.Name, false);
-                            }
-                            break;
-
-                        case MaterialPreset.PersonaSkinP5:
-                            {
-                                newMaterial = MaterialFactory.CreatePersonaSkinP5Material(materialName, diffuseTexture.Name, specularTexture.Name, shadowTexture.Name);
-                            }
-                            break;
-
-
-                        case MaterialPreset.CharacterSkinDancing:
-                            {
-                                newMaterial = MaterialFactory.CreateCharacterSkinDancingMaterial(materialName, diffuseTexture.Name, false);
-                            }
-                            break;
-                    }
-                }
+                else newMaterial = MaterialFactory.CreateMaterial( materialName, diffuseTexture.Name, options );
                 newMaterialDictionary.Add(newMaterial);
             }
 
