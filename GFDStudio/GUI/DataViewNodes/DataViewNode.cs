@@ -258,7 +258,43 @@ namespace GFDStudio.GUI.DataViewNodes
 
             Trace.TraceInformation( $"{nameof( DataViewNode )} [{Text}]: {nameof( ReplaceInternal )} {type} from {filepath}" );
 
-            Replace( replaceAction( filepath ) );
+            ReplaceProcessing( type, replaceAction( filepath ) );
+        }
+
+        public void ReplaceProcessing ( Type type, object replacement )
+        {
+            if ( type == typeof( GFDLibrary.Materials.Material ) )
+            {
+                ToolStripMenuItem item = Forms.MainForm.Instance.retainTexNameToolStripMenuItem;
+
+                if ( item.Checked )
+                {
+                    GFDLibrary.Materials.Material OriginalMat = (GFDLibrary.Materials.Material)Data;
+                    GFDLibrary.Materials.Material ReplacementMat = (GFDLibrary.Materials.Material)replacement;
+
+                    // Retain original mat's texture names
+                    ReplacementMat.Name = OriginalMat.Name;
+                    if ( OriginalMat.DiffuseMap != null && ReplacementMat.DiffuseMap != null ) ReplacementMat.DiffuseMap.Name = OriginalMat.DiffuseMap.Name;
+                    if ( OriginalMat.NormalMap != null && ReplacementMat.NormalMap != null ) ReplacementMat.NormalMap.Name = OriginalMat.NormalMap.Name;
+                    if ( OriginalMat.SpecularMap != null && ReplacementMat.SpecularMap != null ) ReplacementMat.SpecularMap.Name = OriginalMat.SpecularMap.Name;
+                    if ( OriginalMat.ReflectionMap != null && ReplacementMat.ReflectionMap != null ) ReplacementMat.ReflectionMap.Name = OriginalMat.ReflectionMap.Name;
+                    if ( OriginalMat.HighlightMap != null && ReplacementMat.HighlightMap != null ) ReplacementMat.HighlightMap.Name = OriginalMat.HighlightMap.Name;
+                    if ( OriginalMat.GlowMap != null && ReplacementMat.GlowMap != null ) ReplacementMat.GlowMap.Name = OriginalMat.GlowMap.Name;
+                    if ( OriginalMat.NightMap != null && ReplacementMat.NightMap != null ) ReplacementMat.NightMap.Name = OriginalMat.NightMap.Name;
+                    if ( OriginalMat.DetailMap != null && ReplacementMat.DetailMap != null ) ReplacementMat.DetailMap.Name = OriginalMat.DetailMap.Name;
+                    if ( OriginalMat.ShadowMap != null && ReplacementMat.ShadowMap != null ) ReplacementMat.ShadowMap.Name = OriginalMat.ShadowMap.Name;
+
+                    Replace( ReplacementMat );
+                }
+                else
+                {
+                    Replace( replacement );
+                }
+            }
+            else
+            {
+                Replace( replacement );
+            }
         }
 
         public void Replace( object model )
@@ -608,7 +644,7 @@ namespace GFDStudio.GUI.DataViewNodes
                     }
 
                     var data = YamlSerializer.LoadYamlFile( dialog.FileName, DataType );
-                    Replace( data );
+                    ReplaceProcessing( DataType, data );
                 }
             } );
 
@@ -903,5 +939,6 @@ namespace GFDStudio.GUI.DataViewNodes
         Rename = 0b00010000,
         Delete = 0b00100000,
         Expand = 0b01000000,
+        Convert = 0b10000000
     }
 }

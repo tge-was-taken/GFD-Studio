@@ -14,7 +14,7 @@ namespace GFDStudio.GUI.DataViewNodes
     public class MaterialViewNode : DataViewNode<Material>
     {
         public override DataViewNodeMenuFlags ContextMenuFlags =>
-            DataViewNodeMenuFlags.Export | DataViewNodeMenuFlags.Replace | DataViewNodeMenuFlags.Move | DataViewNodeMenuFlags.Rename | DataViewNodeMenuFlags.Delete;
+            DataViewNodeMenuFlags.Export | DataViewNodeMenuFlags.Replace | DataViewNodeMenuFlags.Move | DataViewNodeMenuFlags.Rename | DataViewNodeMenuFlags.Delete | DataViewNodeMenuFlags.Convert;
 
         public override DataViewNodeFlags NodeFlags
             => DataViewNodeFlags.Branch;

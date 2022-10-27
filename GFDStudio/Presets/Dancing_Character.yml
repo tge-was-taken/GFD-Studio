@@ -1,0 +1,104 @@
+!Material
+ResourceType: Material
+Name: c0001_body_jyake2_low
+Flags: Bit0, Bit1, Bit2, Bit5, Bit8, EnableLight2, CastShadow, HasAttributes, HasDiffuseMap
+AmbientColor:
+  X: 0.60000002384185791
+  Y: 0.60000002384185791
+  Z: 0.60000002384185791
+  W: 0
+DiffuseColor:
+  X: 0.30000001192092896
+  Y: 0.30000001192092896
+  Z: 0.30000001192092896
+  W: 1
+SpecularColor:
+  X: 0
+  Y: 0
+  Z: 0
+  W: 1
+EmissiveColor:
+  X: 1
+  Y: 1
+  Z: 1
+  W: 0
+Field40: 1
+Field44: 0
+DrawMethod: Opaque
+Field49: 1
+Field4A: 0
+Field4B: 1
+Field4C: 0
+Field4D: 1
+Field90: 0
+Field92: 4
+Field94: -32767
+Field96: 0
+Field5C: 2
+Field6C: 4294967288
+Field70: 4294967288
+DisableBackfaceCulling: 0
+Field98: 4294967295
+DiffuseMap: &o0 !TextureMap
+  ResourceType: TextureMap
+  Name: pc201_03_body00.dds
+  Field44: 0
+  Field48: 1
+  Field49: 1
+  Field4A: 0
+  Field4B: 0
+  Field4C: 1
+  Field50: -0
+  Field54: 0
+  Field58: 0
+  Field5C: 0
+  Field60: 1
+  Field64: 0
+  Field68: 0
+  Field6C: 0
+  Field70: 0
+  Field74: 0
+  Field78: 0
+  Field7C: 0
+  Field80: 0
+  Field84: 0
+  Field88: 0
+  Version: 17846416
+NormalMap: 
+SpecularMap: 
+ReflectionMap: 
+HighlightMap: 
+GlowMap: 
+NightMap: 
+DetailMap: 
+ShadowMap: 
+TextureMaps:
+- *o0
+- 
+- 
+- 
+- 
+- 
+- 
+- 
+- 
+Attributes:
+- !MaterialAttributeType0
+  Color:
+    X: 0.98000001907348633
+    Y: 0.98000001907348633
+    Z: 0.98000001907348633
+    W: 0.58823531866073608
+  Field1C: 0.80000001192092896
+  Field20: 30
+  Field24: 1
+  Field28: 0
+  Field2C: 0
+  Type0Flags: 0
+  ResourceType: MaterialAttribute
+  RawFlags: 65536
+  Flags: Bit0
+  AttributeType: Type0
+  Version: 17846416
+IsPresetMaterial: false
+Version: 17846416

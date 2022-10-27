@@ -1,406 +1,70 @@
 ﻿using System.Collections.Generic;
 using System.Numerics;
 using GFDLibrary.Models;
+using GFDLibrary.Models.Conversion;
 
 namespace GFDLibrary.Materials
 {
     public static class MaterialFactory
     {
-        public static Material CreateFieldTerrainMaterial( string name, string diffuseMapName, bool hasTransparency = false )
+        public static Material CreateMaterial( string name, string diffuseMapName, string lightmapName, string displacementMapName, string opacityMapName, string normalMapName, 
+            string heightMapName, string emissiveMapName, string ambientMapName, string specularMapName, string reflectionMapName, ModelPackConverterOptions options )
         {
-            var material =  new Material( name )
-            {
-                AmbientColor = new Vector4( 0.549019635f, 0.549019635f, 0.549019635f, 1f ),
-                DiffuseColor = new Vector4( 0.0980392247f, 0.0980392247f, 0.0980392247f, 1f ),
-                DiffuseMap = new TextureMap( diffuseMapName ),
-                EmissiveColor = new Vector4( 0, 0, 0, 0 ),
-                Field40 = 1,
-                Field44 = 0.1f,
-                DrawMethod = MaterialDrawMethod.Opaque,
-                Field49 = 1,
-                Field4A = 0,
-                Field4B = 1,
-                Field4C = 0,
-                Field4D = 2,
-                DisableBackfaceCulling = 0,
-                Field5C = 0,
-                Field6C = 0xfffffff8,
-                Field70 = 0xfffffff8,
-                Field90 = 0,
-                Field92 = 4,
-                Field94 = 1,
-                Field96 = 0,
-                Field98 = 0xffffffff,
-                Flags = MaterialFlags.Bit0 | MaterialFlags.Bit1 | MaterialFlags.Bit5 | MaterialFlags.Bit6 | MaterialFlags.EnableLight2 | MaterialFlags.ReceiveShadow | MaterialFlags.HasDiffuseMap,
-                GlowMap = null,
-                HighlightMap = null,
-                NightMap = null,
-                Attributes = null,
-                ReflectionMap = null,
-                ShadowMap = null,
-                SpecularColor = new Vector4( 0, 0, 0, 0 ),
-                SpecularMap = null,
-            };
+            var MaterialPreset = (Material)options.MaterialPreset;
 
-            if ( hasTransparency )
-            {
-                material.DrawMethod = MaterialDrawMethod.Translucent;
-                material.Field4D = 1;
-                material.Field90 = 0x0080;
-            }
-
-            material.IsPresetMaterial = true;
-
-            return material;
-        }
-        
-        public static Material CreateFieldTerrainVertexColorsMaterial(string name, string diffuseMapName, bool hasTransparency = false)
-        {
-            var material = CreateFieldTerrainMaterial(name, diffuseMapName, hasTransparency);
-            material.Flags |= MaterialFlags.EnableVertColors;
-
-            return material;
-        }
-        
-        public static Material CreateFieldTerrainCastShadowMaterial( string name, string diffuseMapName, bool hasTransparency = false )
-        {
-            var material = CreateFieldTerrainMaterial( name, diffuseMapName, hasTransparency );
-            material.Flags |= MaterialFlags.CastShadow;
-
-            return material;
-        }
-
-        public static Material CreateCharacterSkinP5Material( string name, string diffuseMapName, string shadowMapName, bool hasTransparency = false )
-        {
-            var material =  new Material( name )
-            {
-                AmbientColor = new Vector4( 0.6f, 0.6f, 0.6f, 0f ),
-                DiffuseColor = new Vector4(0.3f, 0.3f, 0.3f, 1 ),
-                SpecularColor = new Vector4( 0f, 0f, 0f, 1 ),
-                EmissiveColor = new Vector4( 0, 0, 0, 0 ),
-                Field40 = 0.5f,
-                Field44 = 0,
-                DrawMethod = MaterialDrawMethod.Opaque,
-                Field49 = 1,
-                Field4A = 0,
-                Field4B = 1,
-                Field4C = 0,
-                Field4D = 1,
-                DisableBackfaceCulling = 0,
-                Field5C = 2,
-                Field6C = 0xFFFFFFF8,
-                Field70 = 0xFFFFFFF8,
-                Field90 = 0,
-                Field92 = 4,
-                Field94 = 4,
-                Field96 = 0,
-                DiffuseMap = new TextureMap( diffuseMapName ),
-                Flags = MaterialFlags.Bit0 | MaterialFlags.Bit1 | MaterialFlags.Bit5 | MaterialFlags.Bit8 | MaterialFlags.EnableLight2 | 
-                        MaterialFlags.ReceiveShadow | MaterialFlags.CastShadow | MaterialFlags.HasAttributes |  MaterialFlags.HasDiffuseMap,
-                Attributes = new List< MaterialAttribute >
-                {
-                    new MaterialAttributeType0
-                    {
-                        Color = new Vector4( 0.98039234f, 0.98039234f, 0.98039234f, 0.39215687f ),
-                        Field1C = 0.6f,
-                        Field20 = 14,
-                        Field24 = 0.6f,
-                        Field28 = 0.4f,
-                        Field2C = 1.5f,
-                        Flags = MaterialAttributeFlags.Bit0,
-                        Type0Flags = ( MaterialAttributeType0Flags ) 0x00000045
-                    }
-                }
-            };
-
-            if ( hasTransparency )
-            {
-                material.DrawMethod = MaterialDrawMethod.Translucent;
-                material.Field4D = 1;
-                material.Field90 = 0x0080;
-            }
-
-            material.IsPresetMaterial = true;
-
-            return material;
-        }
-
-        public static Material CreatePersonaSkinP5Material(string name, string diffuseMapName, string specularMapName, string shadowMapName )
-        {
-            // based off ps0201, t01-5 material
-            var material = new Material(name)
-            {
-                AmbientColor = new Vector4(0.7058824f, 0.7058824f, 0.7058824f, 1f),
-                DiffuseColor = new Vector4(0.3137255f, 0.3137255f, 0.3137255f, 1),
-                SpecularColor = new Vector4(0, 0, 0, 0),
-                EmissiveColor = new Vector4(0.9f, 0.9f, 0.9f, 10),
-                Field40 = 1,
-                Field44 = 0.1f,
-                DrawMethod = MaterialDrawMethod.Opaque,
-                Field49 = 1,
-                Field4A = 0,
-                Field4B = 1,
-                Field4C = 0,
-                Field4D = 1,
-                DisableBackfaceCulling = 0,
-                Field5C = 3,
-                Field6C = 0xF8FFFE38,
-                Field70 = 0xF8FFFE38,
-                Field90 = 0,
-                Field92 = 4,
-                Field94 = 2,
-                Field96 = 0,
-                DiffuseMap = new TextureMap(diffuseMapName),
-                SpecularMap = new TextureMap(specularMapName),
-                ShadowMap = new TextureMap(shadowMapName),
-                Flags = MaterialFlags.Bit0 | MaterialFlags.Bit1 | MaterialFlags.Bit2 | MaterialFlags.Bit5 | MaterialFlags.Bit6 | MaterialFlags.EnableLight2 |
-                        MaterialFlags.CastShadow | MaterialFlags.HasAttributes | MaterialFlags.Bit17 | MaterialFlags.HasDiffuseMap | MaterialFlags.HasSpecularMap | MaterialFlags.HasShadowMap,
-                Attributes = new List<MaterialAttribute>
-                {
-                    new MaterialAttributeType1
-                    {
-                        InnerGlow = new Vector4(0.2352941f, 0.5960785f, 1, 1),
-                        Field1C = 0.85f,
-                        Field20 = 2,
-                        Field24 = new Vector4(0, 0, 0, 0),
-                        Field34 = 0,
-                        Field38 = 0,
-                        Flags = MaterialAttributeFlags.Bit0,
-                        Type1Flags = MaterialAttributeType1Flags.Bit1
-                    },
-                    new MaterialAttributeType2
-                    {
-                        Field0C = 1,
-                        Field10 = 121,
-                        Flags = MaterialAttributeFlags.Bit0
-                    }
-                }
-            };
-
-            material.IsPresetMaterial = true;
-
-            return material;
-        }
-
-        public static Material CreateCharacterClothP4DMaterial( string name, string diffuseMapName, bool hasTransparency = false )
-        {
             var material = new Material( name )
             {
-                Flags = MaterialFlags.Bit0 | MaterialFlags.Bit1 | MaterialFlags.EnableVertColors | MaterialFlags.Bit5 | MaterialFlags.Bit8 |
-                        MaterialFlags.EnableLight2 | MaterialFlags.CastShadow,
-                AmbientColor = new Vector4( 0.6f, 0.6f, 0.6f, 0 ),
-                Attributes = new List< MaterialAttribute >
-                {
-                    new MaterialAttributeType0
-                    {
-                        Color = new Vector4( 0.9799954f, 0.9799954f, 0.9799954f, 0.5882353f ),
-                        Field1C = 0.8f,
-                        Field20 = 30,
-                        Field24 = 1,
-                        Field28 = 0,
-                        Field2C = 0,
-                        Flags = MaterialAttributeFlags.Bit0,
-                        AttributeType = MaterialAttributeType.Type0,
-                        Type0Flags = 0,
-                    }
-                },
-                DiffuseColor = new Vector4( 0.3000076f, 0.3000076f, 0.3000076f, 1f ),
-                DiffuseMap = new TextureMap( diffuseMapName ),
-                DrawMethod = MaterialDrawMethod.Opaque,
-                EmissiveColor = new Vector4( 0f, 0f, 0f, 0f ),
-                Field40 = 1,
-                Field44 = 0,
-                Field49 = 1,
-                Field4A = 0,
-                Field4B = 1,
-                Field4C = 0,
-                Field4D = 1,
-                DisableBackfaceCulling = 0,
-                Field5C = 2,
-                Field6C = 0xfffffff8,
-                Field70 = 0xfffffff8,
-                Field90 = 0,
-                Field92 = 4,
-                Field94 = -32768,
-                Field96 = 0,
-                Field98 = 0xFFFFFFFF,
+                AmbientColor = MaterialPreset.AmbientColor,
+                DiffuseColor = MaterialPreset.DiffuseColor,
+                SpecularColor = MaterialPreset.SpecularColor,
+                EmissiveColor = MaterialPreset.EmissiveColor,
+                Field40 = MaterialPreset.Field40,
+                Field44 = MaterialPreset.Field44,
+                DrawMethod = MaterialPreset.DrawMethod,
+                Field49 = MaterialPreset.Field49,
+                Field4A = MaterialPreset.Field4A,
+                Field4B = MaterialPreset.Field4B,
+                Field4C = MaterialPreset.Field4C,
+                Field4D = MaterialPreset.Field4D,
+                DisableBackfaceCulling = MaterialPreset.DisableBackfaceCulling,
+                Field5C = MaterialPreset.Field5C,
+                Field6C = MaterialPreset.Field6C,
+                Field70 = MaterialPreset.Field70,
+                Field90 = MaterialPreset.Field90,
+                Field92 = MaterialPreset.Field92,
+                Field94 = MaterialPreset.Field94,
+                Field96 = MaterialPreset.Field96,
+                Field98 = MaterialPreset.Field98,
+                DiffuseMap = null,
                 GlowMap = null,
                 HighlightMap = null,
                 NightMap = null,
                 NormalMap = null,
                 ReflectionMap = null,
                 ShadowMap = null,
-                SpecularColor = new Vector4( 0f, 0f, 0f, 1f ),
-                SpecularMap = null
-            };
-
-            if ( hasTransparency )
-            {
-                material.DrawMethod = MaterialDrawMethod.Translucent;
-                material.Field4D = 1;
-                material.Field90 = 0x0080;
-            }
-
-            material.IsPresetMaterial = true;
-
-            return material;
-        }
-
-        public static Material CreateCharacterSkinP3DP5DMaterial(string name, string diffuseMapName, bool hasTransparency = false)
-        {
-            var material = new Material(name)
-            {
-                Flags = MaterialFlags.Bit0 | MaterialFlags.Bit1 | MaterialFlags.Bit5 | MaterialFlags.Bit8 |
-                        MaterialFlags.EnableLight2 | MaterialFlags.CastShadow | MaterialFlags.HasAttributes | MaterialFlags.HasDiffuseMap,
-                AmbientColor = new Vector4(0.6f, 0.6f, 0.6f, 0),
-                Attributes = new List<MaterialAttribute>
-                {
-                    new MaterialAttributeType0
-                    {
-                        Color = new Vector4( 0.9799954f, 0.9799954f, 0.9799954f, 0.5882353f ),
-                        Field1C = 0.8f,
-                        Field20 = 30,
-                        Field24 = 1,
-                        Field28 = 0,
-                        Field2C = 0,
-                        Flags = MaterialAttributeFlags.Bit0,
-                        AttributeType = MaterialAttributeType.Type0,
-                        Type0Flags = 0,
-                    }
-                },
-                DiffuseColor = new Vector4(0.38f, 0.38f, 0.38f, 1f),
-                DiffuseMap = new TextureMap(diffuseMapName),
-                DrawMethod = MaterialDrawMethod.Opaque,
-                EmissiveColor = new Vector4(0f, 0f, 0f, 0f),
-                Field40 = 1,
-                Field44 = 0,
-                Field49 = 1,
-                Field4A = 0,
-                Field4B = 1,
-                Field4C = 0,
-                Field4D = 1,
-                DisableBackfaceCulling = 0,
-                Field5C = 2,
-                Field6C = 0xfffffff8,
-                Field70 = 0xfffffff8,
-                Field90 = 0,
-                Field92 = 4,
-                Field94 = -32767,
-                Field96 = 0,
-                Field98 = 0xFFFFFFFF,
-                GlowMap = null,
-                HighlightMap = null,
-                NightMap = null,
-                NormalMap = null,
-                ReflectionMap = null,
-                ShadowMap = null,
-                SpecularColor = new Vector4(0f, 0f, 0f, 1f),
-                SpecularMap = null
-            };
-
-            if (hasTransparency)
-            {
-                material.DrawMethod = MaterialDrawMethod.Translucent;
-                material.Field4D = 1;
-                material.Field90 = 0x0080;
-            }
-
-            if (material.Name.ToLower().Contains("outline") && material.Version == 0x01105090)
-            {
-                material.Flags = MaterialFlags.Bit0 | MaterialFlags.Bit1 | MaterialFlags.Bit2 | MaterialFlags.Bit3 | MaterialFlags.Bit5 | MaterialFlags.Bit8
-                    | MaterialFlags.EnableLight2;
-                material.AmbientColor = new Vector4(0.149f, 0.039187f, 0.149f, 0);
-                material.DiffuseColor = new Vector4(0f, 0f, 0f, 0.7f);
-                material.DrawMethod = MaterialDrawMethod.Translucent;
-                material.Field5C = 0;
-            }
-
-            material.IsPresetMaterial = true;
-
-            return material;
-        }
-
-        public static Material CreateCharacterSkinFBMaterial( string name, string diffuseMapName, string shadowMapName, bool hasTransparency = false )
-        {
-            var material = new Material( name )
-            {
-                Flags = MaterialFlags.Bit0 | MaterialFlags.Bit1 | MaterialFlags.Bit5 | MaterialFlags.Bit8 |
-                        MaterialFlags.EnableLight2 | MaterialFlags.CastShadow,
-                AmbientColor = new Vector4( 0.4901961f, 0.4901961f, 0.4901961f, 1f ),
-                Attributes = new List<MaterialAttribute>
-                {
-                    new MaterialAttributeType8
-                    {
-                        Field00 = new Vector3(0.9803922f, 0.9803922f, 0.9803922f),
-                        Field0C = 0.470588237f,
-                        Field10 = 0.65f,
-                        Field14 = 30f,
-                        Field18 = 100f,
-                        Field1C = new Vector3(0, 0, 0),
-                        Field28 = 0.35f,
-                        Field2C = 0f,
-                        Field30 = 0,
-                        Field34 = 0,
-                        Field38 = 0,
-                        Flags = MaterialAttributeFlags.Bit0,
-                        Type8Flags = MaterialAttributeType8Flags.Bit0 | MaterialAttributeType8Flags.Bit8,
-                        Version = 0x01105090
-                    }
-                },
-                DiffuseColor = new Vector4( 0f, 0f, 0f, 1f ),
-                DiffuseMap = new TextureMap( diffuseMapName ),
-                DrawMethod = MaterialDrawMethod.Opaque,
-                EmissiveColor = new Vector4( 0f, 0f, 0f, 0f ),
-                Field40 = 1,
-                Field44 = 0,
-                Field49 = 1,
-                Field4A = 0,
-                Field4B = 1,
-                Field4C = 0,
-                Field4D = 1,
-                DisableBackfaceCulling = 0,
-                Field5C = 0x68,
-                Field6C = 0xf8fffff8,
-                Field70 = 0xf8fffff8,
-                Field90 = 0,
-                Field92 = 4,
-                Field94 = 5,
-                Field96 = 0,
-                Field98 = 0xFFFFFFFF,
-                GlowMap = null,
-                HighlightMap = null,
-                NightMap = null,
-                NormalMap = null,
-                ReflectionMap = null,
-                ShadowMap = new TextureMap( shadowMapName ),
-                SpecularColor = new Vector4( 0.4901961f, 0.4901961f, 0.4901961f, 1f ),
                 SpecularMap = null,
-                Version = 0x01105100,
+                Flags = MaterialPreset.Flags,
+                Attributes = MaterialPreset.Attributes
             };
 
-            //if ( hasTransparency )
-            //{
-            //    material.DrawMethod = MaterialDrawMethod.Translucent;
-            //    material.Field4D = 1;
-            //    material.Field90 = 0x0080;
-            //}
+            // TODO: which one is which
+            if ( MaterialPreset.DiffuseMap != null ) material.DiffuseMap = new TextureMap( diffuseMapName );
+            // if ( MaterialPreset.GlowMap != null ) material.GlowMap = new TextureMap( diffuseMapName );
+            // if ( MaterialPreset.HighlightMap != null ) material.HighlightMap = new TextureMap( diffuseMapName );
+            // if ( MaterialPreset.NightMap != null ) material.NightMap = new TextureMap( diffuseMapName );
+            if ( MaterialPreset.NormalMap != null ) material.NormalMap = new TextureMap( normalMapName );
+            if ( MaterialPreset.ReflectionMap != null ) material.ReflectionMap = new TextureMap( reflectionMapName );
+            // if ( MaterialPreset.ShadowMap != null ) material.ShadowMap = new TextureMap( diffuseMapName );
+            if ( MaterialPreset.SpecularMap != null ) material.SpecularMap = new TextureMap( specularMapName );
 
-            material.IsPresetMaterial = true;
+            material.IsPresetMaterial = false;
 
             return material;
         }
-    }
 
-    public enum MaterialPreset
-    {
-        None,
-        FieldTerrain,
-        FieldTerrainVertexColors,
-        FieldTerrainCastShadow,
-        CharacterSkinP5,
-        PersonaSkinP5,
-        CharacterClothP4D,
-        CharacterSkinP3DP5D,
-        CharacterSkinFB
+        public static Material CreateMaterial( string name, string diffuseMapName, ModelPackConverterOptions options )
+        {
+            return CreateMaterial(name, diffuseMapName, null, null, null, null, null, null, null, null, null, options);
+        }
     }
 }
