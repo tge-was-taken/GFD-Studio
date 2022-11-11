@@ -47,6 +47,7 @@ namespace GFDStudio.GUI.Forms
             this.convertAnimationsToP5InDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.convertMaterialInDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.MassExportTexturesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.retainTexNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -159,7 +160,8 @@ namespace GFDStudio.GUI.Forms
             this.rescaleAnimationPacksInDirectoryToolStripMenuItem,
             this.convertAnimationsToP5InDirectoryToolStripMenuItem,
             this.convertMaterialInDirectoryToolStripMenuItem,
-            this.copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem});
+            this.copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem,
+            this.MassExportTexturesToolStripMenuItem} );
             this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             this.toolsToolStripMenuItem.Size = new System.Drawing.Size(46, 20);
             this.toolsToolStripMenuItem.Text = "Tools";
@@ -198,6 +200,13 @@ namespace GFDStudio.GUI.Forms
             this.copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem.Size = new System.Drawing.Size(336, 22);
             this.copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem.Text = "Copy P5 Split GAP to multiple models in directory";
             this.copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem.Click += new System.EventHandler(this.copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem_Click);
+            // 
+            // copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem
+            // 
+            this.MassExportTexturesToolStripMenuItem.Name = "MassExportTexturesToolStripMenuItem";
+            this.MassExportTexturesToolStripMenuItem.Size = new System.Drawing.Size(336, 22);
+            this.MassExportTexturesToolStripMenuItem.Text = "Mass Export Textures from Models";
+            this.MassExportTexturesToolStripMenuItem.Click += new System.EventHandler(this.MassExportTexturesToolStripMenuItem_Click );
             // 
             // optionsToolStripMenuItem
             // 
@@ -436,6 +445,7 @@ namespace GFDStudio.GUI.Forms
         private System.Windows.Forms.ToolStripMenuItem convertAnimationsToP5InDirectoryToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem convertMaterialInDirectoryToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem MassExportTexturesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem thereIsNoHelpToolStripMenuItem;

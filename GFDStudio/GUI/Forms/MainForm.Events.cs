@@ -13,6 +13,7 @@ using GFDStudio.FormatModules;
 using GFDStudio.GUI.Controls;
 using GFDStudio.GUI.DataViewNodes;
 using GFDStudio.IO;
+using GFDLibrary.Textures;
 using Ookii.Dialogs;
 using Ookii.Dialogs.Wpf;
 
@@ -447,6 +448,78 @@ namespace GFDStudio.GUI.Forms
                 MessageBox.Show( "An error occured while processing the following files:\n" + string.Join( "\n", failures ) );
             }
             else MessageBox.Show( "All split GAPs successfully generated!" );
+        }
+        private void MassExportTexturesToolStripMenuItem_Click( object sender, EventArgs e )
+        {
+            string directoryPath;
+            var browserDialog = new VistaFolderBrowserDialog();
+            {
+                browserDialog.Description =
+                    "Select a directory containing Model files to extract textures from.\n";
+
+                if ( browserDialog.ShowDialog() != true )
+                    return;
+
+                directoryPath = browserDialog.SelectedPath;
+            }
+
+            var failures = new ConcurrentBag<string>();
+
+            string[] formats = { ".GFS", ".GMD" };
+
+            foreach ( var filePath in Directory.EnumerateFiles( directoryPath, "*.*", SearchOption.AllDirectories ).Where( x => formats.Any( x.EndsWith ) ) )
+            {
+                try
+                {
+                    //var targetModel = ModuleImportUtilities.ImportFile<ModelPack>( filePath )?.Model;
+                    var targetModelTexDic = ModuleImportUtilities.ImportFile<ModelPack>( filePath )?.Textures;
+
+                    if ( targetModelTexDic == null )
+                        return;
+
+                    string outpath = Path.Combine( directoryPath, "Textures" );
+                    Directory.CreateDirectory( outpath );
+
+                    foreach ( var tex in targetModelTexDic.Textures )
+                    {
+                        string texPath;
+
+                        switch ( tex.Format )
+                        {
+                            case TextureFormat.DDS:
+                                texPath = Path.Combine( outpath, tex.Name );
+                                File.WriteAllBytes( texPath, tex.Data );
+                                break;
+                            case TextureFormat.TGA:
+                                texPath = Path.Combine( outpath, tex.Name );
+                                File.WriteAllBytes( texPath, tex.Data );
+                                break;
+                            case TextureFormat.GNF:
+                                texPath = Path.Combine( outpath, Path.ChangeExtension( tex.Name, ".gnf" ) );
+                                File.WriteAllBytes( texPath, tex.Data );
+                                break;
+                            case TextureFormat.TMX:
+                                texPath = Path.Combine( outpath, tex.Name );
+                                File.WriteAllBytes( texPath, tex.Data );
+                                break;
+                            default:
+                                texPath = Path.Combine( outpath, Path.ChangeExtension( tex.Name, ".png" ) );
+                                TextureDecoder.Decode( tex ).Save( texPath );
+                                break;
+                        }
+                    }
+                }
+                catch ( Exception )
+                {
+                    failures.Add( filePath );
+                }
+            }
+
+            if ( failures.Count > 0 )
+            {
+                MessageBox.Show( "An error occured while processing the following files:\n" + string.Join( "\n", failures ) );
+            }
+            else MessageBox.Show( "All Textures successfully mass dumped!" );
         }
 
         private void HandleRescaleAnimationsToolStripMenuItemClick( object sender, EventArgs e)
