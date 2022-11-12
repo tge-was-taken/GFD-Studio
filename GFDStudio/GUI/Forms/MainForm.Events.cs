@@ -521,6 +521,78 @@ namespace GFDStudio.GUI.Forms
             }
             else MessageBox.Show( "All Textures successfully mass dumped!" );
         }
+        private void MassReplaceTexturesToolStripMenuItem_Click( object sender, EventArgs e )
+        {
+            string directoryPath;
+            var browserDialog = new VistaFolderBrowserDialog();
+            {
+                browserDialog.Description =
+                    "Select a directory containing Model files to replace textures in.\n";
+
+                if ( browserDialog.ShowDialog() != true )
+                    return;
+
+                directoryPath = browserDialog.SelectedPath;
+            }
+
+            var failures = new ConcurrentBag<string>();
+
+            string[] formats = { ".GFS", ".GMD" };
+
+            foreach ( var filePath in Directory.EnumerateFiles( directoryPath, "*.*", SearchOption.AllDirectories ).Where( x => formats.Any( x.EndsWith ) ) )
+            {
+                try
+                {
+                    var targetModel = ModuleImportUtilities.ImportFile<ModelPack>( filePath );
+                    if ( targetModel == null )
+                        return;
+
+                    var targetModelTexDic = targetModel.Textures;
+                    if ( targetModelTexDic == null )
+                        return;
+
+                    string TexReplaceDir = Path.Join( directoryPath, "TextureReplacements" );
+                    var TargetTextures = Directory.EnumerateFiles( TexReplaceDir, "*.dds", SearchOption.AllDirectories ).ToList();
+
+                    var newTexDic = new TextureDictionary( 0x01105100 );
+
+                    string FoundTexPath = null;
+                    foreach ( var tex in targetModelTexDic.Textures )
+                    {
+                        Logger.Debug( $"Tex Replace: Attempting to replace {tex.Name}" );
+                        foreach ( var texpath in TargetTextures )
+                        {
+                            Logger.Debug( $"Tex Replace: Iterating Textures, Current item {Path.GetFileName( texpath )}" );
+                            if ( tex.Name == Path.GetFileName( texpath ) )
+                            {
+                                Logger.Debug( $"Tex Replace: Found Match in {Path.GetFileName( texpath )}, replacing with {texpath}" );
+                                FoundTexPath = texpath;
+                            }
+                        }
+                        if ( FoundTexPath != null )
+                        {
+                            newTexDic.Add( new Texture( tex.Name, TextureFormat.DDS, File.ReadAllBytes( FoundTexPath ) ) );
+                            FoundTexPath = null;
+                        }
+                        else newTexDic.Add( tex );
+                    }
+
+                    targetModel.Textures.ReplaceWith( newTexDic );
+                    targetModel.Save( filePath );
+                    Logger.Debug( $"Tex Replace: saved model to {filePath}" );
+                }
+                catch ( Exception )
+                {
+                    failures.Add( filePath );
+                }
+            }
+
+            if ( failures.Count > 0 )
+            {
+                MessageBox.Show( "An error occured while processing the following files:\n" + string.Join( "\n", failures ) );
+            }
+            else MessageBox.Show( "All Textures successfully mass replaced in models!" );
+        }
 
         private void HandleRescaleAnimationsToolStripMenuItemClick( object sender, EventArgs e)
         {
