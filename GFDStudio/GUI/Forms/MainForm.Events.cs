@@ -196,47 +196,27 @@ namespace GFDStudio.GUI.Forms
 
             var failures = new ConcurrentBag<string>();
 
-            using ( var dialog = new ProgressDialog() )
+            var filePaths = Directory.EnumerateFiles( directoryPath, "*.GAP", SearchOption.AllDirectories ).ToList();
+
+            foreach ( var filePath in filePaths )
             {
-                dialog.DoWork += ( o, progress ) =>
+                try
                 {
-                    var filePaths = Directory.EnumerateFiles( directoryPath, "*.GAP", SearchOption.AllDirectories ).ToList();
-                    var processedFileCount = 0;
-
-                    Parallel.ForEach( filePaths, ( filePath, state ) =>
-                    {
-                        lock ( dialog )
-                        {
-                            if ( dialog.CancellationPending )
-                            {
-                                state.Stop();
-                                return;
-                            }
-
-                            dialog.ReportProgress( ( int )( ( ( float )++processedFileCount / filePaths.Count ) * 100 ),
-                                                   $"Processing {Path.GetFileName( filePath )}", null );
-                        }
-
-                        try
-                        {
-                            var animationPack = Resource.Load<AnimationPack>( filePath );
-                            animationPack.Retarget( originalScene, newScene, fixArms );
-                            animationPack.Save( filePath );
-                        }
-                        catch ( Exception )
-                        {
-                            failures.Add( filePath );
-                        }
-                    } );
-                };
-
-                dialog.ShowDialog();
+                    var animationPack = Resource.Load<AnimationPack>( filePath );
+                    animationPack.Retarget( originalScene, newScene, fixArms );
+                    animationPack.Save( filePath );
+                }
+                catch ( Exception )
+                {
+                    failures.Add( filePath );
+                }
             }
 
             if ( failures.Count > 0 )
             {
                 MessageBox.Show( "An error occured while processing the following files:\n" + string.Join( "\n", failures ) );
             }
+            else MessageBox.Show( "All animation packs successfully retargetted!" );
         }
 		
         private void HandleConvertAnimationsToolStripMenuItemClick(object sender, EventArgs e)
@@ -256,47 +236,27 @@ namespace GFDStudio.GUI.Forms
 
             var failures = new ConcurrentBag<string>();
 
-            using (var dialog = new ProgressDialog())
+            var filePaths = Directory.EnumerateFiles( directoryPath, "*.GAP", SearchOption.AllDirectories ).ToList();
+
+            foreach ( var filePath in filePaths )
             {
-                dialog.DoWork += (o, progress) =>
+                try
                 {
-                    var filePaths = Directory.EnumerateFiles(directoryPath, "*.GAP", SearchOption.AllDirectories).ToList();
-                    var processedFileCount = 0;
-
-                    Parallel.ForEach(filePaths, (filePath, state) =>
-                    {
-                        lock (dialog)
-                        {
-                            if (dialog.CancellationPending)
-                            {
-                                state.Stop();
-                                return;
-                            }
-
-                            dialog.ReportProgress((int)(((float)++processedFileCount / filePaths.Count) * 100),
-                                                   $"Processing {Path.GetFileName(filePath)}", null);
-                        }
-
-                        try
-                        {
-                            var animationPack = Resource.Load<AnimationPack>(filePath);
-                            animationPack.ConvertToP5();
-                            animationPack.Save(filePath);
-                        }
-                        catch (Exception)
-                        {
-                            failures.Add(filePath);
-                        }
-                    });
-                };
-
-                dialog.ShowDialog();
+                    var animationPack = Resource.Load<AnimationPack>( filePath );
+                    animationPack.ConvertToP5();
+                    animationPack.Save( filePath );
+                }
+                catch ( Exception )
+                {
+                    failures.Add( filePath );
+                }
             }
 
             if (failures.Count > 0)
             {
                 MessageBox.Show("An error occured while processing the following files:\n" + string.Join("\n", failures));
             }
+            else MessageBox.Show( "All animation packs successfully converted!" );
         }
 
         private void HandleConvertMaterialsToolStripMenuItemClick(object sender, EventArgs e)
@@ -477,7 +437,17 @@ namespace GFDStudio.GUI.Forms
                     if ( targetModelTexDic == null )
                         return;
 
-                    string outpath = Path.Combine( directoryPath, "Textures" );
+                    string outpath;
+                    browserDialog = new VistaFolderBrowserDialog();
+                    {
+                        browserDialog.Description =
+                            "Select a directory to dump all textures into.\n";
+
+                        if ( browserDialog.ShowDialog() != true )
+                            return;
+
+                        outpath = browserDialog.SelectedPath;
+                    }
                     Directory.CreateDirectory( outpath );
 
                     foreach ( var tex in targetModelTexDic.Textures )
@@ -551,7 +521,17 @@ namespace GFDStudio.GUI.Forms
                     if ( targetModelTexDic == null )
                         return;
 
-                    string TexReplaceDir = Path.Join( directoryPath, "TextureReplacements" );
+                    string TexReplaceDir;
+                    browserDialog = new VistaFolderBrowserDialog();
+                    {
+                        browserDialog.Description =
+                            "Select a directory containing the textures you wish to replace in models.\n";
+
+                        if ( browserDialog.ShowDialog() != true )
+                            return;
+
+                        TexReplaceDir = browserDialog.SelectedPath;
+                    }
                     var TargetTextures = Directory.EnumerateFiles( TexReplaceDir, "*.dds", SearchOption.AllDirectories ).ToList();
 
                     var newTexDic = new TextureDictionary( 0x01105100 );
@@ -623,47 +603,27 @@ namespace GFDStudio.GUI.Forms
 
             var failures = new ConcurrentBag<string>();
 
-            using (var dialog = new ProgressDialog())
+            var filePaths = Directory.EnumerateFiles( directoryPath, "*.GAP", SearchOption.AllDirectories ).ToList();
+
+            foreach ( var filePath in filePaths )
             {
-                dialog.DoWork += (o, progress) =>
+                try
                 {
-                    var filePaths = Directory.EnumerateFiles(directoryPath, "*.GAP", SearchOption.AllDirectories).ToList();
-                    var processedFileCount = 0;
-
-                    Parallel.ForEach(filePaths, (filePath, state) =>
-                    {
-                        lock (dialog)
-                        {
-                            if (dialog.CancellationPending)
-                            {
-                                state.Stop();
-                                return;
-                            }
-
-                            dialog.ReportProgress((int)(((float)++processedFileCount / filePaths.Count) * 100),
-                                                   $"Processing {Path.GetFileName(filePath)}", null);
-                        }
-
-                        try
-                        {
-                            var animationPack = Resource.Load<AnimationPack>(filePath);
-                            animationPack.Rescale(scale, position, rotation);
-                            animationPack.Save(filePath);
-                        }
-                        catch (Exception)
-                        {
-                            failures.Add(filePath);
-                        }
-                    });
-                };
-
-                dialog.ShowDialog();
+                    var animationPack = Resource.Load<AnimationPack>( filePath );
+                    animationPack.Rescale( scale, position, rotation );
+                    animationPack.Save( filePath );
+                }
+                catch ( Exception )
+                {
+                    failures.Add( filePath );
+                }
             }
 
             if (failures.Count > 0)
             {
                 MessageBox.Show("An error occured while processing the following files:\n" + string.Join("\n", failures));
             }
+            else MessageBox.Show( "All animation packs successfully rescaled!" );
         }
 
         private void HandleAnimationLoadExternalToolStripMenuItemClick( object sender, EventArgs e )
