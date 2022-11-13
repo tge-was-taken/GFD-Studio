@@ -354,9 +354,31 @@ namespace GFDStudio.GUI.Forms
                         try
                         {
                             var model = Resource.Load<ModelPack>(filePath);
-                            var materials = model.Materials;
-                            var materialsConverted = MaterialDictionary.ConvertAllToMaterialPreset(materials, option);
-                            model.Materials = materialsConverted;
+                            MaterialDictionary newMaterials = null;
+
+                            foreach (var material in model.Materials )
+                            {
+                                Material newMaterial = (Material)option.MaterialPreset;
+
+                                ToolStripMenuItem retainName = Forms.MainForm.Instance.retainTexNameToolStripMenuItem;
+                                if ( retainName.Checked )
+                                {
+                                    newMaterial.Name = material.Value.Name;
+                                    if ( newMaterial.DiffuseMap != null && material.Value.DiffuseMap != null ) newMaterial.DiffuseMap.Name = material.Value.DiffuseMap.Name;
+                                    if ( newMaterial.NormalMap != null && material.Value.NormalMap != null ) newMaterial.NormalMap.Name = material.Value.NormalMap.Name;
+                                    if ( newMaterial.SpecularMap != null && material.Value.SpecularMap != null ) newMaterial.SpecularMap.Name = material.Value.SpecularMap.Name;
+                                    if ( newMaterial.ReflectionMap != null && material.Value.ReflectionMap != null ) newMaterial.ReflectionMap.Name = material.Value.ReflectionMap.Name;
+                                    if ( newMaterial.HighlightMap != null && material.Value.HighlightMap != null ) newMaterial.HighlightMap.Name = material.Value.HighlightMap.Name;
+                                    if ( newMaterial.GlowMap != null && material.Value.GlowMap != null ) newMaterial.GlowMap.Name = material.Value.GlowMap.Name;
+                                    if ( newMaterial.NightMap != null && material.Value.NightMap != null ) newMaterial.NightMap.Name = material.Value.NightMap.Name;
+                                    if ( newMaterial.DetailMap != null && material.Value.DetailMap != null ) newMaterial.DetailMap.Name = material.Value.DetailMap.Name;
+                                    if ( newMaterial.ShadowMap != null && material.Value.ShadowMap != null ) newMaterial.ShadowMap.Name = material.Value.ShadowMap.Name;
+                                }
+
+                                newMaterials.Add(newMaterial);
+                            }
+                            
+                            model.Materials = newMaterials;
                             model.Save(filePath);
                         }
                         catch (Exception)

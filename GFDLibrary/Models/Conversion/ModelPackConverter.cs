@@ -96,7 +96,8 @@ namespace GFDLibrary.Models.Conversion
             if ( diffuseTexture != null )
             {
                 textureDictionary.Add( diffuseTexture.Texture );
-                material = MaterialFactory.CreateMaterial( materialName, diffuseTexture.Name, options ); 
+                material = MaterialFactory.CreateMaterial( materialName, diffuseTexture.Name, lightmapTexture.Name, displacementTexture.Name, 
+                    opacityTexture.Name, normalTexture.Name, heightTexture.Name, emissiveTexture.Name, ambientTexture.Name, specularTexture.Name, reflectionTexture.Name, options ); 
             }
 
             return material;

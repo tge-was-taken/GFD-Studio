@@ -30,30 +30,6 @@ namespace GFDLibrary.Materials
             set => mDictionary[name] = value;
         }
 
-        public static MaterialDictionary ConvertAllToMaterialPreset( MaterialDictionary materialDictionary, ModelPackConverterOptions options )
-        {
-            Material newMaterial = null;
-            var newMaterialDictionary = new MaterialDictionary(options.Version);
-
-            foreach (var material in materialDictionary.Materials)
-            {
-                var materialName = material.Name;
-                var diffuseTexture = material.DiffuseMap;
-                var shadowTexture = material.ShadowMap;
-                if (shadowTexture == null)
-                    shadowTexture = material.DiffuseMap;
-                var specularTexture = material.SpecularMap;
-                if (specularTexture == null)
-                    specularTexture = material.DiffuseMap;
-                if (diffuseTexture == null) newMaterial = material;
-
-                else newMaterial = MaterialFactory.CreateMaterial( materialName, diffuseTexture.Name, options );
-                newMaterialDictionary.Add(newMaterial);
-            }
-
-            return newMaterialDictionary;
-        }
-
         public void ReplaceWith(MaterialDictionary other)
         {
             foreach (var material in other)
