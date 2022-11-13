@@ -53,33 +53,58 @@ namespace GFDLibrary.Models.Conversion
             if ( aiMaterial.HasTextureDiffuse )
                 diffuseTexture = ConvertTexture( aiMaterial.TextureDiffuse, baseDirectoryPath );
 
+
             TextureInfo lightmapTexture = null;
             if ( aiMaterial.HasTextureLightMap )
+            {
                 lightmapTexture = ConvertTexture( aiMaterial.TextureLightMap, baseDirectoryPath );
+                textureDictionary.Add( lightmapTexture.Texture );
+            }
 
             TextureInfo displacementTexture = null;
             if ( aiMaterial.HasTextureDisplacement )
+            {
                 displacementTexture = ConvertTexture( aiMaterial.TextureDisplacement, baseDirectoryPath );
+                textureDictionary.Add( displacementTexture.Texture );
+            }
 
             TextureInfo opacityTexture = null;
             if ( aiMaterial.HasTextureOpacity )
+            {
                 opacityTexture = ConvertTexture( aiMaterial.TextureOpacity, baseDirectoryPath );
+                textureDictionary.Add( opacityTexture.Texture );
+            }
 
             TextureInfo normalTexture = null;
             if ( aiMaterial.HasTextureNormal )
+            {
                 normalTexture = ConvertTexture( aiMaterial.TextureNormal, baseDirectoryPath );
+                textureDictionary.Add( normalTexture.Texture );
+            }
 
             TextureInfo heightTexture = null;
             if ( aiMaterial.HasTextureHeight )
+            {
                 heightTexture = ConvertTexture( aiMaterial.TextureHeight, baseDirectoryPath );
+                textureDictionary.Add( heightTexture.Texture );
+            }
+
 
             TextureInfo emissiveTexture = null;
             if ( aiMaterial.HasTextureEmissive )
+            {
                 emissiveTexture = ConvertTexture( aiMaterial.TextureEmissive, baseDirectoryPath );
+                textureDictionary.Add( emissiveTexture.Texture );
+            }
+
 
             TextureInfo ambientTexture = null;
             if ( aiMaterial.HasTextureAmbient )
+            {
                 ambientTexture = ConvertTexture( aiMaterial.TextureAmbient, baseDirectoryPath );
+                textureDictionary.Add(ambientTexture.Texture);
+            }
+                
 
             TextureInfo specularTexture = null;
             if ( aiMaterial.HasTextureSpecular )
@@ -96,11 +121,21 @@ namespace GFDLibrary.Models.Conversion
             if ( diffuseTexture != null )
             {
                 textureDictionary.Add( diffuseTexture.Texture );
-                material = MaterialFactory.CreateMaterial( materialName, diffuseTexture.Name, lightmapTexture.Name, displacementTexture.Name, 
-                    opacityTexture.Name, normalTexture.Name, heightTexture.Name, emissiveTexture.Name, ambientTexture.Name, specularTexture.Name, reflectionTexture.Name, options ); 
+                material = MaterialFactory.CreateMaterial( materialName, diffuseTexture.Name, CheckIfTextureNull( lightmapTexture ), CheckIfTextureNull( displacementTexture ),
+                    CheckIfTextureNull( opacityTexture ), CheckIfTextureNull( normalTexture ), CheckIfTextureNull( heightTexture ), CheckIfTextureNull( emissiveTexture ),
+                    CheckIfTextureNull( ambientTexture ), CheckIfTextureNull( specularTexture ), CheckIfTextureNull( reflectionTexture ), options ); 
             }
 
             return material;
+        }
+
+        private static string CheckIfTextureNull( TextureInfo p )
+        {
+            if (p == null) return null;
+            else
+            {
+                return p.Name;
+            }
         }
 
         private static TextureInfo ConvertTexture( Ai.TextureSlot aiTextureSlot, string baseDirectoryPath )
