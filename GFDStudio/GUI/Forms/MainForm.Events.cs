@@ -425,6 +425,18 @@ namespace GFDStudio.GUI.Forms
 
             var failures = new ConcurrentBag<string>();
 
+            string outpath;
+            browserDialog = new VistaFolderBrowserDialog();
+            {
+                browserDialog.Description =
+                    "Select a directory to dump all textures into.\n";
+
+                if ( browserDialog.ShowDialog() != true )
+                    return;
+
+                outpath = browserDialog.SelectedPath;
+            }
+
             string[] formats = { ".GFS", ".GMD" };
 
             foreach ( var filePath in Directory.EnumerateFiles( directoryPath, "*.*", SearchOption.AllDirectories ).Where( x => formats.Any( x.EndsWith ) ) )
@@ -436,19 +448,6 @@ namespace GFDStudio.GUI.Forms
 
                     if ( targetModelTexDic == null )
                         return;
-
-                    string outpath;
-                    browserDialog = new VistaFolderBrowserDialog();
-                    {
-                        browserDialog.Description =
-                            "Select a directory to dump all textures into.\n";
-
-                        if ( browserDialog.ShowDialog() != true )
-                            return;
-
-                        outpath = browserDialog.SelectedPath;
-                    }
-                    Directory.CreateDirectory( outpath );
 
                     foreach ( var tex in targetModelTexDic.Textures )
                     {
@@ -507,6 +506,17 @@ namespace GFDStudio.GUI.Forms
 
             var failures = new ConcurrentBag<string>();
 
+            string TexReplaceDir;
+            browserDialog = new VistaFolderBrowserDialog();
+            {
+                browserDialog.Description =
+                    "Select a directory containing the textures you wish to replace in models.\n";
+
+                if ( browserDialog.ShowDialog() != true )
+                    return;
+
+                TexReplaceDir = browserDialog.SelectedPath;
+            }
             string[] formats = { ".GFS", ".GMD" };
 
             foreach ( var filePath in Directory.EnumerateFiles( directoryPath, "*.*", SearchOption.AllDirectories ).Where( x => formats.Any( x.EndsWith ) ) )
@@ -521,17 +531,6 @@ namespace GFDStudio.GUI.Forms
                     if ( targetModelTexDic == null )
                         return;
 
-                    string TexReplaceDir;
-                    browserDialog = new VistaFolderBrowserDialog();
-                    {
-                        browserDialog.Description =
-                            "Select a directory containing the textures you wish to replace in models.\n";
-
-                        if ( browserDialog.ShowDialog() != true )
-                            return;
-
-                        TexReplaceDir = browserDialog.SelectedPath;
-                    }
                     var TargetTextures = Directory.EnumerateFiles( TexReplaceDir, "*.dds", SearchOption.AllDirectories ).ToList();
 
                     var newTexDic = new TextureDictionary( 0x01105100 );
