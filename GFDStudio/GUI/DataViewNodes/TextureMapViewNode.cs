@@ -34,6 +34,7 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         [Browsable( true )]
+        [DisplayName( "Has texture filtering" )]
         public byte Field49
         {
             get => GetDataProperty<byte>();

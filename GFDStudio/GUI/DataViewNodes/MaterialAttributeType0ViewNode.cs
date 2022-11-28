@@ -34,6 +34,7 @@ namespace GFDStudio.GUI.DataViewNodes
 
         // 1C
         [ Browsable( true ) ]
+        [DisplayName( "Light threshold" )]
         public float Field1C
         {
             get => GetDataProperty< float >();
@@ -42,6 +43,7 @@ namespace GFDStudio.GUI.DataViewNodes
 
         // 20
         [Browsable( true )]
+        [DisplayName( "Light factor" )]
         public float Field20
         {
             get => GetDataProperty<float>();
@@ -50,6 +52,7 @@ namespace GFDStudio.GUI.DataViewNodes
 
         // 24
         [Browsable( true )]
+        [DisplayName( "Light brightness" )]
         public float Field24
         {
             get => GetDataProperty<float>();
@@ -58,6 +61,7 @@ namespace GFDStudio.GUI.DataViewNodes
 
         // 28
         [Browsable( true )]
+        [DisplayName( "Shadow threshold" )]
         public float Field28
         {
             get => GetDataProperty<float>();
@@ -66,6 +70,7 @@ namespace GFDStudio.GUI.DataViewNodes
 
         // 2C
         [Browsable( true )]
+        [DisplayName( "Shadow factor" )]
         public float Field2C
         {
             get => GetDataProperty<float>();
