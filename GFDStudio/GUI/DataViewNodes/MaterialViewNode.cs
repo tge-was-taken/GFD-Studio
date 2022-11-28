@@ -95,6 +95,7 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         [Browsable( true )]
+        [DisplayName( "Reflectivity" )]
         public float Field40
         {
             get => GetDataProperty<float>();
@@ -102,6 +103,7 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         [Browsable( true )]
+        [DisplayName( "Outline index" )]
         public float Field44
         {
             get => GetDataProperty<float>();
@@ -146,6 +148,7 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         [Browsable( true )]
+        [DisplayName( "Highlight Map Blend Mode" )]
         public byte Field4D
         {
             get => GetDataProperty<byte>();
@@ -190,6 +193,7 @@ namespace GFDStudio.GUI.DataViewNodes
 
         [Browsable( true )]
         [TypeConverter( typeof( UInt32HexTypeConverter ) )]
+        [DisplayName( "Texcoord flags [0]" )]
         public uint Field6C
         {
             get => GetDataProperty<uint>();
@@ -198,6 +202,7 @@ namespace GFDStudio.GUI.DataViewNodes
 
         [Browsable( true )]
         [TypeConverter( typeof( UInt32HexTypeConverter ) )]
+        [DisplayName( "Texcoord flags [1]" )]
         public uint Field70
         {
             get => GetDataProperty<uint>();

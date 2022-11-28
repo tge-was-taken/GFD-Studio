@@ -12,6 +12,7 @@ namespace GFDStudio.GUI.DataViewNodes
             DataViewNodeFlags.Leaf;
 
         [Browsable( true )]
+        [DisplayName( "Gravity" )]
         public float Field00
         {
             get => GetDataProperty<float>();
@@ -19,6 +20,7 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         [Browsable( true )]
+        [DisplayName( "Maximum rotation angle" )]
         public float Field04
         {
             get => GetDataProperty<float>();
@@ -26,6 +28,7 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         [Browsable( true )]
+        [DisplayName( "Bone thickness" )]
         public float Field08
         {
             get => GetDataProperty<float>();
@@ -33,6 +36,7 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         [Browsable( true )]
+        [DisplayName( "Parent bone" )]
         public short Field0C
         {
             get => GetDataProperty<short>();
@@ -40,6 +44,7 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         [Browsable( true )]
+        [DisplayName( "Child bone" )]
         public short Field0E
         {
             get => GetDataProperty<short>();
