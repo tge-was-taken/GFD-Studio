@@ -15,6 +15,7 @@ namespace GFDStudio.GUI.DataViewNodes
 
         // 0C
         [ Browsable( true ) ]
+        [DisplayName( "Category" )]
         public int Field0C
         {
             get => GetDataProperty<int>();
@@ -23,6 +24,7 @@ namespace GFDStudio.GUI.DataViewNodes
 
         // 10
         [Browsable( true )]
+        [DisplayName( "Color" )]
         public int Field10
         {
             get => GetDataProperty<int>();

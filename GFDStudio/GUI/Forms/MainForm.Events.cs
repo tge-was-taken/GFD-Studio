@@ -408,7 +408,7 @@ namespace GFDStudio.GUI.Forms
                     var targetModel = ModuleImportUtilities.ImportFile<ModelPack>( filePath )?.Model;
 
                     if ( targetModel == null )
-                        return;
+                        continue;
 
                     aGap.FixTargetIds( targetModel );
                     aGap.Save( Path.Join( targetGAPDir, "bb" + targetCharID + GAP_ID + targetGAPname + "a.GAP" ));
@@ -469,7 +469,7 @@ namespace GFDStudio.GUI.Forms
                     var targetModelTexDic = ModuleImportUtilities.ImportFile<ModelPack>( filePath )?.Textures;
 
                     if ( targetModelTexDic == null )
-                        return;
+                        continue;
 
                     foreach ( var tex in targetModelTexDic.Textures )
                     {
@@ -547,11 +547,11 @@ namespace GFDStudio.GUI.Forms
                 {
                     var targetModel = ModuleImportUtilities.ImportFile<ModelPack>( filePath );
                     if ( targetModel == null )
-                        return;
+                        continue;
 
                     var targetModelTexDic = targetModel.Textures;
                     if ( targetModelTexDic == null )
-                        return;
+                        continue;
 
                     var TargetTextures = Directory.EnumerateFiles( TexReplaceDir, "*.dds", SearchOption.AllDirectories ).ToList();
 

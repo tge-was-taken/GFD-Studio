@@ -14,6 +14,7 @@ namespace GFDStudio.GUI.DataViewNodes
 
 
         [Browsable( true )]
+        [DisplayName( "Capsule height" )]
         public float Field88
         {
             get => GetDataProperty<float>();
@@ -21,6 +22,7 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         [Browsable( true )]
+        [DisplayName( "Capsule radius" )]
         public float Field84
         {
             get => GetDataProperty<float>();
@@ -28,6 +30,7 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         [Browsable( true )]
+        [DisplayName( "Matrix" )]
         public Matrix4x4 Field8C
         {
             get => GetDataProperty<Matrix4x4>();
@@ -35,6 +38,7 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         [Browsable( true )]
+        [DisplayName( "Capsule Type" )]
         public short Field94
         {
             get => GetDataProperty<short>();

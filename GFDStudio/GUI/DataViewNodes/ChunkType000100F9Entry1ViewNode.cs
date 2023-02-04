@@ -12,6 +12,7 @@ namespace GFDStudio.GUI.DataViewNodes
             DataViewNodeFlags.Leaf;
 
         [Browsable( true )]
+        [DisplayName( "Motion scale" )]
         public float Field34
         {
             get => GetDataProperty<float>();
@@ -34,6 +35,7 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         [Browsable( true )]
+        [DisplayName( "Spring rate" )]
         public float Field40
         {
             get => GetDataProperty<float>();
