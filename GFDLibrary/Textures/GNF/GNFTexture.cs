@@ -16,9 +16,9 @@ namespace GFDLibrary.Textures.GNF
         public const int MAGIC = 0x20464E47; // GNF\0x20
 
         private uint mWord0;
-        private uint mWord1;
+        private uint mWord1 = 0x00000008;
         private uint mWord2;
-        private uint mWord3;
+        private uint mWord3 = 0x04000000;
         private uint mWord4;
         private uint mWord5;
         private uint mWord6;
@@ -29,158 +29,340 @@ namespace GFDLibrary.Textures.GNF
 
         public int MinLodClamp
         {
-            get => ( int )( mWord1 & 0x000fff00 ) >> 8;
-            set => mWord1 = ( ( uint )value & 0x000fff00 ) << 8;
+            get => (int)( mWord1 & 0x000fff00 ) >> 8;
+            set
+            {
+                // Create a bitmask.
+                uint mask = 0xffffffff ^ 0x000fff00;
+                // Clear the bit range for this modification using the bitmask, and set the new value using bitwise OR.
+                uint newVal = ( (uint)value << 8 ) & 0x000fff00;
+                mWord1 = ( mWord1 & mask ) | newVal;
+            }
         }
 
         public SurfaceFormat SurfaceFormat
         {
-            get => ( SurfaceFormat ) ( ( int ) ( mWord1 & 0x03f00000 ) >> 20 );
-            set => mWord1 = ( ( uint )value & 0x03f00000 ) << 20;
+            get => (SurfaceFormat)( (int)( mWord1 & 0x03f00000 ) >> 20 );
+            set
+            {
+                // Create a bitmask.
+                uint mask = 0xffffffff ^ 0x03f00000;
+                // Clear the bit range for this modification using the bitmask, and set the new value using bitwise OR.
+                uint newVal = ( (uint)value << 20 ) & 0x03f00000;
+                mWord1 = ( mWord1 & mask ) | newVal;
+            }
         }
 
         public ChannelType ChannelType
         {
-            get => ( ChannelType ) ( ( int ) ( mWord1 & 0x3c000000 ) >> 26 );
-            set => mWord1 = ( ( uint )value & 0x3c000000 ) << 26;
+            get => (ChannelType)( (int)( mWord1 & 0x3c000000 ) >> 26 );
+            set
+            {
+                // Create a bitmask.
+                uint mask = 0xffffffff ^ 0x3c000000;
+                // Clear the bit range for this modification using the bitmask, and set the new value using bitwise OR.
+                uint newVal = ( (uint)value << 26 ) & 0x3c000000;
+                mWord1 = ( mWord1 & mask ) | newVal;
+            }
         }
 
         public int Width
         {
-            get => ( ( int )( mWord2 & 0x00003fff ) ) + 1;
-            set => mWord2 = ( ( uint ) ( value - 1 ) & 0x00003fff );
+            get => ( (int)( mWord2 & 0x00003fff ) ) + 1;
+            set
+            {
+                // Create a bitmask.
+                uint mask = 0xffffffff ^ 0x00003fff;
+                // Clear the bit range for this modification using the bitmask, and set the new value using bitwise OR.
+                uint newVal = (uint)( value - 1 ) & 0x00003fff;
+                mWord2 = ( mWord2 & mask ) | newVal;
+            }
         }
 
         public int Height
         {
-            get => ( ( int )( mWord2 & 0x0fffc000 ) >> 14 ) + 1;
-            set => mWord2 = ( ( uint )( value - 1 ) & 0x0fffc000 ) << 14;
+            get => ( (int)( mWord2 & 0x0fffc000 ) >> 14 ) + 1;
+            set
+            {
+                // Create a bitmask.
+                uint mask = 0xffffffff ^ 0x0fffc000;
+                // Clear the bit range for this modification using the bitmask, and set the new value using bitwise OR.
+                uint newVal = ( (uint)( value - 1 ) << 14 ) & 0x0fffc000;
+                mWord2 = ( mWord2 & mask ) | newVal;
+            }
         }
 
         public SamplerModulationFactor SamplerModulationFactor
         {
-            get => ( SamplerModulationFactor ) ( ( int ) ( mWord2 & 0x70000000 ) >> 28 );
-            set => mWord2 = ( ( uint )value & 0x70000000 ) << 28;
+            get => (SamplerModulationFactor)( (int)( mWord2 & 0x70000000 ) >> 28 );
+            set
+            {
+                // Create a bitmask.
+                uint mask = 0xffffffff ^ 0x70000000;
+                // Clear the bit range for this modification using the bitmask, and set the new value using bitwise OR.
+                uint newVal = ( (uint)value << 28 ) & 0x70000000;
+                mWord2 = ( mWord2 & mask ) | newVal;
+            }
         }
 
         public TextureChannel ChannelOrderX
         {
-            get => ( TextureChannel ) ( ( int ) ( mWord3 & 0x00000007 ) );
-            set => mWord3 = ( ( uint )value & 0x00000007 );
+            get => (TextureChannel)( (int)( mWord3 & 0x00000007 ) );
+            set
+            {
+                // Create a bitmask.
+                uint mask = 0xffffffff ^ 0x00000007;
+                // Clear the bit range for this modification using the bitmask, and set the new value using bitwise OR.
+                uint newVal = ( (uint)value & 0x00000007 );
+                mWord3 = ( mWord3 & mask ) | newVal;
+            }
         }
 
         public TextureChannel ChannelOrderY
         {
-            get => ( TextureChannel ) ( ( int ) ( mWord3 & 0x00000038 ) >> 3 );
-            set => mWord3 = ( ( uint )value & 0x00000038 ) << 3;
+            get => (TextureChannel)( (int)( mWord3 & 0x00000038 ) >> 3 );
+            set
+            {
+                // Create a bitmask.
+                uint mask = 0xffffffff ^ 0x00000038;
+                // Clear the bit range for this modification using the bitmask, and set the new value using bitwise OR.
+                uint newVal = ( (uint)value << 3 ) & 0x00000038;
+                mWord3 = ( mWord3 & mask ) | newVal;
+            }
         }
 
         public TextureChannel ChannelOrderZ
         {
-            get => ( TextureChannel ) ( ( int ) ( mWord3 & 0x000001c0 ) >> 6 );
-            set => mWord3 = ( ( uint )value & 0x000001c0 ) << 6;
+            get => (TextureChannel)( (int)( mWord3 & 0x000001c0 ) >> 6 );
+            set
+            {
+                // Create a bitmask.
+                uint mask = 0xffffffff ^ 0x000001c0;
+                // Clear the bit range for this modification using the bitmask, and set the new value using bitwise OR.
+                uint newVal = ( (uint)value << 6 ) & 0x000001c0;
+                mWord3 = ( mWord3 & mask ) | newVal;
+            }
         }
 
         public TextureChannel ChannelOrderW
         {
-            get => ( TextureChannel ) ( ( int ) ( mWord3 & 0x00000e00 ) >> 9 );
-            set => mWord3 = ( ( uint )value & 0x00000e00 ) << 9;
+            get => (TextureChannel)( (int)( mWord3 & 0x00000e00 ) >> 9 );
+            set
+            {
+                // Create a bitmask.
+                uint mask = 0xffffffff ^ 0x00000e00;
+                // Clear the bit range for this modification using the bitmask, and set the new value using bitwise OR.
+                uint newVal = ( (uint)value << 9 ) & 0x00000e00;
+                mWord3 = ( mWord3 & mask ) | newVal;
+            }
         }
 
         public int BaseMipLevel
         {
-            get => ( int )( mWord3 & 0x0000f000 ) >> 12;
-            set => mWord3 = ( ( uint )value & 0x0000f000 ) << 12;
+            get => (int)( mWord3 & 0x0000f000 ) >> 12;
+            set
+            {
+                // Create a bitmask.
+                uint mask = 0xffffffff ^ 0x0000f000;
+                // Clear the bit range for this modification using the bitmask, and set the new value using bitwise OR.
+                uint newVal = ( (uint)value << 12 ) & 0x0000f000;
+                mWord3 = ( mWord3 & mask ) | newVal;
+            }
         }
 
         public int LastMipLevel
         {
-            get => ( int )( mWord3 & 0x000f0000 ) >> 16;
-            set => mWord3 = ( ( uint )value & 0x000f0000 ) << 16;
+            get => (int)( mWord3 & 0x000f0000 ) >> 16;
+            set
+            {
+                // Create a bitmask.
+                uint mask = 0xffffffff ^ 0x000f0000;
+                // Clear the bit range for this modification using the bitmask, and set the new value using bitwise OR.
+                uint newVal = ( (uint)value << 16 ) & 0x000f0000;
+                mWord3 = ( mWord3 & mask ) | newVal;
+            }
         }
 
         public TileMode TileMode
         {
-            get => ( TileMode ) ( ( int ) ( mWord3 & 0x01f00000 ) >> 20 );
-            set => mWord3 = ( ( uint )value & 0x01f00000 ) << 20;
+            get => (TileMode)( (int)( mWord3 & 0x01f00000 ) >> 20 );
+            set
+            {
+                // Create a bitmask.
+                uint mask = 0xffffffff ^ 0x01f00000;
+                // Clear the bit range for this modification using the bitmask, and set the new value using bitwise OR.
+                uint newVal = ( (uint)value << 20 ) & 0x01f00000;
+                mWord3 = ( mWord3 & mask ) | newVal;
+            }
         }
 
         public bool IsPaddedToPow2
         {
             get => ( mWord3 & 0x02000000 ) >> 25 != 0;
-            set => mWord3 = ( value ? 1u : 0u & 0x02000000 ) << 25;
+            set
+            {
+                // Create a bitmask.
+                uint mask = 0xffffffff ^ 0x02000000;
+                // Clear the bit range for this modification using the bitmask, and set the new value using bitwise OR.
+                uint newVal = ( ( value ? 1u : 0u ) << 25 ) & 0x02000000;
+                mWord3 = ( mWord3 & mask ) | newVal;
+            }
         }
 
         public TextureType TextureType
         {
-            get => ( TextureType ) ( ( mWord3 & 0xf0000000 ) >> 28 );
-            set => mWord3 = ( ( uint )value & 0xf0000000 ) << 28;
+            get => (TextureType)( ( mWord3 & 0xf0000000 ) >> 28 );
+            set
+            {
+                // Create a bitmask.
+                uint mask = 0xffffffff ^ 0xf0000000;
+                // Clear the bit range for this modification using the bitmask, and set the new value using bitwise OR.
+                uint newVal = ( (uint)value << 28 ) & 0xf0000000;
+                mWord3 = ( mWord3 & mask ) | newVal;
+            }
         }
 
         public int Depth
         {
-            get => ( ( int ) ( mWord4 & 0x00001fff ) + 1 );
-            set => mWord4 = ( ( uint ) ( value - 1 ) & 0x00001fff );
+            get => ( (int)( mWord4 & 0x00001fff ) + 1 );
+            set
+            {
+                // Create a bitmask.
+                uint mask = 0xffffffff ^ 0x00001fff;
+                // Clear the bit range for this modification using the bitmask, and set the new value using bitwise OR.
+                uint newVal = (uint)( value - 1 ) & 0x00001fff;
+                mWord4 = ( mWord4 & mask ) | newVal;
+            }
         }
 
         public int Pitch
         {
-            get => ( ( int )( mWord4 & 0x07ffe000 ) >> 13 ) + 1;
-            set => mWord4 = ( ( uint )( value - 1 ) & 0x07ffe000 ) << 13;
+            get => ( (int)( mWord4 & 0x07ffe000 ) >> 13 ) + 1;
+            set
+            {
+                // Create a bitmask.
+                uint mask = 0xffffffff ^ 0x07ffe000;
+                // Clear the bit range for this modification using the bitmask, and set the new value using bitwise OR.
+                uint newVal = ( (uint)( value - 1 ) << 13 ) & 0x07ffe000;
+                mWord4 = ( mWord4 & mask ) | newVal;
+            }
         }
 
         public int BaseArraySliceIndex
         {
-            get => ( int )( mWord5 & 0x00001fff );
-            set => mWord5 = ( ( uint )value & 0x00001fff );
+            get => (int)( mWord5 & 0x00001fff );
+            set
+            {
+                // Create a bitmask.
+                uint mask = 0xffffffff ^ 0x00001fff;
+                // Clear the bit range for this modification using the bitmask, and set the new value using bitwise OR.
+                uint newVal = (uint)value & 0x00001fff;
+                mWord5 = ( mWord5 & mask ) | newVal;
+            }
         }
 
         public int LastArraySliceIndex
         {
-            get => ( int )( mWord5 & 0x03ffe000 ) >> 13;
-            set => mWord5 = ( ( uint )value & 0x03ffe000 ) << 13;
+            get => (int)( mWord5 & 0x03ffe000 ) >> 13;
+            set
+            {
+                // Create a bitmask.
+                uint mask = 0xffffffff ^ 0x03ffe000;
+                // Clear the bit range for this modification using the bitmask, and set the new value using bitwise OR.
+                uint newVal = ( (uint)value << 13 ) & 0x03ffe000;
+                mWord5 = ( mWord5 & mask ) | newVal;
+            }
         }
 
         public int MinLodWarning
         {
-            get => ( int )( mWord6 & 0x00000fff );
-            set => mWord6 = ( ( uint )value & 0x00000fff );
+            get => (int)( mWord6 & 0x00000fff );
+            set
+            {
+                // Create a bitmask.
+                uint mask = 0xffffffff ^ 0x00000fff;
+                // Clear the bit range for this modification using the bitmask, and set the new value using bitwise OR.
+                uint newVal = (uint)value & 0x00000fff;
+                mWord6 = ( mWord6 & mask ) | newVal;
+            }
         }
 
         public int MipStatsCounterIndex
         {
-            get => ( int )( mWord6 & 0x000ff000 ) >> 12;
-            set => mWord6 = ( ( uint )value & 0x000ff000 ) << 12;
+            get => (int)( mWord6 & 0x000ff000 ) >> 12;
+            set
+            {
+                // Create a bitmask.
+                uint mask = 0xffffffff ^ 0x000ff000;
+                // Clear the bit range for this modification using the bitmask, and set the new value using bitwise OR.
+                uint newVal = ( (uint)value << 12 ) & 0x000ff000;
+                mWord6 = ( mWord6 & mask ) | newVal;
+            }
         }
 
         public bool MipStatsEnabled
         {
-            get => ( ( int ) ( mWord6 & 0x00100000 ) >> 20 ) != 0;
-            set => mWord6 = ( ( value ? 1u : 0u ) & 0x00100000 ) << 20;
+            get => ( (int)( mWord6 & 0x00100000 ) >> 20 ) != 0;
+            set
+            {
+                // Create a bitmask.
+                uint mask = 0xffffffff ^ 0x00100000;
+                // Clear the bit range for this modification using the bitmask, and set the new value using bitwise OR.
+                uint newVal = ( ( value ? 1u : 0u ) << 20 ) & 0x00100000;
+                mWord6 = ( mWord6 & mask ) | newVal;
+            }
         }
 
         public bool MetadataCompressionEnabled
         {
-            get => ( ( int ) ( mWord6 & 0x00200000 ) >> 21 ) != 0;
-            set => mWord6 = ( value ? 1u : 0u & 0x00200000 ) << 21;
+            get => ( (int)( mWord6 & 0x00200000 ) >> 21 ) != 0;
+            set
+            {
+                // Create a bitmask.
+                uint mask = 0xffffffff ^ 0x00200000;
+                // Clear the bit range for this modification using the bitmask, and set the new value using bitwise OR.
+                uint newVal = ( ( value ? 1u : 0u ) << 21 ) & 0x00200000;
+                mWord6 = ( mWord6 & mask ) | newVal;
+            }
         }
 
         public bool DccAlphaOnMsb
         {
-            get => ( ( int ) ( mWord6 & 0x00400000 ) >> 22 ) != 0;
-            set => mWord6 = ( value ? 1u : 0u & 0x00400000 ) << 22;
+            get => ( (int)( mWord6 & 0x00400000 ) >> 22 ) != 0;
+            set
+            {
+                // Create a bitmask.
+                uint mask = 0xffffffff ^ 0x00400000;
+                // Clear the bit range for this modification using the bitmask, and set the new value using bitwise OR.
+                uint newVal = ( ( value ? 1u : 0u ) << 22 ) & 0x00400000;
+                mWord6 = ( mWord6 & mask ) | newVal;
+            }
         }
 
         public int DccColorTransform
         {
-            get => ( int )( mWord6 & 0x00800000 ) >> 23;
-            set => mWord6 = ( ( uint )value & 0x00800000 ) << 23;
+            get => (int)( mWord6 & 0x00800000 ) >> 23;
+            set
+            {
+                // Create a bitmask.
+                uint mask = 0xffffffff ^ 0x00800000;
+                // Clear the bit range for this modification using the bitmask, and set the new value using bitwise OR.
+                uint newVal = ( (uint)value << 23 ) & 0x00800000;
+                mWord6 = ( mWord6 & mask ) | newVal;
+            }
         }
 
         public bool UseAltTileMode
         {
-            get => ( ( int ) ( mWord6 & 0x01000000 ) >> 24 ) != 0;
-            set => mWord6 = ( (value ? 1u : 0u) & 0x01000000 ) << 24;
+            get => ( (int)( mWord6 & 0x01000000 ) >> 24 ) != 0;
+            set
+            {
+                // Create a bitmask.
+                uint mask = 0xffffffff ^ 0x01000000;
+                // Clear the bit range for this modification using the bitmask, and set the new value using bitwise OR.
+                uint newVal = ( ( value ? 1u : 0u ) << 24 ) & 0x01000000;
+                mWord6 = ( mWord6 & mask ) | newVal;
+            }
         }
 
         public byte[] Data { get; set; }
@@ -246,6 +428,10 @@ namespace GFDLibrary.Textures.GNF
                     surfaceFormat = SurfaceFormat.BC5;
                     break;
 
+                case DDSPixelFormatFourCC.DX10:
+                    surfaceFormat = SurfaceFormat.BC7;
+                    break;
+
                 default:
                     throw new NotSupportedException( ddsFormat.ToString() );
             }
@@ -275,6 +461,7 @@ namespace GFDLibrary.Textures.GNF
             DccAlphaOnMsb              = false;
             DccColorTransform          = 0;
             Depth                      = 1;
+            SurfaceFormat              = format;
             IsPaddedToPow2             = false;
             LastArraySliceIndex        = 0;
             LastMipLevel               = 0;

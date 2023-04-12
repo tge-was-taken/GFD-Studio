@@ -8,6 +8,7 @@ using CSharpImageLibrary.Headers;
 using GFDLibrary.Textures.DDS;
 using GFDLibrary.Textures.GNF;
 using GFDLibrary.Textures.Swizzle;
+using static CSharpImageLibrary.Headers.DDS_Header;
 
 namespace GFDLibrary.Textures
 {
@@ -101,7 +102,10 @@ namespace GFDLibrary.Textures
             var ddsBytes = new byte[ddsHeaderSize + texture.Data.Length];
 
             // create & write header
-            var ddsHeader = new DDS_Header( 1, texture.Height, texture.Width, imageFormat, dx10ImageFormat );
+            var ddsHeader = new DDS_Header( texture.LastMipLevel, texture.Height, texture.Width, imageFormat, dx10ImageFormat ); //Mips:1 => texture.LastMipLevel
+            ddsHeader.dwPitchOrLinearSize = DDSFormatDetails.CalculatePitchOrLinearSize( texture.Width, texture.Height, ImageEngineFormat2FourCC(ddsHeader.Format), out DDSHeaderFlags additionalFlags );
+            ddsHeader.dwFlags |= (DDSdwFlags)additionalFlags;
+            ddsHeader.dwDepth = texture.Depth;
             ddsHeader.WriteToArray( ddsBytes, 0 );        
 
             // unswizzle
@@ -111,6 +115,65 @@ namespace GFDLibrary.Textures
             Array.Copy( data, 0, ddsBytes, ddsHeaderSize, texture.Data.Length );
 
             return ddsBytes;
+        }
+
+        /// <summary>
+        /// Cast ImageEngineFormat to DDSPixelFormatFourCC for easier calculation of PitchOrLinearSize.
+        /// </summary>
+        public static DDSPixelFormatFourCC ImageEngineFormat2FourCC( ImageEngineFormat format )
+        {
+            switch ( format )
+            {
+                case ImageEngineFormat.Unknown:
+                case ImageEngineFormat.JPG:
+                case ImageEngineFormat.PNG:
+                case ImageEngineFormat.BMP:
+                case ImageEngineFormat.TGA:
+                case ImageEngineFormat.GIF:
+                case ImageEngineFormat.TIF:
+                case ImageEngineFormat.DDS_CUSTOM:
+                    return DDSPixelFormatFourCC.Unknown;
+                case ImageEngineFormat.DDS_DXT1:
+                    return DDSPixelFormatFourCC.DXT1;
+                case ImageEngineFormat.DDS_DXT2:
+                    return DDSPixelFormatFourCC.DXT2;
+                case ImageEngineFormat.DDS_DXT3:
+                    return DDSPixelFormatFourCC.DXT3;
+                case ImageEngineFormat.DDS_DXT4:
+                    return DDSPixelFormatFourCC.DXT4;
+                case ImageEngineFormat.DDS_DXT5:
+                    return DDSPixelFormatFourCC.DXT5;
+                case ImageEngineFormat.DDS_DX10:
+                    return DDSPixelFormatFourCC.DX10;
+                case ImageEngineFormat.DDS_ABGR_8:
+                    return DDSPixelFormatFourCC.A8B8G8R8;
+                case ImageEngineFormat.DDS_ATI1:
+                    return DDSPixelFormatFourCC.ATI1;
+                case ImageEngineFormat.DDS_V8U8:
+                    return DDSPixelFormatFourCC.V8U8;
+                case ImageEngineFormat.DDS_G8_L8:
+                    return DDSPixelFormatFourCC.L8;
+                case ImageEngineFormat.DDS_A8L8:
+                    return DDSPixelFormatFourCC.A8L8;
+                case ImageEngineFormat.DDS_RGB_8:
+                    return DDSPixelFormatFourCC.R8G8B8;
+                case ImageEngineFormat.DDS_ATI2_3Dc:
+                    return DDSPixelFormatFourCC.ATI2N_3Dc;
+                case ImageEngineFormat.DDS_ARGB_8:
+                    return DDSPixelFormatFourCC.A8R8G8B8;
+                case ImageEngineFormat.DDS_R5G6B5:
+                    return DDSPixelFormatFourCC.R5G6B5;
+                case ImageEngineFormat.DDS_ARGB_4:
+                    return DDSPixelFormatFourCC.A4R4G4B4;
+                case ImageEngineFormat.DDS_A8:
+                    return DDSPixelFormatFourCC.A8;
+                case ImageEngineFormat.DDS_G16_R16:
+                    return DDSPixelFormatFourCC.G16R16;
+                case ImageEngineFormat.DDS_ARGB_32F:
+                    return DDSPixelFormatFourCC.A32B32G32R32F;
+            }
+
+            return 0;
         }
 
         public static Bitmap Decode( byte[] data, TextureFormat format )
