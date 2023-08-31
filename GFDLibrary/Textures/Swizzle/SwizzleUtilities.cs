@@ -2,6 +2,10 @@
 {
     internal static class SwizzleUtilities
     {
+        /// <summary>
+        /// Z-order curve
+        /// https://en.wikipedia.org/wiki/Z-order_curve
+        /// </summary>
         public static int Morton( int t, int sx, int sy )
         {
             int num1;

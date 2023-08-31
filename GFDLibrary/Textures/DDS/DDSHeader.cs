@@ -38,6 +38,17 @@ namespace GFDLibrary.Textures.DDS
 
         public int Reserved2 { get; set; }
 
+        /// <summary>Only for FourCC with DX10</summary>
+        public DDSDxgiFormat DxgiFormat { get; set; }
+        /// <summary>Only for FourCC with DX10</summary>
+        public DDSD3D10ResourceDimension D3D10ResourceDimension { get; set; }
+        /// <summary>Only for FourCC with DX10</summary>
+        public uint MiscFlag { get; set; }
+        /// <summary>Only for FourCC with DX10</summary>
+        public uint ArraySize { get; set; }
+        /// <summary>Only for FourCC with DX10</summary>
+        public DDSD3D10ResourceDimension MiscFlags2 { get; set; }
+
         public DDSHeader()
         {
             Size = SIZE_WITHOUT_MAGIC;
@@ -107,6 +118,16 @@ namespace GFDLibrary.Textures.DDS
             Caps3     = reader.ReadInt32();
             Caps4     = reader.ReadInt32();
             Reserved2 = reader.ReadInt32();
+
+            if ( PixelFormat.FourCC == DDSPixelFormatFourCC.DX10 )
+            {
+                Size                  += sizeof(uint) * 5;
+                DxgiFormat             = (DDSDxgiFormat)reader.ReadUInt32();
+                D3D10ResourceDimension = (DDSD3D10ResourceDimension)reader.ReadUInt32();
+                MiscFlag               = reader.ReadUInt32();
+                ArraySize              = reader.ReadUInt32();
+                MiscFlags2             = (DDSD3D10ResourceDimension)reader.ReadUInt32();
+            }
         }
 
         internal void Write( BinaryWriter writer )

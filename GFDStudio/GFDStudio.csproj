@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net5.0-windows</TargetFramework>
+    <TargetFramework>net6.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <Version>0.6.6</Version>
     <Authors>TGE</Authors>
@@ -18,7 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GFDLibrary.Rendering.OpenGL\GFDLibrary.Rendering.OpenGL.csproj" />
-    <ProjectReference Include="..\GFDLibrary\GFDLibrary.NET5.csproj" />
+    <ProjectReference Include="..\GFDLibrary\GFDLibrary.NET6.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.32802.440
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33530.505
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Dependencies", "Dependencies", "{99026BAA-1FC1-4F12-9C8E-B29F5629DA2D}"
 EndProject
@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scarlet.IO.ImageFormats", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scarlet", "Dependencies\Scarlet\Scarlet\Scarlet.csproj", "{B1CC2B0E-4226-4AC5-9940-900A8847201A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GFDLibrary.NET5", "GFDLibrary\GFDLibrary.NET5.csproj", "{FDE3CD40-24C8-4E0A-9286-F6751721877D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GFDLibrary.NET6", "GFDLibrary\GFDLibrary.NET6.csproj", "{FDE3CD40-24C8-4E0A-9286-F6751721877D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GFDLibrary.Rendering.OpenGL", "GFDLibrary.Rendering.OpenGL\GFDLibrary.Rendering.OpenGL.csproj", "{C4429977-DF58-4829-B3B1-23F9FE673F60}"
 EndProject
@@ -19,7 +19,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GFDStudio", "GFDStudio\GFDS
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GFDLibrary", "GFDLibrary", "{D8A2A445-B72A-4D3C-BE12-A4205A55C89B}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NET5", "NET5", "{FB118C81-7E1F-4D89-96D9-12A254AFE8D5}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NET6", "NET6", "{FB118C81-7E1F-4D89-96D9-12A254AFE8D5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{78730075-AECA-4BFC-A386-2F8E8E61B195}"
 	ProjectSection(SolutionItems) = preProject
