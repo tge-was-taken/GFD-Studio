@@ -19,12 +19,13 @@ namespace GFDLibrary.Textures.Swizzle
 
         private byte[] DoSwizzle( byte[] data, int width, int height, int blockSize, bool unswizzle )
         {
-            var processed          = new byte[data.Length];
-            var heightTexels        = height / 4;
-            var heightTexelsAligned = ( heightTexels + 7 ) / 8;
+            byte[] processed        = new byte[data.Length];
+            int heightTexels        = height / 4;
+            int heightTexelsAligned = ( heightTexels + 7 ) / 8;
             int widthTexels         = width / 4;
-            var widthTexelsAligned  = ( widthTexels + 7 ) / 8;
-            var dataIndex           = 0;
+            int widthTexelsAligned  = ( widthTexels + 7 ) / 8;
+            int dataIndex           = 0;
+            string errorMesage      = string.Empty;
 
             for ( int y = 0; y < heightTexelsAligned; ++y )
             {
@@ -35,24 +36,40 @@ namespace GFDLibrary.Textures.Swizzle
                         int pixelIndex = SwizzleUtilities.Morton( t, 8, 8 );
                         int num8       = pixelIndex / 8;
                         int num9       = pixelIndex % 8;
-                        var yOffset    = ( y * 8 ) + num8;
-                        var xOffset    = ( x * 8 ) + num9;
+                        int yOffset    = ( y * 8 ) + num8;
+                        int xOffset    = ( x * 8 ) + num9;
 
                         if ( xOffset < widthTexels && yOffset < heightTexels )
                         {
-                            var destPixelIndex = yOffset * widthTexels + xOffset;
+                            int destPixelIndex = yOffset * widthTexels + xOffset;
                             int destIndex      = blockSize * destPixelIndex;
 
-                            if ( unswizzle )
-                                Array.Copy( data, dataIndex, processed, destIndex, blockSize );
-                            else
-                                Array.Copy( data, destIndex, processed, dataIndex, blockSize );
+                            try
+                            {
+                                if ( unswizzle )
+                                {
+                                    if ( processed.Length < destIndex + blockSize )
+                                        Array.Resize<byte>( ref processed, destIndex + blockSize ); //blockSize = processed.Length - destIndex;
+                                    Array.Copy( data, dataIndex, processed, destIndex, blockSize );
+                                }
+                                else
+                                {
+                                    if ( processed.Length < dataIndex + blockSize )
+                                        Array.Resize<byte>( ref processed, dataIndex + blockSize ); //blockSize = processed.Length - dataIndex;
+                                    Array.Copy( data, destIndex, processed, dataIndex, blockSize );
+                                }
+                            }
+                            catch ( Exception e)
+                            {
+                                errorMesage = e.Message;
+                            }
                         }
 
                         dataIndex += blockSize;
                     }
                 }
             }
+            if ( errorMesage != string.Empty ) Console.WriteLine( errorMesage );
 
             return processed;
         }

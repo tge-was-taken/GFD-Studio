@@ -120,7 +120,10 @@ namespace GFDLibrary.Textures.DDS
         public MemoryStream GetPixelDataStream()
         {
             var savedPosition = mStream.Position;
-            mStream.Position = mHeader.Size;
+            //The Size read by DDSHeader does not include the length of MAGIC (32 bits).
+            //In order to correctly obtain PixelData in subsequent steps,
+            //the Size here needs to be increased by the length of MAGIC (32 bits), which is 4.
+            mStream.Position = mHeader.Size + sizeof( int );
             var dataStream = new MemoryStream();
             mStream.CopyTo( dataStream );
             mStream.Position = savedPosition;

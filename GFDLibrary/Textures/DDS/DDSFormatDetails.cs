@@ -13,6 +13,7 @@ namespace GFDLibrary.Textures.DDS
                 case DDSPixelFormatFourCC.DXT3:
                 case DDSPixelFormatFourCC.DXT4:
                 case DDSPixelFormatFourCC.DXT5:
+                case DDSPixelFormatFourCC.DX10:
                 case DDSPixelFormatFourCC.ATI1:
                 case DDSPixelFormatFourCC.ATI2N_3Dc:
                     return true;
@@ -33,6 +34,7 @@ namespace GFDLibrary.Textures.DDS
                 case DDSPixelFormatFourCC.DXT3:
                 case DDSPixelFormatFourCC.DXT4:
                 case DDSPixelFormatFourCC.DXT5:
+                case DDSPixelFormatFourCC.DX10:
                 case DDSPixelFormatFourCC.ATI2N_3Dc:
                     return 16;
             }
@@ -52,6 +54,7 @@ namespace GFDLibrary.Textures.DDS
                 case DDSPixelFormatFourCC.DXT3:
                 case DDSPixelFormatFourCC.DXT4:
                 case DDSPixelFormatFourCC.DXT5:
+                case DDSPixelFormatFourCC.DX10:
                 case DDSPixelFormatFourCC.ATI2N_3Dc:
                     return 8;
 
