@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Forms;
+using DarkUI.Forms;
 using GFDLibrary;
 using GFDLibrary.Animations;
 using GFDStudio.FormatModules;
@@ -10,7 +11,7 @@ using GFDStudio.GUI.DataViewNodes;
 
 namespace GFDStudio.GUI.Forms
 {
-    public partial class MainForm : Form
+    public partial class MainForm : DarkForm
     {
         private static MainForm sInstance;
         public static MainForm Instance

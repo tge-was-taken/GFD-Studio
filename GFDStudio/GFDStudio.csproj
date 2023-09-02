@@ -12,14 +12,22 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="DarkModeUI" Version="3.1.0" />
     <PackageReference Include="Ookii.Dialogs.Wpf" Version="3.0.1" />
     <PackageReference Include="OpenTK" Version="3.1.0" />
     <PackageReference Include="OpenTK.GLControl" Version="3.1.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\yet-another-tab-control\GrayIris.Utilities.csproj" />
     <ProjectReference Include="..\GFDLibrary.Rendering.OpenGL\GFDLibrary.Rendering.OpenGL.csproj" />
     <ProjectReference Include="..\GFDLibrary\GFDLibrary.NET6.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Dotnetrix.TabControl">
+      <HintPath>..\Dependencies\Dotnetrix.TabControl.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>
