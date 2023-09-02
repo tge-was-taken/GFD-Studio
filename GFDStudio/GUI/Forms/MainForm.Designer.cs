@@ -94,7 +94,7 @@ namespace GFDStudio.GUI.Forms
             mMainMenuStrip.Location = new System.Drawing.Point( 0, 0 );
             mMainMenuStrip.Name = "mMainMenuStrip";
             mMainMenuStrip.Padding = new System.Windows.Forms.Padding( 8, 3, 0, 3 );
-            mMainMenuStrip.Size = new System.Drawing.Size( 949, 30 );
+            mMainMenuStrip.Size = new System.Drawing.Size( 1182, 30 );
             mMainMenuStrip.TabIndex = 0;
             mMainMenuStrip.Text = "menuStrip1";
             // 
@@ -257,7 +257,7 @@ namespace GFDStudio.GUI.Forms
             mContentPanel.Location = new System.Drawing.Point( 5, 4 );
             mContentPanel.Margin = new System.Windows.Forms.Padding( 5, 4, 5, 4 );
             mContentPanel.Name = "mContentPanel";
-            mContentPanel.Size = new System.Drawing.Size( 479, 486 );
+            mContentPanel.Size = new System.Drawing.Size( 599, 749 );
             mContentPanel.TabIndex = 3;
             // 
             // tabControl1
@@ -269,7 +269,7 @@ namespace GFDStudio.GUI.Forms
             tabControl1.Margin = new System.Windows.Forms.Padding( 5, 4, 5, 4 );
             tabControl1.Name = "tabControl1";
             tabControl1.SelectedIndex = 0;
-            tabControl1.Size = new System.Drawing.Size( 456, 235 );
+            tabControl1.Size = new System.Drawing.Size( 569, 360 );
             tabControl1.TabIndex = 4;
             // 
             // tabPage1
@@ -279,7 +279,7 @@ namespace GFDStudio.GUI.Forms
             tabPage1.Margin = new System.Windows.Forms.Padding( 5, 4, 5, 4 );
             tabPage1.Name = "tabPage1";
             tabPage1.Padding = new System.Windows.Forms.Padding( 5, 4, 5, 4 );
-            tabPage1.Size = new System.Drawing.Size( 448, 202 );
+            tabPage1.Size = new System.Drawing.Size( 561, 327 );
             tabPage1.TabIndex = 0;
             tabPage1.Text = "Model Editor";
             tabPage1.UseVisualStyleBackColor = true;
@@ -292,7 +292,7 @@ namespace GFDStudio.GUI.Forms
             mModelEditorTreeView.Margin = new System.Windows.Forms.Padding( 5, 4, 5, 4 );
             mModelEditorTreeView.Name = "mModelEditorTreeView";
             mModelEditorTreeView.SelectedImageIndex = 0;
-            mModelEditorTreeView.Size = new System.Drawing.Size( 438, 194 );
+            mModelEditorTreeView.Size = new System.Drawing.Size( 551, 319 );
             mModelEditorTreeView.TabIndex = 1;
             mModelEditorTreeView.TopNode = null;
             // 
@@ -335,21 +335,21 @@ namespace GFDStudio.GUI.Forms
             tableLayoutPanel_AnimationControls.Controls.Add( mAnimationPlaybackButton, 6, 0 );
             tableLayoutPanel_AnimationControls.Controls.Add( mAnimationTrackBar, 0, 0 );
             tableLayoutPanel_AnimationControls.Dock = System.Windows.Forms.DockStyle.Fill;
-            tableLayoutPanel_AnimationControls.Location = new System.Drawing.Point( 5, 498 );
+            tableLayoutPanel_AnimationControls.Location = new System.Drawing.Point( 5, 761 );
             tableLayoutPanel_AnimationControls.Margin = new System.Windows.Forms.Padding( 5, 4, 5, 4 );
             tableLayoutPanel_AnimationControls.Name = "tableLayoutPanel_AnimationControls";
             tableLayoutPanel_AnimationControls.RowCount = 1;
             tableLayoutPanel_AnimationControls.RowStyles.Add( new System.Windows.Forms.RowStyle( System.Windows.Forms.SizeType.Percent, 100F ) );
-            tableLayoutPanel_AnimationControls.Size = new System.Drawing.Size( 479, 35 );
+            tableLayoutPanel_AnimationControls.Size = new System.Drawing.Size( 599, 58 );
             tableLayoutPanel_AnimationControls.TabIndex = 0;
             // 
             // mAnimationStopButton
             // 
             mAnimationStopButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            mAnimationStopButton.Location = new System.Drawing.Point( 297, 4 );
+            mAnimationStopButton.Location = new System.Drawing.Point( 411, 4 );
             mAnimationStopButton.Margin = new System.Windows.Forms.Padding( 5, 4, 5, 4 );
             mAnimationStopButton.Name = "mAnimationStopButton";
-            mAnimationStopButton.Size = new System.Drawing.Size( 177, 27 );
+            mAnimationStopButton.Size = new System.Drawing.Size( 183, 50 );
             mAnimationStopButton.TabIndex = 2;
             mAnimationStopButton.Text = "Stop";
             mAnimationStopButton.UseVisualStyleBackColor = true;
@@ -358,10 +358,10 @@ namespace GFDStudio.GUI.Forms
             // mAnimationPlaybackButton
             // 
             mAnimationPlaybackButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            mAnimationPlaybackButton.Location = new System.Drawing.Point( 203, 4 );
+            mAnimationPlaybackButton.Location = new System.Drawing.Point( 317, 4 );
             mAnimationPlaybackButton.Margin = new System.Windows.Forms.Padding( 5, 4, 5, 4 );
             mAnimationPlaybackButton.Name = "mAnimationPlaybackButton";
-            mAnimationPlaybackButton.Size = new System.Drawing.Size( 84, 27 );
+            mAnimationPlaybackButton.Size = new System.Drawing.Size( 84, 50 );
             mAnimationPlaybackButton.TabIndex = 0;
             mAnimationPlaybackButton.Text = "Play ";
             mAnimationPlaybackButton.UseVisualStyleBackColor = true;
@@ -373,7 +373,7 @@ namespace GFDStudio.GUI.Forms
             mAnimationTrackBar.Location = new System.Drawing.Point( 5, 4 );
             mAnimationTrackBar.Margin = new System.Windows.Forms.Padding( 5, 4, 5, 4 );
             mAnimationTrackBar.Name = "mAnimationTrackBar";
-            mAnimationTrackBar.Size = new System.Drawing.Size( 188, 27 );
+            mAnimationTrackBar.Size = new System.Drawing.Size( 302, 50 );
             mAnimationTrackBar.TabIndex = 1;
             // 
             // splitContainer_Main
@@ -389,8 +389,8 @@ namespace GFDStudio.GUI.Forms
             // splitContainer_Main.Panel2
             // 
             splitContainer_Main.Panel2.Controls.Add( splitContainer_RightSide );
-            splitContainer_Main.Size = new System.Drawing.Size( 949, 537 );
-            splitContainer_Main.SplitterDistance = 489;
+            splitContainer_Main.Size = new System.Drawing.Size( 1182, 823 );
+            splitContainer_Main.SplitterDistance = 609;
             splitContainer_Main.TabIndex = 5;
             // 
             // tableLayoutPanel_Leftside
@@ -405,7 +405,7 @@ namespace GFDStudio.GUI.Forms
             tableLayoutPanel_Leftside.RowCount = 2;
             tableLayoutPanel_Leftside.RowStyles.Add( new System.Windows.Forms.RowStyle( System.Windows.Forms.SizeType.Percent, 92F ) );
             tableLayoutPanel_Leftside.RowStyles.Add( new System.Windows.Forms.RowStyle( System.Windows.Forms.SizeType.Percent, 8F ) );
-            tableLayoutPanel_Leftside.Size = new System.Drawing.Size( 489, 537 );
+            tableLayoutPanel_Leftside.Size = new System.Drawing.Size( 609, 823 );
             tableLayoutPanel_Leftside.TabIndex = 6;
             // 
             // splitContainer_RightSide
@@ -422,8 +422,8 @@ namespace GFDStudio.GUI.Forms
             // splitContainer_RightSide.Panel2
             // 
             splitContainer_RightSide.Panel2.Controls.Add( panel_PropertyGridContainer );
-            splitContainer_RightSide.Size = new System.Drawing.Size( 456, 537 );
-            splitContainer_RightSide.SplitterDistance = 235;
+            splitContainer_RightSide.Size = new System.Drawing.Size( 569, 823 );
+            splitContainer_RightSide.SplitterDistance = 360;
             splitContainer_RightSide.TabIndex = 0;
             // 
             // panel_PropertyGridContainer
@@ -434,7 +434,7 @@ namespace GFDStudio.GUI.Forms
             panel_PropertyGridContainer.Margin = new System.Windows.Forms.Padding( 25 );
             panel_PropertyGridContainer.Name = "panel_PropertyGridContainer";
             panel_PropertyGridContainer.Padding = new System.Windows.Forms.Padding( 0, 0, 5, 5 );
-            panel_PropertyGridContainer.Size = new System.Drawing.Size( 456, 298 );
+            panel_PropertyGridContainer.Size = new System.Drawing.Size( 569, 459 );
             panel_PropertyGridContainer.TabIndex = 0;
             // 
             // mPropertyGrid
@@ -445,14 +445,14 @@ namespace GFDStudio.GUI.Forms
             mPropertyGrid.Margin = new System.Windows.Forms.Padding( 5, 4, 5, 4 );
             mPropertyGrid.Name = "mPropertyGrid";
             mPropertyGrid.PropertySort = System.Windows.Forms.PropertySort.NoSort;
-            mPropertyGrid.Size = new System.Drawing.Size( 451, 293 );
+            mPropertyGrid.Size = new System.Drawing.Size( 564, 454 );
             mPropertyGrid.TabIndex = 5;
             // 
             // MainForm
             // 
             AutoScaleDimensions = new System.Drawing.SizeF( 8F, 20F );
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            ClientSize = new System.Drawing.Size( 949, 567 );
+            ClientSize = new System.Drawing.Size( 1182, 853 );
             Controls.Add( splitContainer_Main );
             Controls.Add( mMainMenuStrip );
             Icon = (System.Drawing.Icon) resources.GetObject( "$this.Icon" ) ;
