@@ -2,16 +2,16 @@
 using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Forms;
-using DarkUI.Forms;
 using GFDLibrary;
 using GFDLibrary.Animations;
 using GFDStudio.FormatModules;
 using GFDStudio.GUI.Controls;
 using GFDStudio.GUI.DataViewNodes;
+using MetroSet_UI.Forms;
 
 namespace GFDStudio.GUI.Forms
 {
-    public partial class MainForm : DarkForm
+    public partial class MainForm : MetroSet_UI.Forms.MetroSetForm
     {
         private static MainForm sInstance;
         public static MainForm Instance

@@ -39,7 +39,7 @@ namespace GFDStudio.GUI.Controls
         private GLShaderProgram mLineShader;
         private int mGridVertexArrayID;
         private GLBuffer<Vector3> mGridVertexBuffer;
-        private int mGridSize = 2000;
+        private int mGridSize = 96;
         private int mGridSpacing = 16;
         private float mGridMinZ;
 

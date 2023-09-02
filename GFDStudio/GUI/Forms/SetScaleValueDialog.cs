@@ -1,10 +1,11 @@
-﻿using System;
+﻿using MetroSet_UI.Forms;
+using System;
 using System.Numerics;
 using System.Windows.Forms;
 
 namespace GFDStudio.GUI.Forms
 {
-    public partial class SetScaleValueDialog : Form
+    public partial class SetScaleValueDialog : MetroSetForm
     {
         public ResultValue Result { get; private set; }
 
@@ -22,14 +23,14 @@ namespace GFDStudio.GUI.Forms
         {
             private readonly SetScaleValueDialog mParent;
 
-            internal ResultValue(SetScaleValueDialog parent )
+            internal ResultValue( SetScaleValueDialog parent )
             {
                 mParent = parent;
             }
 
-            public Vector3 Scale => new Vector3 { X = Convert.ToSingle(mParent.num_ScaleX.Value), Y = Convert.ToSingle(mParent.num_ScaleY.Value), Z = Convert.ToSingle(mParent.num_ScaleZ.Value) };
-            public Vector3 Position => new Vector3 { X = Convert.ToSingle(mParent.num_PosX.Value), Y = Convert.ToSingle(mParent.num_PosY.Value), Z = Convert.ToSingle(mParent.num_PosZ.Value) };
-            public Quaternion Rotation => new Quaternion { X = Convert.ToSingle(mParent.num_RotX.Value), Y = Convert.ToSingle(mParent.num_RotY.Value), Z = Convert.ToSingle(mParent.num_RotZ.Value), W = Convert.ToSingle(mParent.num_RotW.Value) };
+            public Vector3 Scale => new Vector3 { X = Convert.ToSingle( mParent.num_ScaleX.Value ), Y = Convert.ToSingle( mParent.num_ScaleY.Value ), Z = Convert.ToSingle( mParent.num_ScaleZ.Value ) };
+            public Vector3 Position => new Vector3 { X = Convert.ToSingle( mParent.num_PosX.Value ), Y = Convert.ToSingle( mParent.num_PosY.Value ), Z = Convert.ToSingle( mParent.num_PosZ.Value ) };
+            public Quaternion Rotation => new Quaternion { X = Convert.ToSingle( mParent.num_RotX.Value ), Y = Convert.ToSingle( mParent.num_RotY.Value ), Z = Convert.ToSingle( mParent.num_RotZ.Value ), W = Convert.ToSingle( mParent.num_RotW.Value ) };
 
         }
     }
