@@ -30,408 +30,463 @@ namespace GFDStudio.GUI.Forms
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            this.mMainMenuStrip = new System.Windows.Forms.MenuStrip();
-            this.mFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.modelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.mOpenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.animationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.loadExternalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.makeRelativeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.rescaleAnimationPacksInDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.convertAnimationsToP5InDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.convertMaterialInDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.MassExportTexturesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.MassReplaceTexturesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.retainTexNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.thereIsNoHelpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.perishToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.mPropertyGrid = new System.Windows.Forms.PropertyGrid();
-            this.mContentPanel = new System.Windows.Forms.Panel();
-            this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.mModelEditorTreeView = new GFDStudio.GUI.DataViewNodes.DataTreeView();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.mAnimationListTreeView = new GFDStudio.GUI.DataViewNodes.DataTreeView();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.mAnimationStopButton = new System.Windows.Forms.Button();
-            this.mAnimationPlaybackButton = new System.Windows.Forms.Button();
-            this.mAnimationTrackBar = new System.Windows.Forms.TrackBar();
-            this.mMainMenuStrip.SuspendLayout();
-            this.tabControl1.SuspendLayout();
-            this.tabPage1.SuspendLayout();
-            this.tabPage2.SuspendLayout();
-            this.tableLayoutPanel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.mAnimationTrackBar)).BeginInit();
-            this.SuspendLayout();
+            components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager( typeof( MainForm ) );
+            mMainMenuStrip = new System.Windows.Forms.MenuStrip();
+            mFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            modelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            mOpenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            animationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            loadExternalToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            makeRelativeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            rescaleAnimationPacksInDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            convertAnimationsToP5InDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            convertMaterialInDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            MassExportTexturesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            MassReplaceTexturesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            retainTexNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            thereIsNoHelpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            perishToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            mContentPanel = new System.Windows.Forms.Panel();
+            tabControl1 = new System.Windows.Forms.TabControl();
+            tabPage1 = new System.Windows.Forms.TabPage();
+            mModelEditorTreeView = new DataTreeView();
+            tabPage2 = new System.Windows.Forms.TabPage();
+            mAnimationListTreeView = new DataTreeView();
+            tableLayoutPanel_AnimationControls = new System.Windows.Forms.TableLayoutPanel();
+            mAnimationStopButton = new System.Windows.Forms.Button();
+            mAnimationPlaybackButton = new System.Windows.Forms.Button();
+            mAnimationTrackBar = new System.Windows.Forms.TrackBar();
+            splitContainer_Main = new System.Windows.Forms.SplitContainer();
+            tableLayoutPanel_Leftside = new System.Windows.Forms.TableLayoutPanel();
+            splitContainer_RightSide = new System.Windows.Forms.SplitContainer();
+            panel_PropertyGridContainer = new System.Windows.Forms.Panel();
+            mPropertyGrid = new System.Windows.Forms.PropertyGrid();
+            mMainMenuStrip.SuspendLayout();
+            tabControl1.SuspendLayout();
+            tabPage1.SuspendLayout();
+            tabPage2.SuspendLayout();
+            tableLayoutPanel_AnimationControls.SuspendLayout();
+            ( (System.ComponentModel.ISupportInitialize) mAnimationTrackBar  ).BeginInit();
+            ( (System.ComponentModel.ISupportInitialize) splitContainer_Main  ).BeginInit();
+            splitContainer_Main.Panel1.SuspendLayout();
+            splitContainer_Main.Panel2.SuspendLayout();
+            splitContainer_Main.SuspendLayout();
+            tableLayoutPanel_Leftside.SuspendLayout();
+            ( (System.ComponentModel.ISupportInitialize) splitContainer_RightSide  ).BeginInit();
+            splitContainer_RightSide.Panel1.SuspendLayout();
+            splitContainer_RightSide.Panel2.SuspendLayout();
+            splitContainer_RightSide.SuspendLayout();
+            panel_PropertyGridContainer.SuspendLayout();
+            SuspendLayout();
             // 
             // mMainMenuStrip
             // 
-            this.mMainMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mFileToolStripMenuItem,
-            this.animationToolStripMenuItem,
-            this.toolsToolStripMenuItem,
-            this.optionsToolStripMenuItem,
-            this.helpToolStripMenuItem});
-            this.mMainMenuStrip.Location = new System.Drawing.Point(0, 0);
-            this.mMainMenuStrip.Name = "mMainMenuStrip";
-            this.mMainMenuStrip.Padding = new System.Windows.Forms.Padding(7, 2, 0, 2);
-            this.mMainMenuStrip.Size = new System.Drawing.Size(1461, 24);
-            this.mMainMenuStrip.TabIndex = 0;
-            this.mMainMenuStrip.Text = "menuStrip1";
+            mMainMenuStrip.ImageScalingSize = new System.Drawing.Size( 20, 20 );
+            mMainMenuStrip.Items.AddRange( new System.Windows.Forms.ToolStripItem[] { mFileToolStripMenuItem, animationToolStripMenuItem, toolsToolStripMenuItem, optionsToolStripMenuItem, helpToolStripMenuItem } );
+            mMainMenuStrip.Location = new System.Drawing.Point( 0, 0 );
+            mMainMenuStrip.Name = "mMainMenuStrip";
+            mMainMenuStrip.Padding = new System.Windows.Forms.Padding( 8, 3, 0, 3 );
+            mMainMenuStrip.Size = new System.Drawing.Size( 949, 30 );
+            mMainMenuStrip.TabIndex = 0;
+            mMainMenuStrip.Text = "menuStrip1";
             // 
             // mFileToolStripMenuItem
             // 
-            this.mFileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.newToolStripMenuItem,
-            this.mOpenToolStripMenuItem,
-            this.saveToolStripMenuItem,
-            this.saveAsToolStripMenuItem});
-            this.mFileToolStripMenuItem.Name = "mFileToolStripMenuItem";
-            this.mFileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
-            this.mFileToolStripMenuItem.Text = "File";
+            mFileToolStripMenuItem.DropDownItems.AddRange( new System.Windows.Forms.ToolStripItem[] { newToolStripMenuItem, mOpenToolStripMenuItem, saveToolStripMenuItem, saveAsToolStripMenuItem } );
+            mFileToolStripMenuItem.Name = "mFileToolStripMenuItem";
+            mFileToolStripMenuItem.Size = new System.Drawing.Size( 46, 24 );
+            mFileToolStripMenuItem.Text = "File";
             // 
             // newToolStripMenuItem
             // 
-            this.newToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.modelToolStripMenuItem});
-            this.newToolStripMenuItem.Name = "newToolStripMenuItem";
-            this.newToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
-            this.newToolStripMenuItem.Text = "New";
+            newToolStripMenuItem.DropDownItems.AddRange( new System.Windows.Forms.ToolStripItem[] { modelToolStripMenuItem } );
+            newToolStripMenuItem.Name = "newToolStripMenuItem";
+            newToolStripMenuItem.Size = new System.Drawing.Size( 240, 26 );
+            newToolStripMenuItem.Text = "New";
             // 
             // modelToolStripMenuItem
             // 
-            this.modelToolStripMenuItem.Name = "modelToolStripMenuItem";
-            this.modelToolStripMenuItem.Size = new System.Drawing.Size(108, 22);
-            this.modelToolStripMenuItem.Text = "Model";
-            this.modelToolStripMenuItem.Click += new System.EventHandler(this.HandleNewModelToolStripMenuItemClick);
+            modelToolStripMenuItem.Name = "modelToolStripMenuItem";
+            modelToolStripMenuItem.Size = new System.Drawing.Size( 135, 26 );
+            modelToolStripMenuItem.Text = "Model";
+            modelToolStripMenuItem.Click += HandleNewModelToolStripMenuItemClick;
             // 
             // mOpenToolStripMenuItem
             // 
-            this.mOpenToolStripMenuItem.Name = "mOpenToolStripMenuItem";
-            this.mOpenToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.mOpenToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
-            this.mOpenToolStripMenuItem.Text = "Open";
-            this.mOpenToolStripMenuItem.Click += new System.EventHandler(this.HandleOpenToolStripMenuItemClick);
+            mOpenToolStripMenuItem.Name = "mOpenToolStripMenuItem";
+            mOpenToolStripMenuItem.ShortcutKeys =   System.Windows.Forms.Keys.Control  |  System.Windows.Forms.Keys.O  ;
+            mOpenToolStripMenuItem.Size = new System.Drawing.Size( 240, 26 );
+            mOpenToolStripMenuItem.Text = "Open";
+            mOpenToolStripMenuItem.Click += HandleOpenToolStripMenuItemClick;
             // 
             // saveToolStripMenuItem
             // 
-            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
-            this.saveToolStripMenuItem.Text = "Save";
-            this.saveToolStripMenuItem.Click += new System.EventHandler(this.HandleSaveToolStripMenuItemClick);
+            saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+            saveToolStripMenuItem.ShortcutKeys =   System.Windows.Forms.Keys.Control  |  System.Windows.Forms.Keys.S  ;
+            saveToolStripMenuItem.Size = new System.Drawing.Size( 240, 26 );
+            saveToolStripMenuItem.Text = "Save";
+            saveToolStripMenuItem.Click += HandleSaveToolStripMenuItemClick;
             // 
             // saveAsToolStripMenuItem
             // 
-            this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
-            | System.Windows.Forms.Keys.S)));
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
-            this.saveAsToolStripMenuItem.Text = "Save as...";
-            this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.HandleSaveAsToolStripMenuItemClick);
+            saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
+            saveAsToolStripMenuItem.ShortcutKeys =    System.Windows.Forms.Keys.Control  |  System.Windows.Forms.Keys.Shift   |  System.Windows.Forms.Keys.S  ;
+            saveAsToolStripMenuItem.Size = new System.Drawing.Size( 240, 26 );
+            saveAsToolStripMenuItem.Text = "Save as...";
+            saveAsToolStripMenuItem.Click += HandleSaveAsToolStripMenuItemClick;
             // 
             // animationToolStripMenuItem
             // 
-            this.animationToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.loadExternalToolStripMenuItem});
-            this.animationToolStripMenuItem.Name = "animationToolStripMenuItem";
-            this.animationToolStripMenuItem.Size = new System.Drawing.Size(75, 20);
-            this.animationToolStripMenuItem.Text = "Animation";
+            animationToolStripMenuItem.DropDownItems.AddRange( new System.Windows.Forms.ToolStripItem[] { loadExternalToolStripMenuItem } );
+            animationToolStripMenuItem.Name = "animationToolStripMenuItem";
+            animationToolStripMenuItem.Size = new System.Drawing.Size( 92, 24 );
+            animationToolStripMenuItem.Text = "Animation";
             // 
             // loadExternalToolStripMenuItem
             // 
-            this.loadExternalToolStripMenuItem.Name = "loadExternalToolStripMenuItem";
-            this.loadExternalToolStripMenuItem.Size = new System.Drawing.Size(100, 22);
-            this.loadExternalToolStripMenuItem.Text = "Load";
-            this.loadExternalToolStripMenuItem.Click += new System.EventHandler(this.HandleAnimationLoadExternalToolStripMenuItemClick);
+            loadExternalToolStripMenuItem.Name = "loadExternalToolStripMenuItem";
+            loadExternalToolStripMenuItem.Size = new System.Drawing.Size( 125, 26 );
+            loadExternalToolStripMenuItem.Text = "Load";
+            loadExternalToolStripMenuItem.Click += HandleAnimationLoadExternalToolStripMenuItemClick;
             // 
             // toolsToolStripMenuItem
             // 
-            this.toolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.makeRelativeToolStripMenuItem,
-            this.rescaleAnimationPacksInDirectoryToolStripMenuItem,
-            this.convertAnimationsToP5InDirectoryToolStripMenuItem,
-            this.convertMaterialInDirectoryToolStripMenuItem,
-            this.copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem,
-            this.MassExportTexturesToolStripMenuItem,
-            this.MassReplaceTexturesToolStripMenuItem} );
-            this.toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
-            this.toolsToolStripMenuItem.Size = new System.Drawing.Size(46, 20);
-            this.toolsToolStripMenuItem.Text = "Tools";
+            toolsToolStripMenuItem.DropDownItems.AddRange( new System.Windows.Forms.ToolStripItem[] { makeRelativeToolStripMenuItem, rescaleAnimationPacksInDirectoryToolStripMenuItem, convertAnimationsToP5InDirectoryToolStripMenuItem, convertMaterialInDirectoryToolStripMenuItem, copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem, MassExportTexturesToolStripMenuItem, MassReplaceTexturesToolStripMenuItem } );
+            toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
+            toolsToolStripMenuItem.Size = new System.Drawing.Size( 58, 24 );
+            toolsToolStripMenuItem.Text = "Tools";
             // 
             // makeRelativeToolStripMenuItem
             // 
-            this.makeRelativeToolStripMenuItem.Name = "makeRelativeToolStripMenuItem";
-            this.makeRelativeToolStripMenuItem.Size = new System.Drawing.Size(336, 22);
-            this.makeRelativeToolStripMenuItem.Text = "Retarget animation packs in directory";
-            this.makeRelativeToolStripMenuItem.Click += new System.EventHandler(this.HandleRetargetAnimationsToolStripMenuItemClick);
+            makeRelativeToolStripMenuItem.Name = "makeRelativeToolStripMenuItem";
+            makeRelativeToolStripMenuItem.Size = new System.Drawing.Size( 421, 26 );
+            makeRelativeToolStripMenuItem.Text = "Retarget animation packs in directory";
+            makeRelativeToolStripMenuItem.Click += HandleRetargetAnimationsToolStripMenuItemClick;
             // 
             // rescaleAnimationPacksInDirectoryToolStripMenuItem
             // 
-            this.rescaleAnimationPacksInDirectoryToolStripMenuItem.Name = "rescaleAnimationPacksInDirectoryToolStripMenuItem";
-            this.rescaleAnimationPacksInDirectoryToolStripMenuItem.Size = new System.Drawing.Size(336, 22);
-            this.rescaleAnimationPacksInDirectoryToolStripMenuItem.Text = "Rescale/Reposition animation packs in directory";
-            this.rescaleAnimationPacksInDirectoryToolStripMenuItem.Click += new System.EventHandler(this.HandleRescaleAnimationsToolStripMenuItemClick);
+            rescaleAnimationPacksInDirectoryToolStripMenuItem.Name = "rescaleAnimationPacksInDirectoryToolStripMenuItem";
+            rescaleAnimationPacksInDirectoryToolStripMenuItem.Size = new System.Drawing.Size( 421, 26 );
+            rescaleAnimationPacksInDirectoryToolStripMenuItem.Text = "Rescale/Reposition animation packs in directory";
+            rescaleAnimationPacksInDirectoryToolStripMenuItem.Click += HandleRescaleAnimationsToolStripMenuItemClick;
             // 
             // convertAnimationsToP5InDirectoryToolStripMenuItem
             // 
-            this.convertAnimationsToP5InDirectoryToolStripMenuItem.Name = "convertAnimationsToP5InDirectoryToolStripMenuItem";
-            this.convertAnimationsToP5InDirectoryToolStripMenuItem.Size = new System.Drawing.Size(336, 22);
-            this.convertAnimationsToP5InDirectoryToolStripMenuItem.Text = "Convert P5R animations to P5 in directory";
-            this.convertAnimationsToP5InDirectoryToolStripMenuItem.Click += new System.EventHandler(this.HandleConvertAnimationsToolStripMenuItemClick);
+            convertAnimationsToP5InDirectoryToolStripMenuItem.Name = "convertAnimationsToP5InDirectoryToolStripMenuItem";
+            convertAnimationsToP5InDirectoryToolStripMenuItem.Size = new System.Drawing.Size( 421, 26 );
+            convertAnimationsToP5InDirectoryToolStripMenuItem.Text = "Convert P5R animations to P5 in directory";
+            convertAnimationsToP5InDirectoryToolStripMenuItem.Click += HandleConvertAnimationsToolStripMenuItemClick;
             // 
             // convertMaterialInDirectoryToolStripMenuItem
             // 
-            this.convertMaterialInDirectoryToolStripMenuItem.Name = "convertMaterialInDirectoryToolStripMenuItem";
-            this.convertMaterialInDirectoryToolStripMenuItem.Size = new System.Drawing.Size(336, 22);
-            this.convertMaterialInDirectoryToolStripMenuItem.Text = "Convert model materials in directory";
-            this.convertMaterialInDirectoryToolStripMenuItem.Click += new System.EventHandler(this.HandleConvertMaterialsToolStripMenuItemClick);
+            convertMaterialInDirectoryToolStripMenuItem.Name = "convertMaterialInDirectoryToolStripMenuItem";
+            convertMaterialInDirectoryToolStripMenuItem.Size = new System.Drawing.Size( 421, 26 );
+            convertMaterialInDirectoryToolStripMenuItem.Text = "Convert model materials in directory";
+            convertMaterialInDirectoryToolStripMenuItem.Click += HandleConvertMaterialsToolStripMenuItemClick;
             // 
             // copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem
             // 
-            this.copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem.Name = "copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem";
-            this.copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem.Size = new System.Drawing.Size(336, 22);
-            this.copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem.Text = "Copy P5 Split GAP to multiple models in directory";
-            this.copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem.Click += new System.EventHandler(this.copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem_Click);
+            copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem.Name = "copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem";
+            copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem.Size = new System.Drawing.Size( 421, 26 );
+            copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem.Text = "Copy P5 Split GAP to multiple models in directory";
+            copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem.Click += copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem_Click;
             // 
             // MassExportTexturesToolStripMenuItem
             // 
-            this.MassExportTexturesToolStripMenuItem.Name = "MassExportTexturesToolStripMenuItem";
-            this.MassExportTexturesToolStripMenuItem.Size = new System.Drawing.Size(336, 22);
-            this.MassExportTexturesToolStripMenuItem.Text = "Mass Export Textures from Models";
-            this.MassExportTexturesToolStripMenuItem.Click += new System.EventHandler(this.MassExportTexturesToolStripMenuItem_Click );
+            MassExportTexturesToolStripMenuItem.Name = "MassExportTexturesToolStripMenuItem";
+            MassExportTexturesToolStripMenuItem.Size = new System.Drawing.Size( 421, 26 );
+            MassExportTexturesToolStripMenuItem.Text = "Mass Export Textures from Models";
+            MassExportTexturesToolStripMenuItem.Click += MassExportTexturesToolStripMenuItem_Click;
             // 
             // MassReplaceTexturesToolStripMenuItem
             // 
-            this.MassReplaceTexturesToolStripMenuItem.Name = "MassReplaceTexturesToolStripMenuItem";
-            this.MassReplaceTexturesToolStripMenuItem.Size = new System.Drawing.Size(336, 22);
-            this.MassReplaceTexturesToolStripMenuItem.Text = "Mass Replace Textures in Models";
-            this.MassReplaceTexturesToolStripMenuItem.Click += new System.EventHandler(this.MassReplaceTexturesToolStripMenuItem_Click );
+            MassReplaceTexturesToolStripMenuItem.Name = "MassReplaceTexturesToolStripMenuItem";
+            MassReplaceTexturesToolStripMenuItem.Size = new System.Drawing.Size( 421, 26 );
+            MassReplaceTexturesToolStripMenuItem.Text = "Mass Replace Textures in Models";
+            MassReplaceTexturesToolStripMenuItem.Click += MassReplaceTexturesToolStripMenuItem_Click;
             // 
             // optionsToolStripMenuItem
             // 
-            this.optionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.retainTexNameToolStripMenuItem});
-            this.optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
-            this.optionsToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
-            this.optionsToolStripMenuItem.Text = "Options";
+            optionsToolStripMenuItem.DropDownItems.AddRange( new System.Windows.Forms.ToolStripItem[] { retainTexNameToolStripMenuItem } );
+            optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
+            optionsToolStripMenuItem.Size = new System.Drawing.Size( 75, 24 );
+            optionsToolStripMenuItem.Text = "Options";
             // 
             // retainTexNameToolStripMenuItem
             // 
-            this.retainTexNameToolStripMenuItem.Checked = true;
-            this.retainTexNameToolStripMenuItem.CheckOnClick = true;
-            this.retainTexNameToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.retainTexNameToolStripMenuItem.Name = "retainTexNameToolStripMenuItem";
-            this.retainTexNameToolStripMenuItem.Size = new System.Drawing.Size(366, 22);
-            this.retainTexNameToolStripMenuItem.Text = "Retain original material\'s texture names when replacing";
+            retainTexNameToolStripMenuItem.Checked = true;
+            retainTexNameToolStripMenuItem.CheckOnClick = true;
+            retainTexNameToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            retainTexNameToolStripMenuItem.Name = "retainTexNameToolStripMenuItem";
+            retainTexNameToolStripMenuItem.Size = new System.Drawing.Size( 459, 26 );
+            retainTexNameToolStripMenuItem.Text = "Retain original material's texture names when replacing";
             // 
             // helpToolStripMenuItem
             // 
-            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.thereIsNoHelpToolStripMenuItem,
-            this.perishToolStripMenuItem});
-            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
-            this.helpToolStripMenuItem.Text = "Help";
+            helpToolStripMenuItem.DropDownItems.AddRange( new System.Windows.Forms.ToolStripItem[] { thereIsNoHelpToolStripMenuItem, perishToolStripMenuItem } );
+            helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            helpToolStripMenuItem.Size = new System.Drawing.Size( 55, 24 );
+            helpToolStripMenuItem.Text = "Help";
             // 
             // thereIsNoHelpToolStripMenuItem
             // 
-            this.thereIsNoHelpToolStripMenuItem.Enabled = false;
-            this.thereIsNoHelpToolStripMenuItem.Name = "thereIsNoHelpToolStripMenuItem";
-            this.thereIsNoHelpToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
-            this.thereIsNoHelpToolStripMenuItem.Text = "There is no help.";
+            thereIsNoHelpToolStripMenuItem.Enabled = false;
+            thereIsNoHelpToolStripMenuItem.Name = "thereIsNoHelpToolStripMenuItem";
+            thereIsNoHelpToolStripMenuItem.Size = new System.Drawing.Size( 200, 26 );
+            thereIsNoHelpToolStripMenuItem.Text = "There is no help.";
             // 
             // perishToolStripMenuItem
             // 
-            this.perishToolStripMenuItem.Enabled = false;
-            this.perishToolStripMenuItem.Name = "perishToolStripMenuItem";
-            this.perishToolStripMenuItem.Size = new System.Drawing.Size(160, 22);
-            this.perishToolStripMenuItem.Text = "Perish.";
-            // 
-            // mPropertyGrid
-            // 
-            this.mPropertyGrid.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.mPropertyGrid.LineColor = System.Drawing.SystemColors.ControlDark;
-            this.mPropertyGrid.Location = new System.Drawing.Point(867, 513);
-            this.mPropertyGrid.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.mPropertyGrid.Name = "mPropertyGrid";
-            this.mPropertyGrid.PropertySort = System.Windows.Forms.PropertySort.NoSort;
-            this.mPropertyGrid.Size = new System.Drawing.Size(580, 337);
-            this.mPropertyGrid.TabIndex = 2;
+            perishToolStripMenuItem.Enabled = false;
+            perishToolStripMenuItem.Name = "perishToolStripMenuItem";
+            perishToolStripMenuItem.Size = new System.Drawing.Size( 200, 26 );
+            perishToolStripMenuItem.Text = "Perish.";
             // 
             // mContentPanel
             // 
-            this.mContentPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.mContentPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.mContentPanel.Location = new System.Drawing.Point(14, 32);
-            this.mContentPanel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.mContentPanel.Name = "mContentPanel";
-            this.mContentPanel.Size = new System.Drawing.Size(846, 770);
-            this.mContentPanel.TabIndex = 3;
+            mContentPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            mContentPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            mContentPanel.Location = new System.Drawing.Point( 5, 4 );
+            mContentPanel.Margin = new System.Windows.Forms.Padding( 5, 4, 5, 4 );
+            mContentPanel.Name = "mContentPanel";
+            mContentPanel.Size = new System.Drawing.Size( 479, 486 );
+            mContentPanel.TabIndex = 3;
             // 
             // tabControl1
             // 
-            this.tabControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.tabControl1.Controls.Add(this.tabPage1);
-            this.tabControl1.Controls.Add(this.tabPage2);
-            this.tabControl1.Location = new System.Drawing.Point(867, 32);
-            this.tabControl1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(580, 474);
-            this.tabControl1.TabIndex = 4;
+            tabControl1.Controls.Add( tabPage1 );
+            tabControl1.Controls.Add( tabPage2 );
+            tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            tabControl1.Location = new System.Drawing.Point( 0, 0 );
+            tabControl1.Margin = new System.Windows.Forms.Padding( 5, 4, 5, 4 );
+            tabControl1.Name = "tabControl1";
+            tabControl1.SelectedIndex = 0;
+            tabControl1.Size = new System.Drawing.Size( 456, 235 );
+            tabControl1.TabIndex = 4;
             // 
             // tabPage1
             // 
-            this.tabPage1.Controls.Add(this.mModelEditorTreeView);
-            this.tabPage1.Location = new System.Drawing.Point(4, 24);
-            this.tabPage1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.tabPage1.Size = new System.Drawing.Size(572, 446);
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "Model Editor";
-            this.tabPage1.UseVisualStyleBackColor = true;
+            tabPage1.Controls.Add( mModelEditorTreeView );
+            tabPage1.Location = new System.Drawing.Point( 4, 29 );
+            tabPage1.Margin = new System.Windows.Forms.Padding( 5, 4, 5, 4 );
+            tabPage1.Name = "tabPage1";
+            tabPage1.Padding = new System.Windows.Forms.Padding( 5, 4, 5, 4 );
+            tabPage1.Size = new System.Drawing.Size( 448, 202 );
+            tabPage1.TabIndex = 0;
+            tabPage1.Text = "Model Editor";
+            tabPage1.UseVisualStyleBackColor = true;
             // 
             // mModelEditorTreeView
             // 
-            this.mModelEditorTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.mModelEditorTreeView.ImageIndex = 0;
-            this.mModelEditorTreeView.Location = new System.Drawing.Point(7, 7);
-            this.mModelEditorTreeView.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.mModelEditorTreeView.Name = "mModelEditorTreeView";
-            this.mModelEditorTreeView.SelectedImageIndex = 0;
-            this.mModelEditorTreeView.Size = new System.Drawing.Size(556, 430);
-            this.mModelEditorTreeView.TabIndex = 1;
-            this.mModelEditorTreeView.TopNode = null;
+            mModelEditorTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
+            mModelEditorTreeView.ImageIndex = 0;
+            mModelEditorTreeView.Location = new System.Drawing.Point( 5, 4 );
+            mModelEditorTreeView.Margin = new System.Windows.Forms.Padding( 5, 4, 5, 4 );
+            mModelEditorTreeView.Name = "mModelEditorTreeView";
+            mModelEditorTreeView.SelectedImageIndex = 0;
+            mModelEditorTreeView.Size = new System.Drawing.Size( 438, 194 );
+            mModelEditorTreeView.TabIndex = 1;
+            mModelEditorTreeView.TopNode = null;
             // 
             // tabPage2
             // 
-            this.tabPage2.Controls.Add(this.mAnimationListTreeView);
-            this.tabPage2.Location = new System.Drawing.Point(4, 24);
-            this.tabPage2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.tabPage2.Size = new System.Drawing.Size(572, 446);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Animation List";
-            this.tabPage2.UseVisualStyleBackColor = true;
+            tabPage2.Controls.Add( mAnimationListTreeView );
+            tabPage2.Location = new System.Drawing.Point( 4, 29 );
+            tabPage2.Margin = new System.Windows.Forms.Padding( 5, 4, 5, 4 );
+            tabPage2.Name = "tabPage2";
+            tabPage2.Padding = new System.Windows.Forms.Padding( 5, 4, 5, 4 );
+            tabPage2.Size = new System.Drawing.Size( 448, 202 );
+            tabPage2.TabIndex = 1;
+            tabPage2.Text = "Animation List";
+            tabPage2.UseVisualStyleBackColor = true;
             // 
             // mAnimationListTreeView
             // 
-            this.mAnimationListTreeView.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.mAnimationListTreeView.ImageIndex = 0;
-            this.mAnimationListTreeView.Location = new System.Drawing.Point(7, 7);
-            this.mAnimationListTreeView.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.mAnimationListTreeView.Name = "mAnimationListTreeView";
-            this.mAnimationListTreeView.SelectedImageIndex = 0;
-            this.mAnimationListTreeView.Size = new System.Drawing.Size(556, 430);
-            this.mAnimationListTreeView.TabIndex = 2;
-            this.mAnimationListTreeView.TopNode = null;
+            mAnimationListTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
+            mAnimationListTreeView.ImageIndex = 0;
+            mAnimationListTreeView.Location = new System.Drawing.Point( 5, 4 );
+            mAnimationListTreeView.Margin = new System.Windows.Forms.Padding( 5, 4, 5, 4 );
+            mAnimationListTreeView.Name = "mAnimationListTreeView";
+            mAnimationListTreeView.SelectedImageIndex = 0;
+            mAnimationListTreeView.Size = new System.Drawing.Size( 438, 194 );
+            mAnimationListTreeView.TabIndex = 2;
+            mAnimationListTreeView.TopNode = null;
             // 
-            // tableLayoutPanel1
+            // tableLayoutPanel_AnimationControls
             // 
-            this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tableLayoutPanel1.ColumnCount = 8;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 16.66667F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 82F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 164F));
-            this.tableLayoutPanel1.Controls.Add(this.mAnimationStopButton, 7, 0);
-            this.tableLayoutPanel1.Controls.Add(this.mAnimationPlaybackButton, 6, 0);
-            this.tableLayoutPanel1.Controls.Add(this.mAnimationTrackBar, 0, 0);
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(14, 810);
-            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 1;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(846, 40);
-            this.tableLayoutPanel1.TabIndex = 0;
+            tableLayoutPanel_AnimationControls.ColumnCount = 8;
+            tableLayoutPanel_AnimationControls.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle( System.Windows.Forms.SizeType.Percent, 16.66667F ) );
+            tableLayoutPanel_AnimationControls.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle( System.Windows.Forms.SizeType.Percent, 16.66667F ) );
+            tableLayoutPanel_AnimationControls.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle( System.Windows.Forms.SizeType.Percent, 16.66667F ) );
+            tableLayoutPanel_AnimationControls.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle( System.Windows.Forms.SizeType.Percent, 16.66667F ) );
+            tableLayoutPanel_AnimationControls.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle( System.Windows.Forms.SizeType.Percent, 16.66667F ) );
+            tableLayoutPanel_AnimationControls.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle( System.Windows.Forms.SizeType.Percent, 16.66667F ) );
+            tableLayoutPanel_AnimationControls.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle( System.Windows.Forms.SizeType.Absolute, 94F ) );
+            tableLayoutPanel_AnimationControls.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle( System.Windows.Forms.SizeType.Absolute, 187F ) );
+            tableLayoutPanel_AnimationControls.Controls.Add( mAnimationStopButton, 7, 0 );
+            tableLayoutPanel_AnimationControls.Controls.Add( mAnimationPlaybackButton, 6, 0 );
+            tableLayoutPanel_AnimationControls.Controls.Add( mAnimationTrackBar, 0, 0 );
+            tableLayoutPanel_AnimationControls.Dock = System.Windows.Forms.DockStyle.Fill;
+            tableLayoutPanel_AnimationControls.Location = new System.Drawing.Point( 5, 498 );
+            tableLayoutPanel_AnimationControls.Margin = new System.Windows.Forms.Padding( 5, 4, 5, 4 );
+            tableLayoutPanel_AnimationControls.Name = "tableLayoutPanel_AnimationControls";
+            tableLayoutPanel_AnimationControls.RowCount = 1;
+            tableLayoutPanel_AnimationControls.RowStyles.Add( new System.Windows.Forms.RowStyle( System.Windows.Forms.SizeType.Percent, 100F ) );
+            tableLayoutPanel_AnimationControls.Size = new System.Drawing.Size( 479, 35 );
+            tableLayoutPanel_AnimationControls.TabIndex = 0;
             // 
             // mAnimationStopButton
             // 
-            this.mAnimationStopButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mAnimationStopButton.Location = new System.Drawing.Point(686, 3);
-            this.mAnimationStopButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.mAnimationStopButton.Name = "mAnimationStopButton";
-            this.mAnimationStopButton.Size = new System.Drawing.Size(156, 34);
-            this.mAnimationStopButton.TabIndex = 2;
-            this.mAnimationStopButton.Text = "Stop";
-            this.mAnimationStopButton.UseVisualStyleBackColor = true;
-            this.mAnimationStopButton.Click += new System.EventHandler(this.HandleAnimationStopButtonClick);
+            mAnimationStopButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            mAnimationStopButton.Location = new System.Drawing.Point( 297, 4 );
+            mAnimationStopButton.Margin = new System.Windows.Forms.Padding( 5, 4, 5, 4 );
+            mAnimationStopButton.Name = "mAnimationStopButton";
+            mAnimationStopButton.Size = new System.Drawing.Size( 177, 27 );
+            mAnimationStopButton.TabIndex = 2;
+            mAnimationStopButton.Text = "Stop";
+            mAnimationStopButton.UseVisualStyleBackColor = true;
+            mAnimationStopButton.Click += HandleAnimationStopButtonClick;
             // 
             // mAnimationPlaybackButton
             // 
-            this.mAnimationPlaybackButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mAnimationPlaybackButton.Location = new System.Drawing.Point(604, 3);
-            this.mAnimationPlaybackButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.mAnimationPlaybackButton.Name = "mAnimationPlaybackButton";
-            this.mAnimationPlaybackButton.Size = new System.Drawing.Size(74, 34);
-            this.mAnimationPlaybackButton.TabIndex = 0;
-            this.mAnimationPlaybackButton.Text = "Play ";
-            this.mAnimationPlaybackButton.UseVisualStyleBackColor = true;
+            mAnimationPlaybackButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            mAnimationPlaybackButton.Location = new System.Drawing.Point( 203, 4 );
+            mAnimationPlaybackButton.Margin = new System.Windows.Forms.Padding( 5, 4, 5, 4 );
+            mAnimationPlaybackButton.Name = "mAnimationPlaybackButton";
+            mAnimationPlaybackButton.Size = new System.Drawing.Size( 84, 27 );
+            mAnimationPlaybackButton.TabIndex = 0;
+            mAnimationPlaybackButton.Text = "Play ";
+            mAnimationPlaybackButton.UseVisualStyleBackColor = true;
             // 
             // mAnimationTrackBar
             // 
-            this.tableLayoutPanel1.SetColumnSpan(this.mAnimationTrackBar, 6);
-            this.mAnimationTrackBar.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mAnimationTrackBar.Location = new System.Drawing.Point(4, 3);
-            this.mAnimationTrackBar.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.mAnimationTrackBar.Name = "mAnimationTrackBar";
-            this.mAnimationTrackBar.Size = new System.Drawing.Size(592, 34);
-            this.mAnimationTrackBar.TabIndex = 1;
+            tableLayoutPanel_AnimationControls.SetColumnSpan( mAnimationTrackBar, 6 );
+            mAnimationTrackBar.Dock = System.Windows.Forms.DockStyle.Fill;
+            mAnimationTrackBar.Location = new System.Drawing.Point( 5, 4 );
+            mAnimationTrackBar.Margin = new System.Windows.Forms.Padding( 5, 4, 5, 4 );
+            mAnimationTrackBar.Name = "mAnimationTrackBar";
+            mAnimationTrackBar.Size = new System.Drawing.Size( 188, 27 );
+            mAnimationTrackBar.TabIndex = 1;
+            // 
+            // splitContainer_Main
+            // 
+            splitContainer_Main.Dock = System.Windows.Forms.DockStyle.Fill;
+            splitContainer_Main.Location = new System.Drawing.Point( 0, 30 );
+            splitContainer_Main.Name = "splitContainer_Main";
+            // 
+            // splitContainer_Main.Panel1
+            // 
+            splitContainer_Main.Panel1.Controls.Add( tableLayoutPanel_Leftside );
+            // 
+            // splitContainer_Main.Panel2
+            // 
+            splitContainer_Main.Panel2.Controls.Add( splitContainer_RightSide );
+            splitContainer_Main.Size = new System.Drawing.Size( 949, 537 );
+            splitContainer_Main.SplitterDistance = 489;
+            splitContainer_Main.TabIndex = 5;
+            // 
+            // tableLayoutPanel_Leftside
+            // 
+            tableLayoutPanel_Leftside.ColumnCount = 1;
+            tableLayoutPanel_Leftside.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle( System.Windows.Forms.SizeType.Percent, 100F ) );
+            tableLayoutPanel_Leftside.Controls.Add( tableLayoutPanel_AnimationControls, 0, 1 );
+            tableLayoutPanel_Leftside.Controls.Add( mContentPanel, 0, 0 );
+            tableLayoutPanel_Leftside.Dock = System.Windows.Forms.DockStyle.Fill;
+            tableLayoutPanel_Leftside.Location = new System.Drawing.Point( 0, 0 );
+            tableLayoutPanel_Leftside.Name = "tableLayoutPanel_Leftside";
+            tableLayoutPanel_Leftside.RowCount = 2;
+            tableLayoutPanel_Leftside.RowStyles.Add( new System.Windows.Forms.RowStyle( System.Windows.Forms.SizeType.Percent, 92F ) );
+            tableLayoutPanel_Leftside.RowStyles.Add( new System.Windows.Forms.RowStyle( System.Windows.Forms.SizeType.Percent, 8F ) );
+            tableLayoutPanel_Leftside.Size = new System.Drawing.Size( 489, 537 );
+            tableLayoutPanel_Leftside.TabIndex = 6;
+            // 
+            // splitContainer_RightSide
+            // 
+            splitContainer_RightSide.Dock = System.Windows.Forms.DockStyle.Fill;
+            splitContainer_RightSide.Location = new System.Drawing.Point( 0, 0 );
+            splitContainer_RightSide.Name = "splitContainer_RightSide";
+            splitContainer_RightSide.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // splitContainer_RightSide.Panel1
+            // 
+            splitContainer_RightSide.Panel1.Controls.Add( tabControl1 );
+            // 
+            // splitContainer_RightSide.Panel2
+            // 
+            splitContainer_RightSide.Panel2.Controls.Add( panel_PropertyGridContainer );
+            splitContainer_RightSide.Size = new System.Drawing.Size( 456, 537 );
+            splitContainer_RightSide.SplitterDistance = 235;
+            splitContainer_RightSide.TabIndex = 0;
+            // 
+            // panel_PropertyGridContainer
+            // 
+            panel_PropertyGridContainer.Controls.Add( mPropertyGrid );
+            panel_PropertyGridContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            panel_PropertyGridContainer.Location = new System.Drawing.Point( 0, 0 );
+            panel_PropertyGridContainer.Margin = new System.Windows.Forms.Padding( 25 );
+            panel_PropertyGridContainer.Name = "panel_PropertyGridContainer";
+            panel_PropertyGridContainer.Padding = new System.Windows.Forms.Padding( 0, 0, 5, 5 );
+            panel_PropertyGridContainer.Size = new System.Drawing.Size( 456, 298 );
+            panel_PropertyGridContainer.TabIndex = 0;
+            // 
+            // mPropertyGrid
+            // 
+            mPropertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            mPropertyGrid.LineColor = System.Drawing.SystemColors.ControlDark;
+            mPropertyGrid.Location = new System.Drawing.Point( 0, 0 );
+            mPropertyGrid.Margin = new System.Windows.Forms.Padding( 5, 4, 5, 4 );
+            mPropertyGrid.Name = "mPropertyGrid";
+            mPropertyGrid.PropertySort = System.Windows.Forms.PropertySort.NoSort;
+            mPropertyGrid.Size = new System.Drawing.Size( 451, 293 );
+            mPropertyGrid.TabIndex = 5;
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1461, 864);
-            this.Controls.Add(this.tableLayoutPanel1);
-            this.Controls.Add(this.tabControl1);
-            this.Controls.Add(this.mPropertyGrid);
-            this.Controls.Add(this.mMainMenuStrip);
-            this.Controls.Add(this.mContentPanel);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MainMenuStrip = this.mMainMenuStrip;
-            this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.Name = "MainForm";
-            this.Text = "GFD Studio";
-            this.mMainMenuStrip.ResumeLayout(false);
-            this.mMainMenuStrip.PerformLayout();
-            this.tabControl1.ResumeLayout(false);
-            this.tabPage1.ResumeLayout(false);
-            this.tabPage2.ResumeLayout(false);
-            this.tableLayoutPanel1.ResumeLayout(false);
-            this.tableLayoutPanel1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.mAnimationTrackBar)).EndInit();
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new System.Drawing.SizeF( 8F, 20F );
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            ClientSize = new System.Drawing.Size( 949, 567 );
+            Controls.Add( splitContainer_Main );
+            Controls.Add( mMainMenuStrip );
+            Icon = (System.Drawing.Icon) resources.GetObject( "$this.Icon" ) ;
+            MainMenuStrip = mMainMenuStrip;
+            Margin = new System.Windows.Forms.Padding( 5, 4, 5, 4 );
+            Name = "MainForm";
+            Text = "GFD Studio";
+            mMainMenuStrip.ResumeLayout( false );
+            mMainMenuStrip.PerformLayout();
+            tabControl1.ResumeLayout( false );
+            tabPage1.ResumeLayout( false );
+            tabPage2.ResumeLayout( false );
+            tableLayoutPanel_AnimationControls.ResumeLayout( false );
+            tableLayoutPanel_AnimationControls.PerformLayout();
+            ( (System.ComponentModel.ISupportInitialize) mAnimationTrackBar  ).EndInit();
+            splitContainer_Main.Panel1.ResumeLayout( false );
+            splitContainer_Main.Panel2.ResumeLayout( false );
+            ( (System.ComponentModel.ISupportInitialize) splitContainer_Main  ).EndInit();
+            splitContainer_Main.ResumeLayout( false );
+            tableLayoutPanel_Leftside.ResumeLayout( false );
+            splitContainer_RightSide.Panel1.ResumeLayout( false );
+            splitContainer_RightSide.Panel2.ResumeLayout( false );
+            ( (System.ComponentModel.ISupportInitialize) splitContainer_RightSide  ).EndInit();
+            splitContainer_RightSide.ResumeLayout( false );
+            panel_PropertyGridContainer.ResumeLayout( false );
+            ResumeLayout( false );
+            PerformLayout();
         }
 
         #endregion
 
-        private GFDStudio.GUI.DataViewNodes.DataTreeView mModelEditorTreeView;
+        private DataTreeView mModelEditorTreeView;
         private System.Windows.Forms.MenuStrip mMainMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem mFileToolStripMenuItem;
-        private System.Windows.Forms.PropertyGrid mPropertyGrid;
         private System.Windows.Forms.ToolStripMenuItem mOpenToolStripMenuItem;
         private System.Windows.Forms.Panel mContentPanel;
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
@@ -445,7 +500,7 @@ namespace GFDStudio.GUI.Forms
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel_AnimationControls;
         private System.Windows.Forms.Button mAnimationPlaybackButton;
         private System.Windows.Forms.TrackBar mAnimationTrackBar;
         private DataTreeView mAnimationListTreeView;
@@ -461,5 +516,10 @@ namespace GFDStudio.GUI.Forms
         private System.Windows.Forms.ToolStripMenuItem thereIsNoHelpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem perishToolStripMenuItem;
         public System.Windows.Forms.ToolStripMenuItem retainTexNameToolStripMenuItem;
+        private System.Windows.Forms.SplitContainer splitContainer_Main;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel_Leftside;
+        private System.Windows.Forms.SplitContainer splitContainer_RightSide;
+        private System.Windows.Forms.Panel panel_PropertyGridContainer;
+        private System.Windows.Forms.PropertyGrid mPropertyGrid;
     }
 }
