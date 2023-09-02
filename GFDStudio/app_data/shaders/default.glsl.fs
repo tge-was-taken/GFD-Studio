@@ -25,6 +25,14 @@ uniform vec4 uMatAmbient;
 uniform vec4 uMatDiffuse;
 uniform vec4 uMatEmissive;
 uniform int DrawMethod;
+uniform bool uMatHasType0;
+
+uniform vec4 uMatToonLightColor;
+uniform float uMatToonLightThreshold;
+uniform float uMatToonLightFactor;
+uniform float uMatToonShadowBrightness;
+uniform float uMatToonShadowThreshold;
+uniform float uMatToonShadowFactor;
 
 float mapRange(float value, float min1, float max1, float min2, float max2) {
   return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
@@ -77,12 +85,6 @@ void CharacterShader()
     vec4 toonShadow;
     vec3 lightDirection = vec3( 90.0, 45.0, 90.0 );
     vec3 eyePos = normalize( -fPosition );
-    vec4 toonLightColor = vec4(0.98, 0.98, 0.98, 0.36);
-    float toonLightThreshold = 0.7;
-    float toonLightFactor = 14.0;
-    float toonShadowBrightness = 0.5;
-    float toonShadowThreshold = 0.5;
-    float toonShadowFactor = 20.0;
 
     if ( uMatHasDiffuse )
     {
@@ -119,12 +121,12 @@ void CharacterShader()
     float phongShadow = dot(normalize(lightDirection),normalize(fFacingNormal));
     float clampedPhongShadow = clamp(phongShadow, 0.0, 1.0);
     // Ramp the shadow, copypasted from p5r shader
-    float D = clamp((max(clampedPhongShadow - pow(toonShadowThreshold, 1.8), 0.0) * toonShadowFactor), 0, 1);
+    float D = clamp((max(clampedPhongShadow - pow(uMatToonShadowThreshold, 1.8), 0.0) * uMatToonShadowFactor), 0, 1);
     toonShadow = vec4(D);
     toonShadow.rgb *= shadowColor.rgb;
     // Calculate rim light, copypasted from p5r shader
     float NVW = clamp(( dot( fFacingNormal, mix( eyePos, fFacingNormal, -min( phongShadow, 0.0) ) )), 0.0, 1.0);
-    float E = pow(( min( 1.0 - NVW, toonLightThreshold) / toonLightThreshold), toonLightFactor);
+    float E = pow(( min( 1.0 - NVW, uMatToonLightThreshold) / uMatToonLightThreshold), uMatToonLightFactor);
 
     // Phong Specular
     vec3 ref = reflect(-normalize(lightDirection), normalize(fFacingNormal));
@@ -136,14 +138,17 @@ void CharacterShader()
     toonShadow.xyz = clamp((toonShadow.xyz + uMatAmbient.xyz), 0, 1);
     //Calculate accumated color so far
     vec4 accumulatedColor = diffuseColor + vec4(uMatEmissive.rgb, 1.0) * specular * specularColor;
-    accumulatedColor = mix(accumulatedColor, toonLightColor, E * toonLightColor.a * shadowColor.a );
+    accumulatedColor = mix(accumulatedColor, uMatToonLightColor, E * uMatToonLightColor.a * shadowColor.a );
     vec4 addedShadow = accumulatedColor * toonShadow;
-    accumulatedColor = mix(accumulatedColor, addedShadow, 1.0 - toonShadowBrightness);
+    accumulatedColor = mix(accumulatedColor, addedShadow, 1.0 - uMatToonShadowBrightness);
 
     oColor = accumulatedColor;
 }
 
 void main()
 {
-    CharacterShader();
+    if (uMatHasType0)
+        CharacterShader();
+    else
+        DefaultShader();
 }
