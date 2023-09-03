@@ -56,6 +56,7 @@ namespace GFDStudio.GUI.Forms
             MassReplaceTexturesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             retainTexNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            retainColorValuesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             thereIsNoHelpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             perishToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -273,7 +274,7 @@ namespace GFDStudio.GUI.Forms
             // 
             optionsToolStripMenuItem.AutoSize = false;
             optionsToolStripMenuItem.BackColor = System.Drawing.Color.FromArgb(   30  ,   30  ,   30   );
-            optionsToolStripMenuItem.DropDownItems.AddRange( new System.Windows.Forms.ToolStripItem[] { retainTexNameToolStripMenuItem } );
+            optionsToolStripMenuItem.DropDownItems.AddRange( new System.Windows.Forms.ToolStripItem[] { retainTexNameToolStripMenuItem, retainColorValuesToolStripMenuItem } );
             optionsToolStripMenuItem.ForeColor = System.Drawing.Color.Silver;
             optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
             optionsToolStripMenuItem.Size = new System.Drawing.Size( 75, 24 );
@@ -290,6 +291,18 @@ namespace GFDStudio.GUI.Forms
             retainTexNameToolStripMenuItem.Name = "retainTexNameToolStripMenuItem";
             retainTexNameToolStripMenuItem.Size = new System.Drawing.Size( 459, 26 );
             retainTexNameToolStripMenuItem.Text = "Retain original material's texture names when replacing";
+            // 
+            // retainColorValuesToolStripMenuItem
+            // 
+            retainColorValuesToolStripMenuItem.AutoSize = false;
+            retainColorValuesToolStripMenuItem.BackColor = System.Drawing.Color.FromArgb( 20, 20, 20 );
+            retainColorValuesToolStripMenuItem.Checked = false;
+            retainColorValuesToolStripMenuItem.CheckOnClick = true;
+            retainColorValuesToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Unchecked;
+            retainColorValuesToolStripMenuItem.ForeColor = System.Drawing.Color.Silver;
+            retainColorValuesToolStripMenuItem.Name = "retainColorValuesToolStripMenuItem";
+            retainColorValuesToolStripMenuItem.Size = new System.Drawing.Size( 459, 26 );
+            retainColorValuesToolStripMenuItem.Text = "Retain original material's color values when replacing";
             // 
             // helpToolStripMenuItem
             // 
@@ -689,6 +702,7 @@ namespace GFDStudio.GUI.Forms
         private System.Windows.Forms.ToolStripMenuItem thereIsNoHelpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem perishToolStripMenuItem;
         public System.Windows.Forms.ToolStripMenuItem retainTexNameToolStripMenuItem;
+        public System.Windows.Forms.ToolStripMenuItem retainColorValuesToolStripMenuItem;
         private System.Windows.Forms.SplitContainer splitContainer_Main;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel_Leftside;
         private System.Windows.Forms.SplitContainer splitContainer_RightSide;
