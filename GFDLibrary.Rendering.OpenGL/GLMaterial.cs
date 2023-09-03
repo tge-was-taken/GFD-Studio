@@ -62,14 +62,14 @@ namespace GFDLibrary.Rendering.OpenGL
             Specular = material.SpecularColor.ToOpenTK();
             Emissive = material.EmissiveColor.ToOpenTK();
 
-            HasType0 = ( material.Attributes != null && material.Flags.HasFlag(MaterialFlags.HasAttributes) 
-                & material.Attributes.Any(x => x.AttributeType == MaterialAttributeType.Type0));
-            HasType1 = ( material.Attributes != null && material.Flags.HasFlag( MaterialFlags.HasAttributes )
-                & material.Attributes.Any( x => x.AttributeType == MaterialAttributeType.Type1 ) || material.Attributes.Any( x => x.AttributeType == MaterialAttributeType.Type1 ) );
-            HasType4 = ( material.Attributes != null && material.Flags.HasFlag( MaterialFlags.HasAttributes )
-                & material.Attributes.Any( x => x.AttributeType == MaterialAttributeType.Type4 ) || material.Attributes.Any( x => x.AttributeType == MaterialAttributeType.Type4 ) );
+            if ( material.Attributes != null && material.Flags.HasFlag( MaterialFlags.HasAttributes ) )
+            {
+                HasType0 = material.Attributes.Any( x => x.AttributeType == MaterialAttributeType.Type0 );
+                HasType1 = material.Attributes.Any( x => x.AttributeType == MaterialAttributeType.Type1 );
+                HasType4 = material.Attributes.Any( x => x.AttributeType == MaterialAttributeType.Type4 );
+            }
 
-            if ( HasType0)
+            if (HasType0)
             {
                 MaterialAttributeType0 type0 = (MaterialAttributeType0)material.Attributes.Single(
                     x => x.AttributeType == MaterialAttributeType.Type0 );
@@ -89,7 +89,7 @@ namespace GFDLibrary.Rendering.OpenGL
                 ToonLightThreshold = type1.Field1C;
                 ToonLightFactor = type1.Field20;
             }
-            if ( HasType4 )
+            if (HasType4)
             {
                 MaterialAttributeType4 type4 = (MaterialAttributeType4)material.Attributes.Single(
                     x => x.AttributeType == MaterialAttributeType.Type4 );
