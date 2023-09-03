@@ -43,7 +43,7 @@ namespace GFDLibrary.Rendering.OpenGL
         public bool HasType0 { get; set; } = false;
         public bool HasType1 { get; set; } = false;
         public bool HasType4 { get; set; } = false;
-        public uint Type0Flags { get; set; }
+        public int Type0Flags { get; set; }
 
         public bool HasDiffuseTexture => DiffuseTexture != null;
         public bool HasSpecularTexture => SpecularTexture != null;
@@ -79,7 +79,7 @@ namespace GFDLibrary.Rendering.OpenGL
                 ToonShadowBrightness = type0.Field24;
                 ToonShadowThreshold = type0.Field28;
                 ToonShadowFactor = type0.Field2C;
-                Type0Flags = type0.RawFlags;
+                Type0Flags = ((int)type0.Type0Flags);
             }
             if (HasType1)
             {
