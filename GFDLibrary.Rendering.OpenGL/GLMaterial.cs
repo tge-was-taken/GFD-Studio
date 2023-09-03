@@ -129,7 +129,7 @@ namespace GFDLibrary.Rendering.OpenGL
             shaderProgram.SetUniform( "uMatType0Flags", Type0Flags );
             shaderProgram.SetUniform( "uMatToonLightColor", ToonLightColor );
             shaderProgram.SetUniform( "uMatToonLightFactor", ToonLightFactor );
-            shaderProgram.SetUniform( "uMatToonLightThreshold ", ToonLightThreshold );
+            shaderProgram.SetUniform( "uMatToonLightThreshold", ToonLightThreshold );
             shaderProgram.SetUniform( "uMatToonShadowBrightness", ToonShadowBrightness );
             shaderProgram.SetUniform( "uMatToonShadowThreshold", ToonShadowThreshold );
             shaderProgram.SetUniform( "uMatToonShadowFactor", ToonShadowFactor );

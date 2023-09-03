@@ -26,7 +26,7 @@ uniform vec4 uMatDiffuse;
 uniform vec4 uMatEmissive;
 uniform int DrawMethod;
 uniform bool uMatHasType0;
-uniform uint uMatType0Flags;
+uniform int uMatType0Flags;
 
 uniform vec4 uMatToonLightColor;
 uniform float uMatToonLightThreshold;
@@ -124,7 +124,7 @@ void CharacterShader()
     // Ramp the shadow, copypasted from p5r shader
     float D = clamp((max(clampedPhongShadow - pow(uMatToonShadowThreshold, 1.8), 0.0) * uMatToonShadowFactor), 0, 1);
     if (uMatType0Flags != 77)
-        toonShadow = vec4(0xD);
+        toonShadow = vec4(D);
     toonShadow.rgb *= shadowColor.rgb;
     // Calculate rim light, copypasted from p5r shader
     float NVW = clamp(( dot( fFacingNormal, mix( eyePos, fFacingNormal, -min( phongShadow, 0.0) ) )), 0.0, 1.0);
