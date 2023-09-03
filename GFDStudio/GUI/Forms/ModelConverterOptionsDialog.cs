@@ -6,16 +6,17 @@ using System.Diagnostics;
 using System.Linq;
 using GFDLibrary;
 using GFDLibrary.Materials;
+using MetroSet_UI.Forms;
 
 namespace GFDStudio.GUI.Forms
 {
-    public partial class ModelConverterOptionsDialog : Form
+    public partial class ModelConverterOptionsDialog : MetroSetForm
     {
 
         private static string PresetLibraryPath = System.IO.Path.GetDirectoryName( Application.ExecutablePath ) + @"\Presets\";
         private string[] Presets = Directory.GetFiles( PresetLibraryPath, "*.yml" ).Select( file => Path.GetFileName( file ) ).ToArray();
 
-        public object MaterialPreset 
+        public object MaterialPreset
             => YamlSerializer.LoadYamlFile<Material>( PresetLibraryPath + Presets[MaterialPresetComboBox.SelectedIndex] );
 
 
