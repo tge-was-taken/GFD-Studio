@@ -26,6 +26,8 @@ uniform vec4 uMatDiffuse;
 uniform vec4 uMatEmissive;
 uniform int DrawMethod;
 uniform bool uMatHasType0;
+uniform bool uMatHasType1;
+uniform bool uMatHasType4;
 uniform int uMatType0Flags;
 
 uniform vec4 uMatToonLightColor;
@@ -149,7 +151,7 @@ void CharacterShader()
 
 void main()
 {
-    if (uMatHasType0)
+    if (uMatHasType0 || uMatHasType1 || uMatHasType4)
         CharacterShader();
     else
         DefaultShader();

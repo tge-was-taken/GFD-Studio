@@ -41,6 +41,8 @@ namespace GFDLibrary.Rendering.OpenGL
         public int DrawMethod { get; set; }
 
         public bool HasType0 { get; set; } = false;
+        public bool HasType1 { get; set; } = false;
+        public bool HasType4 { get; set; } = false;
         public uint Type0Flags { get; set; }
 
         public bool HasDiffuseTexture => DiffuseTexture != null;
@@ -62,8 +64,12 @@ namespace GFDLibrary.Rendering.OpenGL
 
             HasType0 = ( material.Attributes != null && material.Flags.HasFlag(MaterialFlags.HasAttributes) 
                 & material.Attributes.Any(x => x.AttributeType == MaterialAttributeType.Type0));
+            HasType1 = ( material.Attributes != null && material.Flags.HasFlag( MaterialFlags.HasAttributes )
+                & material.Attributes.Any( x => x.AttributeType == MaterialAttributeType.Type1 ) || material.Attributes.Any( x => x.AttributeType == MaterialAttributeType.Type1 ) );
+            HasType4 = ( material.Attributes != null && material.Flags.HasFlag( MaterialFlags.HasAttributes )
+                & material.Attributes.Any( x => x.AttributeType == MaterialAttributeType.Type4 ) || material.Attributes.Any( x => x.AttributeType == MaterialAttributeType.Type4 ) );
 
-            if (HasType0)
+            if ( HasType0)
             {
                 MaterialAttributeType0 type0 = (MaterialAttributeType0)material.Attributes.Single(
                     x => x.AttributeType == MaterialAttributeType.Type0 );
@@ -74,6 +80,22 @@ namespace GFDLibrary.Rendering.OpenGL
                 ToonShadowThreshold = type0.Field28;
                 ToonShadowFactor = type0.Field2C;
                 Type0Flags = type0.RawFlags;
+            }
+            if (HasType1)
+            {
+                MaterialAttributeType1 type1 = (MaterialAttributeType1)material.Attributes.Single(
+                    x => x.AttributeType == MaterialAttributeType.Type1 );
+                ToonLightColor = type1.Field24.ToOpenTK();
+                ToonLightThreshold = type1.Field1C;
+                ToonLightFactor = type1.Field20;
+            }
+            if ( HasType4 )
+            {
+                MaterialAttributeType4 type4 = (MaterialAttributeType4)material.Attributes.Single(
+                    x => x.AttributeType == MaterialAttributeType.Type4 );
+                ToonLightColor = type4.Field24.ToOpenTK();
+                ToonLightThreshold = type4.Field1C;
+                ToonLightFactor = type4.Field20;
             }
 
             // texture
@@ -126,6 +148,8 @@ namespace GFDLibrary.Rendering.OpenGL
             shaderProgram.SetUniform( "uMatEmissive",             Emissive );
             shaderProgram.SetUniform( "DrawMethod", DrawMethod );
             shaderProgram.SetUniform( "uMatHasType0", HasType0 );
+            shaderProgram.SetUniform( "uMatHasType1", HasType1 );
+            shaderProgram.SetUniform( "uMatHasType4", HasType4 );
             shaderProgram.SetUniform( "uMatType0Flags", Type0Flags );
             shaderProgram.SetUniform( "uMatToonLightColor", ToonLightColor );
             shaderProgram.SetUniform( "uMatToonLightFactor", ToonLightFactor );
