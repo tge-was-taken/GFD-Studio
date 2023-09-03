@@ -85,7 +85,7 @@ namespace GFDLibrary.Rendering.OpenGL
             {
                 MaterialAttributeType1 type1 = (MaterialAttributeType1)material.Attributes.Single(
                     x => x.AttributeType == MaterialAttributeType.Type1 );
-                ToonLightColor = type1.Field24.ToOpenTK();
+                ToonLightColor = type1.InnerGlow.ToOpenTK();
                 ToonLightThreshold = type1.Field1C;
                 ToonLightFactor = type1.Field20;
             }
@@ -93,7 +93,7 @@ namespace GFDLibrary.Rendering.OpenGL
             {
                 MaterialAttributeType4 type4 = (MaterialAttributeType4)material.Attributes.Single(
                     x => x.AttributeType == MaterialAttributeType.Type4 );
-                ToonLightColor = type4.Field24.ToOpenTK();
+                ToonLightColor = type4.Field0C.ToOpenTK();
                 ToonLightThreshold = type4.Field1C;
                 ToonLightFactor = type4.Field20;
             }
