@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\yet-another-tab-control\GrayIris.Utilities.csproj" />
+    <!--<ProjectReference Include="..\..\yet-another-tab-control\GrayIris.Utilities.csproj" />-->
     <ProjectReference Include="..\GFDLibrary.Rendering.OpenGL\GFDLibrary.Rendering.OpenGL.csproj" />
     <ProjectReference Include="..\GFDLibrary\GFDLibrary.NET6.csproj" />
   </ItemGroup>

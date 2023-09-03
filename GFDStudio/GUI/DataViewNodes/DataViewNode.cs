@@ -8,7 +8,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 using GFDLibrary;
-using GFDLibrary.Models.Conversion;
 using GFDStudio.DataManagement;
 using GFDStudio.FormatModules;
 
@@ -264,11 +263,11 @@ namespace GFDStudio.GUI.DataViewNodes
 
         public void ReplaceProcessing ( Type type, object replacement )
         {
-            ToolStripMenuItem retainName = Forms.MainForm.Instance.retainTexNameToolStripMenuItem;
-
             if ( type == typeof( GFDLibrary.Materials.Material ) )
             {
-                if ( retainName.Checked )
+                ToolStripMenuItem item = Forms.MainForm.Instance.retainTexNameToolStripMenuItem;
+
+                if ( item.Checked )
                 {
                     GFDLibrary.Materials.Material OriginalMat = (GFDLibrary.Materials.Material)Data;
                     GFDLibrary.Materials.Material ReplacementMat = (GFDLibrary.Materials.Material)replacement;
@@ -298,9 +297,9 @@ namespace GFDStudio.GUI.DataViewNodes
             }
         }
 
-        public void Replace( object data )
+        public void Replace( object model )
         {
-            Data = data;
+            Data = model;
             NotifyDataPropertyChanged();
             InitializeView( true );
             DataTreeView.RefreshSelection();
@@ -635,7 +634,7 @@ namespace GFDStudio.GUI.DataViewNodes
                     dialog.CheckPathExists = true;
                     dialog.FileName = Text;
                     dialog.Filter = "YAML files (*.yml)|*.yml";
-                    dialog.Title = "Select a replacement file.";
+                    dialog.Title = "Select a file to export to.";
                     dialog.ValidateNames = true;
                     dialog.AddExtension = true;
 

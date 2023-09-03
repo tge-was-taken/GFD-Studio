@@ -360,9 +360,9 @@ namespace GFDStudio.GUI.DataViewNodes
                 ModelPackConverterOptions options = new ModelPackConverterOptions()
                 {
                     MaterialPreset = dialog.MaterialPreset,
+                    Version = dialog.Version
                 };
-
-                ReplaceProcessing(DataType, options.MaterialPreset);
+                Replace(Material.ConvertToMaterialPreset(Data, options));
             }
         }
     }
