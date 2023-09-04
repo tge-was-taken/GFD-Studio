@@ -85,7 +85,6 @@ namespace GFDStudio.GUI.Forms
             splitContainer_Main.Panel1.SuspendLayout();
             splitContainer_Main.Panel2.SuspendLayout();
             splitContainer_Main.SuspendLayout();
-            tableLayoutPanel_Leftside.SuspendLayout();
             ( (System.ComponentModel.ISupportInitialize) splitContainer_LeftSide  ).BeginInit();
             splitContainer_LeftSide.Panel1.SuspendLayout();
             splitContainer_LeftSide.Panel2.SuspendLayout();
