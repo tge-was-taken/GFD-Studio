@@ -43,7 +43,7 @@ namespace GFDLibrary.Rendering.OpenGL
         public bool HasType0 { get; set; } = false;
         public bool HasType1 { get; set; } = false;
         public bool HasType4 { get; set; } = false;
-        public int MaterialFlags { get; set; }
+        public int MatFlags { get; set; }
         public int Type0Flags { get; set; }
 
         public bool HasDiffuseTexture => DiffuseTexture != null;
@@ -63,7 +63,7 @@ namespace GFDLibrary.Rendering.OpenGL
             Specular = material.SpecularColor.ToOpenTK();
             Emissive = material.EmissiveColor.ToOpenTK();
 
-            MaterialFlags = (int)material.Flags;
+            MatFlags = Convert.ToInt32(material.Flags);
 
             if ( material.Attributes != null && material.Flags.HasFlag( MaterialFlags.HasAttributes ) )
             {
@@ -153,7 +153,7 @@ namespace GFDLibrary.Rendering.OpenGL
             shaderProgram.SetUniform( "uMatHasType0",             HasType0 );
             shaderProgram.SetUniform( "uMatHasType1",             HasType1 );
             shaderProgram.SetUniform( "uMatHasType4",             HasType4 );
-            shaderProgram.SetUniform( "uMatFlags",                MaterialFlags );
+            shaderProgram.SetUniform( "uMatFlags",                MatFlags );
             shaderProgram.SetUniform( "uMatType0Flags",           Type0Flags );
             shaderProgram.SetUniform( "uMatToonLightColor",       ToonLightColor );
             shaderProgram.SetUniform( "uMatToonLightFactor",      ToonLightFactor );

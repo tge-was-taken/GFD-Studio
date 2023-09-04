@@ -17,6 +17,8 @@ namespace GFDStudio
         public static string Name { get; } = "GFD Studio";
         public static Version Version { get; } = AssemblyName.Version;
 
+        public static bool DarkMode { get; set; } = true;
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -54,9 +56,9 @@ namespace GFDStudio
 #endif
     }
 
-    public class CustomMenuRenderer : ToolStripProfessionalRenderer
+    public class DarkMenuRenderer : ToolStripProfessionalRenderer
     {
-        public CustomMenuRenderer() : base( new CustomColors() ) { }
+        public DarkMenuRenderer() : base( new CustomColors() ) { }
     }
     public class CustomColors : ProfessionalColorTable
     {

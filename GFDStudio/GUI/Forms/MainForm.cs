@@ -1,4 +1,8 @@
 ﻿using System;
+using System.CodeDom;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Forms;
@@ -7,7 +11,9 @@ using GFDLibrary.Animations;
 using GFDStudio.FormatModules;
 using GFDStudio.GUI.Controls;
 using GFDStudio.GUI.DataViewNodes;
+using MetroSet_UI.Controls;
 using MetroSet_UI.Forms;
+using Control = System.Windows.Forms.Control;
 
 namespace GFDStudio.GUI.Forms
 {
@@ -42,10 +48,11 @@ namespace GFDStudio.GUI.Forms
         public MainForm()
         {
             InitializeComponent();
-            mMainMenuStrip.Renderer = new CustomMenuRenderer();
             InitializeState();
             InitializeEvents();
-
+            if ( File.Exists( "UseDarkMode.txt" ) )
+                Program.DarkMode = true;
+            ToggleTheme();
 #if DEBUG
             //ModelViewControl.Instance.LoadAnimation( Resource.Load<AnimationPack>( 
             //    @"D:\Modding\Persona 5 EU\Main game\ExtractedClean\data\model\character\0001\field\bf0001_002.GAP" ).Animations[2]);
