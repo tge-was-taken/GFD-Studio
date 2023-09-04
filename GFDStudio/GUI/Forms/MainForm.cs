@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Linq;
+using System.Windows.Controls;
 using System.Windows.Forms;
 using GFDLibrary;
 using GFDLibrary.Animations;
 using GFDStudio.FormatModules;
 using GFDStudio.GUI.Controls;
 using GFDStudio.GUI.DataViewNodes;
+using MetroSet_UI.Forms;
 
 namespace GFDStudio.GUI.Forms
 {
-    public partial class MainForm : Form
+    public partial class MainForm : MetroSet_UI.Forms.MetroSetForm
     {
         private static MainForm sInstance;
         public static MainForm Instance
@@ -40,6 +42,7 @@ namespace GFDStudio.GUI.Forms
         public MainForm()
         {
             InitializeComponent();
+            mMainMenuStrip.Renderer = new CustomMenuRenderer();
             InitializeState();
             InitializeEvents();
 
@@ -185,7 +188,7 @@ namespace GFDStudio.GUI.Forms
 
         public void UpdateSelection()
         {
-            var selectedNode = ( DataViewNode )mPropertyGrid.SelectedObject;
+            var selectedNode = (DataViewNode)mPropertyGrid.SelectedObject;
             if ( selectedNode != null )
                 UpdateSelection( selectedNode );
         }
@@ -195,7 +198,7 @@ namespace GFDStudio.GUI.Forms
             // Set property grid to display properties of the currently selected node
             mPropertyGrid.SelectedObject = node;
 
-            Control control = null;
+            System.Windows.Forms.Control control = null;
 
             if ( FormatModuleRegistry.ModuleByType.TryGetValue( node.DataType, out var module ) )
             {
@@ -207,13 +210,13 @@ namespace GFDStudio.GUI.Forms
                 }
                 else if ( module.ModelType == typeof( ModelPack ) )
                 {
-                    ModelViewControl.Instance.LoadModel( ( ModelPack )node.Data );
+                    ModelViewControl.Instance.LoadModel( (ModelPack)node.Data );
                     ModelViewControl.Instance.Visible = false;
                     control = ModelViewControl.Instance;
                 }
                 else if ( node.DataType == typeof( Animation ) )
                 {
-                    ModelViewControl.Instance.LoadAnimation( ( Animation ) node.Data );
+                    ModelViewControl.Instance.LoadAnimation( (Animation)node.Data );
                 }
             }
 

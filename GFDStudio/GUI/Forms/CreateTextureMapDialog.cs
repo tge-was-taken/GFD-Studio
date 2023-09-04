@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Windows.Forms;
+using MetroSet_UI.Forms;
 
 namespace GFDStudio.GUI.Forms
 {
-    public partial class CreateTextureMapDialog : Form
+    public partial class CreateTextureMapDialog : MetroSetForm
     {
         public ResultValue Result { get; private set; }
 

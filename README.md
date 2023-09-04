@@ -1,14 +1,14 @@
 # GFD Studio [![Build status](https://ci.appveyor.com/api/projects/status/l3p8joj4frjkn753?svg=true)](https://ci.appveyor.com/project/tge/gfd-studio)
-**GFD Studio** is a tool for viewing, editing and converting models in **GMD**/**GFS** format.
-## Latest builds
-Latest debug/release builds can be found here:
-https://ci.appveyor.com/project/tge/gfd-studio/build/artifacts
+**GFD Studio** is a tool for viewing, editing and converting models in **GMD**/**GFS** format.  
+This fork is based on v0.6.7, and includes some personalization like a **Dark Mode**, better shaders (thanks to DniweTamp), and DPI awareness.  
+
 ## Features
 - View a rendered preview of the opened model
 - View, export, replace and add **Textures** (automatic conversion to and from PNG/DDS)
 - Export, replace and edit **Materials** and their maps & properties
 - Export and import models using assimp (automatic conversion to and from DAE/FBX)
 ## Requirements
+- .NET Framework 6 runtime installed
 - A videocard that supports at least OpenGL 3.3 to use the model viewer.
 (This is required for compiling shaders)
 ## Usage
