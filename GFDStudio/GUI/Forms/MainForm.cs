@@ -42,6 +42,7 @@ namespace GFDStudio.GUI.Forms
         public MainForm()
         {
             InitializeComponent();
+            mMainMenuStrip.Renderer = new CustomMenuRenderer();
             InitializeState();
             InitializeEvents();
 

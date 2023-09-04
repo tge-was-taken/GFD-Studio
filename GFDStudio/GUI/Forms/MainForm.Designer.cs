@@ -67,11 +67,11 @@ namespace GFDStudio.GUI.Forms
             tabPage2 = new MetroSetSetTabPage();
             mAnimationListTreeView = new DataTreeView();
             tableLayoutPanel_AnimationControls = new System.Windows.Forms.TableLayoutPanel();
-            mAnimationStopButton = new MetroSetButton();
-            mAnimationPlaybackButton = new MetroSetButton();
             mAnimationTrackBar = new System.Windows.Forms.TrackBar();
+            mAnimationPlaybackButton = new MetroSetButton();
+            mAnimationStopButton = new MetroSetButton();
             splitContainer_Main = new System.Windows.Forms.SplitContainer();
-            tableLayoutPanel_Leftside = new System.Windows.Forms.TableLayoutPanel();
+            splitContainer_LeftSide = new System.Windows.Forms.SplitContainer();
             splitContainer_RightSide = new System.Windows.Forms.SplitContainer();
             panel_PropertyGridContainer = new System.Windows.Forms.Panel();
             mPropertyGrid = new System.Windows.Forms.PropertyGrid();
@@ -86,6 +86,10 @@ namespace GFDStudio.GUI.Forms
             splitContainer_Main.Panel2.SuspendLayout();
             splitContainer_Main.SuspendLayout();
             tableLayoutPanel_Leftside.SuspendLayout();
+            ( (System.ComponentModel.ISupportInitialize) splitContainer_LeftSide  ).BeginInit();
+            splitContainer_LeftSide.Panel1.SuspendLayout();
+            splitContainer_LeftSide.Panel2.SuspendLayout();
+            splitContainer_LeftSide.SuspendLayout();
             ( (System.ComponentModel.ISupportInitialize) splitContainer_RightSide  ).BeginInit();
             splitContainer_RightSide.Panel1.SuspendLayout();
             splitContainer_RightSide.Panel2.SuspendLayout();
@@ -105,7 +109,6 @@ namespace GFDStudio.GUI.Forms
             mMainMenuStrip.Size = new System.Drawing.Size( 878, 30 );
             mMainMenuStrip.TabIndex = 0;
             mMainMenuStrip.Text = "menuStrip1";
-            mMainMenuStrip.Renderer = new CustomMenuRenderer();
             // 
             // mFileToolStripMenuItem
             // 
@@ -338,10 +341,10 @@ namespace GFDStudio.GUI.Forms
             // 
             mContentPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             mContentPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            mContentPanel.Location = new System.Drawing.Point( 5, 4 );
+            mContentPanel.Location = new System.Drawing.Point( 0, 0 );
             mContentPanel.Margin = new System.Windows.Forms.Padding( 5, 4, 5, 4 );
             mContentPanel.Name = "mContentPanel";
-            mContentPanel.Size = new System.Drawing.Size( 441, 471 );
+            mContentPanel.Size = new System.Drawing.Size( 451, 492 );
             mContentPanel.TabIndex = 3;
             // 
             // tabControl1
@@ -423,7 +426,7 @@ namespace GFDStudio.GUI.Forms
             tabPage2.Margin = new System.Windows.Forms.Padding( 5, 4, 5, 4 );
             tabPage2.Name = "tabPage2";
             tabPage2.Padding = new System.Windows.Forms.Padding( 5, 4, 5, 4 );
-            tabPage2.Size = new System.Drawing.Size( 415, 223 );
+            tabPage2.Size = new System.Drawing.Size( 415, 179 );
             tabPage2.Style = MetroSet_UI.Enums.Style.Dark;
             tabPage2.StyleManager = null;
             tabPage2.TabIndex = 1;
@@ -443,62 +446,36 @@ namespace GFDStudio.GUI.Forms
             mAnimationListTreeView.Margin = new System.Windows.Forms.Padding( 5, 4, 5, 4 );
             mAnimationListTreeView.Name = "mAnimationListTreeView";
             mAnimationListTreeView.SelectedImageIndex = 0;
-            mAnimationListTreeView.Size = new System.Drawing.Size( 405, 215 );
+            mAnimationListTreeView.Size = new System.Drawing.Size( 405, 171 );
             mAnimationListTreeView.TabIndex = 2;
             mAnimationListTreeView.TopNode = null;
             // 
             // tableLayoutPanel_AnimationControls
             // 
-            tableLayoutPanel_AnimationControls.ColumnCount = 8;
-            tableLayoutPanel_AnimationControls.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle( System.Windows.Forms.SizeType.Percent, 16.66667F ) );
-            tableLayoutPanel_AnimationControls.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle( System.Windows.Forms.SizeType.Percent, 16.66667F ) );
-            tableLayoutPanel_AnimationControls.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle( System.Windows.Forms.SizeType.Percent, 16.66667F ) );
-            tableLayoutPanel_AnimationControls.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle( System.Windows.Forms.SizeType.Percent, 16.66667F ) );
-            tableLayoutPanel_AnimationControls.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle( System.Windows.Forms.SizeType.Percent, 16.66667F ) );
-            tableLayoutPanel_AnimationControls.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle( System.Windows.Forms.SizeType.Percent, 16.66667F ) );
-            tableLayoutPanel_AnimationControls.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle( System.Windows.Forms.SizeType.Absolute, 94F ) );
-            tableLayoutPanel_AnimationControls.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle( System.Windows.Forms.SizeType.Absolute, 187F ) );
-            tableLayoutPanel_AnimationControls.Controls.Add( mAnimationStopButton, 7, 0 );
-            tableLayoutPanel_AnimationControls.Controls.Add( mAnimationPlaybackButton, 6, 0 );
+            tableLayoutPanel_AnimationControls.ColumnCount = 3;
+            tableLayoutPanel_AnimationControls.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle( System.Windows.Forms.SizeType.Percent, 70F ) );
+            tableLayoutPanel_AnimationControls.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle( System.Windows.Forms.SizeType.Percent, 15F ) );
+            tableLayoutPanel_AnimationControls.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle( System.Windows.Forms.SizeType.Percent, 15F ) );
             tableLayoutPanel_AnimationControls.Controls.Add( mAnimationTrackBar, 0, 0 );
+            tableLayoutPanel_AnimationControls.Controls.Add( mAnimationPlaybackButton, 1, 0 );
+            tableLayoutPanel_AnimationControls.Controls.Add( mAnimationStopButton, 2, 0 );
             tableLayoutPanel_AnimationControls.Dock = System.Windows.Forms.DockStyle.Fill;
-            tableLayoutPanel_AnimationControls.Location = new System.Drawing.Point( 5, 483 );
+            tableLayoutPanel_AnimationControls.Location = new System.Drawing.Point( 0, 0 );
             tableLayoutPanel_AnimationControls.Margin = new System.Windows.Forms.Padding( 5, 4, 5, 4 );
             tableLayoutPanel_AnimationControls.Name = "tableLayoutPanel_AnimationControls";
             tableLayoutPanel_AnimationControls.RowCount = 1;
             tableLayoutPanel_AnimationControls.RowStyles.Add( new System.Windows.Forms.RowStyle( System.Windows.Forms.SizeType.Percent, 100F ) );
-            tableLayoutPanel_AnimationControls.Size = new System.Drawing.Size( 441, 34 );
+            tableLayoutPanel_AnimationControls.Size = new System.Drawing.Size( 451, 25 );
             tableLayoutPanel_AnimationControls.TabIndex = 0;
             // 
-            // mAnimationStopButton
+            // mAnimationTrackBar
             // 
-            mAnimationStopButton.DisabledBackColor = System.Drawing.Color.FromArgb(   120  ,   65  ,   177  ,   225   );
-            mAnimationStopButton.DisabledBorderColor = System.Drawing.Color.FromArgb(   120  ,   65  ,   177  ,   225   );
-            mAnimationStopButton.DisabledForeColor = System.Drawing.Color.Gray;
-            mAnimationStopButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            mAnimationStopButton.Font = new System.Drawing.Font( "Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point );
-            mAnimationStopButton.HoverBorderColor = System.Drawing.Color.FromArgb(   95  ,   207  ,   255   );
-            mAnimationStopButton.HoverColor = System.Drawing.Color.FromArgb(   95  ,   207  ,   255   );
-            mAnimationStopButton.HoverTextColor = System.Drawing.Color.White;
-            mAnimationStopButton.IsDerivedStyle = true;
-            mAnimationStopButton.Location = new System.Drawing.Point( 255, 4 );
-            mAnimationStopButton.Margin = new System.Windows.Forms.Padding( 5, 4, 5, 4 );
-            mAnimationStopButton.Name = "mAnimationStopButton";
-            mAnimationStopButton.NormalBorderColor = System.Drawing.Color.FromArgb(   65  ,   177  ,   225   );
-            mAnimationStopButton.NormalColor = System.Drawing.Color.FromArgb(   65  ,   177  ,   225   );
-            mAnimationStopButton.NormalTextColor = System.Drawing.Color.White;
-            mAnimationStopButton.Padding = new System.Windows.Forms.Padding( 5 );
-            mAnimationStopButton.PressBorderColor = System.Drawing.Color.FromArgb(   35  ,   147  ,   195   );
-            mAnimationStopButton.PressColor = System.Drawing.Color.FromArgb(   35  ,   147  ,   195   );
-            mAnimationStopButton.PressTextColor = System.Drawing.Color.White;
-            mAnimationStopButton.Size = new System.Drawing.Size( 181, 26 );
-            mAnimationStopButton.Style = MetroSet_UI.Enums.Style.Light;
-            mAnimationStopButton.StyleManager = null;
-            mAnimationStopButton.TabIndex = 2;
-            mAnimationStopButton.Text = "Stop";
-            mAnimationStopButton.ThemeAuthor = "Narwin";
-            mAnimationStopButton.ThemeName = "MetroLite";
-            mAnimationStopButton.Click += HandleAnimationStopButtonClick;
+            mAnimationTrackBar.Dock = System.Windows.Forms.DockStyle.Fill;
+            mAnimationTrackBar.Location = new System.Drawing.Point( 5, 4 );
+            mAnimationTrackBar.Margin = new System.Windows.Forms.Padding( 5, 4, 5, 4 );
+            mAnimationTrackBar.Name = "mAnimationTrackBar";
+            mAnimationTrackBar.Size = new System.Drawing.Size( 305, 17 );
+            mAnimationTrackBar.TabIndex = 1;
             // 
             // mAnimationPlaybackButton
             // 
@@ -506,13 +483,14 @@ namespace GFDStudio.GUI.Forms
             mAnimationPlaybackButton.DisabledBorderColor = System.Drawing.Color.FromArgb(   120  ,   65  ,   177  ,   225   );
             mAnimationPlaybackButton.DisabledForeColor = System.Drawing.Color.Gray;
             mAnimationPlaybackButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            mAnimationPlaybackButton.Font = new System.Drawing.Font( "Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point );
+            mAnimationPlaybackButton.Font = new System.Drawing.Font( "Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point );
             mAnimationPlaybackButton.HoverBorderColor = System.Drawing.Color.FromArgb(   95  ,   207  ,   255   );
             mAnimationPlaybackButton.HoverColor = System.Drawing.Color.FromArgb(   95  ,   207  ,   255   );
             mAnimationPlaybackButton.HoverTextColor = System.Drawing.Color.White;
             mAnimationPlaybackButton.IsDerivedStyle = true;
-            mAnimationPlaybackButton.Location = new System.Drawing.Point( 161, 4 );
+            mAnimationPlaybackButton.Location = new System.Drawing.Point( 320, 4 );
             mAnimationPlaybackButton.Margin = new System.Windows.Forms.Padding( 5, 4, 5, 4 );
+            mAnimationPlaybackButton.MaximumSize = new System.Drawing.Size( 100, 30 );
             mAnimationPlaybackButton.Name = "mAnimationPlaybackButton";
             mAnimationPlaybackButton.NormalBorderColor = System.Drawing.Color.FromArgb(   65  ,   177  ,   225   );
             mAnimationPlaybackButton.NormalColor = System.Drawing.Color.FromArgb(   65  ,   177  ,   225   );
@@ -521,23 +499,44 @@ namespace GFDStudio.GUI.Forms
             mAnimationPlaybackButton.PressBorderColor = System.Drawing.Color.FromArgb(   35  ,   147  ,   195   );
             mAnimationPlaybackButton.PressColor = System.Drawing.Color.FromArgb(   35  ,   147  ,   195   );
             mAnimationPlaybackButton.PressTextColor = System.Drawing.Color.White;
-            mAnimationPlaybackButton.Size = new System.Drawing.Size( 84, 26 );
-            mAnimationPlaybackButton.Style = MetroSet_UI.Enums.Style.Light;
+            mAnimationPlaybackButton.Size = new System.Drawing.Size( 57, 17 );
+            mAnimationPlaybackButton.Style = MetroSet_UI.Enums.Style.Dark;
             mAnimationPlaybackButton.StyleManager = null;
             mAnimationPlaybackButton.TabIndex = 0;
-            mAnimationPlaybackButton.Text = "Play ";
+            mAnimationPlaybackButton.Text = "▶";
             mAnimationPlaybackButton.ThemeAuthor = "Narwin";
-            mAnimationPlaybackButton.ThemeName = "MetroLite";
+            mAnimationPlaybackButton.ThemeName = "MetroDark";
             // 
-            // mAnimationTrackBar
+            // mAnimationStopButton
             // 
-            tableLayoutPanel_AnimationControls.SetColumnSpan( mAnimationTrackBar, 6 );
-            mAnimationTrackBar.Dock = System.Windows.Forms.DockStyle.Fill;
-            mAnimationTrackBar.Location = new System.Drawing.Point( 5, 4 );
-            mAnimationTrackBar.Margin = new System.Windows.Forms.Padding( 5, 4, 5, 4 );
-            mAnimationTrackBar.Name = "mAnimationTrackBar";
-            mAnimationTrackBar.Size = new System.Drawing.Size( 146, 26 );
-            mAnimationTrackBar.TabIndex = 1;
+            mAnimationStopButton.DisabledBackColor = System.Drawing.Color.FromArgb(   120  ,   65  ,   177  ,   225   );
+            mAnimationStopButton.DisabledBorderColor = System.Drawing.Color.FromArgb(   120  ,   65  ,   177  ,   225   );
+            mAnimationStopButton.DisabledForeColor = System.Drawing.Color.Gray;
+            mAnimationStopButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            mAnimationStopButton.Font = new System.Drawing.Font( "Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point );
+            mAnimationStopButton.HoverBorderColor = System.Drawing.Color.FromArgb(   95  ,   207  ,   255   );
+            mAnimationStopButton.HoverColor = System.Drawing.Color.FromArgb(   95  ,   207  ,   255   );
+            mAnimationStopButton.HoverTextColor = System.Drawing.Color.White;
+            mAnimationStopButton.IsDerivedStyle = true;
+            mAnimationStopButton.Location = new System.Drawing.Point( 387, 4 );
+            mAnimationStopButton.Margin = new System.Windows.Forms.Padding( 5, 4, 5, 4 );
+            mAnimationStopButton.MaximumSize = new System.Drawing.Size( 100, 30 );
+            mAnimationStopButton.Name = "mAnimationStopButton";
+            mAnimationStopButton.NormalBorderColor = System.Drawing.Color.FromArgb(   65  ,   177  ,   225   );
+            mAnimationStopButton.NormalColor = System.Drawing.Color.FromArgb(   65  ,   177  ,   225   );
+            mAnimationStopButton.NormalTextColor = System.Drawing.Color.White;
+            mAnimationStopButton.Padding = new System.Windows.Forms.Padding( 5 );
+            mAnimationStopButton.PressBorderColor = System.Drawing.Color.FromArgb(   35  ,   147  ,   195   );
+            mAnimationStopButton.PressColor = System.Drawing.Color.FromArgb(   35  ,   147  ,   195   );
+            mAnimationStopButton.PressTextColor = System.Drawing.Color.White;
+            mAnimationStopButton.Size = new System.Drawing.Size( 59, 17 );
+            mAnimationStopButton.Style = MetroSet_UI.Enums.Style.Light;
+            mAnimationStopButton.StyleManager = null;
+            mAnimationStopButton.TabIndex = 2;
+            mAnimationStopButton.Text = "■";
+            mAnimationStopButton.ThemeAuthor = "Narwin";
+            mAnimationStopButton.ThemeName = "MetroLite";
+            mAnimationStopButton.Click += HandleAnimationStopButtonClick;
             // 
             // splitContainer_Main
             // 
@@ -547,7 +546,7 @@ namespace GFDStudio.GUI.Forms
             // 
             // splitContainer_Main.Panel1
             // 
-            splitContainer_Main.Panel1.Controls.Add( tableLayoutPanel_Leftside );
+            splitContainer_Main.Panel1.Controls.Add( splitContainer_LeftSide );
             // 
             // splitContainer_Main.Panel2
             // 
@@ -556,20 +555,23 @@ namespace GFDStudio.GUI.Forms
             splitContainer_Main.SplitterDistance = 451;
             splitContainer_Main.TabIndex = 5;
             // 
-            // tableLayoutPanel_Leftside
+            // splitContainer_LeftSide
             // 
-            tableLayoutPanel_Leftside.ColumnCount = 1;
-            tableLayoutPanel_Leftside.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle( System.Windows.Forms.SizeType.Percent, 100F ) );
-            tableLayoutPanel_Leftside.Controls.Add( tableLayoutPanel_AnimationControls, 0, 1 );
-            tableLayoutPanel_Leftside.Controls.Add( mContentPanel, 0, 0 );
-            tableLayoutPanel_Leftside.Dock = System.Windows.Forms.DockStyle.Fill;
-            tableLayoutPanel_Leftside.Location = new System.Drawing.Point( 0, 0 );
-            tableLayoutPanel_Leftside.Name = "tableLayoutPanel_Leftside";
-            tableLayoutPanel_Leftside.RowCount = 2;
-            tableLayoutPanel_Leftside.RowStyles.Add( new System.Windows.Forms.RowStyle( System.Windows.Forms.SizeType.Percent, 92F ) );
-            tableLayoutPanel_Leftside.RowStyles.Add( new System.Windows.Forms.RowStyle( System.Windows.Forms.SizeType.Percent, 8F ) );
-            tableLayoutPanel_Leftside.Size = new System.Drawing.Size( 451, 521 );
-            tableLayoutPanel_Leftside.TabIndex = 6;
+            splitContainer_LeftSide.Dock = System.Windows.Forms.DockStyle.Fill;
+            splitContainer_LeftSide.Location = new System.Drawing.Point( 0, 0 );
+            splitContainer_LeftSide.Name = "splitContainer_LeftSide";
+            splitContainer_LeftSide.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // splitContainer_LeftSide.Panel1
+            // 
+            splitContainer_LeftSide.Panel1.Controls.Add( mContentPanel );
+            // 
+            // splitContainer_LeftSide.Panel2
+            // 
+            splitContainer_LeftSide.Panel2.Controls.Add( tableLayoutPanel_AnimationControls );
+            splitContainer_LeftSide.Size = new System.Drawing.Size( 451, 521 );
+            splitContainer_LeftSide.SplitterDistance = 492;
+            splitContainer_LeftSide.TabIndex = 7;
             // 
             // splitContainer_RightSide
             // 
@@ -658,7 +660,10 @@ namespace GFDStudio.GUI.Forms
             splitContainer_Main.Panel2.ResumeLayout( false );
             ( (System.ComponentModel.ISupportInitialize) splitContainer_Main  ).EndInit();
             splitContainer_Main.ResumeLayout( false );
-            tableLayoutPanel_Leftside.ResumeLayout( false );
+            splitContainer_LeftSide.Panel1.ResumeLayout( false );
+            splitContainer_LeftSide.Panel2.ResumeLayout( false );
+            ( (System.ComponentModel.ISupportInitialize) splitContainer_LeftSide  ).EndInit();
+            splitContainer_LeftSide.ResumeLayout( false );
             splitContainer_RightSide.Panel1.ResumeLayout( false );
             splitContainer_RightSide.Panel2.ResumeLayout( false );
             ( (System.ComponentModel.ISupportInitialize) splitContainer_RightSide  ).EndInit();
@@ -708,5 +713,6 @@ namespace GFDStudio.GUI.Forms
         private System.Windows.Forms.SplitContainer splitContainer_RightSide;
         private System.Windows.Forms.Panel panel_PropertyGridContainer;
         private System.Windows.Forms.PropertyGrid mPropertyGrid;
+        private System.Windows.Forms.SplitContainer splitContainer_LeftSide;
     }
 }
