@@ -56,9 +56,7 @@ namespace GFDStudio.GUI.Forms
             MassReplaceTexturesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             retainTexNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            thereIsNoHelpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            perishToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            useDarkThemeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             mContentPanel = new System.Windows.Forms.Panel();
             tabControl1 = new MetroSetTabControl();
             tabPage1 = new MetroSetSetTabPage();
@@ -97,10 +95,8 @@ namespace GFDStudio.GUI.Forms
             // 
             // mMainMenuStrip
             // 
-            mMainMenuStrip.BackColor = System.Drawing.Color.FromArgb(   30  ,   30  ,   30   );
-            mMainMenuStrip.ForeColor = System.Drawing.Color.FromArgb(   220  ,   220  ,   220   );
             mMainMenuStrip.ImageScalingSize = new System.Drawing.Size( 20, 20 );
-            mMainMenuStrip.Items.AddRange( new System.Windows.Forms.ToolStripItem[] { mFileToolStripMenuItem, animationToolStripMenuItem, toolsToolStripMenuItem, optionsToolStripMenuItem, helpToolStripMenuItem } );
+            mMainMenuStrip.Items.AddRange( new System.Windows.Forms.ToolStripItem[] { mFileToolStripMenuItem, animationToolStripMenuItem, toolsToolStripMenuItem, optionsToolStripMenuItem } );
             mMainMenuStrip.Location = new System.Drawing.Point( 2, 0 );
             mMainMenuStrip.Name = "mMainMenuStrip";
             mMainMenuStrip.Padding = new System.Windows.Forms.Padding( 8, 3, 0, 3 );
@@ -111,9 +107,7 @@ namespace GFDStudio.GUI.Forms
             // mFileToolStripMenuItem
             // 
             mFileToolStripMenuItem.AutoSize = false;
-            mFileToolStripMenuItem.BackColor = System.Drawing.Color.FromArgb(   30  ,   30  ,   30   );
             mFileToolStripMenuItem.DropDownItems.AddRange( new System.Windows.Forms.ToolStripItem[] { newToolStripMenuItem, mOpenToolStripMenuItem, saveToolStripMenuItem, saveAsToolStripMenuItem } );
-            mFileToolStripMenuItem.ForeColor = System.Drawing.Color.Silver;
             mFileToolStripMenuItem.Name = "mFileToolStripMenuItem";
             mFileToolStripMenuItem.Size = new System.Drawing.Size( 46, 24 );
             mFileToolStripMenuItem.Text = "File";
@@ -121,9 +115,7 @@ namespace GFDStudio.GUI.Forms
             // newToolStripMenuItem
             // 
             newToolStripMenuItem.AutoSize = false;
-            newToolStripMenuItem.BackColor = System.Drawing.Color.FromArgb(   30  ,   30  ,   30   );
             newToolStripMenuItem.DropDownItems.AddRange( new System.Windows.Forms.ToolStripItem[] { modelToolStripMenuItem } );
-            newToolStripMenuItem.ForeColor = System.Drawing.Color.Silver;
             newToolStripMenuItem.Name = "newToolStripMenuItem";
             newToolStripMenuItem.Size = new System.Drawing.Size( 240, 26 );
             newToolStripMenuItem.Text = "New";
@@ -131,8 +123,6 @@ namespace GFDStudio.GUI.Forms
             // modelToolStripMenuItem
             // 
             modelToolStripMenuItem.AutoSize = false;
-            modelToolStripMenuItem.BackColor = System.Drawing.Color.FromArgb(   30  ,   30  ,   30   );
-            modelToolStripMenuItem.ForeColor = System.Drawing.Color.Silver;
             modelToolStripMenuItem.Name = "modelToolStripMenuItem";
             modelToolStripMenuItem.Size = new System.Drawing.Size( 224, 26 );
             modelToolStripMenuItem.Text = "Model";
@@ -141,8 +131,6 @@ namespace GFDStudio.GUI.Forms
             // mOpenToolStripMenuItem
             // 
             mOpenToolStripMenuItem.AutoSize = false;
-            mOpenToolStripMenuItem.BackColor = System.Drawing.Color.FromArgb(   30  ,   30  ,   30   );
-            mOpenToolStripMenuItem.ForeColor = System.Drawing.Color.Silver;
             mOpenToolStripMenuItem.Name = "mOpenToolStripMenuItem";
             mOpenToolStripMenuItem.ShortcutKeys =   System.Windows.Forms.Keys.Control  |  System.Windows.Forms.Keys.O  ;
             mOpenToolStripMenuItem.Size = new System.Drawing.Size( 240, 26 );
@@ -152,8 +140,6 @@ namespace GFDStudio.GUI.Forms
             // saveToolStripMenuItem
             // 
             saveToolStripMenuItem.AutoSize = false;
-            saveToolStripMenuItem.BackColor = System.Drawing.Color.FromArgb(   30  ,   30  ,   30   );
-            saveToolStripMenuItem.ForeColor = System.Drawing.Color.Silver;
             saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             saveToolStripMenuItem.ShortcutKeys =   System.Windows.Forms.Keys.Control  |  System.Windows.Forms.Keys.S  ;
             saveToolStripMenuItem.Size = new System.Drawing.Size( 240, 26 );
@@ -163,8 +149,6 @@ namespace GFDStudio.GUI.Forms
             // saveAsToolStripMenuItem
             // 
             saveAsToolStripMenuItem.AutoSize = false;
-            saveAsToolStripMenuItem.BackColor = System.Drawing.Color.FromArgb(   30  ,   30  ,   30   );
-            saveAsToolStripMenuItem.ForeColor = System.Drawing.Color.Silver;
             saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
             saveAsToolStripMenuItem.ShortcutKeys =    System.Windows.Forms.Keys.Control  |  System.Windows.Forms.Keys.Shift   |  System.Windows.Forms.Keys.S  ;
             saveAsToolStripMenuItem.Size = new System.Drawing.Size( 240, 26 );
@@ -174,9 +158,7 @@ namespace GFDStudio.GUI.Forms
             // animationToolStripMenuItem
             // 
             animationToolStripMenuItem.AutoSize = false;
-            animationToolStripMenuItem.BackColor = System.Drawing.Color.FromArgb(   30  ,   30  ,   30   );
             animationToolStripMenuItem.DropDownItems.AddRange( new System.Windows.Forms.ToolStripItem[] { loadExternalToolStripMenuItem } );
-            animationToolStripMenuItem.ForeColor = System.Drawing.Color.Silver;
             animationToolStripMenuItem.Name = "animationToolStripMenuItem";
             animationToolStripMenuItem.Size = new System.Drawing.Size( 92, 24 );
             animationToolStripMenuItem.Text = "Animation";
@@ -184,8 +166,6 @@ namespace GFDStudio.GUI.Forms
             // loadExternalToolStripMenuItem
             // 
             loadExternalToolStripMenuItem.AutoSize = false;
-            loadExternalToolStripMenuItem.BackColor = System.Drawing.Color.FromArgb(   30  ,   30  ,   30   );
-            loadExternalToolStripMenuItem.ForeColor = System.Drawing.Color.Silver;
             loadExternalToolStripMenuItem.Name = "loadExternalToolStripMenuItem";
             loadExternalToolStripMenuItem.Size = new System.Drawing.Size( 224, 26 );
             loadExternalToolStripMenuItem.Text = "Load";
@@ -194,9 +174,7 @@ namespace GFDStudio.GUI.Forms
             // toolsToolStripMenuItem
             // 
             toolsToolStripMenuItem.AutoSize = false;
-            toolsToolStripMenuItem.BackColor = System.Drawing.Color.FromArgb(   30  ,   30  ,   30   );
             toolsToolStripMenuItem.DropDownItems.AddRange( new System.Windows.Forms.ToolStripItem[] { makeRelativeToolStripMenuItem, rescaleAnimationPacksInDirectoryToolStripMenuItem, convertAnimationsToP5InDirectoryToolStripMenuItem, convertMaterialInDirectoryToolStripMenuItem, copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem, MassExportTexturesToolStripMenuItem, MassReplaceTexturesToolStripMenuItem } );
-            toolsToolStripMenuItem.ForeColor = System.Drawing.Color.Silver;
             toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
             toolsToolStripMenuItem.Size = new System.Drawing.Size( 58, 24 );
             toolsToolStripMenuItem.Text = "Tools";
@@ -204,8 +182,6 @@ namespace GFDStudio.GUI.Forms
             // makeRelativeToolStripMenuItem
             // 
             makeRelativeToolStripMenuItem.AutoSize = false;
-            makeRelativeToolStripMenuItem.BackColor = System.Drawing.Color.FromArgb(   30  ,   30  ,   30   );
-            makeRelativeToolStripMenuItem.ForeColor = System.Drawing.Color.Silver;
             makeRelativeToolStripMenuItem.Name = "makeRelativeToolStripMenuItem";
             makeRelativeToolStripMenuItem.Size = new System.Drawing.Size( 421, 26 );
             makeRelativeToolStripMenuItem.Text = "Retarget animation packs in directory";
@@ -214,8 +190,6 @@ namespace GFDStudio.GUI.Forms
             // rescaleAnimationPacksInDirectoryToolStripMenuItem
             // 
             rescaleAnimationPacksInDirectoryToolStripMenuItem.AutoSize = false;
-            rescaleAnimationPacksInDirectoryToolStripMenuItem.BackColor = System.Drawing.Color.FromArgb(   30  ,   30  ,   30   );
-            rescaleAnimationPacksInDirectoryToolStripMenuItem.ForeColor = System.Drawing.Color.Silver;
             rescaleAnimationPacksInDirectoryToolStripMenuItem.Name = "rescaleAnimationPacksInDirectoryToolStripMenuItem";
             rescaleAnimationPacksInDirectoryToolStripMenuItem.Size = new System.Drawing.Size( 421, 26 );
             rescaleAnimationPacksInDirectoryToolStripMenuItem.Text = "Rescale/Reposition animation packs in directory";
@@ -224,8 +198,6 @@ namespace GFDStudio.GUI.Forms
             // convertAnimationsToP5InDirectoryToolStripMenuItem
             // 
             convertAnimationsToP5InDirectoryToolStripMenuItem.AutoSize = false;
-            convertAnimationsToP5InDirectoryToolStripMenuItem.BackColor = System.Drawing.Color.FromArgb(   30  ,   30  ,   30   );
-            convertAnimationsToP5InDirectoryToolStripMenuItem.ForeColor = System.Drawing.Color.Silver;
             convertAnimationsToP5InDirectoryToolStripMenuItem.Name = "convertAnimationsToP5InDirectoryToolStripMenuItem";
             convertAnimationsToP5InDirectoryToolStripMenuItem.Size = new System.Drawing.Size( 421, 26 );
             convertAnimationsToP5InDirectoryToolStripMenuItem.Text = "Convert P5R animations to P5 in directory";
@@ -234,8 +206,6 @@ namespace GFDStudio.GUI.Forms
             // convertMaterialInDirectoryToolStripMenuItem
             // 
             convertMaterialInDirectoryToolStripMenuItem.AutoSize = false;
-            convertMaterialInDirectoryToolStripMenuItem.BackColor = System.Drawing.Color.FromArgb(   30  ,   30  ,   30   );
-            convertMaterialInDirectoryToolStripMenuItem.ForeColor = System.Drawing.Color.Silver;
             convertMaterialInDirectoryToolStripMenuItem.Name = "convertMaterialInDirectoryToolStripMenuItem";
             convertMaterialInDirectoryToolStripMenuItem.Size = new System.Drawing.Size( 421, 26 );
             convertMaterialInDirectoryToolStripMenuItem.Text = "Convert model materials in directory";
@@ -244,8 +214,6 @@ namespace GFDStudio.GUI.Forms
             // copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem
             // 
             copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem.AutoSize = false;
-            copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem.BackColor = System.Drawing.Color.FromArgb(   30  ,   30  ,   30   );
-            copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem.ForeColor = System.Drawing.Color.Silver;
             copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem.Name = "copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem";
             copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem.Size = new System.Drawing.Size( 421, 26 );
             copyP5SplitGAPToMultipleModelsInDirectoryToolStripMenuItem.Text = "Copy P5 Split GAP to multiple models in directory";
@@ -254,8 +222,6 @@ namespace GFDStudio.GUI.Forms
             // MassExportTexturesToolStripMenuItem
             // 
             MassExportTexturesToolStripMenuItem.AutoSize = false;
-            MassExportTexturesToolStripMenuItem.BackColor = System.Drawing.Color.FromArgb(   30  ,   30  ,   30   );
-            MassExportTexturesToolStripMenuItem.ForeColor = System.Drawing.Color.Silver;
             MassExportTexturesToolStripMenuItem.Name = "MassExportTexturesToolStripMenuItem";
             MassExportTexturesToolStripMenuItem.Size = new System.Drawing.Size( 421, 26 );
             MassExportTexturesToolStripMenuItem.Text = "Mass Export Textures from Models";
@@ -264,8 +230,6 @@ namespace GFDStudio.GUI.Forms
             // MassReplaceTexturesToolStripMenuItem
             // 
             MassReplaceTexturesToolStripMenuItem.AutoSize = false;
-            MassReplaceTexturesToolStripMenuItem.BackColor = System.Drawing.Color.FromArgb(   30  ,   30  ,   30   );
-            MassReplaceTexturesToolStripMenuItem.ForeColor = System.Drawing.Color.Silver;
             MassReplaceTexturesToolStripMenuItem.Name = "MassReplaceTexturesToolStripMenuItem";
             MassReplaceTexturesToolStripMenuItem.Size = new System.Drawing.Size( 421, 26 );
             MassReplaceTexturesToolStripMenuItem.Text = "Mass Replace Textures in Models";
@@ -274,54 +238,32 @@ namespace GFDStudio.GUI.Forms
             // optionsToolStripMenuItem
             // 
             optionsToolStripMenuItem.AutoSize = false;
-            optionsToolStripMenuItem.BackColor = System.Drawing.Color.FromArgb(   30  ,   30  ,   30   );
-            optionsToolStripMenuItem.DropDownItems.AddRange( new System.Windows.Forms.ToolStripItem[] { retainTexNameToolStripMenuItem } );
-            optionsToolStripMenuItem.ForeColor = System.Drawing.Color.Silver;
+            optionsToolStripMenuItem.DropDownItems.AddRange( new System.Windows.Forms.ToolStripItem[] { retainTexNameToolStripMenuItem, useDarkThemeToolStripMenuItem } );
             optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
             optionsToolStripMenuItem.Size = new System.Drawing.Size( 75, 24 );
             optionsToolStripMenuItem.Text = "Options";
+            optionsToolStripMenuItem.CheckedChanged += DarkTheme_CheckedChanged;
             // 
             // retainTexNameToolStripMenuItem
             // 
             retainTexNameToolStripMenuItem.AutoSize = false;
-            retainTexNameToolStripMenuItem.BackColor = System.Drawing.Color.FromArgb(   20  ,   20  ,   20   );
             retainTexNameToolStripMenuItem.Checked = true;
             retainTexNameToolStripMenuItem.CheckOnClick = true;
             retainTexNameToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
-            retainTexNameToolStripMenuItem.ForeColor = System.Drawing.Color.Silver;
             retainTexNameToolStripMenuItem.Name = "retainTexNameToolStripMenuItem";
             retainTexNameToolStripMenuItem.Size = new System.Drawing.Size( 459, 26 );
             retainTexNameToolStripMenuItem.Text = "Retain original material's texture names when replacing";
             // 
-            // helpToolStripMenuItem
+            // useDarkThemeToolStripMenuItem
             // 
-            helpToolStripMenuItem.AutoSize = false;
-            helpToolStripMenuItem.BackColor = System.Drawing.Color.FromArgb(   30  ,   30  ,   30   );
-            helpToolStripMenuItem.DropDownItems.AddRange( new System.Windows.Forms.ToolStripItem[] { thereIsNoHelpToolStripMenuItem, perishToolStripMenuItem } );
-            helpToolStripMenuItem.ForeColor = System.Drawing.Color.Silver;
-            helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            helpToolStripMenuItem.Size = new System.Drawing.Size( 55, 24 );
-            helpToolStripMenuItem.Text = "Help";
-            // 
-            // thereIsNoHelpToolStripMenuItem
-            // 
-            thereIsNoHelpToolStripMenuItem.AutoSize = false;
-            thereIsNoHelpToolStripMenuItem.BackColor = System.Drawing.Color.FromArgb(   30  ,   30  ,   30   );
-            thereIsNoHelpToolStripMenuItem.Enabled = false;
-            thereIsNoHelpToolStripMenuItem.ForeColor = System.Drawing.Color.Silver;
-            thereIsNoHelpToolStripMenuItem.Name = "thereIsNoHelpToolStripMenuItem";
-            thereIsNoHelpToolStripMenuItem.Size = new System.Drawing.Size( 200, 26 );
-            thereIsNoHelpToolStripMenuItem.Text = "There is no help.";
-            // 
-            // perishToolStripMenuItem
-            // 
-            perishToolStripMenuItem.AutoSize = false;
-            perishToolStripMenuItem.BackColor = System.Drawing.Color.FromArgb(   30  ,   30  ,   30   );
-            perishToolStripMenuItem.Enabled = false;
-            perishToolStripMenuItem.ForeColor = System.Drawing.Color.Silver;
-            perishToolStripMenuItem.Name = "perishToolStripMenuItem";
-            perishToolStripMenuItem.Size = new System.Drawing.Size( 200, 26 );
-            perishToolStripMenuItem.Text = "Perish.";
+            useDarkThemeToolStripMenuItem.AutoSize = false;
+            useDarkThemeToolStripMenuItem.Checked = true;
+            useDarkThemeToolStripMenuItem.CheckOnClick = true;
+            useDarkThemeToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            useDarkThemeToolStripMenuItem.Name = "useDarkThemeToolStripMenuItem";
+            useDarkThemeToolStripMenuItem.Size = new System.Drawing.Size( 459, 26 );
+            useDarkThemeToolStripMenuItem.Text = "Use Dark Theme";
+            useDarkThemeToolStripMenuItem.CheckedChanged += DarkTheme_CheckedChanged;
             // 
             // mContentPanel
             // 
@@ -341,7 +283,6 @@ namespace GFDStudio.GUI.Forms
             tabControl1.Controls.Add( tabPage1 );
             tabControl1.Controls.Add( tabPage2 );
             tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            tabControl1.ForeColor = System.Drawing.Color.Silver;
             tabControl1.IsDerivedStyle = true;
             tabControl1.ItemSize = new System.Drawing.Size( 100, 38 );
             tabControl1.Location = new System.Drawing.Point( 0, 0 );
@@ -366,7 +307,6 @@ namespace GFDStudio.GUI.Forms
             tabPage1.Controls.Add( mModelEditorTreeView );
             tabPage1.Dock = System.Windows.Forms.DockStyle.Fill;
             tabPage1.Font = null;
-            tabPage1.ForeColor = System.Drawing.Color.Silver;
             tabPage1.ImageIndex = 0;
             tabPage1.ImageKey = null;
             tabPage1.IsDerivedStyle = true;
@@ -385,10 +325,8 @@ namespace GFDStudio.GUI.Forms
             // 
             // mModelEditorTreeView
             // 
-            mModelEditorTreeView.BackColor = System.Drawing.Color.FromArgb(   30  ,   30  ,   30   );
             mModelEditorTreeView.BorderStyle = System.Windows.Forms.BorderStyle.None;
             mModelEditorTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
-            mModelEditorTreeView.ForeColor = System.Drawing.Color.Silver;
             mModelEditorTreeView.ImageIndex = 0;
             mModelEditorTreeView.Location = new System.Drawing.Point( 5, 4 );
             mModelEditorTreeView.Margin = new System.Windows.Forms.Padding( 5, 4, 5, 4 );
@@ -404,7 +342,6 @@ namespace GFDStudio.GUI.Forms
             tabPage2.Controls.Add( mAnimationListTreeView );
             tabPage2.Dock = System.Windows.Forms.DockStyle.Fill;
             tabPage2.Font = null;
-            tabPage2.ForeColor = System.Drawing.Color.Silver;
             tabPage2.ImageIndex = 0;
             tabPage2.ImageKey = null;
             tabPage2.IsDerivedStyle = true;
@@ -423,10 +360,8 @@ namespace GFDStudio.GUI.Forms
             // 
             // mAnimationListTreeView
             // 
-            mAnimationListTreeView.BackColor = System.Drawing.Color.FromArgb(   30  ,   30  ,   30   );
             mAnimationListTreeView.BorderStyle = System.Windows.Forms.BorderStyle.None;
             mAnimationListTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
-            mAnimationListTreeView.ForeColor = System.Drawing.Color.Silver;
             mAnimationListTreeView.ImageIndex = 0;
             mAnimationListTreeView.Location = new System.Drawing.Point( 5, 4 );
             mAnimationListTreeView.Margin = new System.Windows.Forms.Padding( 5, 4, 5, 4 );
@@ -613,7 +548,6 @@ namespace GFDStudio.GUI.Forms
             // 
             // MainForm
             // 
-            BackColor = System.Drawing.Color.FromArgb(   30  ,   30  ,   30   );
             BackgroundColor = System.Drawing.Color.FromArgb(   30  ,   30  ,   30   );
             ClientSize = new System.Drawing.Size( 882, 553 );
             Controls.Add( splitContainer_Main );
@@ -632,7 +566,6 @@ namespace GFDStudio.GUI.Forms
             SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
             Style = MetroSet_UI.Enums.Style.Dark;
             Text = "GFD STUDIO";
-            TextColor = System.Drawing.Color.White;
             ThemeName = "MetroDark";
             mMainMenuStrip.ResumeLayout( false );
             mMainMenuStrip.PerformLayout();
@@ -689,10 +622,8 @@ namespace GFDStudio.GUI.Forms
         private System.Windows.Forms.ToolStripMenuItem MassExportTexturesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem MassReplaceTexturesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem optionsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem thereIsNoHelpToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem perishToolStripMenuItem;
         public System.Windows.Forms.ToolStripMenuItem retainTexNameToolStripMenuItem;
+        public System.Windows.Forms.ToolStripMenuItem useDarkThemeToolStripMenuItem;
         private System.Windows.Forms.SplitContainer splitContainer_Main;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel_Leftside;
         private System.Windows.Forms.SplitContainer splitContainer_RightSide;
