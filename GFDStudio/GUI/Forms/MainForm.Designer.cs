@@ -57,6 +57,7 @@ namespace GFDStudio.GUI.Forms
             optionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             retainTexNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             retainColorValuesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            useDarkThemeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             mContentPanel = new System.Windows.Forms.Panel();
             tabControl1 = new MetroSetTabControl();
             tabPage1 = new MetroSetSetTabPage();
