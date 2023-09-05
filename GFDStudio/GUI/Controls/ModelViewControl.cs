@@ -42,6 +42,8 @@ namespace GFDStudio.GUI.Controls
         private int mGridSize = 96;
         private int mGridSpacing = 16;
         private float mGridMinZ;
+        public Vector4 GridLineColor = new Vector4( 50.15f, 50.15f, 50.15f, 1f );
+        public Color ClearColor = System.Drawing.Color.FromArgb( 60, 63, 65 );
 
         // Primitives
         private PrimitiveMesh mCameraPrimitive;
@@ -354,7 +356,7 @@ namespace GFDStudio.GUI.Controls
             mLineShader.Use();
             mLineShader.SetUniform( "uView", view );
             mLineShader.SetUniform( "uProjection", projection );
-            mLineShader.SetUniform( "uColor", new Vector4( 50.15f, 50.15f, 50.15f, 1f ) );
+            mLineShader.SetUniform( "uColor", GridLineColor );
             mLineShader.SetUniform( "uMinZ", mGridMinZ );
 
             GL.BindVertexArray( mGridVertexArrayID );
@@ -394,7 +396,7 @@ namespace GFDStudio.GUI.Controls
         /// </summary>
         private void InitializeGLRenderState()
         {
-            GL.ClearColor( System.Drawing.Color.FromArgb( 60, 63, 65 ) );
+            GL.ClearColor( ClearColor );
             GL.FrontFace( FrontFaceDirection.Ccw );
             GL.CullFace( CullFaceMode.Back );
             GL.Enable( EnableCap.CullFace );
