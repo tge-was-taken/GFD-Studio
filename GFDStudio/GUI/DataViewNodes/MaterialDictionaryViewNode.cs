@@ -51,6 +51,7 @@ namespace GFDStudio.GUI.DataViewNodes
                 var materialDictionary = new MaterialDictionary( Version );
                 foreach ( MaterialViewNode adapter in Nodes )
                     materialDictionary[adapter.Name] = adapter.Data;
+                    
 
                 return materialDictionary;
             } );
@@ -68,12 +69,7 @@ namespace GFDStudio.GUI.DataViewNodes
                     MaterialPreset = dialog.MaterialPreset,
                     Version = dialog.Version
                 };
-
-                foreach (var material in Data.Materials )
-                {
-                    ReplaceProcessing( material.GetType(), options.MaterialPreset );
-                }
-                
+                Replace(MaterialDictionary.ConvertAllToMaterialPreset(Data, options));
             }
         }
 

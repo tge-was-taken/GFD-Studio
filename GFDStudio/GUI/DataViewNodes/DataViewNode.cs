@@ -8,7 +8,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows.Forms;
 using GFDLibrary;
-using GFDLibrary.Models.Conversion;
 using GFDStudio.DataManagement;
 using GFDStudio.FormatModules;
 
@@ -262,17 +261,18 @@ namespace GFDStudio.GUI.DataViewNodes
             ReplaceProcessing( type, replaceAction( filepath ) );
         }
 
-        public void ReplaceProcessing ( Type type, object replacement )
+        public void ReplaceProcessing( Type type, object replacement )
         {
-            ToolStripMenuItem retainName = Forms.MainForm.Instance.retainTexNameToolStripMenuItem;
-
             if ( type == typeof( GFDLibrary.Materials.Material ) )
             {
-                if ( retainName.Checked )
-                {
-                    GFDLibrary.Materials.Material OriginalMat = (GFDLibrary.Materials.Material)Data;
-                    GFDLibrary.Materials.Material ReplacementMat = (GFDLibrary.Materials.Material)replacement;
+                ToolStripMenuItem retainTexName = Forms.MainForm.Instance.retainTexNameToolStripMenuItem;
+                ToolStripMenuItem retainColorValues = Forms.MainForm.Instance.retainColorValuesToolStripMenuItem;
 
+                GFDLibrary.Materials.Material OriginalMat = (GFDLibrary.Materials.Material)Data;
+                GFDLibrary.Materials.Material ReplacementMat = (GFDLibrary.Materials.Material)replacement;
+
+                if ( retainTexName.Checked )
+                {
                     // Retain original mat's texture names
                     ReplacementMat.Name = OriginalMat.Name;
                     if ( OriginalMat.DiffuseMap != null && ReplacementMat.DiffuseMap != null ) ReplacementMat.DiffuseMap.Name = OriginalMat.DiffuseMap.Name;
@@ -284,23 +284,25 @@ namespace GFDStudio.GUI.DataViewNodes
                     if ( OriginalMat.NightMap != null && ReplacementMat.NightMap != null ) ReplacementMat.NightMap.Name = OriginalMat.NightMap.Name;
                     if ( OriginalMat.DetailMap != null && ReplacementMat.DetailMap != null ) ReplacementMat.DetailMap.Name = OriginalMat.DetailMap.Name;
                     if ( OriginalMat.ShadowMap != null && ReplacementMat.ShadowMap != null ) ReplacementMat.ShadowMap.Name = OriginalMat.ShadowMap.Name;
+                }
 
-                    Replace( ReplacementMat );
-                }
-                else
+                if ( retainColorValues.Checked )
                 {
-                    Replace( replacement );
+                    ReplacementMat.AmbientColor = OriginalMat.AmbientColor;
+                    ReplacementMat.DiffuseColor = OriginalMat.DiffuseColor;
+                    ReplacementMat.SpecularColor = OriginalMat.SpecularColor;
+                    ReplacementMat.EmissiveColor = OriginalMat.EmissiveColor;
                 }
+
+                replacement = ReplacementMat;
             }
-            else
-            {
-                Replace( replacement );
-            }
+
+            Replace( replacement );
         }
 
-        public void Replace( object data )
+        public void Replace( object model )
         {
-            Data = data;
+            Data = model;
             NotifyDataPropertyChanged();
             InitializeView( true );
             DataTreeView.RefreshSelection();
@@ -635,7 +637,7 @@ namespace GFDStudio.GUI.DataViewNodes
                     dialog.CheckPathExists = true;
                     dialog.FileName = Text;
                     dialog.Filter = "YAML files (*.yml)|*.yml";
-                    dialog.Title = "Select a replacement file.";
+                    dialog.Title = "Select a file to export to.";
                     dialog.ValidateNames = true;
                     dialog.AddExtension = true;
 

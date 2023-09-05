@@ -528,6 +528,23 @@ namespace GFDLibrary.Materials
                     MaterialAttribute.Write( writer, attribute );
             }
         }
+
+        public static Material ConvertToMaterialPreset(Material material, ModelPackConverterOptions options)
+        {
+            Material newMaterial = null;
+
+            var materialName = material.Name;
+            var diffuseTexture = material.DiffuseMap;
+            var shadowTexture = material.ShadowMap;
+            if (shadowTexture == null)
+                shadowTexture = material.DiffuseMap;
+            var specularTexture = material.SpecularMap;
+            if (specularTexture == null)
+                specularTexture = material.DiffuseMap;
+            if ( diffuseTexture == null ) newMaterial = material;
+            else newMaterial = MaterialFactory.CreateMaterial( materialName, diffuseTexture.Name, options );
+            return newMaterial;
+        }
     }
 
     [Flags]

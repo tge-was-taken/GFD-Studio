@@ -217,6 +217,9 @@ namespace GFDLibrary
 
         public void Save( string path )
         {
+            //replace colons with semi colons since windows doesn't allow colons in filenames
+            path = Path.GetDirectoryName( path ) + "\\" + Path.GetFileName( path ).Replace( ':', ';' );
+
             using ( var stream = FileUtils.Create( path ) )
             using ( var memoryStream = new MemoryStream() )
             {
