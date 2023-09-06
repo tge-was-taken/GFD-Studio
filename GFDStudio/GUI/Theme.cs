@@ -1,101 +1,91 @@
 ﻿using GFDLibrary.Rendering.OpenGL;
+using GFDStudio.GUI.DataViewNodes;
 using MetroSet_UI.Forms;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Media.Animation;
 
 namespace GFDStudio.GUI.Forms
 {
-    public partial class MainForm : MetroSetForm
+    public class Theme
     {
-        public void ToggleTheme()
+        public static Color DarkBG { get; set; } = Color.FromArgb( 30, 30, 30 );
+        public static Color DarkText { get; set; } = Color.FromArgb( 220, 220, 220 );
+        public static Color LightBG { get; set; } = Color.FromArgb( 240, 240, 240 );
+        public static Color LightText { get; set; } = Color.FromArgb( 20, 20, 20 );
+
+        public static void Apply(MetroSetForm form, Config settings)
         {
             var style = MetroSet_UI.Enums.Style.Dark;
-            if ( Program.DarkMode )
+            if ( settings.DarkMode )
             {
-                mMainMenuStrip.Renderer = new DarkMenuRenderer();
-                GUI.Controls.ModelViewControl.Instance.GridLineColor = new Vector4( 50.15f, 50.15f, 50.15f, 1f ).ToOpenTK();
-                GUI.Controls.ModelViewControl.Instance.ClearColor = System.Drawing.Color.FromArgb( 60, 63, 65 );
+                form.MainMenuStrip.Renderer = new DarkMenuRenderer();
             }
             else
             {
                 style = MetroSet_UI.Enums.Style.Light;
-                mMainMenuStrip.Renderer = new ToolStripProfessionalRenderer();
-                GUI.Controls.ModelViewControl.Instance.GridLineColor = new Vector4( 0.15f, 0.15f, 0.15f, 1f ).ToOpenTK();
-                GUI.Controls.ModelViewControl.Instance.ClearColor = System.Drawing.Color.LightGray;
+                form.MainMenuStrip.Renderer = new ToolStripProfessionalRenderer();
             }
             GUI.Controls.ModelViewControl.Instance.Refresh();
 
-            this.Style = style;
+            form.Style = style;
 
-            foreach ( var control in EnumerateControls( this ) )
+            foreach ( var control in EnumerateControls( form ) )
             {
                 dynamic ctrl = control as dynamic;
                 if ( PropertyExists( ctrl, "Style" ) )
                     ctrl.Style = style;
 
-                if ( Program.DarkMode )
+                if ( settings.DarkMode )
                 {
-                    ctrl.BackColor = System.Drawing.Color.FromArgb( 30, 30, 30 );
-                    ctrl.ForeColor = System.Drawing.Color.FromArgb( 220, 220, 220 );
+                    ctrl.BackColor = DarkBG;
+                    ctrl.ForeColor = DarkText;
                 }
                 else
                 {
-                    ctrl.BackColor = System.Drawing.Color.FromArgb( 240, 240, 240 );
-                    ctrl.ForeColor = System.Drawing.Color.FromArgb( 30, 30, 30 );
+                    ctrl.BackColor = LightBG;
+                    ctrl.ForeColor = LightText;
+                    if ( PropertyExists( ctrl, "BackgroundColor" ) )
+                        ctrl.BackgroundColor = LightBG;
                 }
 
                 if ( ctrl.GetType() == typeof( MenuStrip ) )
-                {
-                    foreach ( ToolStripMenuItem item in ctrl.Items )
-                    {
-                        if ( Program.DarkMode )
-                            item.ForeColor = System.Drawing.Color.FromArgb( 220, 220, 220 );
-                        else
-                            item.ForeColor = System.Drawing.Color.FromArgb( 30, 30, 30 );
-
-                        foreach ( ToolStripMenuItem subItem in item.DropDownItems )
-                        {
-                            if ( Program.DarkMode )
-                                subItem.ForeColor = System.Drawing.Color.FromArgb( 220, 220, 220 );
-                            else
-                                subItem.ForeColor = System.Drawing.Color.FromArgb( 30, 30, 30 );
-
-                            foreach ( ToolStripMenuItem subSubItem in subItem.DropDownItems )
-                            {
-                                if ( Program.DarkMode )
-                                    subSubItem.ForeColor = System.Drawing.Color.FromArgb( 220, 220, 220 );
-                                else
-                                    subSubItem.ForeColor = System.Drawing.Color.FromArgb( 30, 30, 30 );
-                            }
-                        }
-                    }
-                }
+                    RecursivelySetColor(ctrl, settings);
             }
 
         }
 
-        private void DarkTheme_CheckedChanged( object sender, EventArgs e )
+        private static void RecursivelySetColor( dynamic ctrl, Config settings )
         {
-            // Toggle setting state
-            if ( Program.DarkMode )
-                Program.DarkMode = false;
+            List<dynamic> items = new List<dynamic>();
+            if ( ctrl.GetType() == typeof( MenuStrip ) )
+                foreach ( dynamic item in ctrl.Items )
+                {
+                    if ( settings.DarkMode )
+                        item.ForeColor = DarkText;
+                    else
+                        item.ForeColor = LightText;
+
+                    RecursivelySetColor( item, settings );
+                }
             else
-                Program.DarkMode = true;
+                foreach ( dynamic item in ctrl.DropDownItems )
+                {
+                    if ( settings.DarkMode )
+                        item.ForeColor = DarkText;
+                    else
+                        item.ForeColor = LightText;
 
-            // Manage file used to keep track of previous setting state
-            if ( Program.DarkMode && !File.Exists( "UseDarkMode.txt" ) )
-                try { File.CreateText( "UseDarkMode.txt" ); } catch { }
-            else if ( File.Exists( "UseDarkMode.txt" ) )
-                try { File.Delete( "UseDarkMode.txt" ); } catch { }
-
-            // Change appearance of form elements
-            ToggleTheme();
+                    RecursivelySetColor( item, settings );
+                }
         }
 
         public static bool PropertyExists( dynamic obj, string name )
@@ -130,6 +120,213 @@ namespace GFDStudio.GUI.Forms
                     controls.AddRange( EnumerateChildren( control ) );
             }
             return controls;
+        }
+
+
+        public class DarkMenuRenderer : ToolStripProfessionalRenderer
+        {
+            public DarkMenuRenderer() : base( new CustomColors() ) { }
+        }
+        public class CustomColors : ProfessionalColorTable
+        {
+            public override Color MenuItemSelected
+            {
+                get { return DarkBG; }
+            }
+
+            public override Color MenuItemSelectedGradientBegin
+            {
+                get { return DarkBG; }
+            }
+            public override Color MenuItemSelectedGradientEnd
+            {
+                get { return DarkBG; }
+            }
+            public override Color ToolStripDropDownBackground
+            {
+                get { return DarkBG; }
+            }
+            public override Color SeparatorDark
+            {
+                get { return DarkBG; }
+            }
+            public override Color SeparatorLight
+            {
+                get { return DarkBG; }
+            }
+            public override Color MenuItemPressedGradientBegin
+            {
+                get { return DarkBG; }
+            }
+            public override Color MenuItemPressedGradientEnd
+            {
+                get { return DarkBG; }
+            }
+            public override Color MenuStripGradientBegin
+            {
+                get { return DarkBG; }
+            }
+            public override Color MenuStripGradientEnd
+            {
+                get { return DarkBG; }
+            }
+
+            public override Color ButtonCheckedGradientBegin
+            {
+                get { return DarkBG; }
+            }
+            public override Color ButtonCheckedGradientEnd
+            {
+                get { return DarkBG; }
+            }
+            public override Color ButtonCheckedGradientMiddle
+            {
+                get { return DarkBG; }
+            }
+            public override Color ButtonCheckedHighlight
+            {
+                get { return DarkBG; }
+            }
+
+            public override Color ButtonPressedGradientBegin
+            {
+                get { return DarkBG; }
+            }
+            public override Color ButtonPressedGradientEnd
+            {
+                get { return DarkBG; }
+            }
+            public override Color ButtonPressedGradientMiddle
+            {
+                get { return DarkBG; }
+            }
+            public override Color ButtonPressedHighlight
+            {
+                get { return DarkBG; }
+            }
+
+            public override Color ButtonSelectedGradientMiddle
+            {
+                get { return DarkBG; }
+            }
+
+            public override Color ButtonSelectedGradientBegin
+            {
+                get { return DarkBG; }
+            }
+            public override Color ButtonSelectedGradientEnd
+            {
+                get { return DarkBG; }
+            }
+            public override Color ButtonSelectedHighlight
+            {
+                get { return DarkBG; }
+            }
+
+            public override Color OverflowButtonGradientBegin
+            {
+                get { return DarkBG; }
+            }
+            public override Color OverflowButtonGradientEnd
+            {
+                get { return DarkBG; }
+            }
+            public override Color OverflowButtonGradientMiddle
+            {
+                get { return DarkBG; }
+            }
+            public override Color CheckBackground
+            {
+                get { return DarkBG; }
+            }
+            public override Color CheckPressedBackground
+            {
+                get { return DarkBG; }
+            }
+            public override Color CheckSelectedBackground
+            {
+                get { return DarkBG; }
+            }
+            public override Color ToolStripContentPanelGradientBegin
+            {
+                get { return DarkBG; }
+            }
+            public override Color ToolStripContentPanelGradientEnd
+            {
+                get { return DarkBG; }
+            }
+            public override Color ToolStripGradientBegin
+            {
+                get { return DarkBG; }
+            }
+            public override Color ToolStripGradientEnd
+            {
+                get { return DarkBG; }
+            }
+            public override Color ToolStripGradientMiddle
+            {
+                get { return DarkBG; }
+            }
+            public override Color ToolStripPanelGradientBegin
+            {
+                get { return DarkBG; }
+            }
+            public override Color ToolStripPanelGradientEnd
+            {
+                get { return DarkBG; }
+            }
+            public override Color GripDark
+            {
+                get { return DarkBG; }
+            }
+            public override Color GripLight
+            {
+                get { return DarkBG; }
+            }
+            public override Color ImageMarginGradientBegin
+            {
+                get { return DarkBG; }
+            }
+            public override Color ImageMarginGradientEnd
+            {
+                get { return DarkBG; }
+            }
+            public override Color ImageMarginGradientMiddle
+            {
+                get { return DarkBG; }
+            }
+            public override Color ImageMarginRevealedGradientBegin
+            {
+                get { return DarkBG; }
+            }
+            public override Color ImageMarginRevealedGradientEnd
+            {
+                get { return DarkBG; }
+            }
+            public override Color ImageMarginRevealedGradientMiddle
+            {
+                get { return DarkBG; }
+            }
+            public override Color MenuItemPressedGradientMiddle
+            {
+                get { return DarkBG; }
+            }
+            public override Color RaftingContainerGradientBegin
+            {
+                get { return DarkBG; }
+            }
+            public override Color RaftingContainerGradientEnd
+            {
+                get { return DarkBG; }
+            }
+            public override Color StatusStripGradientBegin
+            {
+                get { return DarkBG; }
+            }
+            public override Color StatusStripGradientEnd
+            {
+                get { return DarkBG; }
+            }
         }
     }
 }

@@ -19,6 +19,8 @@ namespace GFDStudio.GUI.Forms
 {
     public partial class MainForm : MetroSet_UI.Forms.MetroSetForm
     {
+        public Config settings = new Config();
+
         private static MainForm sInstance;
         public static MainForm Instance
         {
@@ -50,9 +52,12 @@ namespace GFDStudio.GUI.Forms
             InitializeComponent();
             InitializeState();
             InitializeEvents();
-            if ( File.Exists( "UseDarkMode.txt" ) )
-                Program.DarkMode = true;
-            ToggleTheme();
+
+            settings = settings.LoadJson();
+            Theme.Apply( this, settings );
+            retainColorValuesToolStripMenuItem.Checked = settings.RetainMaterialColors;
+            retainTexNameToolStripMenuItem.Checked = settings.RetainTextureNames;
+            useDarkThemeToolStripMenuItem.Checked = settings.DarkMode;
 #if DEBUG
             //ModelViewControl.Instance.LoadAnimation( Resource.Load<AnimationPack>( 
             //    @"D:\Modding\Persona 5 EU\Main game\ExtractedClean\data\model\character\0001\field\bf0001_002.GAP" ).Animations[2]);

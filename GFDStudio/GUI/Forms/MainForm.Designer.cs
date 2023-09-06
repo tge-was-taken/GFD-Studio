@@ -39,8 +39,7 @@ namespace GFDStudio.GUI.Forms
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager( typeof( MainForm ) );
             mMainMenuStrip = new System.Windows.Forms.MenuStrip();
             mFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            modelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            newModelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             mOpenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -78,16 +77,16 @@ namespace GFDStudio.GUI.Forms
             tabPage1.SuspendLayout();
             tabPage2.SuspendLayout();
             tableLayoutPanel_AnimationControls.SuspendLayout();
-            ( (System.ComponentModel.ISupportInitialize)mAnimationTrackBar ).BeginInit();
-            ( (System.ComponentModel.ISupportInitialize)splitContainer_Main ).BeginInit();
+            ( (System.ComponentModel.ISupportInitialize) mAnimationTrackBar  ).BeginInit();
+            ( (System.ComponentModel.ISupportInitialize) splitContainer_Main  ).BeginInit();
             splitContainer_Main.Panel1.SuspendLayout();
             splitContainer_Main.Panel2.SuspendLayout();
             splitContainer_Main.SuspendLayout();
-            ( (System.ComponentModel.ISupportInitialize)splitContainer_LeftSide ).BeginInit();
+            ( (System.ComponentModel.ISupportInitialize) splitContainer_LeftSide  ).BeginInit();
             splitContainer_LeftSide.Panel1.SuspendLayout();
             splitContainer_LeftSide.Panel2.SuspendLayout();
             splitContainer_LeftSide.SuspendLayout();
-            ( (System.ComponentModel.ISupportInitialize)splitContainer_RightSide ).BeginInit();
+            ( (System.ComponentModel.ISupportInitialize) splitContainer_RightSide  ).BeginInit();
             splitContainer_RightSide.Panel1.SuspendLayout();
             splitContainer_RightSide.Panel2.SuspendLayout();
             splitContainer_RightSide.SuspendLayout();
@@ -108,32 +107,24 @@ namespace GFDStudio.GUI.Forms
             // mFileToolStripMenuItem
             // 
             mFileToolStripMenuItem.AutoSize = false;
-            mFileToolStripMenuItem.DropDownItems.AddRange( new System.Windows.Forms.ToolStripItem[] { newToolStripMenuItem, mOpenToolStripMenuItem, saveToolStripMenuItem, saveAsToolStripMenuItem } );
+            mFileToolStripMenuItem.DropDownItems.AddRange( new System.Windows.Forms.ToolStripItem[] { newModelToolStripMenuItem, mOpenToolStripMenuItem, saveToolStripMenuItem, saveAsToolStripMenuItem } );
             mFileToolStripMenuItem.Name = "mFileToolStripMenuItem";
             mFileToolStripMenuItem.Size = new System.Drawing.Size( 46, 24 );
             mFileToolStripMenuItem.Text = "File";
             // 
-            // newToolStripMenuItem
+            // newModelToolStripMenuItem
             // 
-            newToolStripMenuItem.AutoSize = false;
-            newToolStripMenuItem.DropDownItems.AddRange( new System.Windows.Forms.ToolStripItem[] { modelToolStripMenuItem } );
-            newToolStripMenuItem.Name = "newToolStripMenuItem";
-            newToolStripMenuItem.Size = new System.Drawing.Size( 240, 26 );
-            newToolStripMenuItem.Text = "New";
-            // 
-            // modelToolStripMenuItem
-            // 
-            modelToolStripMenuItem.AutoSize = false;
-            modelToolStripMenuItem.Name = "modelToolStripMenuItem";
-            modelToolStripMenuItem.Size = new System.Drawing.Size( 224, 26 );
-            modelToolStripMenuItem.Text = "Model";
-            modelToolStripMenuItem.Click += HandleNewModelToolStripMenuItemClick;
+            newModelToolStripMenuItem.AutoSize = false;
+            newModelToolStripMenuItem.Name = "newModelToolStripMenuItem";
+            newModelToolStripMenuItem.Size = new System.Drawing.Size( 240, 26 );
+            newModelToolStripMenuItem.Text = "New Model";
+            newModelToolStripMenuItem.Click += HandleNewModelToolStripMenuItemClick;
             // 
             // mOpenToolStripMenuItem
             // 
             mOpenToolStripMenuItem.AutoSize = false;
             mOpenToolStripMenuItem.Name = "mOpenToolStripMenuItem";
-            mOpenToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O;
+            mOpenToolStripMenuItem.ShortcutKeys =   System.Windows.Forms.Keys.Control  |  System.Windows.Forms.Keys.O  ;
             mOpenToolStripMenuItem.Size = new System.Drawing.Size( 240, 26 );
             mOpenToolStripMenuItem.Text = "Open";
             mOpenToolStripMenuItem.Click += HandleOpenToolStripMenuItemClick;
@@ -142,7 +133,7 @@ namespace GFDStudio.GUI.Forms
             // 
             saveToolStripMenuItem.AutoSize = false;
             saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            saveToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S;
+            saveToolStripMenuItem.ShortcutKeys =   System.Windows.Forms.Keys.Control  |  System.Windows.Forms.Keys.S  ;
             saveToolStripMenuItem.Size = new System.Drawing.Size( 240, 26 );
             saveToolStripMenuItem.Text = "Save";
             saveToolStripMenuItem.Click += HandleSaveToolStripMenuItemClick;
@@ -151,7 +142,7 @@ namespace GFDStudio.GUI.Forms
             // 
             saveAsToolStripMenuItem.AutoSize = false;
             saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            saveAsToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift | System.Windows.Forms.Keys.S;
+            saveAsToolStripMenuItem.ShortcutKeys =    System.Windows.Forms.Keys.Control  |  System.Windows.Forms.Keys.Shift   |  System.Windows.Forms.Keys.S  ;
             saveAsToolStripMenuItem.Size = new System.Drawing.Size( 240, 26 );
             saveAsToolStripMenuItem.Text = "Save as...";
             saveAsToolStripMenuItem.Click += HandleSaveAsToolStripMenuItemClick;
@@ -239,11 +230,10 @@ namespace GFDStudio.GUI.Forms
             // optionsToolStripMenuItem
             // 
             optionsToolStripMenuItem.AutoSize = false;
-            optionsToolStripMenuItem.DropDownItems.AddRange( new System.Windows.Forms.ToolStripItem[] { retainTexNameToolStripMenuItem, useDarkThemeToolStripMenuItem, retainColorValuesToolStripMenuItem } );
+            optionsToolStripMenuItem.DropDownItems.AddRange( new System.Windows.Forms.ToolStripItem[] { retainTexNameToolStripMenuItem, retainColorValuesToolStripMenuItem, useDarkThemeToolStripMenuItem } );
             optionsToolStripMenuItem.Name = "optionsToolStripMenuItem";
             optionsToolStripMenuItem.Size = new System.Drawing.Size( 75, 24 );
             optionsToolStripMenuItem.Text = "Options";
-            optionsToolStripMenuItem.CheckedChanged += DarkTheme_CheckedChanged;
             // 
             // retainTexNameToolStripMenuItem
             // 
@@ -254,18 +244,16 @@ namespace GFDStudio.GUI.Forms
             retainTexNameToolStripMenuItem.Name = "retainTexNameToolStripMenuItem";
             retainTexNameToolStripMenuItem.Size = new System.Drawing.Size( 459, 26 );
             retainTexNameToolStripMenuItem.Text = "Retain original material's texture names when replacing";
+            retainTexNameToolStripMenuItem.CheckedChanged += handleRetainTextureCheckedChanged;
             // 
             // retainColorValuesToolStripMenuItem
             // 
             retainColorValuesToolStripMenuItem.AutoSize = false;
-            retainColorValuesToolStripMenuItem.BackColor = System.Drawing.Color.FromArgb( 20, 20, 20 );
-            retainColorValuesToolStripMenuItem.Checked = false;
             retainColorValuesToolStripMenuItem.CheckOnClick = true;
-            retainColorValuesToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Unchecked;
-            retainColorValuesToolStripMenuItem.ForeColor = System.Drawing.Color.Silver;
             retainColorValuesToolStripMenuItem.Name = "retainColorValuesToolStripMenuItem";
             retainColorValuesToolStripMenuItem.Size = new System.Drawing.Size( 459, 26 );
             retainColorValuesToolStripMenuItem.Text = "Retain original material's color values when replacing";
+            retainColorValuesToolStripMenuItem.CheckedChanged += handleRetainColorCheckedChanged;
             // 
             // useDarkThemeToolStripMenuItem
             // 
@@ -276,7 +264,7 @@ namespace GFDStudio.GUI.Forms
             useDarkThemeToolStripMenuItem.Name = "useDarkThemeToolStripMenuItem";
             useDarkThemeToolStripMenuItem.Size = new System.Drawing.Size( 459, 26 );
             useDarkThemeToolStripMenuItem.Text = "Use Dark Theme";
-            useDarkThemeToolStripMenuItem.CheckedChanged += DarkTheme_CheckedChanged;
+            useDarkThemeToolStripMenuItem.CheckedChanged += handleDarkThemeCheckedChanged;
             // 
             // mContentPanel
             // 
@@ -292,7 +280,7 @@ namespace GFDStudio.GUI.Forms
             // 
             tabControl1.AnimateEasingType = MetroSet_UI.Enums.EasingType.CubeOut;
             tabControl1.AnimateTime = 200;
-            tabControl1.BackgroundColor = System.Drawing.Color.FromArgb( 30, 30, 30 );
+            tabControl1.BackgroundColor = System.Drawing.Color.FromArgb(   30  ,   30  ,   30   );
             tabControl1.Controls.Add( tabPage1 );
             tabControl1.Controls.Add( tabPage2 );
             tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -316,7 +304,7 @@ namespace GFDStudio.GUI.Forms
             // 
             // tabPage1
             // 
-            tabPage1.BaseColor = System.Drawing.Color.FromArgb( 30, 30, 30 );
+            tabPage1.BaseColor = System.Drawing.Color.FromArgb(   30  ,   30  ,   30   );
             tabPage1.Controls.Add( mModelEditorTreeView );
             tabPage1.Dock = System.Windows.Forms.DockStyle.Fill;
             tabPage1.Font = null;
@@ -324,9 +312,8 @@ namespace GFDStudio.GUI.Forms
             tabPage1.ImageKey = null;
             tabPage1.IsDerivedStyle = true;
             tabPage1.Location = new System.Drawing.Point( 4, 42 );
-            tabPage1.Margin = new System.Windows.Forms.Padding( 5, 4, 5, 4 );
+            tabPage1.Margin = new System.Windows.Forms.Padding( 0 );
             tabPage1.Name = "tabPage1";
-            tabPage1.Padding = new System.Windows.Forms.Padding( 5, 4, 5, 4 );
             tabPage1.Size = new System.Drawing.Size( 415, 179 );
             tabPage1.Style = MetroSet_UI.Enums.Style.Dark;
             tabPage1.StyleManager = null;
@@ -341,17 +328,17 @@ namespace GFDStudio.GUI.Forms
             mModelEditorTreeView.BorderStyle = System.Windows.Forms.BorderStyle.None;
             mModelEditorTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
             mModelEditorTreeView.ImageIndex = 0;
-            mModelEditorTreeView.Location = new System.Drawing.Point( 5, 4 );
+            mModelEditorTreeView.Location = new System.Drawing.Point( 0, 0 );
             mModelEditorTreeView.Margin = new System.Windows.Forms.Padding( 5, 4, 5, 4 );
             mModelEditorTreeView.Name = "mModelEditorTreeView";
             mModelEditorTreeView.SelectedImageIndex = 0;
-            mModelEditorTreeView.Size = new System.Drawing.Size( 405, 171 );
+            mModelEditorTreeView.Size = new System.Drawing.Size( 415, 179 );
             mModelEditorTreeView.TabIndex = 1;
             mModelEditorTreeView.TopNode = null;
             // 
             // tabPage2
             // 
-            tabPage2.BaseColor = System.Drawing.Color.FromArgb( 30, 30, 30 );
+            tabPage2.BaseColor = System.Drawing.Color.FromArgb(   30  ,   30  ,   30   );
             tabPage2.Controls.Add( mAnimationListTreeView );
             tabPage2.Dock = System.Windows.Forms.DockStyle.Fill;
             tabPage2.Font = null;
@@ -359,9 +346,8 @@ namespace GFDStudio.GUI.Forms
             tabPage2.ImageKey = null;
             tabPage2.IsDerivedStyle = true;
             tabPage2.Location = new System.Drawing.Point( 4, 42 );
-            tabPage2.Margin = new System.Windows.Forms.Padding( 5, 4, 5, 4 );
+            tabPage2.Margin = new System.Windows.Forms.Padding( 0 );
             tabPage2.Name = "tabPage2";
-            tabPage2.Padding = new System.Windows.Forms.Padding( 5, 4, 5, 4 );
             tabPage2.Size = new System.Drawing.Size( 415, 179 );
             tabPage2.Style = MetroSet_UI.Enums.Style.Dark;
             tabPage2.StyleManager = null;
@@ -376,11 +362,11 @@ namespace GFDStudio.GUI.Forms
             mAnimationListTreeView.BorderStyle = System.Windows.Forms.BorderStyle.None;
             mAnimationListTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
             mAnimationListTreeView.ImageIndex = 0;
-            mAnimationListTreeView.Location = new System.Drawing.Point( 5, 4 );
+            mAnimationListTreeView.Location = new System.Drawing.Point( 0, 0 );
             mAnimationListTreeView.Margin = new System.Windows.Forms.Padding( 5, 4, 5, 4 );
             mAnimationListTreeView.Name = "mAnimationListTreeView";
             mAnimationListTreeView.SelectedImageIndex = 0;
-            mAnimationListTreeView.Size = new System.Drawing.Size( 405, 171 );
+            mAnimationListTreeView.Size = new System.Drawing.Size( 415, 179 );
             mAnimationListTreeView.TabIndex = 2;
             mAnimationListTreeView.TopNode = null;
             // 
@@ -413,25 +399,25 @@ namespace GFDStudio.GUI.Forms
             // 
             // mAnimationPlaybackButton
             // 
-            mAnimationPlaybackButton.DisabledBackColor = System.Drawing.Color.FromArgb( 120, 65, 177, 225 );
-            mAnimationPlaybackButton.DisabledBorderColor = System.Drawing.Color.FromArgb( 120, 65, 177, 225 );
+            mAnimationPlaybackButton.DisabledBackColor = System.Drawing.Color.FromArgb(   120  ,   65  ,   177  ,   225   );
+            mAnimationPlaybackButton.DisabledBorderColor = System.Drawing.Color.FromArgb(   120  ,   65  ,   177  ,   225   );
             mAnimationPlaybackButton.DisabledForeColor = System.Drawing.Color.Gray;
             mAnimationPlaybackButton.Dock = System.Windows.Forms.DockStyle.Fill;
             mAnimationPlaybackButton.Font = new System.Drawing.Font( "Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point );
-            mAnimationPlaybackButton.HoverBorderColor = System.Drawing.Color.FromArgb( 95, 207, 255 );
-            mAnimationPlaybackButton.HoverColor = System.Drawing.Color.FromArgb( 95, 207, 255 );
+            mAnimationPlaybackButton.HoverBorderColor = System.Drawing.Color.FromArgb(   95  ,   207  ,   255   );
+            mAnimationPlaybackButton.HoverColor = System.Drawing.Color.FromArgb(   95  ,   207  ,   255   );
             mAnimationPlaybackButton.HoverTextColor = System.Drawing.Color.White;
             mAnimationPlaybackButton.IsDerivedStyle = true;
             mAnimationPlaybackButton.Location = new System.Drawing.Point( 320, 4 );
             mAnimationPlaybackButton.Margin = new System.Windows.Forms.Padding( 5, 4, 5, 4 );
             mAnimationPlaybackButton.MaximumSize = new System.Drawing.Size( 100, 30 );
             mAnimationPlaybackButton.Name = "mAnimationPlaybackButton";
-            mAnimationPlaybackButton.NormalBorderColor = System.Drawing.Color.FromArgb( 65, 177, 225 );
-            mAnimationPlaybackButton.NormalColor = System.Drawing.Color.FromArgb( 65, 177, 225 );
+            mAnimationPlaybackButton.NormalBorderColor = System.Drawing.Color.FromArgb(   65  ,   177  ,   225   );
+            mAnimationPlaybackButton.NormalColor = System.Drawing.Color.FromArgb(   65  ,   177  ,   225   );
             mAnimationPlaybackButton.NormalTextColor = System.Drawing.Color.White;
             mAnimationPlaybackButton.Padding = new System.Windows.Forms.Padding( 5 );
-            mAnimationPlaybackButton.PressBorderColor = System.Drawing.Color.FromArgb( 35, 147, 195 );
-            mAnimationPlaybackButton.PressColor = System.Drawing.Color.FromArgb( 35, 147, 195 );
+            mAnimationPlaybackButton.PressBorderColor = System.Drawing.Color.FromArgb(   35  ,   147  ,   195   );
+            mAnimationPlaybackButton.PressColor = System.Drawing.Color.FromArgb(   35  ,   147  ,   195   );
             mAnimationPlaybackButton.PressTextColor = System.Drawing.Color.White;
             mAnimationPlaybackButton.Size = new System.Drawing.Size( 57, 17 );
             mAnimationPlaybackButton.Style = MetroSet_UI.Enums.Style.Dark;
@@ -443,25 +429,25 @@ namespace GFDStudio.GUI.Forms
             // 
             // mAnimationStopButton
             // 
-            mAnimationStopButton.DisabledBackColor = System.Drawing.Color.FromArgb( 120, 65, 177, 225 );
-            mAnimationStopButton.DisabledBorderColor = System.Drawing.Color.FromArgb( 120, 65, 177, 225 );
+            mAnimationStopButton.DisabledBackColor = System.Drawing.Color.FromArgb(   120  ,   65  ,   177  ,   225   );
+            mAnimationStopButton.DisabledBorderColor = System.Drawing.Color.FromArgb(   120  ,   65  ,   177  ,   225   );
             mAnimationStopButton.DisabledForeColor = System.Drawing.Color.Gray;
             mAnimationStopButton.Dock = System.Windows.Forms.DockStyle.Fill;
             mAnimationStopButton.Font = new System.Drawing.Font( "Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point );
-            mAnimationStopButton.HoverBorderColor = System.Drawing.Color.FromArgb( 95, 207, 255 );
-            mAnimationStopButton.HoverColor = System.Drawing.Color.FromArgb( 95, 207, 255 );
+            mAnimationStopButton.HoverBorderColor = System.Drawing.Color.FromArgb(   95  ,   207  ,   255   );
+            mAnimationStopButton.HoverColor = System.Drawing.Color.FromArgb(   95  ,   207  ,   255   );
             mAnimationStopButton.HoverTextColor = System.Drawing.Color.White;
             mAnimationStopButton.IsDerivedStyle = true;
             mAnimationStopButton.Location = new System.Drawing.Point( 387, 4 );
             mAnimationStopButton.Margin = new System.Windows.Forms.Padding( 5, 4, 5, 4 );
             mAnimationStopButton.MaximumSize = new System.Drawing.Size( 100, 30 );
             mAnimationStopButton.Name = "mAnimationStopButton";
-            mAnimationStopButton.NormalBorderColor = System.Drawing.Color.FromArgb( 65, 177, 225 );
-            mAnimationStopButton.NormalColor = System.Drawing.Color.FromArgb( 65, 177, 225 );
+            mAnimationStopButton.NormalBorderColor = System.Drawing.Color.FromArgb(   65  ,   177  ,   225   );
+            mAnimationStopButton.NormalColor = System.Drawing.Color.FromArgb(   65  ,   177  ,   225   );
             mAnimationStopButton.NormalTextColor = System.Drawing.Color.White;
             mAnimationStopButton.Padding = new System.Windows.Forms.Padding( 5 );
-            mAnimationStopButton.PressBorderColor = System.Drawing.Color.FromArgb( 35, 147, 195 );
-            mAnimationStopButton.PressColor = System.Drawing.Color.FromArgb( 35, 147, 195 );
+            mAnimationStopButton.PressBorderColor = System.Drawing.Color.FromArgb(   35  ,   147  ,   195   );
+            mAnimationStopButton.PressColor = System.Drawing.Color.FromArgb(   35  ,   147  ,   195   );
             mAnimationStopButton.PressTextColor = System.Drawing.Color.White;
             mAnimationStopButton.Size = new System.Drawing.Size( 59, 17 );
             mAnimationStopButton.Style = MetroSet_UI.Enums.Style.Light;
@@ -539,13 +525,13 @@ namespace GFDStudio.GUI.Forms
             // mPropertyGrid
             // 
             mPropertyGrid.CategoryForeColor = System.Drawing.Color.Silver;
-            mPropertyGrid.CommandsBorderColor = System.Drawing.Color.FromArgb( 30, 30, 30 );
+            mPropertyGrid.CommandsBorderColor = System.Drawing.Color.FromArgb(   30  ,   30  ,   30   );
             mPropertyGrid.CommandsForeColor = System.Drawing.Color.Silver;
-            mPropertyGrid.DisabledItemForeColor = System.Drawing.Color.FromArgb( 127, 192, 192, 192 );
+            mPropertyGrid.DisabledItemForeColor = System.Drawing.Color.FromArgb(   127  ,   192  ,   192  ,   192   );
             mPropertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
             mPropertyGrid.Font = new System.Drawing.Font( "Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point );
-            mPropertyGrid.HelpBackColor = System.Drawing.Color.FromArgb( 30, 30, 30 );
-            mPropertyGrid.HelpBorderColor = System.Drawing.Color.FromArgb( 30, 30, 30 );
+            mPropertyGrid.HelpBackColor = System.Drawing.Color.FromArgb(   30  ,   30  ,   30   );
+            mPropertyGrid.HelpBorderColor = System.Drawing.Color.FromArgb(   30  ,   30  ,   30   );
             mPropertyGrid.HelpForeColor = System.Drawing.Color.Silver;
             mPropertyGrid.LineColor = System.Drawing.SystemColors.ControlDarkDark;
             mPropertyGrid.Location = new System.Drawing.Point( 0, 0 );
@@ -555,20 +541,20 @@ namespace GFDStudio.GUI.Forms
             mPropertyGrid.Size = new System.Drawing.Size( 418, 287 );
             mPropertyGrid.TabIndex = 5;
             mPropertyGrid.ToolbarVisible = false;
-            mPropertyGrid.ViewBackColor = System.Drawing.Color.FromArgb( 30, 30, 30 );
-            mPropertyGrid.ViewBorderColor = System.Drawing.Color.FromArgb( 30, 30, 30 );
+            mPropertyGrid.ViewBackColor = System.Drawing.Color.FromArgb(   30  ,   30  ,   30   );
+            mPropertyGrid.ViewBorderColor = System.Drawing.Color.FromArgb(   30  ,   30  ,   30   );
             mPropertyGrid.ViewForeColor = System.Drawing.Color.Silver;
             // 
             // MainForm
             // 
-            BackgroundColor = System.Drawing.Color.FromArgb( 30, 30, 30 );
+            BackgroundColor = System.Drawing.Color.FromArgb(   30  ,   30  ,   30   );
             ClientSize = new System.Drawing.Size( 882, 553 );
             Controls.Add( splitContainer_Main );
             Controls.Add( mMainMenuStrip );
             DropShadowEffect = false;
             FormBorderStyle = System.Windows.Forms.FormBorderStyle.Sizable;
             HeaderHeight = -40;
-            Icon = (System.Drawing.Icon)resources.GetObject( "$this.Icon" );
+            Icon = (System.Drawing.Icon) resources.GetObject( "$this.Icon" ) ;
             MainMenuStrip = mMainMenuStrip;
             Margin = new System.Windows.Forms.Padding( 5, 4, 5, 4 );
             Name = "MainForm";
@@ -587,18 +573,18 @@ namespace GFDStudio.GUI.Forms
             tabPage2.ResumeLayout( false );
             tableLayoutPanel_AnimationControls.ResumeLayout( false );
             tableLayoutPanel_AnimationControls.PerformLayout();
-            ( (System.ComponentModel.ISupportInitialize)mAnimationTrackBar ).EndInit();
+            ( (System.ComponentModel.ISupportInitialize) mAnimationTrackBar  ).EndInit();
             splitContainer_Main.Panel1.ResumeLayout( false );
             splitContainer_Main.Panel2.ResumeLayout( false );
-            ( (System.ComponentModel.ISupportInitialize)splitContainer_Main ).EndInit();
+            ( (System.ComponentModel.ISupportInitialize) splitContainer_Main  ).EndInit();
             splitContainer_Main.ResumeLayout( false );
             splitContainer_LeftSide.Panel1.ResumeLayout( false );
             splitContainer_LeftSide.Panel2.ResumeLayout( false );
-            ( (System.ComponentModel.ISupportInitialize)splitContainer_LeftSide ).EndInit();
+            ( (System.ComponentModel.ISupportInitialize) splitContainer_LeftSide  ).EndInit();
             splitContainer_LeftSide.ResumeLayout( false );
             splitContainer_RightSide.Panel1.ResumeLayout( false );
             splitContainer_RightSide.Panel2.ResumeLayout( false );
-            ( (System.ComponentModel.ISupportInitialize)splitContainer_RightSide ).EndInit();
+            ( (System.ComponentModel.ISupportInitialize) splitContainer_RightSide  ).EndInit();
             splitContainer_RightSide.ResumeLayout( false );
             panel_PropertyGridContainer.ResumeLayout( false );
             ResumeLayout( false );
@@ -614,8 +600,7 @@ namespace GFDStudio.GUI.Forms
         private System.Windows.Forms.Panel mContentPanel;
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem newToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem modelToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem newModelToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem makeRelativeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem animationToolStripMenuItem;

@@ -741,5 +741,28 @@ namespace GFDStudio.GUI.Forms
             ModelViewControl.Instance.AnimationPlayback = AnimationPlaybackState.Stopped;
             ModelViewControl.Instance.Invalidate();
         }
+
+
+        private void handleRetainColorCheckedChanged( object sender, EventArgs e )
+        {
+            settings.RetainMaterialColors = retainColorValuesToolStripMenuItem.Checked;
+            settings.SaveJson( settings );
+        }
+
+        private void handleRetainTextureCheckedChanged( object sender, EventArgs e )
+        {
+            settings.RetainTextureNames = retainTexNameToolStripMenuItem.Checked;
+            settings.SaveJson( settings );
+        }
+
+        private void handleDarkThemeCheckedChanged( object sender, EventArgs e )
+        {
+            // Toggle setting state and save to .json
+            settings.DarkMode = useDarkThemeToolStripMenuItem.Checked;
+            settings.SaveJson( settings );
+
+            // Change appearance of form elements
+            Theme.Apply( this, settings );
+        }
     }
 }
