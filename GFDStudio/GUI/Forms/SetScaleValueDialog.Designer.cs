@@ -35,35 +35,45 @@ namespace GFDStudio.GUI.Forms
             tableLayoutPanel_Scale = new System.Windows.Forms.TableLayoutPanel();
             lbl_ScaleZ = new MetroSetLabel();
             lbl_scaleX = new MetroSetLabel();
-            num_ScaleX = new MetroSetNumeric();
+            num_ScaleX = new System.Windows.Forms.NumericUpDown();
             lbl_ScaleY = new MetroSetLabel();
-            num_ScaleY = new MetroSetNumeric();
-            num_ScaleZ = new MetroSetNumeric();
+            num_ScaleY = new System.Windows.Forms.NumericUpDown();
+            num_ScaleZ = new System.Windows.Forms.NumericUpDown();
             lbl_Scale = new MetroSetLabel();
             CancelButton = new System.Windows.Forms.Button();
             OKButton = new System.Windows.Forms.Button();
             tableLayoutPanel_Pos = new System.Windows.Forms.TableLayoutPanel();
             lbl_PosZ = new MetroSetLabel();
             lbl_PosX = new MetroSetLabel();
-            num_PosX = new MetroSetNumeric();
+            num_PosX = new System.Windows.Forms.NumericUpDown();
             lbl_PosY = new MetroSetLabel();
-            num_PosY = new MetroSetNumeric();
-            num_PosZ = new MetroSetNumeric();
+            num_PosY = new System.Windows.Forms.NumericUpDown();
+            num_PosZ = new System.Windows.Forms.NumericUpDown();
             lbl_Position = new MetroSetLabel();
             tableLayoutPanel_Rot = new System.Windows.Forms.TableLayoutPanel();
             lbl_RotW = new MetroSetLabel();
             lbl_RotZ = new MetroSetLabel();
             lbl_RotX = new MetroSetLabel();
-            num_RotX = new MetroSetNumeric();
+            num_RotX = new System.Windows.Forms.NumericUpDown();
             lbl_RotY = new MetroSetLabel();
-            num_RotY = new MetroSetNumeric();
-            num_RotZ = new MetroSetNumeric();
+            num_RotY = new System.Windows.Forms.NumericUpDown();
+            num_RotZ = new System.Windows.Forms.NumericUpDown();
             lbl_Rotation = new MetroSetLabel();
-            num_RotW = new MetroSetNumeric();
+            num_RotW = new System.Windows.Forms.NumericUpDown();
             tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             tableLayoutPanel_Scale.SuspendLayout();
+            ( (System.ComponentModel.ISupportInitialize) num_ScaleX  ).BeginInit();
+            ( (System.ComponentModel.ISupportInitialize) num_ScaleY  ).BeginInit();
+            ( (System.ComponentModel.ISupportInitialize) num_ScaleZ  ).BeginInit();
             tableLayoutPanel_Pos.SuspendLayout();
+            ( (System.ComponentModel.ISupportInitialize) num_PosX  ).BeginInit();
+            ( (System.ComponentModel.ISupportInitialize) num_PosY  ).BeginInit();
+            ( (System.ComponentModel.ISupportInitialize) num_PosZ  ).BeginInit();
             tableLayoutPanel_Rot.SuspendLayout();
+            ( (System.ComponentModel.ISupportInitialize) num_RotX  ).BeginInit();
+            ( (System.ComponentModel.ISupportInitialize) num_RotY  ).BeginInit();
+            ( (System.ComponentModel.ISupportInitialize) num_RotZ  ).BeginInit();
+            ( (System.ComponentModel.ISupportInitialize) num_RotW  ).BeginInit();
             tableLayoutPanel1.SuspendLayout();
             SuspendLayout();
             // 
@@ -129,27 +139,13 @@ namespace GFDStudio.GUI.Forms
             // num_ScaleX
             // 
             num_ScaleX.Anchor =   System.Windows.Forms.AnchorStyles.Left  |  System.Windows.Forms.AnchorStyles.Right  ;
-            num_ScaleX.BackColor = System.Drawing.Color.Transparent;
-            num_ScaleX.BackgroundColor = System.Drawing.Color.Empty;
-            num_ScaleX.BorderColor = System.Drawing.Color.FromArgb(   110  ,   110  ,   110   );
-            num_ScaleX.DisabledBackColor = System.Drawing.Color.FromArgb(   80  ,   80  ,   80   );
-            num_ScaleX.DisabledBorderColor = System.Drawing.Color.FromArgb(   109  ,   109  ,   109   );
-            num_ScaleX.DisabledForeColor = System.Drawing.Color.FromArgb(   109  ,   109  ,   109   );
-            num_ScaleX.Font = new System.Drawing.Font( "Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point );
-            num_ScaleX.IsDerivedStyle = true;
-            num_ScaleX.Location = new System.Drawing.Point( 47, 75 );
+            num_ScaleX.DecimalPlaces = 6;
+            num_ScaleX.Location = new System.Drawing.Point( 47, 72 );
             num_ScaleX.Margin = new System.Windows.Forms.Padding( 4, 5, 4, 5 );
-            num_ScaleX.Maximum = 100;
-            num_ScaleX.Minimum = 0;
             num_ScaleX.Name = "num_ScaleX";
-            num_ScaleX.Size = new System.Drawing.Size( 173, 26 );
-            num_ScaleX.Style = MetroSet_UI.Enums.Style.Dark;
-            num_ScaleX.StyleManager = null;
-            num_ScaleX.SymbolsColor = System.Drawing.Color.FromArgb(   110  ,   110  ,   110   );
+            num_ScaleX.Size = new System.Drawing.Size( 173, 32 );
             num_ScaleX.TabIndex = 4;
-            num_ScaleX.ThemeAuthor = "Narwin";
-            num_ScaleX.ThemeName = "MetroDark";
-            num_ScaleX.Value = 1;
+            num_ScaleX.Value = new decimal( new int[] { 1, 0, 0, 0 } );
             // 
             // lbl_ScaleY
             // 
@@ -171,52 +167,24 @@ namespace GFDStudio.GUI.Forms
             // num_ScaleY
             // 
             num_ScaleY.Anchor =   System.Windows.Forms.AnchorStyles.Left  |  System.Windows.Forms.AnchorStyles.Right  ;
-            num_ScaleY.BackColor = System.Drawing.Color.Transparent;
-            num_ScaleY.BackgroundColor = System.Drawing.Color.Empty;
-            num_ScaleY.BorderColor = System.Drawing.Color.FromArgb(   110  ,   110  ,   110   );
-            num_ScaleY.DisabledBackColor = System.Drawing.Color.FromArgb(   80  ,   80  ,   80   );
-            num_ScaleY.DisabledBorderColor = System.Drawing.Color.FromArgb(   109  ,   109  ,   109   );
-            num_ScaleY.DisabledForeColor = System.Drawing.Color.FromArgb(   109  ,   109  ,   109   );
-            num_ScaleY.Font = new System.Drawing.Font( "Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point );
-            num_ScaleY.IsDerivedStyle = true;
-            num_ScaleY.Location = new System.Drawing.Point( 47, 134 );
+            num_ScaleY.DecimalPlaces = 6;
+            num_ScaleY.Location = new System.Drawing.Point( 47, 131 );
             num_ScaleY.Margin = new System.Windows.Forms.Padding( 4, 5, 4, 5 );
-            num_ScaleY.Maximum = 100;
-            num_ScaleY.Minimum = 0;
             num_ScaleY.Name = "num_ScaleY";
-            num_ScaleY.Size = new System.Drawing.Size( 173, 26 );
-            num_ScaleY.Style = MetroSet_UI.Enums.Style.Dark;
-            num_ScaleY.StyleManager = null;
-            num_ScaleY.SymbolsColor = System.Drawing.Color.FromArgb(   110  ,   110  ,   110   );
+            num_ScaleY.Size = new System.Drawing.Size( 173, 32 );
             num_ScaleY.TabIndex = 7;
-            num_ScaleY.ThemeAuthor = "Narwin";
-            num_ScaleY.ThemeName = "MetroDark";
-            num_ScaleY.Value = 1;
+            num_ScaleY.Value = new decimal( new int[] { 1, 0, 0, 0 } );
             // 
             // num_ScaleZ
             // 
             num_ScaleZ.Anchor =   System.Windows.Forms.AnchorStyles.Left  |  System.Windows.Forms.AnchorStyles.Right  ;
-            num_ScaleZ.BackColor = System.Drawing.Color.Transparent;
-            num_ScaleZ.BackgroundColor = System.Drawing.Color.Empty;
-            num_ScaleZ.BorderColor = System.Drawing.Color.FromArgb(   110  ,   110  ,   110   );
-            num_ScaleZ.DisabledBackColor = System.Drawing.Color.FromArgb(   80  ,   80  ,   80   );
-            num_ScaleZ.DisabledBorderColor = System.Drawing.Color.FromArgb(   109  ,   109  ,   109   );
-            num_ScaleZ.DisabledForeColor = System.Drawing.Color.FromArgb(   109  ,   109  ,   109   );
-            num_ScaleZ.Font = new System.Drawing.Font( "Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point );
-            num_ScaleZ.IsDerivedStyle = true;
-            num_ScaleZ.Location = new System.Drawing.Point( 47, 193 );
+            num_ScaleZ.DecimalPlaces = 6;
+            num_ScaleZ.Location = new System.Drawing.Point( 47, 190 );
             num_ScaleZ.Margin = new System.Windows.Forms.Padding( 4, 5, 4, 5 );
-            num_ScaleZ.Maximum = 100;
-            num_ScaleZ.Minimum = 0;
             num_ScaleZ.Name = "num_ScaleZ";
-            num_ScaleZ.Size = new System.Drawing.Size( 173, 26 );
-            num_ScaleZ.Style = MetroSet_UI.Enums.Style.Dark;
-            num_ScaleZ.StyleManager = null;
-            num_ScaleZ.SymbolsColor = System.Drawing.Color.FromArgb(   110  ,   110  ,   110   );
+            num_ScaleZ.Size = new System.Drawing.Size( 173, 32 );
             num_ScaleZ.TabIndex = 9;
-            num_ScaleZ.ThemeAuthor = "Narwin";
-            num_ScaleZ.ThemeName = "MetroDark";
-            num_ScaleZ.Value = 1;
+            num_ScaleZ.Value = new decimal( new int[] { 1, 0, 0, 0 } );
             // 
             // lbl_Scale
             // 
@@ -324,27 +292,14 @@ namespace GFDStudio.GUI.Forms
             // num_PosX
             // 
             num_PosX.Anchor =   System.Windows.Forms.AnchorStyles.Left  |  System.Windows.Forms.AnchorStyles.Right  ;
-            num_PosX.BackColor = System.Drawing.Color.Transparent;
-            num_PosX.BackgroundColor = System.Drawing.Color.Empty;
-            num_PosX.BorderColor = System.Drawing.Color.FromArgb(   110  ,   110  ,   110   );
-            num_PosX.DisabledBackColor = System.Drawing.Color.FromArgb(   80  ,   80  ,   80   );
-            num_PosX.DisabledBorderColor = System.Drawing.Color.FromArgb(   109  ,   109  ,   109   );
-            num_PosX.DisabledForeColor = System.Drawing.Color.FromArgb(   109  ,   109  ,   109   );
-            num_PosX.Font = new System.Drawing.Font( "Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point );
-            num_PosX.IsDerivedStyle = true;
-            num_PosX.Location = new System.Drawing.Point( 64, 75 );
+            num_PosX.DecimalPlaces = 6;
+            num_PosX.Location = new System.Drawing.Point( 64, 72 );
             num_PosX.Margin = new System.Windows.Forms.Padding( 4, 5, 4, 5 );
-            num_PosX.Maximum = 999999;
-            num_PosX.Minimum = -999999;
+            num_PosX.Maximum = new decimal( new int[] { 999999, 0, 0, 0 } );
+            num_PosX.Minimum = new decimal( new int[] { 999999, 0, 0, int.MinValue } );
             num_PosX.Name = "num_PosX";
-            num_PosX.Size = new System.Drawing.Size( 156, 26 );
-            num_PosX.Style = MetroSet_UI.Enums.Style.Dark;
-            num_PosX.StyleManager = null;
-            num_PosX.SymbolsColor = System.Drawing.Color.FromArgb(   110  ,   110  ,   110   );
+            num_PosX.Size = new System.Drawing.Size( 156, 32 );
             num_PosX.TabIndex = 4;
-            num_PosX.ThemeAuthor = "Narwin";
-            num_PosX.ThemeName = "MetroDark";
-            num_PosX.Value = 0;
             // 
             // lbl_PosY
             // 
@@ -366,52 +321,26 @@ namespace GFDStudio.GUI.Forms
             // num_PosY
             // 
             num_PosY.Anchor =   System.Windows.Forms.AnchorStyles.Left  |  System.Windows.Forms.AnchorStyles.Right  ;
-            num_PosY.BackColor = System.Drawing.Color.Transparent;
-            num_PosY.BackgroundColor = System.Drawing.Color.Empty;
-            num_PosY.BorderColor = System.Drawing.Color.FromArgb(   110  ,   110  ,   110   );
-            num_PosY.DisabledBackColor = System.Drawing.Color.FromArgb(   80  ,   80  ,   80   );
-            num_PosY.DisabledBorderColor = System.Drawing.Color.FromArgb(   109  ,   109  ,   109   );
-            num_PosY.DisabledForeColor = System.Drawing.Color.FromArgb(   109  ,   109  ,   109   );
-            num_PosY.Font = new System.Drawing.Font( "Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point );
-            num_PosY.IsDerivedStyle = true;
-            num_PosY.Location = new System.Drawing.Point( 64, 134 );
+            num_PosY.DecimalPlaces = 6;
+            num_PosY.Location = new System.Drawing.Point( 64, 131 );
             num_PosY.Margin = new System.Windows.Forms.Padding( 4, 5, 4, 5 );
-            num_PosY.Maximum = 999999;
-            num_PosY.Minimum = -999999;
+            num_PosY.Maximum = new decimal( new int[] { 999999, 0, 0, 0 } );
+            num_PosY.Minimum = new decimal( new int[] { 999999, 0, 0, int.MinValue } );
             num_PosY.Name = "num_PosY";
-            num_PosY.Size = new System.Drawing.Size( 156, 26 );
-            num_PosY.Style = MetroSet_UI.Enums.Style.Dark;
-            num_PosY.StyleManager = null;
-            num_PosY.SymbolsColor = System.Drawing.Color.FromArgb(   110  ,   110  ,   110   );
+            num_PosY.Size = new System.Drawing.Size( 156, 32 );
             num_PosY.TabIndex = 7;
-            num_PosY.ThemeAuthor = "Narwin";
-            num_PosY.ThemeName = "MetroDark";
-            num_PosY.Value = 0;
             // 
             // num_PosZ
             // 
             num_PosZ.Anchor =   System.Windows.Forms.AnchorStyles.Left  |  System.Windows.Forms.AnchorStyles.Right  ;
-            num_PosZ.BackColor = System.Drawing.Color.Transparent;
-            num_PosZ.BackgroundColor = System.Drawing.Color.Empty;
-            num_PosZ.BorderColor = System.Drawing.Color.FromArgb(   110  ,   110  ,   110   );
-            num_PosZ.DisabledBackColor = System.Drawing.Color.FromArgb(   80  ,   80  ,   80   );
-            num_PosZ.DisabledBorderColor = System.Drawing.Color.FromArgb(   109  ,   109  ,   109   );
-            num_PosZ.DisabledForeColor = System.Drawing.Color.FromArgb(   109  ,   109  ,   109   );
-            num_PosZ.Font = new System.Drawing.Font( "Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point );
-            num_PosZ.IsDerivedStyle = true;
-            num_PosZ.Location = new System.Drawing.Point( 64, 193 );
+            num_PosZ.DecimalPlaces = 6;
+            num_PosZ.Location = new System.Drawing.Point( 64, 190 );
             num_PosZ.Margin = new System.Windows.Forms.Padding( 4, 5, 4, 5 );
-            num_PosZ.Maximum = 999999;
-            num_PosZ.Minimum = -999999;
+            num_PosZ.Maximum = new decimal( new int[] { 999999, 0, 0, 0 } );
+            num_PosZ.Minimum = new decimal( new int[] { 999999, 0, 0, int.MinValue } );
             num_PosZ.Name = "num_PosZ";
-            num_PosZ.Size = new System.Drawing.Size( 156, 26 );
-            num_PosZ.Style = MetroSet_UI.Enums.Style.Dark;
-            num_PosZ.StyleManager = null;
-            num_PosZ.SymbolsColor = System.Drawing.Color.FromArgb(   110  ,   110  ,   110   );
+            num_PosZ.Size = new System.Drawing.Size( 156, 32 );
             num_PosZ.TabIndex = 9;
-            num_PosZ.ThemeAuthor = "Narwin";
-            num_PosZ.ThemeName = "MetroDark";
-            num_PosZ.Value = 0;
             // 
             // lbl_Position
             // 
@@ -511,27 +440,14 @@ namespace GFDStudio.GUI.Forms
             // num_RotX
             // 
             num_RotX.Anchor =   System.Windows.Forms.AnchorStyles.Left  |  System.Windows.Forms.AnchorStyles.Right  ;
-            num_RotX.BackColor = System.Drawing.Color.Transparent;
-            num_RotX.BackgroundColor = System.Drawing.Color.Empty;
-            num_RotX.BorderColor = System.Drawing.Color.FromArgb(   110  ,   110  ,   110   );
-            num_RotX.DisabledBackColor = System.Drawing.Color.FromArgb(   80  ,   80  ,   80   );
-            num_RotX.DisabledBorderColor = System.Drawing.Color.FromArgb(   109  ,   109  ,   109   );
-            num_RotX.DisabledForeColor = System.Drawing.Color.FromArgb(   109  ,   109  ,   109   );
-            num_RotX.Font = new System.Drawing.Font( "Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point );
-            num_RotX.IsDerivedStyle = true;
-            num_RotX.Location = new System.Drawing.Point( 61, 75 );
+            num_RotX.DecimalPlaces = 6;
+            num_RotX.Location = new System.Drawing.Point( 61, 72 );
             num_RotX.Margin = new System.Windows.Forms.Padding( 4, 5, 4, 5 );
-            num_RotX.Maximum = 999;
-            num_RotX.Minimum = -999;
+            num_RotX.Maximum = new decimal( new int[] { 999, 0, 0, 0 } );
+            num_RotX.Minimum = new decimal( new int[] { 999, 0, 0, int.MinValue } );
             num_RotX.Name = "num_RotX";
-            num_RotX.Size = new System.Drawing.Size( 159, 26 );
-            num_RotX.Style = MetroSet_UI.Enums.Style.Dark;
-            num_RotX.StyleManager = null;
-            num_RotX.SymbolsColor = System.Drawing.Color.FromArgb(   110  ,   110  ,   110   );
+            num_RotX.Size = new System.Drawing.Size( 159, 32 );
             num_RotX.TabIndex = 4;
-            num_RotX.ThemeAuthor = "Narwin";
-            num_RotX.ThemeName = "MetroDark";
-            num_RotX.Value = 0;
             // 
             // lbl_RotY
             // 
@@ -553,52 +469,26 @@ namespace GFDStudio.GUI.Forms
             // num_RotY
             // 
             num_RotY.Anchor =   System.Windows.Forms.AnchorStyles.Left  |  System.Windows.Forms.AnchorStyles.Right  ;
-            num_RotY.BackColor = System.Drawing.Color.Transparent;
-            num_RotY.BackgroundColor = System.Drawing.Color.Empty;
-            num_RotY.BorderColor = System.Drawing.Color.FromArgb(   110  ,   110  ,   110   );
-            num_RotY.DisabledBackColor = System.Drawing.Color.FromArgb(   80  ,   80  ,   80   );
-            num_RotY.DisabledBorderColor = System.Drawing.Color.FromArgb(   109  ,   109  ,   109   );
-            num_RotY.DisabledForeColor = System.Drawing.Color.FromArgb(   109  ,   109  ,   109   );
-            num_RotY.Font = new System.Drawing.Font( "Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point );
-            num_RotY.IsDerivedStyle = true;
-            num_RotY.Location = new System.Drawing.Point( 61, 134 );
+            num_RotY.DecimalPlaces = 6;
+            num_RotY.Location = new System.Drawing.Point( 61, 131 );
             num_RotY.Margin = new System.Windows.Forms.Padding( 4, 5, 4, 5 );
-            num_RotY.Maximum = 999;
-            num_RotY.Minimum = -999;
+            num_RotY.Maximum = new decimal( new int[] { 999, 0, 0, 0 } );
+            num_RotY.Minimum = new decimal( new int[] { 999, 0, 0, int.MinValue } );
             num_RotY.Name = "num_RotY";
-            num_RotY.Size = new System.Drawing.Size( 159, 26 );
-            num_RotY.Style = MetroSet_UI.Enums.Style.Dark;
-            num_RotY.StyleManager = null;
-            num_RotY.SymbolsColor = System.Drawing.Color.FromArgb(   110  ,   110  ,   110   );
+            num_RotY.Size = new System.Drawing.Size( 159, 32 );
             num_RotY.TabIndex = 7;
-            num_RotY.ThemeAuthor = "Narwin";
-            num_RotY.ThemeName = "MetroDark";
-            num_RotY.Value = 0;
             // 
             // num_RotZ
             // 
             num_RotZ.Anchor =   System.Windows.Forms.AnchorStyles.Left  |  System.Windows.Forms.AnchorStyles.Right  ;
-            num_RotZ.BackColor = System.Drawing.Color.Transparent;
-            num_RotZ.BackgroundColor = System.Drawing.Color.Empty;
-            num_RotZ.BorderColor = System.Drawing.Color.FromArgb(   110  ,   110  ,   110   );
-            num_RotZ.DisabledBackColor = System.Drawing.Color.FromArgb(   80  ,   80  ,   80   );
-            num_RotZ.DisabledBorderColor = System.Drawing.Color.FromArgb(   109  ,   109  ,   109   );
-            num_RotZ.DisabledForeColor = System.Drawing.Color.FromArgb(   109  ,   109  ,   109   );
-            num_RotZ.Font = new System.Drawing.Font( "Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point );
-            num_RotZ.IsDerivedStyle = true;
-            num_RotZ.Location = new System.Drawing.Point( 61, 193 );
+            num_RotZ.DecimalPlaces = 6;
+            num_RotZ.Location = new System.Drawing.Point( 61, 190 );
             num_RotZ.Margin = new System.Windows.Forms.Padding( 4, 5, 4, 5 );
-            num_RotZ.Maximum = 999;
-            num_RotZ.Minimum = -999;
+            num_RotZ.Maximum = new decimal( new int[] { 999, 0, 0, 0 } );
+            num_RotZ.Minimum = new decimal( new int[] { 999, 0, 0, int.MinValue } );
             num_RotZ.Name = "num_RotZ";
-            num_RotZ.Size = new System.Drawing.Size( 159, 26 );
-            num_RotZ.Style = MetroSet_UI.Enums.Style.Dark;
-            num_RotZ.StyleManager = null;
-            num_RotZ.SymbolsColor = System.Drawing.Color.FromArgb(   110  ,   110  ,   110   );
+            num_RotZ.Size = new System.Drawing.Size( 159, 32 );
             num_RotZ.TabIndex = 9;
-            num_RotZ.ThemeAuthor = "Narwin";
-            num_RotZ.ThemeName = "MetroDark";
-            num_RotZ.Value = 0;
             // 
             // lbl_Rotation
             // 
@@ -620,27 +510,14 @@ namespace GFDStudio.GUI.Forms
             // num_RotW
             // 
             num_RotW.Anchor =   System.Windows.Forms.AnchorStyles.Left  |  System.Windows.Forms.AnchorStyles.Right  ;
-            num_RotW.BackColor = System.Drawing.Color.Transparent;
-            num_RotW.BackgroundColor = System.Drawing.Color.Empty;
-            num_RotW.BorderColor = System.Drawing.Color.FromArgb(   110  ,   110  ,   110   );
-            num_RotW.DisabledBackColor = System.Drawing.Color.FromArgb(   80  ,   80  ,   80   );
-            num_RotW.DisabledBorderColor = System.Drawing.Color.FromArgb(   109  ,   109  ,   109   );
-            num_RotW.DisabledForeColor = System.Drawing.Color.FromArgb(   109  ,   109  ,   109   );
-            num_RotW.Font = new System.Drawing.Font( "Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point );
-            num_RotW.IsDerivedStyle = true;
-            num_RotW.Location = new System.Drawing.Point( 61, 254 );
+            num_RotW.DecimalPlaces = 6;
+            num_RotW.Location = new System.Drawing.Point( 61, 251 );
             num_RotW.Margin = new System.Windows.Forms.Padding( 4, 5, 4, 5 );
-            num_RotW.Maximum = 999;
-            num_RotW.Minimum = 0;
+            num_RotW.Maximum = new decimal( new int[] { 999, 0, 0, 0 } );
             num_RotW.Name = "num_RotW";
-            num_RotW.Size = new System.Drawing.Size( 159, 26 );
-            num_RotW.Style = MetroSet_UI.Enums.Style.Dark;
-            num_RotW.StyleManager = null;
-            num_RotW.SymbolsColor = System.Drawing.Color.FromArgb(   110  ,   110  ,   110   );
+            num_RotW.Size = new System.Drawing.Size( 159, 32 );
             num_RotW.TabIndex = 11;
-            num_RotW.ThemeAuthor = "Narwin";
-            num_RotW.ThemeName = "MetroDark";
-            num_RotW.Value = 1;
+            num_RotW.Value = new decimal( new int[] { 1, 0, 0, 0 } );
             // 
             // tableLayoutPanel1
             // 
@@ -665,8 +542,6 @@ namespace GFDStudio.GUI.Forms
             // SetScaleValueDialog
             // 
             AcceptButton = OKButton;
-            AutoScaleDimensions = new System.Drawing.SizeF( 120F, 120F );
-            
             BackColor = System.Drawing.Color.FromArgb(   30  ,   30  ,   30   );
             BackgroundColor = System.Drawing.Color.FromArgb(   30  ,   30  ,   30   );
             ClientSize = new System.Drawing.Size( 700, 387 );
@@ -688,10 +563,20 @@ namespace GFDStudio.GUI.Forms
             ThemeName = "MetroDark";
             tableLayoutPanel_Scale.ResumeLayout( false );
             tableLayoutPanel_Scale.PerformLayout();
+            ( (System.ComponentModel.ISupportInitialize) num_ScaleX  ).EndInit();
+            ( (System.ComponentModel.ISupportInitialize) num_ScaleY  ).EndInit();
+            ( (System.ComponentModel.ISupportInitialize) num_ScaleZ  ).EndInit();
             tableLayoutPanel_Pos.ResumeLayout( false );
             tableLayoutPanel_Pos.PerformLayout();
+            ( (System.ComponentModel.ISupportInitialize) num_PosX  ).EndInit();
+            ( (System.ComponentModel.ISupportInitialize) num_PosY  ).EndInit();
+            ( (System.ComponentModel.ISupportInitialize) num_PosZ  ).EndInit();
             tableLayoutPanel_Rot.ResumeLayout( false );
             tableLayoutPanel_Rot.PerformLayout();
+            ( (System.ComponentModel.ISupportInitialize) num_RotX  ).EndInit();
+            ( (System.ComponentModel.ISupportInitialize) num_RotY  ).EndInit();
+            ( (System.ComponentModel.ISupportInitialize) num_RotZ  ).EndInit();
+            ( (System.ComponentModel.ISupportInitialize) num_RotW  ).EndInit();
             tableLayoutPanel1.ResumeLayout( false );
             ResumeLayout( false );
         }
@@ -702,30 +587,30 @@ namespace GFDStudio.GUI.Forms
         private new System.Windows.Forms.Button CancelButton;
         private System.Windows.Forms.Button OKButton;
         private MetroSetLabel lbl_scaleX;
-        private MetroSetNumeric num_ScaleX;
+        private System.Windows.Forms.NumericUpDown num_ScaleX;
         private MetroSetLabel lbl_ScaleZ;
         private MetroSetLabel lbl_Scale;
         private MetroSetLabel lbl_ScaleY;
-        private MetroSetNumeric num_ScaleY;
-        private MetroSetNumeric num_ScaleZ;
+        private System.Windows.Forms.NumericUpDown num_ScaleY;
+        private System.Windows.Forms.NumericUpDown num_ScaleZ;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel_Pos;
         private MetroSetLabel lbl_PosZ;
         private MetroSetLabel lbl_PosX;
-        private MetroSetNumeric num_PosX;
+        private System.Windows.Forms.NumericUpDown num_PosX;
         private MetroSetLabel lbl_Position;
         private MetroSetLabel lbl_PosY;
-        private MetroSetNumeric num_PosY;
-        private MetroSetNumeric num_PosZ;
+        private System.Windows.Forms.NumericUpDown num_PosY;
+        private System.Windows.Forms.NumericUpDown num_PosZ;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel_Rot;
         private MetroSetLabel lbl_RotW;
         private MetroSetLabel lbl_RotZ;
         private MetroSetLabel lbl_RotX;
-        private MetroSetNumeric num_RotX;
+        private System.Windows.Forms.NumericUpDown num_RotX;
         private MetroSetLabel lbl_RotY;
-        private MetroSetNumeric num_RotY;
-        private MetroSetNumeric num_RotZ;
+        private System.Windows.Forms.NumericUpDown num_RotY;
+        private System.Windows.Forms.NumericUpDown num_RotZ;
         private MetroSetLabel lbl_Rotation;
-        private MetroSetNumeric num_RotW;
+        private System.Windows.Forms.NumericUpDown num_RotW;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
     }
 }

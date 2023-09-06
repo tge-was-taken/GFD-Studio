@@ -4,11 +4,12 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
-    <Version>0.6.8</Version>
+    <Version>0.6.9</Version>
     <Authors>TGE</Authors>
     <Company>TGE</Company>
     <ApplicationIcon>app_data\icons\main_icon.ico</ApplicationIcon>
     <StartupObject>GFDStudio.Program</StartupObject>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
 
   <ItemGroup>

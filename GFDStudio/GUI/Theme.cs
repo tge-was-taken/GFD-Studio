@@ -22,17 +22,19 @@ namespace GFDStudio.GUI.Forms
         public static Color LightBG { get; set; } = Color.FromArgb( 240, 240, 240 );
         public static Color LightText { get; set; } = Color.FromArgb( 20, 20, 20 );
 
-        public static void Apply(MetroSetForm form, Config settings)
+        public static void Apply(MetroSetForm form)
         {
             var style = MetroSet_UI.Enums.Style.Dark;
-            if ( settings.DarkMode )
+            if ( MainForm.settings.DarkMode )
             {
-                form.MainMenuStrip.Renderer = new DarkMenuRenderer();
+                if (form.MainMenuStrip != null)
+                    form.MainMenuStrip.Renderer = new DarkMenuRenderer();
             }
             else
             {
                 style = MetroSet_UI.Enums.Style.Light;
-                form.MainMenuStrip.Renderer = new ToolStripProfessionalRenderer();
+                if ( form.MainMenuStrip != null )
+                    form.MainMenuStrip.Renderer = new ToolStripProfessionalRenderer();
             }
             GUI.Controls.ModelViewControl.Instance.Refresh();
 
@@ -44,7 +46,7 @@ namespace GFDStudio.GUI.Forms
                 if ( PropertyExists( ctrl, "Style" ) )
                     ctrl.Style = style;
 
-                if ( settings.DarkMode )
+                if ( MainForm.settings.DarkMode )
                 {
                     ctrl.BackColor = DarkBG;
                     ctrl.ForeColor = DarkText;
@@ -58,33 +60,47 @@ namespace GFDStudio.GUI.Forms
                 }
 
                 if ( ctrl.GetType() == typeof( MenuStrip ) )
-                    RecursivelySetColor(ctrl, settings);
+                    RecursivelySetColor(ctrl);
             }
 
         }
 
-        private static void RecursivelySetColor( dynamic ctrl, Config settings )
+        public static void RecursivelySetColor( dynamic ctrl )
         {
-            List<dynamic> items = new List<dynamic>();
             if ( ctrl.GetType() == typeof( MenuStrip ) )
                 foreach ( dynamic item in ctrl.Items )
                 {
-                    if ( settings.DarkMode )
+                    if ( MainForm.settings.DarkMode )
                         item.ForeColor = DarkText;
                     else
                         item.ForeColor = LightText;
 
-                    RecursivelySetColor( item, settings );
+                    RecursivelySetColor( item );
                 }
-            else
+            else if ( ctrl.GetType() == typeof( ContextMenuStrip ) )
+            {
+                if ( MainForm.settings.DarkMode )
+                    ctrl.Renderer = new DarkMenuRenderer();
+                else
+                    ctrl.Renderer = new ToolStripProfessionalRenderer();
+
+                if ( MainForm.settings.DarkMode )
+                    ctrl.ForeColor = DarkText;
+                else
+                    ctrl.ForeColor = LightText;
+
+                foreach(var item in ctrl.Items)
+                    RecursivelySetColor( item );
+            }
+            else if ( ctrl.GetType() == typeof( ToolStripMenuItem ) || ctrl.GetType() == typeof( ToolStripItem ) )
                 foreach ( dynamic item in ctrl.DropDownItems )
                 {
-                    if ( settings.DarkMode )
+                    if ( MainForm.settings.DarkMode )
                         item.ForeColor = DarkText;
                     else
                         item.ForeColor = LightText;
 
-                    RecursivelySetColor( item, settings );
+                    RecursivelySetColor( item );
                 }
         }
 

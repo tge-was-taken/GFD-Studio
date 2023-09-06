@@ -12,6 +12,7 @@ namespace GFDStudio.GUI.Forms
         public SetScaleValueDialog()
         {
             InitializeComponent();
+            Theme.Apply( this );
         }
 
         private void OKButton_Click( object sender, EventArgs e )

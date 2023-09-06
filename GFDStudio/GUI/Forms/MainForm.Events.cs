@@ -762,7 +762,7 @@ namespace GFDStudio.GUI.Forms
             settings.SaveJson( settings );
 
             // Change appearance of form elements
-            Theme.Apply( this, settings );
+            Theme.Apply( this );
         }
     }
 }

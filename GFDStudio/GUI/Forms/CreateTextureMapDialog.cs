@@ -11,6 +11,7 @@ namespace GFDStudio.GUI.Forms
         public CreateTextureMapDialog()
         {
             InitializeComponent();
+            Theme.Apply( this );
         }
 
         private void OKButton_Click( object sender, EventArgs e )

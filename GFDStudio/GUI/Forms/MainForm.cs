@@ -19,7 +19,7 @@ namespace GFDStudio.GUI.Forms
 {
     public partial class MainForm : MetroSet_UI.Forms.MetroSetForm
     {
-        public Config settings = new Config();
+        public static Config settings = new Config();
 
         private static MainForm sInstance;
         public static MainForm Instance
@@ -54,7 +54,7 @@ namespace GFDStudio.GUI.Forms
             InitializeEvents();
 
             settings = settings.LoadJson();
-            Theme.Apply( this, settings );
+            Theme.Apply( this );
             retainColorValuesToolStripMenuItem.Checked = settings.RetainMaterialColors;
             retainTexNameToolStripMenuItem.Checked = settings.RetainTextureNames;
             useDarkThemeToolStripMenuItem.Checked = settings.DarkMode;

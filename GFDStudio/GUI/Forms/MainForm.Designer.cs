@@ -527,13 +527,13 @@ namespace GFDStudio.GUI.Forms
             mPropertyGrid.CategoryForeColor = System.Drawing.Color.Silver;
             mPropertyGrid.CommandsBorderColor = System.Drawing.Color.FromArgb(   30  ,   30  ,   30   );
             mPropertyGrid.CommandsForeColor = System.Drawing.Color.Silver;
-            mPropertyGrid.DisabledItemForeColor = System.Drawing.Color.FromArgb(   127  ,   192  ,   192  ,   192   );
+            mPropertyGrid.DisabledItemForeColor = System.Drawing.SystemColors.Highlight;
             mPropertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
             mPropertyGrid.Font = new System.Drawing.Font( "Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point );
             mPropertyGrid.HelpBackColor = System.Drawing.Color.FromArgb(   30  ,   30  ,   30   );
             mPropertyGrid.HelpBorderColor = System.Drawing.Color.FromArgb(   30  ,   30  ,   30   );
             mPropertyGrid.HelpForeColor = System.Drawing.Color.Silver;
-            mPropertyGrid.LineColor = System.Drawing.SystemColors.ControlDarkDark;
+            mPropertyGrid.LineColor = System.Drawing.SystemColors.Highlight;
             mPropertyGrid.Location = new System.Drawing.Point( 0, 0 );
             mPropertyGrid.Margin = new System.Windows.Forms.Padding( 5, 4, 5, 4 );
             mPropertyGrid.Name = "mPropertyGrid";

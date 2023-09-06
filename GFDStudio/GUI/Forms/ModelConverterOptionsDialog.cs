@@ -75,6 +75,7 @@ namespace GFDStudio.GUI.Forms
         public ModelConverterOptionsDialog( bool showSceneOptionsOnly )
         {
             InitializeComponent();
+            Theme.Apply( this );
             VersionTextBox.Text = $"0x{ResourceVersion.Persona5Dancing:X8}";
 
             if ( showSceneOptionsOnly )

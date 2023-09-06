@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using GFDLibrary;
 using GFDStudio.DataManagement;
 using GFDStudio.FormatModules;
+using GFDStudio.GUI.Forms;
 
 namespace GFDStudio.GUI.DataViewNodes
 {
@@ -740,6 +741,7 @@ namespace GFDStudio.GUI.DataViewNodes
         private void InitializeContextMenuStrip()
         {
             ContextMenuStrip = new ContextMenuStrip();
+            ContextMenuStrip.VisibleChanged += CreateEventHandler(ShowContextMenuStrip);
 
             var uncategorizedCustomHandlers = mCustomHandlers.Where( x => x.Menu == null ).ToList();
             if ( uncategorizedCustomHandlers.Count > 0 )
@@ -848,6 +850,12 @@ namespace GFDStudio.GUI.DataViewNodes
                     Name = "Delete"
                 });
             }
+        }
+
+        private void ShowContextMenuStrip()
+        {
+            Theme.RecursivelySetColor( ContextMenuStrip );
+            return;
         }
 
         //
