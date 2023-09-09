@@ -33,7 +33,7 @@ namespace GFDStudio.GUI.DataViewNodes
                 Data.Add( new Material( "New material" ) );
                 InitializeView( true );
             } );
-            //RegisterCustomHandler("Convert to", "Material preset (All)", () => { ConvertAllToMaterialPreset(); });
+            RegisterCustomHandler("Convert to", "Material preset (All)", () => { ConvertAllToMaterialPreset(); });
             RegisterCustomHandler( "Export", "All", () =>
             {
                 var dialog = new VistaFolderBrowserDialog();
