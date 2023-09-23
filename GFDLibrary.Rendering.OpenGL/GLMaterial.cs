@@ -26,7 +26,8 @@ namespace GFDLibrary.Rendering.OpenGL
         public Vector4 Specular { get; set; }
 
         public Vector4 Emissive { get; set; }
-        public Vector4 ToonLightColor { get; set; } = new Vector4(0.98f, 0.98f, 0.98f, 0.36f);
+        public float Reflectivity { get; set; }
+        public Vector4 ToonLightColor { get; set; } = new Vector4( 0.98f, 0.98f, 0.98f, 0.36f );
         public float ToonLightThreshold { get; set; } = 0.7f;
         public float ToonLightFactor { get; set; } = 14.0f;
         public float ToonShadowBrightness { get; set; } = 0.5f;
@@ -35,10 +36,12 @@ namespace GFDLibrary.Rendering.OpenGL
 
         public GLTexture DiffuseTexture { get; set; }
         public GLTexture SpecularTexture { get; set; }
+        public GLTexture ReflectionTexture { get; set; }
         public GLTexture ShadowTexture { get; set; }
 
 
         public int DrawMethod { get; set; }
+        public int AlphaClip { get; set; }
 
         public bool HasType0 { get; set; } = false;
         public bool HasType1 { get; set; } = false;
@@ -48,6 +51,7 @@ namespace GFDLibrary.Rendering.OpenGL
 
         public bool HasDiffuseTexture => DiffuseTexture != null;
         public bool HasSpecularTexture => SpecularTexture != null;
+        public bool HasReflectionTexture => ReflectionTexture != null;
         public bool HasShadowTexture => ShadowTexture != null;
 
 
@@ -62,8 +66,10 @@ namespace GFDLibrary.Rendering.OpenGL
             Diffuse = material.DiffuseColor.ToOpenTK();
             Specular = material.SpecularColor.ToOpenTK();
             Emissive = material.EmissiveColor.ToOpenTK();
+            Reflectivity = material.Field40;
+            AlphaClip = (int)material.Field90;
 
-            MatFlags = Convert.ToInt32(material.Flags);
+            MatFlags = Convert.ToInt32( material.Flags );
 
             if ( material.Attributes != null && material.Flags.HasFlag( MaterialFlags.HasAttributes ) )
             {
@@ -72,7 +78,7 @@ namespace GFDLibrary.Rendering.OpenGL
                 HasType4 = material.Attributes.Any( x => x.AttributeType == MaterialAttributeType.Type4 );
             }
 
-            if (HasType0)
+            if ( HasType0 )
             {
                 MaterialAttributeType0 type0 = (MaterialAttributeType0)material.Attributes.Single(
                     x => x.AttributeType == MaterialAttributeType.Type0 );
@@ -82,9 +88,9 @@ namespace GFDLibrary.Rendering.OpenGL
                 ToonShadowBrightness = type0.Field24;
                 ToonShadowThreshold = type0.Field28;
                 ToonShadowFactor = type0.Field2C;
-                Type0Flags = ((int)type0.Type0Flags);
+                Type0Flags = ( (int)type0.Type0Flags );
             }
-            if (HasType1)
+            if ( HasType1 )
             {
                 MaterialAttributeType1 type1 = (MaterialAttributeType1)material.Attributes.Single(
                     x => x.AttributeType == MaterialAttributeType.Type1 );
@@ -92,7 +98,7 @@ namespace GFDLibrary.Rendering.OpenGL
                 ToonLightThreshold = type1.Field1C;
                 ToonLightFactor = type1.Field20;
             }
-            if (HasType4)
+            if ( HasType4 )
             {
                 MaterialAttributeType4 type4 = (MaterialAttributeType4)material.Attributes.Single(
                     x => x.AttributeType == MaterialAttributeType.Type4 );
@@ -111,6 +117,10 @@ namespace GFDLibrary.Rendering.OpenGL
             {
                 SpecularTexture = textureCreator( material, material.SpecularMap.Name );
             }
+            if ( material.ReflectionMap != null )
+            {
+                ReflectionTexture = textureCreator( material, material.ReflectionMap.Name );
+            }
             if ( material.ShadowMap != null )
             {
                 ShadowTexture = textureCreator( material, material.ShadowMap.Name );
@@ -118,17 +128,15 @@ namespace GFDLibrary.Rendering.OpenGL
         }
 
         public GLMaterial()
-        {       
+        {
         }
 
         public void Bind( GLShaderProgram shaderProgram )
         {
-            shaderProgram.SetUniform( "uMatHasDiffuse",  HasDiffuseTexture );
-            shaderProgram.SetUniform( "uMatHasSpecular", HasSpecularTexture );
-            shaderProgram.SetUniform( "uMatHasShadow",   HasShadowTexture );
             shaderProgram.SetUniform( "uDiffuse", 0 );
             shaderProgram.SetUniform( "uSpecular", 1 );
-            shaderProgram.SetUniform( "uShadow", 2 );
+            shaderProgram.SetUniform( "uReflection", 2 );
+            shaderProgram.SetUniform( "uShadow", 3 );
             if ( HasDiffuseTexture )
             //DiffuseTexture.Bind();
             {
@@ -140,27 +148,34 @@ namespace GFDLibrary.Rendering.OpenGL
                 GL.ActiveTexture( TextureUnit.Texture1 );
                 SpecularTexture.Bind();
             }
-            if ( HasShadowTexture )
+            if ( HasReflectionTexture )
             {
                 GL.ActiveTexture( TextureUnit.Texture2 );
+                ReflectionTexture.Bind();
+            }
+            if ( HasShadowTexture )
+            {
+                GL.ActiveTexture( TextureUnit.Texture3 );
                 ShadowTexture.Bind();
             }
-            shaderProgram.SetUniform( "uMatAmbient",              Ambient );
-            shaderProgram.SetUniform( "uMatDiffuse",              Diffuse );
-            shaderProgram.SetUniform( "uMatSpecular",             Specular );
-            shaderProgram.SetUniform( "uMatEmissive",             Emissive );
-            shaderProgram.SetUniform( "DrawMethod",               DrawMethod );
-            shaderProgram.SetUniform( "uMatHasType0",             HasType0 );
-            shaderProgram.SetUniform( "uMatHasType1",             HasType1 );
-            shaderProgram.SetUniform( "uMatHasType4",             HasType4 );
-            shaderProgram.SetUniform( "uMatFlags",                MatFlags );
-            shaderProgram.SetUniform( "uMatType0Flags",           Type0Flags );
-            shaderProgram.SetUniform( "uMatToonLightColor",       ToonLightColor );
-            shaderProgram.SetUniform( "uMatToonLightFactor",      ToonLightFactor );
-            shaderProgram.SetUniform( "uMatToonLightThreshold",   ToonLightThreshold );
+            shaderProgram.SetUniform( "uMatAmbient", Ambient );
+            shaderProgram.SetUniform( "uMatDiffuse", Diffuse );
+            shaderProgram.SetUniform( "uMatSpecular", Specular );
+            shaderProgram.SetUniform( "uMatEmissive", Emissive );
+            shaderProgram.SetUniform( "uMatReflectivity", Reflectivity );
+            shaderProgram.SetUniform( "DrawMethod", DrawMethod );
+            shaderProgram.SetUniform( "alphaClip", AlphaClip );
+            shaderProgram.SetUniform( "uMatHasType0", HasType0 );
+            shaderProgram.SetUniform( "uMatHasType1", HasType1 );
+            shaderProgram.SetUniform( "uMatHasType4", HasType4 );
+            shaderProgram.SetUniform( "uMatFlags", MatFlags );
+            shaderProgram.SetUniform( "uMatType0Flags", Type0Flags );
+            shaderProgram.SetUniform( "uMatToonLightColor", ToonLightColor );
+            shaderProgram.SetUniform( "uMatToonLightFactor", ToonLightFactor );
+            shaderProgram.SetUniform( "uMatToonLightThreshold", ToonLightThreshold );
             shaderProgram.SetUniform( "uMatToonShadowBrightness", ToonShadowBrightness );
-            shaderProgram.SetUniform( "uMatToonShadowThreshold",  ToonShadowThreshold );
-            shaderProgram.SetUniform( "uMatToonShadowFactor",     ToonShadowFactor );
+            shaderProgram.SetUniform( "uMatToonShadowThreshold", ToonShadowThreshold );
+            shaderProgram.SetUniform( "uMatToonShadowFactor", ToonShadowFactor );
 
             if ( RenderWireframe )
             {
@@ -175,6 +190,7 @@ namespace GFDLibrary.Rendering.OpenGL
 
         public void Unbind( GLShaderProgram shaderProgram )
         {
+            GL.Disable( EnableCap.Blend );
             if ( !EnableBackfaceCulling )
             {
                 GL.Enable( EnableCap.CullFace );
