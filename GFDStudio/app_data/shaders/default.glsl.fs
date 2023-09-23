@@ -81,7 +81,7 @@ vec4 DefaultShader(vec4 diffuseColor, vec4 specularColor, vec4 reflectionColor, 
         specular = vec4(pow(specAngle, uMatEmissive.a));
     vec4 accumulatedColor = diffuseColor;
     if (hasMatFlag(cMF_HasSpecularMap) && hasMatFlag(cMF_HasReflectionMap)){
-        accumulatedColor.rgb += uMatEmissive.rgb * specular.rgb;
+        accumulatedColor.rgb += uMatEmissive.rgb * specular.rgb * specularColor.rgb;
         accumulatedColor.rgb += specularColor.r * reflectionColor.rgb * uMatReflectivity;
     }
     else{
@@ -122,7 +122,7 @@ vec4 CharacterShader(vec4 diffuseColor, vec4 specularColor, vec4 reflectionColor
     //Calculate accumated color so far
     vec4 accumulatedColor = diffuseColor;
     if (hasMatFlag(cMF_HasSpecularMap) && hasMatFlag(cMF_HasReflectionMap)){
-        accumulatedColor.rgb += uMatEmissive.rgb * specular.rgb;
+        accumulatedColor.rgb += uMatEmissive.rgb * specular.rgb * specularColor.rgb;
         accumulatedColor.rgb += specularColor.r * reflectionColor.rgb * uMatReflectivity;
     }
     else{
@@ -156,7 +156,7 @@ vec4 PersonaShader(vec4 diffuseColor, vec4 specularColor, vec4 reflectionColor, 
     //Calculate accumated color so far
     vec4 accumulatedColor = diffuseColor;
     if (hasMatFlag(cMF_HasSpecularMap) && hasMatFlag(cMF_HasReflectionMap)){
-        accumulatedColor.rgb += uMatEmissive.rgb * specular.rgb;
+        accumulatedColor.rgb += uMatEmissive.rgb * specular.rgb * specularColor.rgb;
         accumulatedColor.rgb += specularColor.r * reflectionColor.rgb * uMatReflectivity;
     }
     else{
