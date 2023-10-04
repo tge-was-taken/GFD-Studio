@@ -25,7 +25,7 @@ void main()
     mat4 uModelView = uView * uModel;
     fPosition = ( uModelView * vec4( vPosition, 1.0 ) ).xyz;
     fNormal = vNormal.xyz;
-    fFacingNormal = ( uModelView * vec4( vNormal, 0.0 ) ).xyz;
+    fFacingNormal = normalize(( uModelView * vec4( vNormal, 0.0 ) ).xyz);
     fTex0 = vTex0;
     fColor0 = vec4( 1.0, 1.0, 1.0, 1.0 );
     gl_Position = uProjection * uModelView * vec4( vPosition, 1.0 );
