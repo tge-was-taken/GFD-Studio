@@ -37,13 +37,13 @@ namespace GFDLibrary.Rendering.OpenGL
                         if ( ddsHeader.PixelFormat.FourCC != 0 ||
                             !ddsHeader.PixelFormat.Flags.HasFlag( DDSPixelFormatFlags.RGB ) ||
                             ddsHeader.PixelFormat.RGBBitCount != 32 )
-                            format = GetPixelInternalFormat( ddsHeader.PixelFormat.FourCC );
+                            format = GetPixelInternalFormat( ddsHeader.PixelFormat.FourCC, ddsHeader.DxgiFormat );
                         else if ( ddsHeader.PixelFormat.Flags.HasFlag( DDSPixelFormatFlags.AlphaPixels ) )
                             format = PixelInternalFormat.Rgba;
                         else
                             format = PixelInternalFormat.Rgb;
 
-                        if ( format == PixelInternalFormat.CompressedRgbaBptcUnorm ) dataOffset += 0x14; //DX10 have an additional 20 bytes of header
+                        if ( format == PixelInternalFormat.CompressedRgbaBptcUnorm || format == PixelInternalFormat.CompressedRgbBptcSignedFloat || format == PixelInternalFormat.CompressedRgbBptcUnsignedFloat ) dataOffset += 0x14; //DX10 have an additional 20 bytes of header
 
                         UploadDDSTextureData( ddsHeader.Width, ddsHeader.Height, format, 1, texture.Data, dataOffset );
                     }
@@ -114,7 +114,7 @@ namespace GFDLibrary.Rendering.OpenGL
             GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, maxMipLevel );
         }
 
-        private static PixelInternalFormat GetPixelInternalFormat( DDSPixelFormatFourCC format )
+        private static PixelInternalFormat GetPixelInternalFormat( DDSPixelFormatFourCC format, DDSDxgiFormat dxgiFormat )
         {
             switch ( format )
             {
@@ -131,7 +131,21 @@ namespace GFDLibrary.Rendering.OpenGL
                     return PixelInternalFormat.Rgba8;
 
                 case DDSPixelFormatFourCC.DX10:
-                    return PixelInternalFormat.CompressedRgbaBptcUnorm;
+                    {
+                        switch ( dxgiFormat )
+                        {
+                            case DDSDxgiFormat.BC7_UNORM:
+                            case DDSDxgiFormat.BC7_TYPELESS:
+                            case DDSDxgiFormat.BC7_UNORM_SRGB:
+                                return PixelInternalFormat.CompressedRgbaBptcUnorm;
+                            case DDSDxgiFormat.BC6H_SF16:
+                            case DDSDxgiFormat.BC6H_TYPELESS:
+                                return PixelInternalFormat.CompressedRgbBptcSignedFloat;
+                            case DDSDxgiFormat.BC6H_UF16:
+                                return PixelInternalFormat.CompressedRgbBptcUnsignedFloat;
+                        }
+                        return PixelInternalFormat.CompressedRgbaBptcUnorm;
+                    }
 
                 default:
                     throw new NotImplementedException( format.ToString() );

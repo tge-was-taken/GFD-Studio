@@ -31,7 +31,13 @@ namespace GFDLibrary.Rendering.OpenGL
             // colors
             if (vertColor != null )
             {
-                // will add later
+                Vector4[] vertColorVector4 = new Vector4[vertColor.Length];
+                for ( int i = 0; i < vertColor.Length; i++ )
+                {
+                    byte[] bytes = BitConverter.GetBytes( vertColor[i] );
+                    vertColorVector4[i] = new Vector4( bytes[0], bytes[1], bytes[2], bytes[3] ) / 255f;
+                }
+                ColorBuffer = new GLVertexAttributeBuffer<Vector4>( vertColorVector4, 7, 4, VertexAttribPointerType.Float );
 
             }
 

@@ -67,11 +67,7 @@ uniform float uMatToonShadowFactor;
 
 // huge thanks to Firerabbit for https://godotshaders.com/shader/dither-opacity/
 const float dither_alpha_clip = 0.01;
-const mat4 mtrx_dither = mat4(
-    vec4(0.0625, 0.5625, 0.1875,  0.6875),
-    vec4(0.8125, 0.3125, 0.9375,  0.4375),
-    vec4(0.25, 0.75, 0.125, 0.625),
-    vec4(1.0, 0.5, 0.875,  0.375));
+const mat4 mtrx_dither = mat4(vec4(0.0625, 0.5625, 0.1875, 0.6875), vec4(0.8125, 0.3125, 0.9375, 0.4375), vec4(0.25, 0.75, 0.125, 0.625), vec4(1.0, 0.5, 0.875, 0.375));
 
 float get_dither_value(int x, int y) {
     return mtrx_dither[x][y];
@@ -91,16 +87,15 @@ bool hasBitFlag(int bitField, int bitFlag){
 }
 */
 
-int bitfieldExtract(int value, int offset, int bits){
+int bitfieldExtract(int value, int offset, int bits) {
     return (value >> offset) & ((1 << bits) - 1);
 }
 
-bool hasMatFlag(int bitFlag){
+bool hasMatFlag(int bitFlag) {
     return ((uMatFlags & bitFlag) != 0);
 }
 
-vec3 calcTangent(vec3 normal, vec3 pos, vec2 texCoord)
-{
+vec3 calcTangent(vec3 normal, vec3 pos, vec2 texCoord) {
     vec3 tangent;
     vec3 edge1 = dFdx(pos);
     vec3 edge2 = dFdy(pos);
@@ -114,8 +109,7 @@ vec3 calcTangent(vec3 normal, vec3 pos, vec2 texCoord)
     return normalize(tangent);
 }
 
-vec4 ShaderInfo(vec4 normalColor)
-{
+vec4 ShaderInfo(vec4 normalColor) {
     /*
     Calculates things:
     x - Base phong shadow (from -1 to 1)
@@ -125,55 +119,51 @@ vec4 ShaderInfo(vec4 normalColor)
     */
     float specular = 0.0;
     float phongShadow = 1.0;
-    const vec3 lightDirection = normalize(vec3( 90.0, 45.0, 90.0 ));
-    vec3 eyePos = normalize( -fPosition );
-    if (hasMatFlag(MatFlag_EnableLight2)){
+    const vec3 lightDirection = normalize(vec3(90.0, 45.0, 90.0));
+    vec3 eyePos = normalize(-fPosition);
+    if(hasMatFlag(MatFlag_EnableLight2)) {
         phongShadow = dot(lightDirection, normalColor.xyz);
     }
     float clampedPhongShadow = clamp(phongShadow, 0.0, 1.0);
     vec3 refAngle = reflect(-lightDirection, normalColor.xyz);
     float specAngle = max(dot(refAngle, normalize(-fPosition)), 0.0);
-    if ( uMatEmissive.a > 0.0 ){
+    if(uMatEmissive.a > 0.0) {
         specular = pow(specAngle, uMatEmissive.a);
     }
-    float baseRimLight = clamp(( dot( normalColor.xyz, mix( eyePos, normalColor.xyz, -min( phongShadow, 0.0) ) )), 0.0, 1.0);
-    float rampedRimLight = pow(( min( 1.0 - baseRimLight, uMatToonLightThreshold) / uMatToonLightThreshold), uMatToonLightFactor);
+    float baseRimLight = clamp((dot(normalColor.xyz, mix(eyePos, normalColor.xyz, -min(phongShadow, 0.0)))), 0.0, 1.0);
+    float rampedRimLight = pow((min(1.0 - baseRimLight, uMatToonLightThreshold) / uMatToonLightThreshold), uMatToonLightFactor);
     return vec4(phongShadow, clampedPhongShadow, specular, rampedRimLight);
 }
 
-void DefaultShader(vec3 specularColor, vec3 reflectionColor, vec4 shadowColor, vec4 inShaderInfo)
-{
+void DefaultShader(vec3 specularColor, vec3 reflectionColor, vec4 shadowColor, vec4 inShaderInfo) {
     vec3 phongShadowCol = clamp((inShaderInfo.y * (1.0 - shadowColor.r) + uMatAmbient.rgb), 0, 1);
     oColor.rgb += uMatEmissive.rgb * inShaderInfo.z * mix(vec3(1.0), specularColor.rgb, float(hasMatFlag(MatFlag_HasSpecularMap)));                                       // Add specular
     oColor.rgb += reflectionColor.rgb * uMatReflectivity * mix(1.0, specularColor.r, bool(hasMatFlag(MatFlag_HasSpecularMap) && hasMatFlag(MatFlag_HasReflectionMap)));   // Add reflection
     oColor.rgb *= phongShadowCol;                                                                                                                                         // Add shadow
 }
 
-void CharacterShader(vec3 specularColor, vec3 reflectionColor, vec4 shadowColor, vec4 inShaderInfo)
-{
+void CharacterShader(vec3 specularColor, vec3 reflectionColor, vec4 shadowColor, vec4 inShaderInfo) {
     vec3 toonShadowCol = vec3(1.0 - shadowColor.r);
     float toonShadow = clamp((max(inShaderInfo.y - pow(uMatToonShadowThreshold, 1.8), 0.0) * uMatToonShadowFactor), 0, 1);
-    if (uMatType0Flags != 77) // disable shadows for face material
+    if(uMatType0Flags != 77) // disable shadows for face material
         toonShadowCol.rgb *= vec3(toonShadow);
     toonShadowCol.rgb = clamp((toonShadowCol.rgb + uMatAmbient.rgb), 0, 1);
     oColor.rgb += uMatEmissive.rgb * inShaderInfo.z * mix(vec3(1.0), specularColor.rgb, float(hasMatFlag(MatFlag_HasSpecularMap)));                                         // Add specular
     oColor.rgb += reflectionColor.rgb * uMatReflectivity * mix(1.0, specularColor.r, bool(hasMatFlag(MatFlag_HasSpecularMap) && hasMatFlag(MatFlag_HasReflectionMap)));     // Add reflection
-    oColor.rgb = mix(oColor.rgb, uMatToonLightColor.rgb, inShaderInfo.w * uMatToonLightColor.a * shadowColor.a );                                                           // Add rim light
+    oColor.rgb = mix(oColor.rgb, uMatToonLightColor.rgb, inShaderInfo.w * uMatToonLightColor.a * shadowColor.a);                                                           // Add rim light
     oColor.rgb = mix(oColor.rgb, oColor.rgb * toonShadowCol, 1.0 - clamp(uMatToonShadowBrightness, 0, 1));                                                                  // Add shadow
 }
 
-void PersonaShader(vec3 specularColor, vec3 reflectionColor, vec4 shadowColor, vec4 inShaderInfo)
-{
+void PersonaShader(vec3 specularColor, vec3 reflectionColor, vec4 shadowColor, vec4 inShaderInfo) {
     vec3 toonShadow = vec3(1.0 - shadowColor.r);
     toonShadow.rgb = clamp((toonShadow.rgb + uMatAmbient.rgb), 0, 1);
     oColor.rgb += uMatEmissive.rgb * inShaderInfo.z * mix(vec3(1.0), specularColor.rgb, float(hasMatFlag(MatFlag_HasSpecularMap)));                                       // Add specular
     oColor.rgb += reflectionColor.rgb * uMatReflectivity * mix(1.0, specularColor.r, bool(hasMatFlag(MatFlag_HasSpecularMap) && hasMatFlag(MatFlag_HasReflectionMap)));   // Add reflection
     oColor.rgb *= toonShadow.rgb;                                                                                                                                         // Add shadow
-    oColor.rgb = mix(oColor.rgb, uMatToonLightColor.rgb, inShaderInfo.w * uMatToonLightColor.a * oColor.a );                                                              // Add rim light
+    oColor.rgb = mix(oColor.rgb, uMatToonLightColor.rgb, inShaderInfo.w * uMatToonLightColor.a * oColor.a);                                                              // Add rim light
 }
 
-void main()
-{
+void main() {
     float dither_limit = get_dither_value(int(gl_FragCoord.x) % 4, int(gl_FragCoord.y) % 4);
 
     oColor = uMatDiffuse;
@@ -184,22 +174,37 @@ void main()
 
     // --- Setting up textures ---
 
-    if (hasMatFlag(MatFlag_HasDiffuseMap)){
+    if(hasMatFlag(MatFlag_HasDiffuseMap)) {
         int texcoord = bitfieldExtract(TexcoordFlags, 0, 3);
-        switch (texcoord){
-            case 0: oColor = texture(uDiffuse, fTex0); break;
-            case 1: oColor = texture(uDiffuse, fTex1); break;
-            case 2: oColor = texture(uDiffuse, fTex2); break;
+        switch(texcoord) {
+            case 0:
+                oColor = texture(uDiffuse, fTex0);
+                break;
+            case 1:
+                oColor = texture(uDiffuse, fTex1);
+                break;
+            case 2:
+                oColor = texture(uDiffuse, fTex2);
+                break;
         }
         oColor.a *= uMatDiffuse.a;
     }
-    if (hasMatFlag(MatFlag_HasNormalMap)){
+    if(hasMatFlag(MatFlag_HasNormalMap)) {
         int texcoord = bitfieldExtract(TexcoordFlags, 3, 3);
         vec3 tangent = vec3(0.0);
-        switch (texcoord){
-            case 0: normalColor = texture(uNormal, fTex0); tangent = calcTangent( fFacingNormal, fPosition, fTex0 ); break;
-            case 1: normalColor = texture(uNormal, fTex1); tangent = calcTangent( fFacingNormal, fPosition, fTex1 ); break;
-            case 2: normalColor = texture(uNormal, fTex2); tangent = calcTangent( fFacingNormal, fPosition, fTex2 ); break;
+        switch(texcoord) {
+            case 0:
+                normalColor = texture(uNormal, fTex0);
+                tangent = calcTangent(fFacingNormal, fPosition, fTex0);
+                break;
+            case 1:
+                normalColor = texture(uNormal, fTex1);
+                tangent = calcTangent(fFacingNormal, fPosition, fTex1);
+                break;
+            case 2:
+                normalColor = texture(uNormal, fTex2);
+                tangent = calcTangent(fFacingNormal, fPosition, fTex2);
+                break;
         }
         normalColor.y = 1.0 - normalColor.y; // OpenGL moment
         vec3 bitangent = cross(fFacingNormal, tangent);
@@ -207,84 +212,129 @@ void main()
         normalColor.xyz = normalize(normalColor.xyz * 2.0 - 1.0);
         normalColor.xyz = normalize(TBN * normalColor.xyz);
     }
-    if (hasMatFlag(MatFlag_HasSpecularMap)){
+    if(hasMatFlag(MatFlag_HasSpecularMap)) {
         int texcoord = bitfieldExtract(TexcoordFlags, 6, 3);
-        switch (texcoord){
-            case 0: specularColor = texture(uSpecular, fTex0).rgb; break;
-            case 1: specularColor = texture(uSpecular, fTex1).rgb; break;
-            case 2: specularColor = texture(uSpecular, fTex2).rgb; break;
+        switch(texcoord) {
+            case 0:
+                specularColor = texture(uSpecular, fTex0).rgb;
+                break;
+            case 1:
+                specularColor = texture(uSpecular, fTex1).rgb;
+                break;
+            case 2:
+                specularColor = texture(uSpecular, fTex2).rgb;
+                break;
         }
     }
-    if (hasMatFlag(MatFlag_HasReflectionMap)){
-        vec3 eyePos = normalize( -fPosition );
-        vec3 reflectionCoord = reflect( eyePos, normalColor.xyz);
+    if(hasMatFlag(MatFlag_HasReflectionMap)) {
+        vec3 eyePos = normalize(-fPosition);
+        vec3 reflectionCoord = reflect(eyePos, normalColor.xyz);
         reflectionColor = texture(uReflection, reflectionCoord.xy).rgb;
     }
-    if (hasMatFlag(MatFlag_HasHighlightMap)){
+    if(hasMatFlag(MatFlag_HasHighlightMap)) {
         vec4 highlightColor = vec4(0.0);
         int texcoord = bitfieldExtract(TexcoordFlags, 12, 3);
-        switch (texcoord){
-            case 0: highlightColor = texture(uHighlight, fTex0); break;
-            case 1: highlightColor = texture(uHighlight, fTex1); break;
-            case 2: highlightColor = texture(uHighlight, fTex2); break;
+        switch(texcoord) {
+            case 0:
+                highlightColor = texture(uHighlight, fTex0);
+                break;
+            case 1:
+                highlightColor = texture(uHighlight, fTex1);
+                break;
+            case 2:
+                highlightColor = texture(uHighlight, fTex2);
+                break;
         }
-        switch(HighlightMapBlendMode){
-            case 1: oColor.rgb = mix( oColor.rgb, highlightColor.rgb, highlightColor.a * uMatAmbient.a); break;
-            case 2: oColor.rgb += highlightColor.rgb * highlightColor.a * uMatAmbient.a; break;
-            case 3: oColor.rgb -= highlightColor.rgb * highlightColor.a * uMatAmbient.a; break;
-            case 4: oColor.rgb *= highlightColor.rgb * highlightColor.a * uMatAmbient.a; break;
+        switch(HighlightMapBlendMode) {
+            case 1:
+                oColor.rgb = mix(oColor.rgb, highlightColor.rgb, highlightColor.a * uMatAmbient.a);
+                break;
+            case 2:
+                oColor.rgb += highlightColor.rgb * highlightColor.a * uMatAmbient.a;
+                break;
+            case 3:
+                oColor.rgb -= highlightColor.rgb * highlightColor.a * uMatAmbient.a;
+                break;
+            case 4:
+                oColor.rgb *= highlightColor.rgb * highlightColor.a * uMatAmbient.a;
+                break;
         }
     }
-    if (hasMatFlag(MatFlag_HasGlowMap)){
+    if(hasMatFlag(MatFlag_HasGlowMap)) {
         vec3 glowColor = vec3(0.0);
         int texcoord = bitfieldExtract(TexcoordFlags, 15, 3);
-        switch (texcoord){
-            case 0: glowColor = texture(uGlow, fTex0).rgb; break;
-            case 1: glowColor = texture(uGlow, fTex1).rgb; break;
-            case 2: glowColor = texture(uGlow, fTex2).rgb; break;
+        switch(texcoord) {
+            case 0:
+                glowColor = texture(uGlow, fTex0).rgb;
+                break;
+            case 1:
+                glowColor = texture(uGlow, fTex1).rgb;
+                break;
+            case 2:
+                glowColor = texture(uGlow, fTex2).rgb;
+                break;
         }
         oColor.rgb += glowColor;
     }
-    if (hasMatFlag(MatFlag_HasNightMap)){
+    if(hasMatFlag(MatFlag_HasNightMap)) {
         vec3 nightColor = vec3(1.0);
         int texcoord = bitfieldExtract(TexcoordFlags, 18, 3);
-        switch (texcoord){
-            case 0: nightColor = texture(uNight, fTex0).rgb; break;
-            case 1: nightColor = texture(uNight, fTex1).rgb; break;
-            case 2: nightColor = texture(uNight, fTex2).rgb; break;
+        switch(texcoord) {
+            case 0:
+                nightColor = texture(uNight, fTex0).rgb;
+                break;
+            case 1:
+                nightColor = texture(uNight, fTex1).rgb;
+                break;
+            case 2:
+                nightColor = texture(uNight, fTex2).rgb;
+                break;
         }
         oColor.rgb *= nightColor.rgb;
     }
-    if (hasMatFlag(MatFlag_HasDetailMap)){
+    if(hasMatFlag(MatFlag_HasDetailMap)) {
         vec3 detailColor = vec3(0.0);
         int texcoord = bitfieldExtract(TexcoordFlags, 21, 3);
-        switch (texcoord){
-            case 0: detailColor = texture(uDetail, fTex0).rgb; break;
-            case 1: detailColor = texture(uDetail, fTex1).rgb; break;
-            case 2: detailColor = texture(uDetail, fTex2).rgb; break;
+        switch(texcoord) {
+            case 0:
+                detailColor = texture(uDetail, fTex0).rgb;
+                break;
+            case 1:
+                detailColor = texture(uDetail, fTex1).rgb;
+                break;
+            case 2:
+                detailColor = texture(uDetail, fTex2).rgb;
+                break;
         }
         detailColor *= 2.0;
         oColor.rgb *= detailColor.rgb;
     }
-    if (hasMatFlag(MatFlag_HasShadowMap)){
+    if(hasMatFlag(MatFlag_HasShadowMap)) {
         int texcoord = bitfieldExtract(TexcoordFlags, 24, 3);
-        switch (texcoord){
-            case 0: shadowColor = texture(uShadow, fTex0); break;
-            case 1: shadowColor = texture(uShadow, fTex1); break;
-            case 2: shadowColor = texture(uShadow, fTex2); break;
+        switch(texcoord) {
+            case 0:
+                shadowColor = texture(uShadow, fTex0);
+                break;
+            case 1:
+                shadowColor = texture(uShadow, fTex1);
+                break;
+            case 2:
+                shadowColor = texture(uShadow, fTex2);
+                break;
         }
     }
 
+    if(hasMatFlag(MatFlag_HasVertexColors)) {
+        oColor *= fColor0;
+    }
     // --- Selecting the shader ---
 
     vec4 inShaderInfo = ShaderInfo(normalColor);
-    if (uMatHasType0){
+    if(uMatHasType0) {
         CharacterShader(specularColor, reflectionColor, shadowColor, inShaderInfo);
-    }
-    else if(uMatHasType1 || uMatHasType4){
+    } else if(uMatHasType1 || uMatHasType4) {
         PersonaShader(specularColor, reflectionColor, shadowColor, inShaderInfo);
-    }
-    else{
+    } else {
         DefaultShader(specularColor, reflectionColor, shadowColor, inShaderInfo);
     }
 
@@ -293,21 +343,20 @@ void main()
     oColor.a *= mix(1.0, oColor.r, bool(DrawMethod == 2));
     oColor.a *= mix(1.0, 1.0 - oColor.r, bool(DrawMethod == 4));
 
-    if (DrawMethod == 1 || DrawMethod == 2 || DrawMethod == 4){ // can add proper alpha blending in the future maybe
-        if (oColor.a < dither_limit || oColor.a < dither_alpha_clip)
-                discard;
+    if(DrawMethod == 1 || DrawMethod == 2 || DrawMethod == 4) { // can add proper alpha blending in the future maybe
+        if(oColor.a < dither_limit || oColor.a < dither_alpha_clip)
+            discard;
     }
-    if (!uMatHasType1 && !uMatHasType4){
-        if (DrawMethod == 0 && (!hasMatFlag(MatFlag_OpaqueAlpha1) || !hasMatFlag(MatFlag_OpaqueAlpha2)))
-        {
+    if(!uMatHasType1 && !uMatHasType4) {
+        if(DrawMethod == 0 && (!hasMatFlag(MatFlag_OpaqueAlpha1) || !hasMatFlag(MatFlag_OpaqueAlpha2))) {
             oColor.a = uMatDiffuse.a;
-            if (oColor.a < dither_limit || oColor.a < dither_alpha_clip)
+            if(oColor.a < dither_limit || oColor.a < dither_alpha_clip)
                 discard;
         }
     }
 
-    if (hasMatFlag(MatFlag_OpaqueAlpha1) && hasMatFlag(MatFlag_OpaqueAlpha2)){
-        if ( oColor.a < alphaClip / 256.0 )
+    if(hasMatFlag(MatFlag_OpaqueAlpha1) && hasMatFlag(MatFlag_OpaqueAlpha2)) {
+        if(oColor.a < alphaClip / 256.0)
             discard;
     }
 }

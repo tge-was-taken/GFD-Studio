@@ -1,16 +1,14 @@
-﻿
 #version 330 core
 
 // in
-layout( location = 0 ) in vec3 vPosition;
-layout( location = 1 ) in vec3 vNormal;
-layout( location = 2 ) in vec2 vTex0;
-layout( location = 3 ) in vec4 vBoneWeights;
-layout( location = 4 ) in uvec4 vBoneIndices;
-layout( location = 5 ) in vec2 vTex1;
-layout( location = 6 ) in vec2 vTex2;
-layout( location = 7 ) in vec4 vColor;
-
+layout(location = 0) in vec3 vPosition;
+layout(location = 1) in vec3 vNormal;
+layout(location = 2) in vec2 vTex0;
+layout(location = 3) in vec4 vBoneWeights;
+layout(location = 4) in uvec4 vBoneIndices;
+layout(location = 5) in vec2 vTex1;
+layout(location = 6) in vec2 vTex2;
+layout(location = 7) in vec4 vColor;
 
 // out
 out vec3 fPosition;
@@ -26,15 +24,14 @@ uniform mat4 uModel;
 uniform mat4 uView;
 uniform mat4 uProjection;
 
-void main()
-{
+void main() {
     mat4 uModelView = uView * uModel;
-    fPosition = ( uModelView * vec4( vPosition, 1.0 ) ).xyz;
+    fPosition = (uModelView * vec4(vPosition, 1.0)).xyz;
     fNormal = vNormal.xyz;
-    fFacingNormal = normalize(( uModelView * vec4( vNormal, 0.0 ) ).xyz);
+    fFacingNormal = normalize((uModelView * vec4(vNormal, 0.0)).xyz);
     fTex0 = vTex0;
     fTex1 = vTex1;
     fTex2 = vTex2;
-    fColor0 = vec4(1.0, 1.0, 1.0, 1.0);
-    gl_Position = uProjection * uModelView * vec4( vPosition, 1.0 );
+    fColor0 = vColor.bgra;
+    gl_Position = uProjection * uModelView * vec4(vPosition, 1.0);
 }
