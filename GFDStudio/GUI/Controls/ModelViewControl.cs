@@ -111,7 +111,7 @@ namespace GFDStudio.GUI.Controls
         public event EventHandler<AnimationPlaybackState> AnimationPlaybackStateChanged;
         public event EventHandler<double> AnimationTimeChanged;
 
-        private ModelViewControl() : base( 
+        private ModelViewControl() : base(
             new GraphicsMode( 32, 24, 0, 0 ),
             3,
             3,
@@ -150,13 +150,13 @@ namespace GFDStudio.GUI.Controls
             var vertices = new List<Vector3>();
             for ( int i = -mGridSize; i <= mGridSize; i += mGridSpacing )
             {
-                vertices.Add( new Vector3( i,   0, -mGridSize ) );
-                vertices.Add( new Vector3( i,   0, mGridSize ) );
+                vertices.Add( new Vector3( i, 0, -mGridSize ) );
+                vertices.Add( new Vector3( i, 0, mGridSize ) );
                 vertices.Add( new Vector3( -mGridSize, 0, i ) );
-                vertices.Add( new Vector3( mGridSize,  0, i ) );
+                vertices.Add( new Vector3( mGridSize, 0, i ) );
             }
 
-            mGridMinZ = ( int ) vertices.Min( x => x.Z );
+            mGridMinZ = (int)vertices.Min( x => x.Z );
             mGridVertexArrayID = GL.GenVertexArray();
             GL.BindVertexArray( mGridVertexArrayID );
 
@@ -205,7 +205,7 @@ namespace GFDStudio.GUI.Controls
                 }
                 else
                 {
-                    Trace.TraceWarning( $"tTexture '{ textureName }' used by material '{ material.Name }' is missing" );
+                    Trace.TraceWarning( $"tTexture '{textureName}' used by material '{material.Name}' is missing" );
                 }
 
                 return null;
@@ -291,7 +291,7 @@ namespace GFDStudio.GUI.Controls
             mTimeCounter.Start();
 
             mUpdateTimer = new Timer();
-            mUpdateTimer.Interval = ( int ) ( ( 1f / 60f ) * 1000 );
+            mUpdateTimer.Interval = (int)( ( 1f / 60f ) * 1000 );
             mUpdateTimer.Tick += ( o, s ) =>
             {
                 if ( !mCanRender )
@@ -301,7 +301,7 @@ namespace GFDStudio.GUI.Controls
                 {
                     if ( AnimationPlayback == AnimationPlaybackState.Playing )
                         Invalidate();
-                });
+                } );
             };
             mUpdateTimer.Start();
         }
@@ -309,7 +309,7 @@ namespace GFDStudio.GUI.Controls
         private void ExecuteTimedCallback( Action action )
         {
             // Update timings
-            var curTime   = mTimeCounter.Elapsed.TotalSeconds;
+            var curTime = mTimeCounter.Elapsed.TotalSeconds;
             var deltaTime = curTime - mLastTime;
 
             if ( AnimationPlayback == AnimationPlaybackState.Playing )
@@ -330,7 +330,7 @@ namespace GFDStudio.GUI.Controls
         /// <param name="e"></param>
         protected override void OnPaint( PaintEventArgs e )
         {
-            if ( !mCanRender || mCamera == null)
+            if ( !mCanRender || mCamera == null )
                 return;
 
             ExecuteTimedCallback( () =>
@@ -347,7 +347,7 @@ namespace GFDStudio.GUI.Controls
                 }
 
                 SwapBuffers();
-            });
+            } );
         }
 
 
@@ -372,7 +372,7 @@ namespace GFDStudio.GUI.Controls
             if ( !mCanRender || !mIsModelLoaded )
                 return;
 
-            mCamera.AspectRatio = ( float )Width / Height;
+            mCamera.AspectRatio = (float)Width / Height;
             GL.Viewport( ClientRectangle );
         }
 
@@ -410,7 +410,7 @@ namespace GFDStudio.GUI.Controls
             GL.Enable( EnableCap.Multisample );
         }
 
-        [Conditional("DEBUG")]
+        [Conditional( "DEBUG" )]
         private void GLDebugMessageCallback( DebugSource source, DebugType type, int id, DebugSeverity severity, int length, IntPtr message, IntPtr userParam )
         {
             // notication for buffer using VIDEO memory
@@ -474,20 +474,12 @@ namespace GFDStudio.GUI.Controls
                 bSphere = mModel.ModelPack.Model.BoundingSphere.Value;
             }
 
-            mCamera = new GLPerspectiveFreeCamera( CalculateCameraTranslation( cameraFov, bSphere), 1f, 100000f, cameraFov, ( float )Width / ( float )Height, Quaternion.Identity );
-        }
-
-        private static Vector3 CalculateCameraTranslation( float cameraFov, BoundingSphere bSphere )
-        {
-            var cameraFovInRad = MathHelper.DegreesToRadians( cameraFov );
-            var distance = ( float )( ( bSphere.Radius * 2.0f ) / Math.Tan( cameraFovInRad / 2.0f ) );
-            var cameraTranslation = new Vector3( bSphere.Center.X, bSphere.Center.Y, bSphere.Center.Z ) + new Vector3( 0, -50, 300 );
-
-            return cameraTranslation;
+            mCamera = new GLPerspectiveCamera( 1f, 100000f, cameraFov,
+                                (float)Width / (float)Height, bSphere, Vector3.Zero, Vector3.Zero );
         }
 
         //
-        // Mouse events
+        // Input events
         //
 
         private Point GetMouseLocationDelta( Point location )
@@ -498,53 +490,47 @@ namespace GFDStudio.GUI.Controls
             return location;
         }
 
+        protected internal float CalculateMultiplier( float baseValue = 0.5f )
+        {
+            float multiplier = baseValue;
+            var keyboardState = Keyboard.GetState();
+
+            if ( keyboardState.IsKeyDown( Key.ShiftLeft ) )
+            {
+                multiplier *= 10f;
+            }
+            else if ( keyboardState.IsKeyDown( Key.ControlLeft ) )
+            {
+                multiplier /= 2f;
+            }
+            return multiplier;
+        }
         protected override void OnMouseMove( System.Windows.Forms.MouseEventArgs e )
         {
             if ( !mIsModelLoaded )
                 return;
-
-            if ( e.Button.HasFlag( MouseButtons.Middle ) )
+            bool left = e.Button.HasFlag( MouseButtons.Left );
+            bool right = e.Button.HasFlag( MouseButtons.Right );
+            if ( left || right )
             {
-                float multiplier = 0.5f;
-                var keyboardState = Keyboard.GetState();
-
-                if ( keyboardState.IsKeyDown( Key.ShiftLeft ) )
-                {
-                    multiplier *= 10f;
-                }
-                else if ( keyboardState.IsKeyDown( Key.ControlLeft) )
-                {
-                    multiplier /= 2f;
-                }
+                float multiplier = CalculateMultiplier();
 
                 var locationDelta = GetMouseLocationDelta( e.Location );
 
-                if ( keyboardState.IsKeyDown( Key.AltLeft ) )
+                if ( right )
                 {
-                    // Orbit around model
-
-                    if ( mModel.ModelPack.Model.BoundingSphere.HasValue )
-                    {
-                        var bSphere = mModel.ModelPack.Model.BoundingSphere.Value;
-                        var camera = new GLPerspectiveTargetCamera( mCamera.Translation, mCamera.ZNear, mCamera.ZFar, mCamera.FieldOfView, mCamera.AspectRatio, new Vector3( bSphere.Center.X, bSphere.Center.Y, bSphere.Center.Z ) );
-                        camera.Rotate( -locationDelta.Y / 100f, -locationDelta.X / 100f );
-                        mCamera = camera;
-                    }
+                    mCamera.ModelTranslation = new Vector3(
+                         mCamera.ModelTranslation.X + ( locationDelta.X / 3f ) * multiplier,
+                         mCamera.ModelTranslation.Y - ( locationDelta.Y / 3f ) * multiplier,
+                         mCamera.ModelTranslation.Z );
                 }
-                else
+                else if ( left )
                 {
-                    // Move camera
-                    var translation = mCamera.Translation;
-                    if ( !( mCamera is GLPerspectiveFreeCamera ) )
-                        translation = CalculateCameraTranslation( mCamera.FieldOfView, mModel.ModelPack.Model.BoundingSphere.Value );
-
-                    mCamera = new GLPerspectiveFreeCamera( translation, mCamera.ZNear, mCamera.ZFar, mCamera.FieldOfView, mCamera.AspectRatio, Quaternion.Identity );
-                    mCamera.Translation = new Vector3(
-                        mCamera.Translation.X - ( ( locationDelta.X / 3f ) * multiplier ),
-                        mCamera.Translation.Y + ( ( locationDelta.Y / 3f ) * multiplier ),
-                        mCamera.Translation.Z );
+                    mCamera.ModelRotation = new Vector3(
+                        mCamera.ModelRotation.X + locationDelta.Y * 0.01f * multiplier,
+                        mCamera.ModelRotation.Y + locationDelta.X * 0.01f * multiplier,
+                        mCamera.ModelRotation.Z );
                 }
-
                 Invalidate();
             }
 
@@ -556,22 +542,22 @@ namespace GFDStudio.GUI.Controls
             if ( !mIsModelLoaded )
                 return;
 
-            float multiplier = 0.25f;
-            var keyboardState = Keyboard.GetState();
+            float multiplier = CalculateMultiplier( 0.25f );
 
-            if ( keyboardState.IsKeyDown( Key.ShiftLeft ) )
+            var translation = mCamera.ModelTranslation;
+            translation.Z += (float)e.Delta * multiplier;
+            mCamera.ModelTranslation = translation;
+
+            Invalidate();
+        }
+
+        protected override void OnKeyDown( KeyEventArgs e )
+        {
+            if ( e.KeyCode == Keys.Space )
             {
-                multiplier *= 10f;
+                mCamera.ModelTranslation = Vector3.Zero;
+                mCamera.ModelRotation = Vector3.Zero;
             }
-            else if ( keyboardState.IsKeyDown( Key.ControlLeft ) )
-            {
-                multiplier /= 2f;
-            }
-
-            var translation = mCamera.Translation;
-            translation.Z += -( ( float )e.Delta * multiplier );
-            mCamera.Translation = translation;
-
             Invalidate();
         }
     }
