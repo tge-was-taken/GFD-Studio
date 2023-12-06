@@ -37,7 +37,7 @@
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.Name = "BitmapViewControl";
-            this.Size = new System.Drawing.Size( 0, 0 );
+            this.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ResumeLayout( false );
 
         }
