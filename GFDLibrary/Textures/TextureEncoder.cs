@@ -2,8 +2,14 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using BCnEncoder.Encoder;
 using CSharpImageLibrary;
 using GFDLibrary.Textures.Utilities;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp;
+using BCnEncoder.Shared;
+using BCnEncoder.ImageSharp;
+using SixLabors.ImageSharp.Formats.Png;
 
 namespace GFDLibrary.Textures
 {
@@ -20,9 +26,25 @@ namespace GFDLibrary.Textures
 
             if ( format == TextureFormat.DDS )
             {
-                var image = GetImageEngineImageFromBitmap( bitmap );
-                var ddsFormat = DetermineBestDDSFormat( bitmap );
-                data = image.Save( new ImageFormats.ImageEngineFormatDetails( ddsFormat ), MipHandling.GenerateNew, 0, 0, false );
+                BcEncoder encoder = new BcEncoder
+                {
+                    OutputOptions =
+                    {
+                        GenerateMipMaps = true,
+                        Quality = CompressionQuality.BestQuality,
+                        Format = BitmapHelper.HasTransparency(bitmap) ? CompressionFormat.Bc3 : CompressionFormat.Bc1,
+                        FileFormat = OutputFileFormat.Dds
+                    }
+                };
+
+                using MemoryStream pngstream = new MemoryStream();
+                bitmap.Save( pngstream, ImageFormat.Png );
+                pngstream.Seek( 0, SeekOrigin.Begin );
+
+                using Image<Rgba32> image = SixLabors.ImageSharp.Image.Load<Rgba32>( pngstream );
+                using MemoryStream datastream = new MemoryStream();
+                encoder.EncodeToStream( image, datastream );
+                data = datastream.ToArray();
             }
             else
             {

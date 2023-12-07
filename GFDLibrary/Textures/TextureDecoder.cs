@@ -9,6 +9,12 @@ using GFDLibrary.Textures.DDS;
 using GFDLibrary.Textures.GNF;
 using GFDLibrary.Textures.Swizzle;
 using static CSharpImageLibrary.Headers.DDS_Header;
+using BCnEncoder.Decoder;
+using BCnEncoder.ImageSharp;
+using BCnEncoder.Shared;
+using Microsoft.Toolkit.HighPerformance;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp;
 
 namespace GFDLibrary.Textures
 {
@@ -200,8 +206,21 @@ namespace GFDLibrary.Textures
         {
             try
             {
-                // Prefer DDSCodec -- handles alpha properly but doesn't handle non pow 2 textures & DX10+ formats
-                return DDSCodec.DecompressImage( data );
+                BcDecoder decoder = new BcDecoder();
+                MemoryStream texturestream = new MemoryStream( data );
+                Image<Rgba32> rgba32image = decoder.DecodeToImageRgba32( texturestream );
+                // this is so cringe
+                var bitmap = new Bitmap( rgba32image.Width, rgba32image.Height, PixelFormat.Format32bppArgb );
+                for ( int y = 0; y < rgba32image.Height; y++ )
+                {
+                    for ( int x = 0; x < rgba32image.Width; x++ )
+                    {
+                        var pixel = rgba32image[x, y];
+                        var color = System.Drawing.Color.FromArgb( pixel.A, pixel.R, pixel.G, pixel.B );
+                        bitmap.SetPixel( x, y, color );
+                    }
+                }
+                return bitmap;
             }
             catch ( Exception )
             {
