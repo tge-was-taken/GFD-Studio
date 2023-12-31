@@ -124,6 +124,9 @@ namespace GFDLibrary.Rendering.OpenGL
                         oldGlMesh.Dispose();
                     }
 
+                    if ( glMesh.Mesh.Flags.HasFlag( GeometryFlags.Bit5 ) )
+                        continue;
+
                     glMesh.Draw( glNode.WorldTransform.ToOpenTK(), shaderProgram );
                 }
             }
