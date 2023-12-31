@@ -63,7 +63,8 @@ namespace GFDStudio.GUI.DataViewNodes
                         Version = dialog.Version,
                         ConvertSkinToZUp = dialog.ConvertSkinToZUp,
                         GenerateVertexColors = dialog.GenerateVertexColors,
-                        MinimalVertexAttributes = dialog.MinimalVertexAttributes
+                        MinimalVertexAttributes = dialog.MinimalVertexAttributes,
+                        AutoAddGFDHelperIDs = dialog.AutoAddGFDHelperIDs
                     };
 
                     var scene = ModelConverter.ConvertFromAssimpScene( path, options );

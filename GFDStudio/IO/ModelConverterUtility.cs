@@ -43,7 +43,8 @@ namespace GFDStudio.IO
                     Version = dialog.Version,
                     ConvertSkinToZUp = dialog.ConvertSkinToZUp,
                     GenerateVertexColors = dialog.GenerateVertexColors,
-                    MinimalVertexAttributes = dialog.MinimalVertexAttributes
+                    MinimalVertexAttributes = dialog.MinimalVertexAttributes,
+                    AutoAddGFDHelperIDs = dialog.AutoAddGFDHelperIDs
                 };
 
                 return ModelPackConverter.ConvertFromAssimpScene( path, options );

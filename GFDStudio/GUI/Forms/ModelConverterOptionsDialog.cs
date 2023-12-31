@@ -57,6 +57,11 @@ namespace GFDStudio.GUI.Forms
             get => MinimalVertexAttributesCheckBox.Checked;
         }
 
+        public bool AutoAddGFDHelperIDs
+        {
+            get => AutoAddGFDHelperIDsCheckBox.Checked;
+        }
+
         private void RefreshPresetList()
         {
             Presets = Directory.GetFiles( PresetLibraryPath, "*.yml" ).Select( file => Path.GetFileName( file ) ).ToArray();

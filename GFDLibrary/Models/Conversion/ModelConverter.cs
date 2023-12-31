@@ -168,6 +168,79 @@ namespace GFDLibrary.Models.Conversion
                     }
                 }
 
+                if ( options.AutoAddGFDHelperIDs ) // for P5/R
+                {
+                    switch( node.Name )
+                    {
+                        case "h_B_BD1":
+                            TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 501 ) );
+                            break;
+
+                        case "h_C_US3":
+                            TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 3 ) );
+                            break;
+
+                        case "h_C_FS1":
+                            TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 21 ) );
+                            break;
+
+                        case "h_M_HR3":
+                            TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 103 ) );
+                            break;
+
+                        case "h_B_KA1":
+                            TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 502 ) );
+                            break;
+
+                        case "h_B_CT1":
+                            TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 521 ) );
+                            break;
+
+                        case "h_C_US2":
+                            TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 2 ) );
+                            break;
+
+                        case "h_C_BS1":
+                            TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 11 ) );
+                            break;
+
+                        case "h_M_HL2":
+                            TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 152 ) );
+                            break;
+
+                        case "h_B_MZ1":
+                            TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 511 ) );
+                            break;
+
+                        case "h_M_HR2":
+                            TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 102 ) );
+                            break;
+
+                        case "h_M_HL1":
+                            TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 151 ) );
+                            break;
+
+                        case "h_M_BC1":
+                            TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 301 ) );
+                            break;
+
+                        case "h_C_US1":
+                            TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 1 ) );
+                            break;
+
+                        case "h_M_HL3":
+                            TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 153 ) );
+                            break;
+
+                        case "h_M_HR1":
+                            TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 101 ) );
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+
                 if ( !nodeLookup.ContainsKey( node.Name ) )
                 {
                     // Add to lookup
@@ -261,6 +334,7 @@ namespace GFDLibrary.Models.Conversion
                      metadataEntry.Key == "InheritType" ||
                      metadataEntry.Key == "DefaultAttributeIndex" ||
                      metadataEntry.Key == "UserProperties" || // dupe of UDP3DSMAX
+                     metadataEntry.Key == "ScalingMax" ||
                      metadataEntry.Key == "MaxHandle" )
                 {
                     continue;
@@ -629,6 +703,8 @@ namespace GFDLibrary.Models.Conversion
         public bool MinimalVertexAttributes { get; set; }
 
         public bool SetFullBodyNodeProperties { get; set; }
+
+        public bool AutoAddGFDHelperIDs { get; set; }
 
         public ModelConverterOptions()
         {

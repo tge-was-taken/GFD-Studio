@@ -16,6 +16,7 @@ using GFDStudio.IO;
 using GFDLibrary.Textures;
 using Ookii.Dialogs;
 using Ookii.Dialogs.Wpf;
+using System.Threading;
 
 namespace GFDStudio.GUI.Forms
 {
@@ -196,27 +197,49 @@ namespace GFDStudio.GUI.Forms
 
             var failures = new ConcurrentBag<string>();
 
-            var filePaths = Directory.EnumerateFiles( directoryPath, "*.GAP", SearchOption.AllDirectories ).ToList();
-
-            foreach ( var filePath in filePaths )
+            using ( var dialog = new ProgressDialog() )
             {
-                try
+                dialog.DoWork += async ( o, progress ) =>
                 {
-                    var animationPack = Resource.Load<AnimationPack>( filePath );
-                    animationPack.Retarget( originalScene, newScene, fixArms );
-                    animationPack.Save( filePath );
-                }
-                catch ( Exception )
-                {
-                    failures.Add( filePath );
-                }
+                    var filePaths = Directory.EnumerateFiles( directoryPath, "*.GAP", SearchOption.AllDirectories ).ToList();
+                    var processedFileCount = 0;
+
+                    var tasks = filePaths.Select( async filePath =>
+                    {
+                        lock ( dialog )
+                        {
+                            if ( dialog.CancellationPending )
+                                return;
+                            dialog.ReportProgress( (int)( ( (float)Interlocked.Increment( ref processedFileCount ) / filePaths.Count ) * 100 ),
+                                                   $"Processing {Path.GetFileName( filePath )}", null );
+                        }
+
+                        try
+                        {
+                            await Task.Run( () =>
+                            {
+                                var animationPack = Resource.Load<AnimationPack>( filePath );
+                                animationPack.Retarget( originalScene, newScene, fixArms );
+                                animationPack.Save( filePath );
+                            } );
+                        }
+                        catch ( Exception )
+                        {
+                            failures.Add( filePath );
+                        }
+                    } );
+
+                    await Task.WhenAll( tasks );
+                };
+
+                dialog.ShowDialog();
             }
 
-            if ( failures.Count > 0 )
+            if ( !failures.IsEmpty )
             {
                 MessageBox.Show( "An error occured while processing the following files:\n" + string.Join( "\n", failures ) );
             }
-            else MessageBox.Show( "All animation packs successfully retargetted!" );
+            else MessageBox.Show( "All animation packs successfully retargeted!" );
         }
 		
         private void HandleConvertAnimationsToolStripMenuItemClick(object sender, EventArgs e)
@@ -236,20 +259,42 @@ namespace GFDStudio.GUI.Forms
 
             var failures = new ConcurrentBag<string>();
 
-            var filePaths = Directory.EnumerateFiles( directoryPath, "*.GAP", SearchOption.AllDirectories ).ToList();
-
-            foreach ( var filePath in filePaths )
+            using ( var dialog = new ProgressDialog() )
             {
-                try
+                dialog.DoWork += async ( o, progress ) =>
                 {
-                    var animationPack = Resource.Load<AnimationPack>( filePath );
-                    animationPack.ConvertToP5();
-                    animationPack.Save( filePath );
-                }
-                catch ( Exception )
-                {
-                    failures.Add( filePath );
-                }
+                    var filePaths = Directory.EnumerateFiles( directoryPath, "*.GAP", SearchOption.AllDirectories ).ToList();
+                    var processedFileCount = 0;
+
+                    var tasks = filePaths.Select( async filePath =>
+                    {
+                        lock ( dialog )
+                        {
+                            if ( dialog.CancellationPending )
+                                return;
+                            dialog.ReportProgress( (int)( ( (float)Interlocked.Increment( ref processedFileCount ) / filePaths.Count ) * 100 ),
+                                                   $"Processing {Path.GetFileName( filePath )}", null );
+                        }
+
+                        try
+                        {
+                            await Task.Run( () =>
+                            {
+                                var animationPack = Resource.Load<AnimationPack>( filePath );
+                                animationPack.ConvertToP5();
+                                animationPack.Save( filePath );
+                            } );
+                        }
+                        catch ( Exception )
+                        {
+                            failures.Add( filePath );
+                        }
+                    } );
+
+                    await Task.WhenAll( tasks );
+                };
+
+                dialog.ShowDialog();
             }
 
             if (failures.Count > 0)
@@ -602,20 +647,42 @@ namespace GFDStudio.GUI.Forms
 
             var failures = new ConcurrentBag<string>();
 
-            var filePaths = Directory.EnumerateFiles( directoryPath, "*.GAP", SearchOption.AllDirectories ).ToList();
-
-            foreach ( var filePath in filePaths )
+            using ( var dialog = new ProgressDialog() )
             {
-                try
+                dialog.DoWork += async ( o, progress ) =>
                 {
-                    var animationPack = Resource.Load<AnimationPack>( filePath );
-                    animationPack.Rescale( scale, position, rotation );
-                    animationPack.Save( filePath );
-                }
-                catch ( Exception )
-                {
-                    failures.Add( filePath );
-                }
+                    var filePaths = Directory.EnumerateFiles( directoryPath, "*.GAP", SearchOption.AllDirectories ).ToList();
+                    var processedFileCount = 0;
+
+                    var tasks = filePaths.Select( async filePath =>
+                    {
+                        lock ( dialog )
+                        {
+                            if ( dialog.CancellationPending )
+                                return;
+                            dialog.ReportProgress( (int)( ( (float)Interlocked.Increment( ref processedFileCount ) / filePaths.Count ) * 100 ),
+                                                   $"Processing {Path.GetFileName( filePath )}", null );
+                        }
+
+                        try
+                        {
+                            await Task.Run( () =>
+                            {
+                                var animationPack = Resource.Load<AnimationPack>( filePath );
+                                animationPack.Rescale( scale, position, rotation );
+                                animationPack.Save( filePath );
+                            } );
+                        }
+                        catch ( Exception )
+                        {
+                            failures.Add( filePath );
+                        }
+                    } );
+
+                    await Task.WhenAll( tasks );
+                };
+
+                dialog.ShowDialog();
             }
 
             if (failures.Count > 0)
