@@ -39,6 +39,7 @@ namespace GFDLibrary.Models.Conversion
                 ConvertSkinToZUp = options.ConvertSkinToZUp,
                 GenerateVertexColors = options.GenerateVertexColors,
                 MinimalVertexAttributes = options.MinimalVertexAttributes,
+                AutoAddGFDHelperIDs = options.AutoAddGFDHelperIDs,
             };
 
             model.Model = ModelConverter.ConvertFromAssimpScene( aiScene, sceneConverterOptions );
@@ -159,6 +160,11 @@ namespace GFDLibrary.Models.Conversion
         /// Sometimes extra vertex attributes are generated for one reason or another, on games using the GFD formats after P5 this causes problems if the data for the attributes does not exist, this sets the minimal amount of attributes to circumvent this issue.
         /// </summary>
         public bool MinimalVertexAttributes { get; set; }
+
+        /// <summary>
+        /// If, for whatever reason, the GFD Helper IDs are missing, we try to add them
+        /// </summary>
+        public bool AutoAddGFDHelperIDs { get; set; }
 
         public ModelPackConverterOptions()
         {
