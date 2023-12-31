@@ -181,7 +181,7 @@ namespace GFDLibrary.Rendering.OpenGL
                 }
 
                 // Calculate current transform
-                var transform = Matrix4x4.CreateFromQuaternion( rotation ) * Matrix4x4.CreateScale( glNode.Node.Scale );
+                var transform = Matrix4x4.CreateFromQuaternion( rotation ) * Matrix4x4.CreateScale( scale );
                 transform.Translation   = translation;
                 glNode.CurrentTransform = transform;
 
