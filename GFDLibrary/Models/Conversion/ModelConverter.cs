@@ -334,7 +334,7 @@ namespace GFDLibrary.Models.Conversion
                      metadataEntry.Key == "InheritType" ||
                      metadataEntry.Key == "DefaultAttributeIndex" ||
                      metadataEntry.Key == "UserProperties" || // dupe of UDP3DSMAX
-                     metadataEntry.Key == "ScaleMax" ||
+                     metadataEntry.Key == "ScalingMax" ||
                      metadataEntry.Key == "MaxHandle" )
                 {
                     continue;
