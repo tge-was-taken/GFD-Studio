@@ -29,10 +29,10 @@ uniform sampler2D uShadow;
 uniform int uMatFlags;
 uniform vec4 uMatAmbient;
 uniform vec4 uMatDiffuse;
-uniform vec4 uMatSpecular;
+//uniform vec4 uMatSpecular;
 uniform vec4 uMatEmissive;
 uniform float uMatReflectivity;
-uniform int DrawMethod;
+//uniform int DrawMethod;
 uniform int HighlightMapBlendMode;
 uniform int alphaClip;
 uniform int TexcoordFlags;
@@ -64,28 +64,6 @@ uniform float uMatToonShadowFactor;
 #define MatFlag_EnableLight      (1 << 7)
 #define MatFlag_OpaqueAlpha1     (1 << 5)
 #define MatFlag_HasVertexColors  (1 << 4)
-
-// huge thanks to Firerabbit for https://godotshaders.com/shader/dither-opacity/
-const float dither_alpha_clip = 0.01;
-const mat4 mtrx_dither = mat4(vec4(0.0625, 0.5625, 0.1875, 0.6875), vec4(0.8125, 0.3125, 0.9375, 0.4375), vec4(0.25, 0.75, 0.125, 0.625), vec4(1.0, 0.5, 0.875, 0.375));
-
-float get_dither_value(int x, int y) {
-    return mtrx_dither[x][y];
-}
-
-/*  --- These are unused for now ---
-float mapRange(float value, float min1, float max1, float min2, float max2) {
-  return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
-}
-
-float RGBtoGray(vec3 RGB) {
-    return (RGB.r+RGB.g+RGB.b)/3.0;
-}
-
-bool hasBitFlag(int bitField, int bitFlag){
-    return ((bitField & bitFlag) != 0);
-}
-*/
 
 int bitfieldExtract(int value, int offset, int bits) {
     return (value >> offset) & ((1 << bits) - 1);
@@ -164,10 +142,9 @@ void PersonaShader(vec3 specularColor, vec3 reflectionColor, vec4 shadowColor, v
 }
 
 void main() {
-    float dither_limit = get_dither_value(int(gl_FragCoord.x) % 4, int(gl_FragCoord.y) % 4);
-
     oColor = uMatDiffuse;
-    vec4 normalColor = vec4(fFacingNormal, 1.0);
+    vec3 fFacingNormal_norm = normalize(fFacingNormal);
+    vec4 normalColor = vec4(fFacingNormal_norm, 1.0);
     vec3 specularColor = vec3(0.0);
     vec3 reflectionColor = vec3(0.0);
     vec4 shadowColor = vec4(0.0, 0.0, 0.0, 1.0);
@@ -195,20 +172,20 @@ void main() {
         switch(texcoord) {
             case 0:
                 normalColor = texture(uNormal, fTex0);
-                tangent = calcTangent(fFacingNormal, fPosition, fTex0);
+                tangent = calcTangent(fFacingNormal_norm, fPosition, fTex0);
                 break;
             case 1:
                 normalColor = texture(uNormal, fTex1);
-                tangent = calcTangent(fFacingNormal, fPosition, fTex1);
+                tangent = calcTangent(fFacingNormal_norm, fPosition, fTex1);
                 break;
             case 2:
                 normalColor = texture(uNormal, fTex2);
-                tangent = calcTangent(fFacingNormal, fPosition, fTex2);
+                tangent = calcTangent(fFacingNormal_norm, fPosition, fTex2);
                 break;
         }
         normalColor.y = 1.0 - normalColor.y; // OpenGL moment
-        vec3 bitangent = cross(fFacingNormal, tangent);
-        mat3 TBN = mat3(tangent, bitangent, fFacingNormal);
+        vec3 bitangent = cross(fFacingNormal_norm, tangent);
+        mat3 TBN = mat3(tangent, bitangent, fFacingNormal_norm);
         normalColor.xyz = normalize(normalColor.xyz * 2.0 - 1.0);
         normalColor.xyz = normalize(TBN * normalColor.xyz);
     }
@@ -339,21 +316,6 @@ void main() {
     }
 
     // --- Handling transparency
-
-    oColor.a *= mix(1.0, oColor.r, bool(DrawMethod == 2));
-    oColor.a *= mix(1.0, 1.0 - oColor.r, bool(DrawMethod == 4));
-
-    if(DrawMethod == 1 || DrawMethod == 2 || DrawMethod == 4) { // can add proper alpha blending in the future maybe
-        if(oColor.a < dither_limit || oColor.a < dither_alpha_clip)
-            discard;
-    }
-    if(!uMatHasType1 && !uMatHasType4) {
-        if(DrawMethod == 0 && (!hasMatFlag(MatFlag_OpaqueAlpha1) || !hasMatFlag(MatFlag_OpaqueAlpha2))) {
-            oColor.a = uMatDiffuse.a;
-            if(oColor.a < dither_limit || oColor.a < dither_alpha_clip)
-                discard;
-        }
-    }
 
     if(hasMatFlag(MatFlag_OpaqueAlpha1) && hasMatFlag(MatFlag_OpaqueAlpha2)) {
         if(oColor.a < alphaClip / 256.0)

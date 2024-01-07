@@ -28,7 +28,7 @@ void main() {
     mat4 uModelView = uView * uModel;
     fPosition = (uModelView * vec4(vPosition, 1.0)).xyz;
     fNormal = vNormal.xyz;
-    fFacingNormal = normalize((uModelView * vec4(vNormal, 0.0)).xyz);
+    fFacingNormal = (uModelView * vec4(vNormal, 0.0)).xyz;
     fTex0 = vTex0;
     fTex1 = vTex1;
     fTex2 = vTex2;

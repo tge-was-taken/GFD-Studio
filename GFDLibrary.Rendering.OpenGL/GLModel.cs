@@ -97,10 +97,10 @@ namespace GFDLibrary.Rendering.OpenGL
         {
             var view = camera.View;
             var proj = camera.Projection;
-            Draw( shaderProgram, ref view, ref proj, animationTime );
+            Draw( shaderProgram, ref view, ref proj, animationTime, camera );
         }
 
-        public void Draw( GLShaderProgram shaderProgram, ref Matrix4 view, ref Matrix4 projection, double animationTime )
+        public void Draw( GLShaderProgram shaderProgram, ref Matrix4 view, ref Matrix4 projection, double animationTime, GLCamera camera )
         {
             if ( Animation != null )
                 AnimateNodes( animationTime );
@@ -109,6 +109,10 @@ namespace GFDLibrary.Rendering.OpenGL
             shaderProgram.SetUniform( "uView", view );
             shaderProgram.SetUniform( "uProjection", projection );
 
+            // List to hold transparent meshes and their world transforms
+            List<Tuple<GLMesh, Matrix4>> transparentMeshes = new List<Tuple<GLMesh, Matrix4>>();
+
+            // Draw opaque objects first
             foreach ( var glNode in Nodes )
             {
                 if ( !glNode.IsVisible )
@@ -117,17 +121,69 @@ namespace GFDLibrary.Rendering.OpenGL
                 for ( var i = 0; i < glNode.Meshes.Count; i++ )
                 {
                     var glMesh = glNode.Meshes[i];
+                    bool transparentMesh = false;
+                    if ( glMesh.Material.DrawMethod != 0 || (glMesh.Material.DrawMethod == 0 && glMesh.Material.Diffuse.W < 1.0) )
+                    {
+                        transparentMesh = true;
+                    }
+
                     if ( Animation != null && glMesh.Mesh != null )
                     {
-                        var oldGlMesh             = glMesh;
+                        var oldGlMesh = glMesh;
                         glMesh = glNode.Meshes[i] = new GLMesh( oldGlMesh.Mesh, glNode.WorldTransform, ModelPack.Model.Bones, Nodes, Materials );
                         oldGlMesh.Dispose();
                     }
 
-                    glMesh.Draw( glNode.WorldTransform.ToOpenTK(), shaderProgram );
+                    if ( !transparentMesh ) // If opaque
+                    {
+                        glMesh.Draw( glNode.WorldTransform.ToOpenTK(), shaderProgram );
+                    }
+                    else // If transparent
+                    {
+                        transparentMeshes.Add( Tuple.Create( glMesh, glNode.WorldTransform.ToOpenTK() ) );
+                    }
                 }
             }
+
+            // Enable blending for transparent objects
+            GL.Enable( EnableCap.Blend );
+
+            // Sort transparent objects based on their distance from the camera
+            transparentMeshes.Sort( ( a, b ) => OpenTK.Vector3.Distance( camera.Translation, b.Item2.ExtractTranslation() ).CompareTo( OpenTK.Vector3.Distance( camera.Translation, a.Item2.ExtractTranslation() ) ) );
+
+            // Disable depth mask
+            GL.DepthMask( false );
+
+            // Then draw transparent objects
+            foreach ( var tuple in transparentMeshes )
+            {
+                var glMesh = tuple.Item1;
+                var worldTransform = tuple.Item2;
+
+                switch ( glMesh.Material.DrawMethod )
+                {
+                    case 1:
+                        GL.BlendFunc( BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha );
+                        break;
+                    case 2:
+                        GL.BlendFuncSeparate( BlendingFactorSrc.SrcAlpha, BlendingFactorDest.One, // RGB blending
+                                              BlendingFactorSrc.Zero, BlendingFactorDest.One ); // Alpha blending
+                        break;
+                    case 4:
+                        GL.BlendFunc( BlendingFactor.DstColor, BlendingFactor.Zero );
+                        break;
+                }
+
+                glMesh.Draw( worldTransform, shaderProgram );
+            }
+
+            // Re-enable depth mask
+            GL.DepthMask( true );
+
+            // Disable blending after drawing transparent objects
+            GL.Disable( EnableCap.Blend );
         }
+
 
         private void AnimateNodes( double animationTime )
         {
@@ -181,7 +237,7 @@ namespace GFDLibrary.Rendering.OpenGL
                 }
 
                 // Calculate current transform
-                var transform = Matrix4x4.CreateFromQuaternion( rotation ) * Matrix4x4.CreateScale( scale );
+                var transform = Matrix4x4.CreateFromQuaternion( rotation ) * Matrix4x4.CreateScale( glNode.Node.Scale );
                 transform.Translation   = translation;
                 glNode.CurrentTransform = transform;
 

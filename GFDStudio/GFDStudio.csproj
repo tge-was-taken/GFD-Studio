@@ -4,7 +4,7 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
-    <Version>0.7.5</Version>
+    <Version>0.7.6</Version>
     <Authors>TGE</Authors>
     <Company>TGE</Company>
     <ApplicationIcon>app_data\icons\main_icon.ico</ApplicationIcon>
