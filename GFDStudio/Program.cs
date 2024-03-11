@@ -34,7 +34,14 @@ namespace GFDStudio
 #if WINDOWS && DEBUG
                 Console.WriteLine( fmt );
 #endif
-                File.AppendAllTextAsync( "GFDStudio.log", fmt );
+                try
+                {
+                    File.AppendAllTextAsync( "GFDStudio.log", fmt );
+                }
+                catch ( Exception )
+                {
+                    // C'est la vie
+                }
             };
 
             Application.EnableVisualStyles();
