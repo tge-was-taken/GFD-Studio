@@ -12,6 +12,10 @@ Latest debug/release builds can be found here: https://ci.appveyor.com/project/t
 - .NET Framework 6 runtime installed
 - A videocard that supports at least OpenGL 3.3 to use the model viewer.
 (This is required for compiling shaders)
+## Building
+- Clone with `git clone https://github.com/tge-was-taken/GFD-Studio`
+- Navigate to the repo, and clone submodules with `git submodule update --init --recursive`
+- Open the solution in Visual Studio. You may get pop-ups prompting you to update the submodules' target frameworks. Click update.
 ## Usage
 ### Model Conversion
 For best results, use the [GMD Maxscript](https://github.com/tge-was-taken/GFD-Studio/blob/master/Resources/GfdImporter/GfdImporter.ms) to import models directly into 3ds Max.
