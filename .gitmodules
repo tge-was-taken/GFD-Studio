@@ -1,6 +1,6 @@
 [submodule "Dependencies/Scarlet"]
 	path = Dependencies/Scarlet
-	url = https://github.com/xdanieldzd/Scarlet
+	url = https://github.com/tge-was-taken/Scarlet
 [submodule "tga-decoder-cs"]
-	path = tga-decoder-cs
-	url = https://github.com/Ariq139/tga-decoder-cs
+	path = Dependencies/tga-decoder-cs
+	url = https://github.com/tge-was-taken/tga-decoder-cs
