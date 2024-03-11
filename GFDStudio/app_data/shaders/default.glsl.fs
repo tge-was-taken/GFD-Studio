@@ -103,10 +103,9 @@ vec4 ShaderInfo(vec4 normalColor) {
         phongShadow = dot(lightDirection, normalColor.xyz);
     }
     float clampedPhongShadow = clamp(phongShadow, 0.0, 1.0);
-    vec3 refAngle = reflect(-lightDirection, normalColor.xyz);
-    float specAngle = max(dot(refAngle, normalize(-fPosition)), 0.0);
+    vec3 H = normalize(eyePos + lightDirection);
     if(uMatEmissive.a > 0.0) {
-        specular = pow(specAngle, uMatEmissive.a);
+        specular = pow( max( dot( H, normalColor.xyz), 0.0), uMatEmissive.a);
     }
     float baseRimLight = clamp((dot(normalColor.xyz, mix(eyePos, normalColor.xyz, -min(phongShadow, 0.0)))), 0.0, 1.0);
     float rampedRimLight = pow((min(1.0 - baseRimLight, uMatToonLightThreshold) / uMatToonLightThreshold), uMatToonLightFactor);

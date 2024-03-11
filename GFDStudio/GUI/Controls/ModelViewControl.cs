@@ -112,7 +112,7 @@ namespace GFDStudio.GUI.Controls
         public event EventHandler<double> AnimationTimeChanged;
 
         private ModelViewControl() : base(
-            new GraphicsMode( 32, 24, 0, 0 ),
+            new GraphicsMode( 32, 24, 0, 4 ),
             3,
             3,
 #if GL_DEBUG
