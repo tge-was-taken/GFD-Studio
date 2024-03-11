@@ -29,7 +29,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Dependencies\Scarlet\Scarlet.IO.ImageFormats\Scarlet.IO.ImageFormats.csproj" />
     <ProjectReference Include="..\Dependencies\Scarlet\Scarlet\Scarlet.csproj" />
-    <ProjectReference Include="..\tga-decoder-cs\TgaDecoderTest.csproj" />
+    <ProjectReference Include="..\Dependencies\tga-decoder-cs\TgaDecoderTest.csproj" />
   </ItemGroup>
 
 </Project>
