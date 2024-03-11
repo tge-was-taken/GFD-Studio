@@ -147,7 +147,16 @@ namespace GFDStudio.GUI.Forms
             }
 
             RecordOpenedFile( filePath );
-            ModelEditorTreeView.SetTopNode( node );
+            
+            if (node.DataType == typeof(Animation) || node.DataType == typeof(AnimationPack))
+            {
+                mAnimationListTreeView.SetTopNode( node );
+            }
+            else
+            {
+                ModelEditorTreeView.SetTopNode( node );
+            }
+
             UpdateSelection( node );
         }
 
