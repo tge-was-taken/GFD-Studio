@@ -117,7 +117,11 @@ namespace GFDLibrary.Textures
         DDS = 1,
 		TGA = 2,
 		TMX = 3,
+        GTF = 4,
+        DEV = 5,
         GXT = 6,
+        PVR = 7,
+        BMP = 8,
         GNF = 9,
         EPT = 12
     }

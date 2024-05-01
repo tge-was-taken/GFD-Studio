@@ -64,14 +64,14 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         [TypeConverter( typeof( Vector4TypeConverter ) )]
-        [DisplayName( "Specular color (float)" )]
+        [DisplayName( "Emissive color (float)" )]
         public Vector4 SpecularColor
         {
             get => Data.SpecularColor;
             set => SetDataProperty( value );
         }
 
-        [DisplayName( "Specular color (RGBA)" )]
+        [DisplayName( "Emissive color (RGBA)" )]
         public System.Drawing.Color SpecularColorRGBA
         {
             get => Data.SpecularColor.ToByte();
@@ -80,14 +80,14 @@ namespace GFDStudio.GUI.DataViewNodes
 
         [Browsable( true )]
         [TypeConverter( typeof( Vector4ColorTypeConverter ) )]
-        [DisplayName( "Emissive color (float)" )]
+        [DisplayName( "Specular color (float)" )]
         public Vector4 EmissiveColor
         {
             get => GetDataProperty<Vector4>();
             set => SetDataProperty( value );
         }
 
-        [DisplayName( "Emissive color (RGBA)" )]
+        [DisplayName( "Specular color (RGBA)" )]
         public System.Drawing.Color EmissiveColorRGBA
         {
             get => Data.EmissiveColor.ToByte();
@@ -103,7 +103,7 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         [Browsable( true )]
-        [DisplayName( "Outline index" )]
+        [DisplayName( "Diffusivity" )]
         public float Field44
         {
             get => GetDataProperty<float>();
@@ -148,14 +148,16 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         [Browsable( true )]
+        [TypeConverter( typeof( EnumTypeConverter<HighlightMapMode> ) )]
         [DisplayName( "Highlight Map Blend Mode" )]
-        public byte Field4D
+        public HighlightMapMode Field4D
         {
-            get => GetDataProperty<byte>();
+            get => GetDataProperty<HighlightMapMode>();
             set => SetDataProperty( value );
         }
 
         [Browsable( true )]
+        [DisplayName( "Alpha Clip" )]
         public short Field90
         {
             get => GetDataProperty<short>();
@@ -163,17 +165,20 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         [Browsable( true )]
-        public short Field92
+        [TypeConverter( typeof( EnumTypeConverter<AlphaClipMode> ) )]
+        [DisplayName( "Alpha Clip Mode" )]
+        public AlphaClipMode Field92
         {
-            get => GetDataProperty<short>();
+            get => GetDataProperty<AlphaClipMode>();
             set => SetDataProperty( value );
         }
 
         [Browsable( true )]
-        [TypeConverter( typeof( Int16HexTypeConverter ) )]
-        public short Field94
+        [DisplayName( "Flags 2" )]
+        [TypeConverter( typeof( EnumTypeConverter<MaterialFlags2> ) )]
+        public MaterialFlags2 Flags2
         {
-            get => GetDataProperty<short>();
+            get => GetDataProperty<MaterialFlags2>();
             set => SetDataProperty( value );
         }
 

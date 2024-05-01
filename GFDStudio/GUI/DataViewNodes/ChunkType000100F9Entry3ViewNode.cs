@@ -12,7 +12,7 @@ namespace GFDStudio.GUI.DataViewNodes
             DataViewNodeFlags.Leaf;
 
         [Browsable( true )]
-        [DisplayName( "Gravity" )]
+        [DisplayName( "Length (Squared)" )]
         public float Field00
         {
             get => GetDataProperty<float>();
@@ -20,7 +20,7 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         [Browsable( true )]
-        [DisplayName( "Maximum rotation angle" )]
+        [DisplayName( "Angular Limit" )]
         public float Field04
         {
             get => GetDataProperty<float>();
@@ -28,7 +28,7 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         [Browsable( true )]
-        [DisplayName( "Bone thickness" )]
+        [DisplayName( "Chain thickness" )]
         public float Field08
         {
             get => GetDataProperty<float>();

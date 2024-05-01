@@ -32,7 +32,7 @@ namespace GFDLibrary.Materials
                 Field70 = MaterialPreset.Field70,
                 Field90 = MaterialPreset.Field90,
                 Field92 = MaterialPreset.Field92,
-                Field94 = MaterialPreset.Field94,
+                Flags2 = MaterialPreset.Flags2,
                 Field96 = MaterialPreset.Field96,
                 Field98 = MaterialPreset.Field98,
                 DiffuseMap = null,

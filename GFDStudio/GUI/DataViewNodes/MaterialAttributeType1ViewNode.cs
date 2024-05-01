@@ -16,17 +16,25 @@ namespace GFDStudio.GUI.DataViewNodes
             => DataViewNodeFlags.Leaf;
 
         // 0C
-        [ Browsable( true ) ]
-        [ TypeConverter( typeof( Vector4TypeConverter ) ) ]
-        [DisplayName("Inner Glow")]
+        [Browsable( true )]
+        [TypeConverter( typeof( Vector4TypeConverter ) )]
+        [DisplayName( "Light Color (float)" )]
         public Vector4 InnerGlow
         {
             get => GetDataProperty<Vector4>();
             set => SetDataProperty( value );
         }
 
+        [DisplayName( "Light Color (RGBA)" )]
+        public System.Drawing.Color LightColorRGBA
+        {
+            get => Data.InnerGlow.ToByte();
+            set => Data.InnerGlow = value.ToFloat();
+        }
+
         // 1C
         [Browsable( true )]
+        [DisplayName( "Light threshold" )]
         public float Field1C
         {
             get => GetDataProperty<float>();
@@ -35,6 +43,7 @@ namespace GFDStudio.GUI.DataViewNodes
 
         // 20
         [Browsable( true )]
+        [DisplayName( "Light factor" )]
         public float Field20
         {
             get => GetDataProperty<float>();
@@ -44,14 +53,23 @@ namespace GFDStudio.GUI.DataViewNodes
         // 24
         [Browsable( true )]
         [TypeConverter( typeof( Vector4TypeConverter ) )]
+        [DisplayName( "Shadow Color (float)" )]
         public Vector4 Field24
         {
             get => GetDataProperty<Vector4>();
             set => SetDataProperty( value );
         }
 
+        [DisplayName( "Shadow Color (RGBA)" )]
+        public System.Drawing.Color ShadowColorRGBA
+        {
+            get => Data.Field24.ToByte();
+            set => Data.Field24 = value.ToFloat();
+        }
+
         // 34
         [Browsable( true )]
+        [DisplayName( "Shadow threshold" )]
         public float Field34
         {
             get => GetDataProperty<float>();
@@ -60,6 +78,7 @@ namespace GFDStudio.GUI.DataViewNodes
 
         // 38
         [Browsable( true )]
+        [DisplayName( "Shadow factor" )]
         public float Field38
         {
             get => GetDataProperty<float>();
