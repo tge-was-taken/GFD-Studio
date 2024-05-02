@@ -590,7 +590,7 @@ namespace GFDLibrary.Materials
         HasDetailMap = 1 << 27,
         HasShadowMap = 1 << 28,
         Bit29 = 1 << 29,
-        Bit30 = 1 << ExtraDistortion,
+        ExtraDistortion = 1 << 30,
         Bit31 = 1u << 31
     }
 
