@@ -64,6 +64,7 @@ uniform float uMatToonShadowFactor;
 #define MatFlag_HasAttributes    (1 << 16)
 #define MatFlag_AlphaTest     (1 << 13)
 #define MatFlag_EnableLight2     (1 << 11)
+#define MatFlag_Emissive      (1 << 8)
 #define MatFlag_EnableLight      (1 << 7)
 #define MatFlag_HasVertexColors  (1 << 4)
 
@@ -81,9 +82,9 @@ uniform float uMatToonShadowFactor;
 #define ToonFlag_LIGHTDIFFUSEALPHA (1 << 6)
 #define ToonFlag_LIGHTLIGHTALPHA (1 << 7)
 
-//const vec3 ENV_AmbientColor = vec3(0.749);
-//const vec3 ENV_DiffuseColor = vec3(0.898);
-//const vec3 ENV_SpecularColor = vec3(1.0);
+const vec3 ENV_AmbientColor = vec3(0.8);
+const vec3 ENV_DiffuseColor = vec3(1.0);
+const vec3 ENV_SpecularColor = vec3(1.0);
 
 int bitfieldExtract(int value, int offset, int bits) {
     return (value >> offset) & ((1 << bits) - 1);
@@ -141,9 +142,37 @@ vec4 ShaderInfo(vec4 normalColor) {
 }
 
 void DefaultShader(vec3 specularColor, vec3 reflectionColor, vec4 shadowColor, vec4 inShaderInfo) {
-    vec3 phongShadowCol = clamp((inShaderInfo.y * (1.0 - shadowColor.r) + uMatAmbient.rgb), 0, 1);
-    oColor.rgb *= phongShadowCol;                                                                                                                                         // Add shadow
-    oColor.rgb += uMatSpecular.rgb * inShaderInfo.z * mix(vec3(1.0), specularColor.rgb, float(hasMatFlag(MatFlag_HasSpecularMap)));                                       // Add specular
+    //vec3 phongShadowCol = clamp((inShaderInfo.y * (1.0 - shadowColor.r) + uMatAmbient.rgb), 0, 1);
+    //oColor.rgb *= phongShadowCol;                                                                                                                                         // Add shadow
+    float Shadow;
+    vec3 lightDiffuse = inShaderInfo.y * ENV_DiffuseColor;
+    if(hasMatFlag2(MatFlag2_ShadowMapAdd)) {
+        lightDiffuse = mix( ENV_DiffuseColor.rgb, lightDiffuse, shadowColor.r);
+    }
+    else if(hasMatFlag2(MatFlag2_ShadowMapMultiply)) {
+        lightDiffuse *= 1.f - shadowColor.r;
+    }
+    else{
+        lightDiffuse += shadowColor.rgb;
+    }
+    if(hasMatFlag2(MatFlag_Emissive)){
+        if(hasMatFlag2(MatFlag2_ShadowMapAdd)) {
+            vec3 lmAmbient = mix( ENV_AmbientColor, uMatAmbient.rgb * ENV_AmbientColor, shadowColor.r);
+            oColor.rgb *= uMatEmissive.rgb + lmAmbient + uMatDiffuse.rgb * lightDiffuse;
+        }
+        else{
+            oColor.rgb *= uMatEmissive.rgb + uMatAmbient.rgb * ENV_AmbientColor + uMatDiffuse.rgb * lightDiffuse;
+        }
+    }else{
+        if(hasMatFlag2(MatFlag2_ShadowMapAdd)) {
+            vec3 lmAmbient = mix( ENV_AmbientColor, uMatAmbient.rgb * ENV_AmbientColor, shadowColor.r);
+            oColor.rgb *= lmAmbient + uMatDiffuse.rgb * lightDiffuse;
+        }
+        else{
+            oColor.rgb *= uMatAmbient.rgb * ENV_AmbientColor + uMatDiffuse.rgb * lightDiffuse;
+        }
+    }
+    oColor.rgb += uMatSpecular.rgb * ENV_SpecularColor * inShaderInfo.z * mix(vec3(1.0), specularColor.rgb, float(hasMatFlag(MatFlag_HasSpecularMap)));                                       // Add specular
 }
 
 void CharacterShader(vec3 specularColor, vec3 reflectionColor, vec4 shadowColor, vec4 inShaderInfo) {
@@ -159,8 +188,12 @@ void CharacterShader(vec3 specularColor, vec3 reflectionColor, vec4 shadowColor,
         toonShadow = clamp( toonShadow + uMatToonShadowBrightness, 0.0, 1.0);
     }
     vec3 toonShadowCol = mix(uMatAmbient.rgb, vec3(1.0), toonShadow);
-    oColor.rgb *= toonShadowCol;
-    oColor.rgb += uMatSpecular.rgb * inShaderInfo.z * mix(vec3(1.0), specularColor.rgb, float(hasMatFlag(MatFlag_HasSpecularMap)));                                         // Add specular
+	if(hasMatFlag2(MatFlag_Emissive)){
+		oColor.rgb *= uMatEmissive.rgb + mix( uMatAmbient.rgb * ENV_AmbientColor, ENV_AmbientColor + uMatDiffuse.rgb * ENV_DiffuseColor, toonShadow);
+    }else{
+		oColor.rgb *= mix( uMatAmbient.rgb * ENV_AmbientColor, ENV_AmbientColor + uMatDiffuse.rgb * ENV_DiffuseColor, toonShadow);
+    }
+    oColor.rgb += uMatSpecular.rgb * ENV_SpecularColor * inShaderInfo.z * mix(vec3(1.0), specularColor.rgb, float(hasMatFlag(MatFlag_HasSpecularMap)));                                         // Add specular
 }
 
 void PersonaShader(vec3 specularColor, vec3 reflectionColor, vec4 shadowColor, vec4 inShaderInfo) {
@@ -173,8 +206,12 @@ void PersonaShader(vec3 specularColor, vec3 reflectionColor, vec4 shadowColor, v
         toonShadow = clamp( toonShadow * shadowTex + uMatToonShadowBrightness, 0.0, 1.0);
     }
     vec3 toonShadowCol = mix(uMatAmbient.rgb, vec3(1.0), toonShadow);
-    oColor.rgb *= toonShadowCol;
-    oColor.rgb += uMatSpecular.rgb * inShaderInfo.z * mix(vec3(1.0), specularColor.rgb, float(hasMatFlag(MatFlag_HasSpecularMap)));                                       // Add specular
+	if(hasMatFlag2(MatFlag_Emissive)){
+		oColor.rgb *= uMatEmissive.rgb + mix( uMatAmbient.rgb * ENV_AmbientColor, ENV_AmbientColor + uMatDiffuse.rgb * ENV_DiffuseColor, toonShadow);
+    }else{
+		oColor.rgb *= mix( uMatAmbient.rgb * ENV_AmbientColor, ENV_AmbientColor + uMatDiffuse.rgb * ENV_DiffuseColor, toonShadow);
+    }
+    oColor.rgb += uMatSpecular.rgb * ENV_SpecularColor * inShaderInfo.z * mix(vec3(1.0), specularColor.rgb, float(hasMatFlag(MatFlag_HasSpecularMap)));                                       // Add specular
 }
 
 void ApplyReflection(vec3 reflectionColor, float specularMask){
@@ -188,15 +225,15 @@ void ApplyReflection(vec3 reflectionColor, float specularMask){
 
 void ApplyRimLight(vec4 shaderInfo, float rimLightMask){
     if(hasMatToonFlag(ToonFlag_LIGHTSEMITRANS)){
-        oColor.rgb += uMatToonLightColor.rgb * shaderInfo.w * uMatToonLightColor.a * rimLightMask;
+        oColor.rgb += uMatToonLightColor.rgb * ENV_DiffuseColor * shaderInfo.w * uMatToonLightColor.a * rimLightMask;
     }
     else{
-        oColor.rgb = mix(oColor.rgb, uMatToonLightColor.rgb, shaderInfo.w * uMatToonLightColor.a * rimLightMask);
+        oColor.rgb = mix(oColor.rgb, uMatToonLightColor.rgb * ENV_DiffuseColor, shaderInfo.w * uMatToonLightColor.a * rimLightMask);
     }
 }
 
 void main() {
-    oColor = uMatDiffuse;
+    oColor = vec4(1.0);
     vec3 fFacingNormal_norm = normalize(fFacingNormal);
     vec4 normalColor = vec4(fFacingNormal_norm, 1.0);
     vec3 specularColor = vec3(0.0);
