@@ -639,9 +639,9 @@ namespace GFDLibrary.Materials
     }
     public enum HighlightMapMode
     {
-        Lerp,
-        Add,
-        Subtract,
-        Modulate
+        Lerp = 1,
+        Add = 2,
+        Subtract = 3,
+        Modulate = 4
     }
 }
