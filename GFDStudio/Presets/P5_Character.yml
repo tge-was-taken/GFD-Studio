@@ -1,21 +1,21 @@
 !Material
 ResourceType: Material
-Name: c0001_body_jyake2_low
-Flags: Bit0, Bit1, Bit5, Bit8, EnableLight2, ReceiveShadow, CastShadow, HasAttributes, HasDiffuseMap
+Name: P5_Character
+Flags: HasAmbientColor, HasDiffuseColor, ApplyFog, HasEmissiveColor, EnableLight, ReceiveShadow, CastShadow, HasAttributes, HasDiffuseMap
 AmbientColor:
-  X: 0.60000002384185791
-  Y: 0.60000002384185791
-  Z: 0.60000002384185791
+  X: 0.6
+  Y: 0.6
+  Z: 0.6
   W: 0
 DiffuseColor:
-  X: 0.30000001192092896
-  Y: 0.30000001192092896
-  Z: 0.30000001192092896
+  X: 0.078431375
+  Y: 0.078431375
+  Z: 0.078431375
   W: 1
 SpecularColor:
-  X: 0
-  Y: 0
-  Z: 0
+  X: 0.11764707
+  Y: 0.11764707
+  Z: 0.11764707
   W: 1
 EmissiveColor:
   X: 0
@@ -29,10 +29,10 @@ Field49: 1
 Field4A: 0
 Field4B: 1
 Field4C: 0
-Field4D: 1
+Field4D: Lerp
 Field90: 0
-Field92: 4
-Field94: 4
+Field92: Greater
+Flags2: ShadowMapMultiply
 Field96: 0
 Field5C: 2
 Field6C: 4294967288
@@ -41,12 +41,12 @@ DisableBackfaceCulling: 0
 Field98: 4294967295
 DiffuseMap: &o0 !TextureMap
   ResourceType: TextureMap
-  Name: c0001_t01_body01K2.dds
+  Name: dum_b.dds
   Field44: 0
-  Field48: 1
-  Field49: 1
-  Field4A: 0
-  Field4B: 0
+  Field48: Linear
+  Field49: Linear
+  Field4A: Repeat
+  Field4B: Repeat
   Field4C: 1
   Field50: 0
   Field54: 0
@@ -85,20 +85,20 @@ TextureMaps:
 Attributes:
 - !MaterialAttributeType0
   Color:
-    X: 0.98039233684539795
-    Y: 0.98039233684539795
-    Z: 0.98039233684539795
-    W: 0.39215689897537231
-  Field1C: 0.55000001192092896
+    X: 0.98039234
+    Y: 0.98039234
+    Z: 0.98039234
+    W: 0.3921569
+  Field1C: 0.75
   Field20: 14
   Field24: 0.5
-  Field28: 0.30000001192092896
+  Field28: 0.4
   Field2C: 15
-  Type0Flags: 69
+  Type0Flags: LightNormalMap, ShadowNormalMap, LightShadowMapAlphaMask
   ResourceType: MaterialAttribute
   RawFlags: 65536
   Flags: Bit0
   AttributeType: Type0
   Version: 17846384
-IsPresetMaterial: true
+IsPresetMaterial: false
 Version: 17846384
