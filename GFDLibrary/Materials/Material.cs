@@ -60,16 +60,26 @@ namespace GFDLibrary.Materials
         public byte Field4C { get; set; }
 
         // 0x4D
-        public byte Field4D { get; set; }
+        public HighlightMapMode Field4D { get; set; }
 
         // 0x90
         public short Field90 { get; set; }
 
         // 0x92
-        public short Field92 { get; set; }
+        public AlphaClipMode Field92 { get; set; }
 
         // 0x94
-        public short Field94 { get; set; }
+        //public short Field94 { get; set; }
+        private MaterialFlags2 Field94;
+
+        public MaterialFlags2 Flags2
+        {
+            get => Field94;
+            set
+            {
+                Field94 = value;
+            }
+        }
 
         // 0x96
         public short Field96 { get; set; }
@@ -246,13 +256,13 @@ namespace GFDLibrary.Materials
             Field44 = 0;
             Field49 = 1;
             Field4B = 1;
-            Field4D = 1;
+            Field4D = (HighlightMapMode)1;
             DrawMethod = 0;
             Field4A = 0;
             Field4C = 0;
             Field5C = 0;
-            Flags = MaterialFlags.Bit0 | MaterialFlags.Bit1;
-            Field92 = 4;
+            Flags = MaterialFlags.HasAmbientColor | MaterialFlags.HasDiffuseColor;
+            Field92 = ( AlphaClipMode)4;
             Field70 = 0xFFFFFFFF;
             Field98 = 0xFFFFFFFF;
             Field6C = 0xFFFFFFFF;
@@ -320,7 +330,7 @@ namespace GFDLibrary.Materials
 
                 if ( Version > 0x108011b )
                 {
-                    Field4D = ( byte )reader.ReadInt16();
+                    Field4D = (HighlightMapMode)reader.ReadInt16();
                 }
             }
             else
@@ -330,20 +340,20 @@ namespace GFDLibrary.Materials
                 Field4A = reader.ReadByte();
                 Field4B = reader.ReadByte();
                 Field4C = reader.ReadByte();
-                Field4D = reader.ReadByte();
+                Field4D = (HighlightMapMode)reader.ReadByte();
             }
 
             Field90 = reader.ReadInt16();
-            Field92 = reader.ReadInt16();
+            Field92 = ( AlphaClipMode)reader.ReadInt16();
 
             if ( Version <= 0x1104800 )
             {
-                Field94 = 1;
+                Field94 = (MaterialFlags2)1;
                 Field96 = ( short )reader.ReadInt32();
             }
             else
             {
-                Field94 = reader.ReadInt16();
+                Field94 = (MaterialFlags2)reader.ReadInt16();
                 Field96 = reader.ReadInt16();
             }
 
@@ -439,7 +449,7 @@ namespace GFDLibrary.Materials
 
                 if ( Version > 0x108011b )
                 {
-                    writer.WriteInt16( Field4D );
+                    writer.WriteInt16( (byte)Field4D );
                 }
             }
             else
@@ -449,11 +459,11 @@ namespace GFDLibrary.Materials
                 writer.WriteByte( Field4A );
                 writer.WriteByte( Field4B );
                 writer.WriteByte( Field4C );
-                writer.WriteByte( Field4D );
+                writer.WriteByte( (byte)Field4D );
             }
 
             writer.WriteInt16( Field90 );
-            writer.WriteInt16( Field92 );
+            writer.WriteInt16( ( short ) Field92 );
 
             if ( Version <= 0x1104800 )
             {
@@ -461,7 +471,7 @@ namespace GFDLibrary.Materials
             }
             else
             {
-                writer.WriteInt16( Field94 );
+                writer.WriteInt16( (short)Field94 );
                 writer.WriteInt16( Field96 );
             }
 
@@ -550,43 +560,88 @@ namespace GFDLibrary.Materials
     [Flags]
     public enum MaterialFlags : uint
     {
-        Bit0            = 1 << 00,
-        Bit1            = 1 << 01,
-        Bit2            = 1 << 02,
-        Bit3            = 1 << 03,
-        EnableVertColors = 1 << 04,
-        Bit5           = 1 << 05,
-        Bit6           = 1 << 06,
-        EnableLight      = 1 << 07,
-        Bit8          = 1 << 08,
-        Bit9          = 1 << 09,
-        Bit10          = 1 << 10,
-        EnableLight2     = 1 << 11,
-        PurpleWireframe  = 1 << 12,
-        Bit13         = 1 << 13,
-        ReceiveShadow    = 1 << 14,
-        CastShadow       = 1 << 15,
-        HasAttributes    = 1 << 16,
-        Bit17   = 1 << 17,
-        Bit18   = 1 << 18,
-        DisableBloom     = 1 << 19,
-        HasDiffuseMap    = 1 << 20,
-        HasNormalMap     = 1 << 21,
-        HasSpecularMap   = 1 << 22,
+        HasAmbientColor = 1 << 00,
+        HasDiffuseColor = 1 << 01,
+        HasSpecularColor = 1 << 02,
+        Transparency = 1 << 03,
+        HasVertexColors = 1 << 04,
+        ApplyFog = 1 << 05,
+        Diffusitivity = 1 << 06,
+        HasUVAnimation = 1 << 07,
+        HasEmissiveColor = 1 << 08,
+        HasReflection = 1 << 09,
+        EnableShadow = 1 << 10,
+        EnableLight = 1 << 11,
+        RenderWireframe = 1 << 12,
+        AlphaTest = 1 << 13,
+        ReceiveShadow = 1 << 14,
+        CastShadow = 1 << 15,
+        HasAttributes = 1 << 16,
+        HasOutline = 1 << 17,
+        SpecularInNormalMap = 1 << 18,
+        ReflectionCaster = 1 << 19,
+        HasDiffuseMap = 1 << 20,
+        HasNormalMap = 1 << 21,
+        HasSpecularMap = 1 << 22,
         HasReflectionMap = 1 << 23,
-        HasHighlightMap  = 1 << 24,
-        HasGlowMap       = 1 << 25,
-        HasNightMap      = 1 << 26,
-        HasDetailMap     = 1 << 27,
-        HasShadowMap     = 1 << 28,
-        Bit29= 1 << 29,
-        Bit30     = 1 << 30,
-        Bit31     = 1u << 31
+        HasHighlightMap = 1 << 24,
+        HasGlowMap = 1 << 25,
+        HasNightMap = 1 << 26,
+        HasDetailMap = 1 << 27,
+        HasShadowMap = 1 << 28,
+        Bit29 = 1 << 29,
+        ExtraDistortion = 1 << 30,
+        Bit31 = 1u << 31
+    }
+
+    [Flags]
+    public enum MaterialFlags2 : ushort
+    {
+        Bloom = 1 << 00,
+        ShadowMapAdd = 1 << 01,
+        ShadowMapMultiply = 1 << 02,
+        DisableHDR = 1 << 03,
+        DisableDeferred = 1 << 04,
+        DisableOutline = 1 << 05,
+        OpaqueAlpha1 = 1 << 06,
+        LerpVertexColor = 1 << 07,
+        ReflectionMapAdd = 1 << 08,
+        Grayscale = 1 << 09,
+        DisableFog = 1 << 10,
+        Bit11 = 1 << 11,
+        Bit12 = 1 << 12,
+        Bit13 = 1 << 13,
+        Bit14 = 1 << 14,
+        Bit15 = 1 << 15
     }
 
     public enum MaterialDrawMethod
     {
         Opaque,
-        Translucent,
+        Transparent,
+        Add,
+        Subtract,
+        Modulate,
+        ModulateTransparent,
+        Modulate2Transparent,
+        Advanced
+    }
+    public enum AlphaClipMode
+    {
+        Never,
+        Less,
+        Equal,
+        LEqual,
+        Greater,
+        NotEqual,
+        GEqual,
+        Always
+    }
+    public enum HighlightMapMode
+    {
+        Lerp = 1,
+        Add = 2,
+        Subtract = 3,
+        Modulate = 4
     }
 }

@@ -12,7 +12,7 @@ namespace GFDStudio.GUI.DataViewNodes
             DataViewNodeFlags.Leaf;
 
         [Browsable( true )]
-        [DisplayName( "Motion scale" )]
+        [DisplayName( "Sphere Radius" )]
         public float Field34
         {
             get => GetDataProperty<float>();
@@ -21,6 +21,7 @@ namespace GFDStudio.GUI.DataViewNodes
 
 
         [Browsable( true )]
+        [DisplayName( "Mass" )]
         public float Field38
         {
             get => GetDataProperty<float>();
@@ -28,6 +29,7 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         [ Browsable( true ) ]
+        [DisplayName( "Restoring force" )]
         public float Field3C
         {
             get => GetDataProperty<float>();
@@ -35,7 +37,7 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         [Browsable( true )]
-        [DisplayName( "Spring rate" )]
+        [DisplayName( "Wind rate" )]
         public float Field40
         {
             get => GetDataProperty<float>();

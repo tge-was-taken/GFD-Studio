@@ -1,7 +1,9 @@
 ﻿using System.ComponentModel;
 using System.IO;
 using GFDLibrary;
+using GFDLibrary.Materials;
 using GFDLibrary.Models;
+using GFDStudio.GUI.TypeConverters;
 
 namespace GFDStudio.GUI.DataViewNodes
 {
@@ -20,6 +22,7 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         [Browsable( true )]
+        [DisplayName( "Flags" )]
         public int Field44
         {
             get => GetDataProperty<int>();
@@ -27,31 +30,38 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         [Browsable( true )]
-        public byte Field48
+        [TypeConverter( typeof( EnumTypeConverter<TextureFilteringMethod> ) )]
+        [DisplayName( "Texture Filtering - Minification" )]
+        public TextureFilteringMethod Field48
         {
-            get => GetDataProperty<byte>();
+            get => GetDataProperty<TextureFilteringMethod>();
             set => SetDataProperty( value );
         }
 
         [Browsable( true )]
-        [DisplayName( "Has texture filtering" )]
-        public byte Field49
+        [TypeConverter( typeof( EnumTypeConverter<TextureFilteringMethod> ) )]
+        [DisplayName( "Texture Filtering - Magnification" )]
+        public TextureFilteringMethod Field49
         {
-            get => GetDataProperty<byte>();
+            get => GetDataProperty<TextureFilteringMethod>();
             set => SetDataProperty( value );
         }
 
         [Browsable( true )]
-        public byte Field4A
+        [TypeConverter( typeof( EnumTypeConverter<TextureWrapMethod> ) )]
+        [DisplayName( "Wrap Mode U" )]
+        public TextureWrapMethod Field4A
         {
-            get => GetDataProperty<byte>();
+            get => GetDataProperty<TextureWrapMethod>();
             set => SetDataProperty( value );
         }
 
         [Browsable( true )]
-        public byte Field4B
+        [TypeConverter( typeof( EnumTypeConverter<TextureWrapMethod> ) )]
+        [DisplayName( "Wrap Mode V" )]
+        public TextureWrapMethod Field4B
         {
-            get => GetDataProperty<byte>();
+            get => GetDataProperty<TextureWrapMethod>();
             set => SetDataProperty( value );
         }
 

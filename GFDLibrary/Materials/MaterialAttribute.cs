@@ -186,18 +186,18 @@ namespace GFDLibrary.Materials
                 Field2C = reader.ReadSingle();
 
                 if ( reader.ReadBoolean() )
-                    Type0Flags |= MaterialAttributeType0Flags.Bit0;
+                    Type0Flags |= MaterialAttributeType0Flags.LightNormalMap;
 
                 if ( reader.ReadBoolean() )
-                    Type0Flags |= MaterialAttributeType0Flags.Bit1;
+                    Type0Flags |= MaterialAttributeType0Flags.LightAdd;
 
                 if ( reader.ReadBoolean() )
-                    Type0Flags |= MaterialAttributeType0Flags.Bit2;
+                    Type0Flags |= MaterialAttributeType0Flags.ShadowNormalMap;
 
                 if ( Version > 0x1104260 )
                 {
                     if ( reader.ReadBoolean() )
-                        Type0Flags |= MaterialAttributeType0Flags.Bit3;
+                        Type0Flags |= MaterialAttributeType0Flags.LockYAxis;
                 }
             }
             else
@@ -232,13 +232,13 @@ namespace GFDLibrary.Materials
                 writer.WriteSingle( Field28 );
                 writer.WriteSingle( Field2C );
 
-                writer.WriteBoolean( Type0Flags.HasFlag( MaterialAttributeType0Flags.Bit0 ) );
-                writer.WriteBoolean( Type0Flags.HasFlag( MaterialAttributeType0Flags.Bit1 ) );
-                writer.WriteBoolean( Type0Flags.HasFlag( MaterialAttributeType0Flags.Bit2 ) );
+                writer.WriteBoolean( Type0Flags.HasFlag( MaterialAttributeType0Flags.LightNormalMap ) );
+                writer.WriteBoolean( Type0Flags.HasFlag( MaterialAttributeType0Flags.LightAdd ) );
+                writer.WriteBoolean( Type0Flags.HasFlag( MaterialAttributeType0Flags.ShadowNormalMap ) );
 
                 if ( Version > 0x1104260 )
                 {
-                    writer.WriteBoolean( Type0Flags.HasFlag( MaterialAttributeType0Flags.Bit3 ) );
+                    writer.WriteBoolean( Type0Flags.HasFlag( MaterialAttributeType0Flags.LockYAxis ) );
                 }
             }
             else
@@ -255,10 +255,13 @@ namespace GFDLibrary.Materials
     [Flags]
     public enum MaterialAttributeType0Flags
     {
-        Bit0 = 0b0001,
-        Bit1 = 0b0010,
-        Bit2 = 0b0100,
-        Bit3 = 0b1000,
+        LightNormalMap = 1 << 0,
+        LightAdd = 1 << 1,
+        ShadowNormalMap = 1 << 2,
+        LockYAxis = 1 << 3,
+        LightNormalMapAlphaMask = 1 << 4,
+        LightDiffuseMapAlphaMask = 1 << 5,
+        LightShadowMapAlphaMask = 1 << 6,
     }
 
     public sealed class MaterialAttributeType1 : MaterialAttribute
@@ -307,24 +310,24 @@ namespace GFDLibrary.Materials
             if ( Version <= 0x1104500 )
             {
                 if ( reader.ReadBoolean() )
-                    Type1Flags |= MaterialAttributeType1Flags.Bit0;
+                    Type1Flags |= MaterialAttributeType1Flags.NormalMap;
 
                 if ( Version > 0x1104180 )
                 {
                     if ( reader.ReadBoolean() )
-                        Type1Flags |= MaterialAttributeType1Flags.Bit1;
+                        Type1Flags |= MaterialAttributeType1Flags.Backlight;
                 }
 
                 if ( Version > 0x1104210 )
                 {
                     if ( reader.ReadBoolean() )
-                        Type1Flags |= MaterialAttributeType1Flags.Bit2;
+                        Type1Flags |= MaterialAttributeType1Flags.LightAdd;
                 }
 
                 if ( Version > 0x1104400 )
                 {
                     if ( reader.ReadBoolean() )
-                        Type1Flags |= MaterialAttributeType1Flags.Bit3;
+                        Type1Flags |= MaterialAttributeType1Flags.Cavernmap;
                 }
             }
             else
@@ -344,21 +347,21 @@ namespace GFDLibrary.Materials
 
             if ( Version <= 0x1104500 )
             {
-                writer.WriteBoolean( Type1Flags.HasFlag( MaterialAttributeType1Flags.Bit0 ) );
+                writer.WriteBoolean( Type1Flags.HasFlag( MaterialAttributeType1Flags.NormalMap ) );
 
                 if ( Version > 0x1104180 )
                 {
-                    writer.WriteBoolean( Type1Flags.HasFlag( MaterialAttributeType1Flags.Bit1 ) );
+                    writer.WriteBoolean( Type1Flags.HasFlag( MaterialAttributeType1Flags.Backlight ) );
                 }
 
                 if ( Version > 0x1104210 )
                 {
-                    writer.WriteBoolean( Type1Flags.HasFlag( MaterialAttributeType1Flags.Bit2 ) );
+                    writer.WriteBoolean( Type1Flags.HasFlag( MaterialAttributeType1Flags.LightAdd ) );
                 }
 
                 if ( Version > 0x1104400 )
                 {
-                    writer.WriteBoolean( Type1Flags.HasFlag( MaterialAttributeType1Flags.Bit3 ) );
+                    writer.WriteBoolean( Type1Flags.HasFlag( MaterialAttributeType1Flags.Cavernmap ) );
                 }
             }
             else
@@ -371,16 +374,20 @@ namespace GFDLibrary.Materials
     [Flags]
     public enum MaterialAttributeType1Flags
     {
-        Bit0 = 0b0001,
-        Bit1 = 0b0010,
-        Bit2 = 0b0100,
-        Bit3 = 0b1000,
+        NormalMap = 1 << 0,
+        Backlight = 1 << 1,
+        LightAdd = 1 << 2,
+        Cavernmap = 1 << 3,
+        LightNormalMapAlphaMask = 1 << 4,
+        LockYAxis = 1 << 5,
+        LightDiffuseMapAlphaMask = 1 << 6,
+        LightShadowMapAlphaMask = 1 << 7,
     }
 
     public sealed class MaterialAttributeType2 : MaterialAttribute
     {
         // 0C
-        public int Field0C { get; set; }
+        public MaterialAttributeType2Flags Field0C { get; set; }
 
         // 10
         public int Field10 { get; set; }
@@ -395,13 +402,20 @@ namespace GFDLibrary.Materials
 
         protected override void ReadCore( ResourceReader reader )
         {
-            Field0C = reader.ReadInt32();
+            Field0C = (MaterialAttributeType2Flags)reader.ReadInt32();
             Field10 = reader.ReadInt32();
+        }
+
+        [Flags]
+        public enum MaterialAttributeType2Flags
+        {
+            Normal = 1 << 0,
+            Disable = 1 << 1,
         }
 
         protected override void WriteCore( ResourceWriter writer )
         {
-            writer.WriteInt32( Field0C );
+            writer.WriteInt32( (int)Field0C );
             writer.WriteInt32( Field10 );
         }
     }
@@ -535,7 +549,7 @@ namespace GFDLibrary.Materials
         public float Field58 { get; set; }
 
         // 5C
-        public int Field5C { get; set; }
+        public MaterialAttributeType1Flags Field5C { get; set; }
 
         public MaterialAttributeType4() : base( MaterialAttributeFlags.Bit0, MaterialAttributeType.Type4 ) { }
 
@@ -561,7 +575,7 @@ namespace GFDLibrary.Materials
             Field50 = reader.ReadByte();
             Field54 = reader.ReadSingle();
             Field58 = reader.ReadSingle();
-            Field5C = reader.ReadInt32();
+            Field5C = ( MaterialAttributeType1Flags )reader.ReadInt32();
         }
 
         protected override void WriteCore( ResourceWriter writer )
@@ -580,7 +594,7 @@ namespace GFDLibrary.Materials
             writer.WriteByte( Field50 );
             writer.WriteSingle( Field54 );
             writer.WriteSingle( Field58 );
-            writer.WriteInt32( Field5C );
+            writer.WriteInt32( (int)Field5C );
         }
     }
 

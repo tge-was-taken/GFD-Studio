@@ -1,11 +1,11 @@
 !Material
 ResourceType: Material
-Name: c0001_body_jyake2_low
-Flags: Bit0, Bit1, Bit5, Bit8, EnableLight2, CastShadow, HasAttributes, HasDiffuseMap, HasShadowMap
+Name: CFB_Character
+Flags: HasAmbientColor, HasDiffuseColor, ApplyFog, HasEmissiveColor, EnableLight, CastShadow, HasAttributes, HasDiffuseMap, HasShadowMap
 AmbientColor: &o0
-  X: 0.4901961088180542
-  Y: 0.4901961088180542
-  Z: 0.4901961088180542
+  X: 0.4901961
+  Y: 0.4901961
+  Z: 0.4901961
   W: 1
 DiffuseColor:
   X: 0
@@ -25,10 +25,10 @@ Field49: 1
 Field4A: 0
 Field4B: 1
 Field4C: 0
-Field4D: 1
+Field4D: Lerp
 Field90: 0
-Field92: 4
-Field94: 5
+Field92: Greater
+Flags2: Bloom, ShadowMapMultiply
 Field96: 0
 Field5C: 104
 Field6C: 4177526776
@@ -37,12 +37,12 @@ DisableBackfaceCulling: 0
 Field98: 4294967295
 DiffuseMap: &o1 !TextureMap
   ResourceType: TextureMap
-  Name: pc201_03_body00.dds
+  Name: dum_b.dds
   Field44: 0
-  Field48: 1
-  Field49: 1
-  Field4A: 0
-  Field4B: 0
+  Field48: Linear
+  Field49: Linear
+  Field4A: Repeat
+  Field4B: Repeat
   Field4C: 1
   Field50: 0
   Field54: 0
@@ -69,12 +69,12 @@ NightMap:
 DetailMap: 
 ShadowMap: &o2 !TextureMap
   ResourceType: TextureMap
-  Name: pc201_03_body00.dds
+  Name: dum_b.dds
   Field44: 0
-  Field48: 1
-  Field49: 1
-  Field4A: 0
-  Field4B: 0
+  Field48: Linear
+  Field49: Linear
+  Field4A: Repeat
+  Field4B: Repeat
   Field4C: 1
   Field50: 0
   Field54: 0
@@ -105,18 +105,18 @@ TextureMaps:
 Attributes:
 - !MaterialAttributeType8
   Field00:
-    X: 0.9803922176361084
-    Y: 0.9803922176361084
-    Z: 0.9803922176361084
-  Field0C: 0.47058823704719543
-  Field10: 0.64999997615814209
+    X: 0.9803922
+    Y: 0.9803922
+    Z: 0.9803922
+  Field0C: 0.47058824
+  Field10: 0.65
   Field14: 30
   Field18: 100
   Field1C:
     X: 0
     Y: 0
     Z: 0
-  Field28: 0.34999999403953552
+  Field28: 0.35
   Field2C: 0
   Field30: 0
   Field34: 0
@@ -126,6 +126,6 @@ Attributes:
   RawFlags: 65544
   Flags: Bit0
   AttributeType: Type8
-  Version: 17846416
-IsPresetMaterial: true
-Version: 17846528
+  Version: 17846384
+IsPresetMaterial: false
+Version: 17846384

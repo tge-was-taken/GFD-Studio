@@ -48,12 +48,14 @@ namespace GFDLibrary.Rendering.OpenGL
         public int DrawMethod { get; set; }
         public int HighlightMapBlendMode { get; set; }
         public int AlphaClip { get; set; }
+        public int AlphaClipMode { get; set; }
         public int TexcoordsFlags { get; set; }
 
         public bool HasType0 { get; set; } = false;
         public bool HasType1 { get; set; } = false;
         public bool HasType4 { get; set; } = false;
         public int MatFlags { get; set; }
+        public int MatFlags2 { get; set; }
         public int Type0Flags { get; set; }
 
         public bool HasDiffuseTexture => DiffuseTexture != null;
@@ -77,12 +79,14 @@ namespace GFDLibrary.Rendering.OpenGL
             MatFlags = Convert.ToInt32( material.Flags );
             Ambient = material.AmbientColor.ToOpenTK();
             Diffuse = material.DiffuseColor.ToOpenTK();
-            Specular = material.SpecularColor.ToOpenTK();
-            Emissive = material.EmissiveColor.ToOpenTK();
+            Specular = material.EmissiveColor.ToOpenTK();
+            Emissive = material.SpecularColor.ToOpenTK();
             Reflectivity = material.Field40;
             DrawMethod = (int)material.DrawMethod;
             HighlightMapBlendMode = (int)material.Field4D;
             AlphaClip = (int)material.Field90;
+            AlphaClipMode = (int)material.Field92;
+            MatFlags2 = Convert.ToInt32( material.Flags2 );
             TexcoordsFlags = (int)( material.Field6C );
             EnableBackfaceCulling = !(Convert.ToBoolean( material.DisableBackfaceCulling ));
 
@@ -229,11 +233,13 @@ namespace GFDLibrary.Rendering.OpenGL
             shaderProgram.SetUniform( "DrawMethod",               DrawMethod );
             shaderProgram.SetUniform( "HighlightMapBlendMode",    HighlightMapBlendMode );
             shaderProgram.SetUniform( "alphaClip",                AlphaClip );
+            shaderProgram.SetUniform( "alphaClipMode",            AlphaClipMode );
             shaderProgram.SetUniform( "TexcoordFlags",            TexcoordsFlags );
             shaderProgram.SetUniform( "uMatHasType0",             HasType0 );
             shaderProgram.SetUniform( "uMatHasType1",             HasType1 );
             shaderProgram.SetUniform( "uMatHasType4",             HasType4 );
             shaderProgram.SetUniform( "uMatFlags",                MatFlags );
+            shaderProgram.SetUniform( "uMatFlags2",               MatFlags2 );
             shaderProgram.SetUniform( "uMatType0Flags",           Type0Flags );
             shaderProgram.SetUniform( "uMatToonLightColor",       ToonLightColor );
             shaderProgram.SetUniform( "uMatToonLightFactor",      ToonLightFactor );

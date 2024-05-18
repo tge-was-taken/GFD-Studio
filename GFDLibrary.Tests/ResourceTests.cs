@@ -342,7 +342,7 @@ namespace GFDLibrary.Tests
             Assert.AreEqual( a.Field4D, b.Field4D );
             Assert.AreEqual( a.Field90, b.Field90 );
             Assert.AreEqual( a.Field92, b.Field92 );
-            Assert.AreEqual( a.Field94, b.Field94 );
+            Assert.AreEqual( a.Flags2,  b.Flags2 );
             Assert.AreEqual( a.Field96, b.Field96 );
             Assert.AreEqual( a.Field5C, b.Field5C );
             Assert.AreEqual( a.Field6C, b.Field6C );

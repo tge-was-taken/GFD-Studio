@@ -13,6 +13,7 @@ namespace GFDStudio.GUI.DataViewNodes
             DataViewNodeFlags.Branch;
 
         [Browsable( true )]
+        [DisplayName( "Iterations" )]
         public int Field140
         {
             get => GetDataProperty<int>();
@@ -20,6 +21,7 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         [Browsable( true )]
+        [DisplayName( "Deceleration" )]
         public float Field13C
         {
             get => GetDataProperty<float>();
@@ -27,6 +29,7 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         [Browsable( true )]
+        [DisplayName( "Max Steps" )]
         public float Field138
         {
             get => GetDataProperty<float>();
@@ -34,6 +37,7 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         [Browsable( true )]
+        [DisplayName( "Transfers tolerance" )]
         public float Field134
         {
             get => GetDataProperty<float>();
@@ -41,6 +45,7 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         [Browsable( true )]
+        [DisplayName( "Velocity tolerance" )]
         public float Field130
         {
             get => GetDataProperty<float>();

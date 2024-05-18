@@ -12,16 +12,16 @@ namespace GFDLibrary.Models
         public int Field44 { get; set; }
 
         // 0x48
-        public byte Field48 { get; set; }
+        public TextureFilteringMethod Field48 { get; set; }
 
         // 0x49
-        public byte Field49 { get; set; }
+        public TextureFilteringMethod Field49 { get; set; }
 
         // 0x4A
-        public byte Field4A { get; set; }
+        public TextureWrapMethod Field4A { get; set; }
 
         // 0x4B
-        public byte Field4B { get; set; }
+        public TextureWrapMethod Field4B { get; set; }
         
         // 0x4C
         public float Field4C { get; set; }
@@ -89,10 +89,10 @@ namespace GFDLibrary.Models
         private void Initialize()
         {
             Field44 = 0;
-            Field48 = 1;
-            Field49 = 1;
-            Field4A = 0;
-            Field4B = 0;
+            Field48 = (TextureFilteringMethod)1;
+            Field49 = (TextureFilteringMethod)1;
+            Field4A = (TextureWrapMethod)0;
+            Field4B = (TextureWrapMethod)0;
             Field4C = 1;
             Field50 = 0;
             Field54 = 0;
@@ -115,10 +115,10 @@ namespace GFDLibrary.Models
         {
             Name = reader.ReadStringWithHash( Version );
             Field44 = reader.ReadInt32();
-            Field48 = reader.ReadByte();
-            Field49 = reader.ReadByte();
-            Field4A = reader.ReadByte();
-            Field4B = reader.ReadByte();
+            Field48 = (TextureFilteringMethod)reader.ReadByte();
+            Field49 = (TextureFilteringMethod)reader.ReadByte();
+            Field4A = (TextureWrapMethod)reader.ReadByte();
+            Field4B = (TextureWrapMethod)reader.ReadByte();
             Field4C = reader.ReadSingle();
             Field50 = reader.ReadSingle();
             Field54 = reader.ReadSingle();
@@ -141,10 +141,10 @@ namespace GFDLibrary.Models
         {
             writer.WriteStringWithHash( Version, Name );
             writer.WriteInt32( Field44 );
-            writer.WriteByte( Field48 );
-            writer.WriteByte( Field49 );
-            writer.WriteByte( Field4A );
-            writer.WriteByte( Field4B );
+            writer.WriteByte( (byte)Field48 );
+            writer.WriteByte( (byte)Field49 );
+            writer.WriteByte( (byte)Field4A );
+            writer.WriteByte( (byte)Field4B );
             writer.WriteSingle( Field4C );
             writer.WriteSingle( Field50 );
             writer.WriteSingle( Field54 );
@@ -162,5 +162,23 @@ namespace GFDLibrary.Models
             writer.WriteSingle( Field84 );
             writer.WriteSingle( Field88 );
         }
+    }
+    public enum TextureFilteringMethod : byte
+    {
+        Nearest,
+        Linear,
+        Nearest_Nearest,
+        Linear_Nearest,
+        Nearest_Linear,
+        Linear_Linear,
+        ConvolutionMin,
+        ConvolutionMag
+    }
+    public enum TextureWrapMethod : byte
+    {
+        Repeat,
+        Mirror,
+        Clamp,
+        Border
     }
 }
