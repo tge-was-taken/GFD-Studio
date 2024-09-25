@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <Version>0.7.6</Version>
+    <Version>0.8.0</Version>
     <Authors>TGE</Authors>
     <AssemblyName>GFDLibrary</AssemblyName>
     <RootNamespace>GFDLibrary</RootNamespace>
@@ -30,6 +30,10 @@
     <ProjectReference Include="..\Dependencies\Scarlet\Scarlet.IO.ImageFormats\Scarlet.IO.ImageFormats.csproj" />
     <ProjectReference Include="..\Dependencies\Scarlet\Scarlet\Scarlet.csproj" />
     <ProjectReference Include="..\Dependencies\tga-decoder-cs\TgaDecoderTest.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Materials\NewFolder\" />
   </ItemGroup>
 
 </Project>

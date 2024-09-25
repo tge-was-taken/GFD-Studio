@@ -373,6 +373,11 @@ namespace GFDLibrary.Models
 
             int vertexCount = reader.ReadInt32();
 
+            if ( Version > 0x2110205 )
+            {
+                reader.ReadByte(); // Stride Type
+            }
+
             if ( Version > 0x1103020 )
             {
                 Field14 = reader.ReadInt32();
@@ -398,7 +403,8 @@ namespace GFDLibrary.Models
                     ColorChannel0[i] = reader.ReadUInt32();
 
                 if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord0 ) )
-                    TexCoordsChannel0[i] = reader.ReadVector2();
+                    reader.ReadSingle();
+                    //TexCoordsChannel0[i] = reader.ReadVector2();
 
                 if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord1 ) )
                     TexCoordsChannel1[i] = reader.ReadVector2();

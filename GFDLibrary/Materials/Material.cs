@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Diagnostics;
+using System.IO;
 using System.Numerics;
 using GFDLibrary.IO;
 using GFDLibrary.Models;
 using GFDLibrary.Models.Conversion;
+using YamlDotNet.Core;
 
 namespace GFDLibrary.Materials
 {
@@ -225,6 +228,10 @@ namespace GFDLibrary.Materials
             }
         }
 
+        // METAPHOR REFANTAZIO
+        // 0x2dc
+        public ushort METAPHOR_MaterialParameterFormat { get; set; }
+
         public bool IsPresetMaterial { get; internal set; }
 
         public Material( string name )
@@ -305,6 +312,11 @@ namespace GFDLibrary.Materials
         protected override void ReadCore( ResourceReader reader )
         {
             // Read material header
+            METAPHOR_MaterialParameterFormat = 1;
+            if ( Version >= 0x2000000 )
+            {
+                METAPHOR_MaterialParameterFormat = reader.ReadUInt16();
+            }
             Name = reader.ReadStringWithHash( Version );
             var flags = ( MaterialFlags )reader.ReadUInt32();
 
@@ -313,12 +325,300 @@ namespace GFDLibrary.Materials
                 flags = ( MaterialFlags )( ( uint )Flags & 0x7FFFFFFF );
             }
 
-            AmbientColor = reader.ReadVector4();
-            DiffuseColor = reader.ReadVector4();
-            SpecularColor = reader.ReadVector4();
-            EmissiveColor = reader.ReadVector4();
-            Field40 = reader.ReadSingle();
-            Field44 = reader.ReadSingle();
+            if (Version < 0x2000000 )
+            {
+                AmbientColor = reader.ReadVector4();
+                DiffuseColor = reader.ReadVector4();
+                SpecularColor = reader.ReadVector4();
+                EmissiveColor = reader.ReadVector4();
+                Field40 = reader.ReadSingle();
+                Field44 = reader.ReadSingle();
+            } else
+            {
+                switch ( METAPHOR_MaterialParameterFormat )
+                {
+                    case 0:
+                        reader.ReadResource<MaterialParameterSetType0>( Version );
+                        break;
+                    case 1:
+                        reader.ReadResource<MaterialParameterSetType1>( Version );
+                        break;
+                    case 2:
+                    case 3:
+                    case 0xd:
+                        reader.ReadResource<MaterialParameterSetType2_3_13>( Version );
+                        break;
+                    case 4:
+                        reader.ReadResource<MaterialParameterSetType4>( Version );
+                        break;
+                    case 5:
+                        reader.ReadResource<MaterialParameterSetType5>( Version );
+                        break;
+                    case 6:
+                        reader.ReadResource<MaterialParameterSetType6>( Version );
+                        break;
+                    case 7:
+                        reader.ReadResource<MaterialParameterSetType7>( Version );
+                        break;
+                    case 8:
+                        reader.ReadResource<MaterialParameterSetType8>( Version );
+                        break;
+                    case 9:
+                        reader.ReadResource<MaterialParameterSetType9>( Version );
+                        break;
+                    case 0xa:
+                        reader.ReadResource<MaterialParameterSetType10>( Version );
+                        break;
+                    case 0xb:
+                        reader.ReadResource<MaterialParameterSetType11>( Version );
+                        break;
+                    case 0xc:
+                        reader.ReadResource<MaterialParameterSetType12>( Version );
+                        break;
+                    case 0xe:
+                        reader.ReadResource<MaterialParameterSetType14>( Version );
+                        break;
+                    case 0xf:
+                        reader.ReadResource<MaterialParameterSetType15>( Version );
+                        break;
+                    default:
+                        throw new InvalidDataException( $"Unknown/Invalid material parameter version {METAPHOR_MaterialParameterFormat}" );
+                    /*
+                    case 0:
+                        Vector3 DiffuseRGB = reader.ReadVector3();
+                        float DiffuseAlpha = 1;
+                        if ( Version >= 0x2000004 )
+                            DiffuseAlpha = reader.ReadSingle();
+                        DiffuseColor = new Vector4(DiffuseRGB, DiffuseAlpha);
+                        Field40 = 1;
+                        if ( Version >= 0x2030001 )
+                            Field40 = reader.ReadSingle(); // Reflectivity
+                        Field44 = 1;
+                        if ( Version >= 0x2110040 )
+                            Field40 = reader.ReadSingle(); // Diffusitivity
+                        if ( Version == 0x2110140 )
+                            reader.ReadSingle(); // idk
+                        reader.ReadVector4();
+                        AmbientColor = new Vector4( 1, 1, 1, 1 );
+                        SpecularColor = new Vector4( 1, 1, 1, 1 );
+                        EmissiveColor = new Vector4( 1, 1, 1, 1 );
+                        break;
+                    case 1: // 3.HLSL
+                        AmbientColor = reader.ReadVector4();
+                        DiffuseColor = reader.ReadVector4();
+                        SpecularColor = reader.ReadVector4();
+                        EmissiveColor = reader.ReadVector4();
+                        Field40 = reader.ReadSingle();
+                        reader.ReadSingle(); // LerpBlendRate
+                        break;
+                    case 2:
+                    case 3:
+                    case 0xd:
+                        for (int i = 0; i < 4; i++ )
+                            reader.ReadVector4();
+                        reader.ReadVector3();
+                        for ( int i = 0; i < 6; i++ )
+                            reader.ReadSingle();
+                        reader.ReadUInt32();
+                        if ( Version >= 0x200ffff )
+                        {
+                            reader.ReadSingle();
+                            reader.ReadVector3();
+                        }
+                        float FieldEC = 0.5f;
+                        if ( Version >= 0x2030001 )
+                            FieldEC = reader.ReadSingle();
+                        float FieldDC = 0.5f;
+                        if ( Version >= 0x2090000 )
+                            FieldDC = reader.ReadSingle();
+                        float FieldF8 = 3f;
+                        if ( Version >= 0x2094001 )
+                            FieldF8 = reader.ReadSingle();
+                        float Field118 = 1;
+                        float Field11C = -1;
+                        float Field120 = 0;
+                        if ( Version >= 0x2109501 )
+                        {
+                            Field118 = reader.ReadSingle();
+                            Field11C = reader.ReadSingle();
+                            Field120 = reader.ReadSingle();
+                        }
+                        float Field108 = 0.1f;
+                        if ( Version >= 0x2109601 )
+                            Field108 = reader.ReadSingle();
+                        if ( Version >= 0x2110197 )
+                            reader.ReadSingle(); // FieldE8
+                        if ( Version >= 0x2110203 )
+                            reader.ReadSingle(); // Field128
+                        if ( Version >= 0x2110209 )
+                            reader.ReadSingle(); // Field12C
+                        break;
+                    case 4:
+                        AmbientColor = reader.ReadVector4();
+                        DiffuseColor = reader.ReadVector4();
+                        // I don't think these actually set emissive/specular, value of material fields
+                        // depends on the material type
+                        Vector4 _Specular = new Vector4( reader.ReadVector3(), 0.5f );
+                        Vector4 _Emissive = new Vector4( 1, 1, 1, (float)reader.ReadUInt32() );
+                        if ( Version >= 0x2110184 )
+                            _Specular.W = reader.ReadSingle();
+                        SpecularColor = _Specular;
+                        if ( Version >= 0x2110203 )
+                            _Emissive.X = reader.ReadSingle();
+                        if ( Version >= 0x2110217 )
+                            _Emissive.Y = reader.ReadSingle();
+                        EmissiveColor = _Emissive;
+                        break;
+                    case 5:
+                        // Ambient.X -> Specular.Z
+                        for ( int i = 0; i < 11; i++ )
+                            reader.ReadSingle();
+                        // Specular.W -> Emissive.X
+                        if ( Version >= 0x2110182 )
+                            for ( int i = 0; i < 2; i++ )
+                                reader.ReadSingle();
+                        if ( Version >= 0x2110205 )
+                            reader.ReadSingle();
+                        if ( Version >= 0x2110188 )
+                            reader.ReadUInt32();
+                        break;
+                    case 6:
+                        for ( int i = 0; i < 2; i++ )
+                        {
+                            reader.ReadVector4();
+                            reader.ReadSingle();
+                            reader.ReadSingle();
+                            reader.ReadSingle();
+                            reader.ReadSingle();
+                        }
+                        if ( Version < 0x2110021 )
+                            reader.ReadSingle();
+                        else
+                        {
+                            reader.ReadSingle();
+                            reader.ReadSingle();
+                            reader.ReadSingle();
+                        }
+                        reader.ReadSingle();
+                        reader.ReadUInt32();
+                        break;
+                    case 7:
+                        for (int i = 0; i < 4; i++ )
+                        {
+                            reader.ReadSingle();
+                            reader.ReadSingle();
+                            reader.ReadSingle();
+                            reader.ReadSingle();
+                            reader.ReadSingle();
+                            reader.ReadSingle();
+                        }
+                        reader.ReadSingle(); // FieldF0
+                        reader.ReadUInt32(); // FieldF4
+                        break;
+                    case 8:
+                        reader.ReadSingle();
+                        reader.ReadSingle();
+                        reader.ReadSingle();
+                        reader.ReadSingle();
+                        reader.ReadVector4();
+                        reader.ReadSingle();
+                        reader.ReadSingle();
+                        reader.ReadSingle();
+                        reader.ReadSingle();
+                        break;
+                    case 9:
+                        reader.ReadSingle();
+                        reader.ReadSingle();
+                        reader.ReadSingle();
+                        reader.ReadSingle();
+                        reader.ReadVector4();
+                        reader.ReadVector4();
+                        reader.ReadVector4();
+                        reader.ReadVector4();
+                        reader.ReadVector3();
+                        reader.ReadSingle();
+                        reader.ReadSingle();
+                        reader.ReadSingle();
+                        reader.ReadSingle();
+                        reader.ReadSingle();
+                        reader.ReadSingle();
+                        reader.ReadSingle();
+                        reader.ReadSingle();
+                        reader.ReadUInt32();
+                        break;
+                    case 0xa:
+                        reader.ReadVector4();
+                        if (Version >= 0x2110091)
+                            reader.ReadSingle();
+                        reader.ReadSingle();
+                        if ( Version >= 0x2110100 )
+                            reader.ReadUInt32();
+                        break;
+                    case 0xb:
+                        reader.ReadVector4();
+                        if (Version >= 0x2108001 )
+                            reader.ReadSingle();
+                        break;
+                    case 0xc:
+                        reader.ReadVector4();
+                        reader.ReadVector4();
+                        reader.ReadVector4();
+                        reader.ReadSingle();
+                        reader.ReadSingle();
+                        reader.ReadSingle();
+                        reader.ReadUInt32();
+                        reader.ReadSingle();
+                        reader.ReadVector3();
+                        reader.ReadSingle();
+                        reader.ReadSingle();
+                        if ( Version >= 0x2109501 )
+                        {
+                            reader.ReadSingle();
+                            reader.ReadSingle();
+                            reader.ReadSingle();
+                        }
+                        if ( Version >= 0x2109601 )
+                            reader.ReadSingle();
+                        if ( Version >= 0x2109701 )
+                        {
+                            reader.ReadVector3();
+                            reader.ReadSingle();
+                            reader.ReadSingle();
+                            reader.ReadSingle();
+                            reader.ReadSingle();
+                        }
+                        if (Version >= 0x2110070 )
+                        {
+                            reader.ReadVector4();
+                            reader.ReadSingle();
+                            reader.ReadSingle();
+                        }
+                        break;
+                    case 0xe:
+                        reader.ReadVector4();
+                        reader.ReadUInt32();
+                        break;
+                    case 0xf: // 49.HLSL
+                        for (int i = 0; i < 0x10; i++ )
+                        {
+                            // layer layers[16];
+                            reader.ReadSingle(); // tileSize
+                            reader.ReadSingle();
+                            reader.ReadSingle(); // tileOffset
+                            reader.ReadSingle();
+                            reader.ReadSingle(); // roughness
+                            reader.ReadSingle(); // metallic
+                            reader.ReadVector3(); // color?
+                        }
+                        reader.ReadUInt32(); // layerCount
+                        reader.ReadSingle(); // triPlanarScale
+                        reader.ReadUInt32(); // aTestRef/lerpBlendRate
+                        break;
+                    default:
+                        throw new InvalidDataException( "Unknown/Invalid material parameter version " );
+                    */
+                }
+            }
 
             if ( Version <= 0x1103040 )
             {
@@ -366,12 +666,15 @@ namespace GFDLibrary.Materials
             {
                 Field98 = reader.ReadUInt32();
             }
+            float Field6C_2 = 0;
+            if ( Version >= 0x2110160 )
+                Field6C_2 = reader.ReadSingle();
 
-            if ( flags.HasFlag( MaterialFlags.HasDiffuseMap ) )
+            //if ( flags.HasFlag( MaterialFlags.HasDiffuseMap ) )
             {
                 DiffuseMap = reader.ReadResource<TextureMap>( Version );
             }
-
+            /*
             if ( flags.HasFlag( MaterialFlags.HasNormalMap ) )
             {
                 NormalMap = reader.ReadResource<TextureMap>( Version );
@@ -423,9 +726,9 @@ namespace GFDLibrary.Materials
                     Attributes.Add( attribute );
                 }
             }
-
+            */
             Flags = flags;
-            Trace.Assert( Flags == flags, "Material flags don't match flags from file" );
+            // Trace.Assert( Flags == flags, "Material flags don't match flags from file" );
         }
 
         protected override void WriteCore( ResourceWriter writer )

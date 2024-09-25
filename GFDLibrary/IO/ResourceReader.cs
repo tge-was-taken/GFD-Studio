@@ -18,6 +18,7 @@ namespace GFDLibrary.IO
         public bool EndOfStream => Position >= BaseStream.Length;
 
         public ResourceReader( Stream stream, bool leaveOpen ) : base( stream, Encoding.Default, leaveOpen, Endianness.BigEndian )
+        //public ResourceReader( Stream stream, bool leaveOpen ) : base( stream, Encoding.Default, leaveOpen, Endianness.LittleEndian )
         {
         }
 

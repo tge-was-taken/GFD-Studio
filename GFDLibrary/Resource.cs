@@ -95,6 +95,8 @@ namespace GFDLibrary
                 switch ( header.Type )
                 {
                     case ResourceType.ModelPack:
+                    case ResourceType.ModelPack_Metaphor:
+                    case ResourceType.ModelPack_Metaphor_BIG_ENDIAN:
                         res = new ModelPack( header.Version );
                         break;
 
