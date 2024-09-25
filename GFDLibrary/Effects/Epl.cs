@@ -36,6 +36,11 @@ namespace GFDLibrary.Effects
             {
                 Field40 = reader.ReadUInt16();
             }
+            if ( Version > 0x2110207 && ((int)Flags & 0x200) != 0 )
+            {
+                reader.ReadVector4();
+                reader.ReadVector4();
+            }
         }
 
         protected override void WriteCore( ResourceWriter writer )
@@ -157,6 +162,11 @@ namespace GFDLibrary.Effects
         protected override void ReadCore( ResourceReader reader )
         {
             //     SetRandomBackColor();
+            if (Version > 0x2110060 )
+            {
+                reader.ReadVector2();
+                reader.ReadVector2();
+            }
             Flags = (EplLeafFlags)reader.ReadInt32();
             Name = reader.ReadStringWithHash( Version );
             var type = reader.ReadInt32();

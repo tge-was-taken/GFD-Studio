@@ -372,7 +372,6 @@ namespace GFDLibrary.Models
             }
 
             int vertexCount = reader.ReadInt32();
-
             if ( Version > 0x2110205 )
             {
                 reader.ReadByte(); // Stride Type
@@ -382,7 +381,6 @@ namespace GFDLibrary.Models
             {
                 Field14 = reader.ReadInt32();
             }
-
             AllocateBuffers( vertexCount );
 
             for ( int i = 0; i < vertexCount; i++ )
@@ -402,15 +400,27 @@ namespace GFDLibrary.Models
                 if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color0 ) )
                     ColorChannel0[i] = reader.ReadUInt32();
 
-                if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord0 ) )
-                    reader.ReadSingle();
-                    //TexCoordsChannel0[i] = reader.ReadVector2();
+                if ( Version < 0x2000000 || VertexAttributeFlags.HasFlag(VertexAttributeFlags.TexCoord3 ) )
+                {
+                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord0 ) )
+                        TexCoordsChannel0[i] = reader.ReadVector2();
 
-                if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord1 ) )
-                    TexCoordsChannel1[i] = reader.ReadVector2();
+                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord1 ) )
+                        TexCoordsChannel1[i] = reader.ReadVector2();
 
-                if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord2 ) )
-                    TexCoordsChannel2[i] = reader.ReadVector2();
+                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord2 ) )
+                        TexCoordsChannel2[i] = reader.ReadVector2();
+                } else
+                {
+                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord0 ) )
+                        TexCoordsChannel0[i] = new Vector2( reader.ReadHalf(), reader.ReadHalf() );
+
+                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord1 ) )
+                        TexCoordsChannel1[i] = new Vector2( reader.ReadHalf(), reader.ReadHalf() );
+
+                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord2 ) )
+                        TexCoordsChannel2[i] = new Vector2( reader.ReadHalf(), reader.ReadHalf() );
+                }
 
                 if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color1 ) )
                     ColorChannel1[i] = reader.ReadUInt32();
@@ -427,6 +437,8 @@ namespace GFDLibrary.Models
 
                     VertexWeights[i].Indices = new byte[MAX_NUM_WEIGHTS];
                     uint indices = reader.ReadUInt32();
+                    if (Version >= 0x2040001 )
+                        reader.ReadVector3(); // extra vertex weighting info
 
                     for ( int j = 0; j < VertexWeights[i].Indices.Length; j++ )
                     {
@@ -435,6 +447,10 @@ namespace GFDLibrary.Models
                     }
                 }
             }
+
+            if ( Flags.HasFlag( GeometryFlags.HasVertexWeights ) && Version >= 0x2110213 )
+                reader.ReadByte();
+
 
             if ( Flags.HasFlag( GeometryFlags.HasMorphTargets ) )
             {
@@ -513,7 +529,6 @@ namespace GFDLibrary.Models
             {
                 ColorChannel0 = new uint[vertexCount];
             }
-
             if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord0 ) )
             {
                 TexCoordsChannel0 = new Vector2[vertexCount];

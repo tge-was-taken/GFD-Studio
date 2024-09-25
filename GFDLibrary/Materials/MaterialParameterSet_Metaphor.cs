@@ -18,7 +18,7 @@ namespace GFDLibrary.Materials
             if ( Version >= 0x2030001 )
                 Field40 = reader.ReadSingle(); // Reflectivity
             float Field44 = 1;
-            if ( Version >= 0x2110040 )
+            if ( Version > 0x2110040 )
                 Field40 = reader.ReadSingle(); // Diffusitivity
             if ( Version == 0x2110140 )
                 reader.ReadSingle(); // idk
@@ -66,7 +66,7 @@ namespace GFDLibrary.Materials
             for ( int i = 0; i < 6; i++ )
                 reader.ReadSingle();
             reader.ReadUInt32();
-            if ( Version >= 0x200ffff )
+            if ( Version > 0x200ffff )
             {
                 reader.ReadSingle();
                 reader.ReadVector3();
@@ -75,7 +75,7 @@ namespace GFDLibrary.Materials
             if ( Version >= 0x2030001 )
                 FieldEC = reader.ReadSingle();
             float FieldDC = 0.5f;
-            if ( Version >= 0x2090000 )
+            if ( Version > 0x2090000 )
                 FieldDC = reader.ReadSingle();
             float FieldF8 = 3f;
             if ( Version >= 0x2094001 )
@@ -92,11 +92,11 @@ namespace GFDLibrary.Materials
             float Field108 = 0.1f;
             if ( Version >= 0x2109601 )
                 Field108 = reader.ReadSingle();
-            if ( Version >= 0x2110197 )
+            if ( Version > 0x2110197 )
                 reader.ReadSingle(); // FieldE8
-            if ( Version >= 0x2110203 )
+            if ( Version > 0x2110203 )
                 reader.ReadSingle(); // Field128
-            if ( Version >= 0x2110209 )
+            if ( Version > 0x2110209 )
                 reader.ReadSingle(); // Field12C
         }
 
@@ -121,9 +121,9 @@ namespace GFDLibrary.Materials
             if ( Version >= 0x2110184 )
                 _Specular.W = reader.ReadSingle();
             var SpecularColor = _Specular;
-            if ( Version >= 0x2110203 )
+            if ( Version > 0x2110203 )
                 _Emissive.X = reader.ReadSingle();
-            if ( Version >= 0x2110217 )
+            if ( Version > 0x2110217 )
                 _Emissive.Y = reader.ReadSingle();
             var EmissiveColor = _Emissive;
         }
@@ -280,7 +280,7 @@ namespace GFDLibrary.Materials
             if ( Version >= 0x2110091 )
                 reader.ReadSingle();
             reader.ReadSingle();
-            if ( Version >= 0x2110100 )
+            if ( Version > 0x2110100 )
                 reader.ReadUInt32();
         }
 
@@ -340,7 +340,7 @@ namespace GFDLibrary.Materials
                 reader.ReadSingle();
                 reader.ReadSingle();
             }
-            if ( Version >= 0x2110070 )
+            if ( Version > 0x2110070 )
             {
                 reader.ReadVector4();
                 reader.ReadSingle();

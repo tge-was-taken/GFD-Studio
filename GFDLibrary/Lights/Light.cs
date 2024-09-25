@@ -39,6 +39,8 @@ namespace GFDLibrary.Lights
         public float AngleInnerCone { get; set; }
 
         public float AngleOuterCone { get; set; }
+        public float Field98 { get; set; }
+        public float Field9C { get; set; }
 
         public Light()
         {
@@ -102,6 +104,11 @@ namespace GFDLibrary.Lights
                     AngleOuterCone = reader.ReadSingle(); // 0.245575309
                     goto case LightType.Point;
             }
+            if ( Version > 0x2110191 )
+                Field98 = reader.ReadSingle();
+            Field9C = 1;
+            if ( Version >= 0x2110203 )
+                Field9C = reader.ReadSingle();
         }
 
         protected override void WriteCore( ResourceWriter writer )

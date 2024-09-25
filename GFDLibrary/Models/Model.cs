@@ -103,6 +103,8 @@ namespace GFDLibrary.Models
                 Bones = new List<Bone>( boneCount );
                 for ( int i = 0; i < boneCount; i++ )
                     Bones.Add( new Bone( boneToNodeIndices[ i ], inverseBindMatrices[ i ] ) );
+                if ( Version >= 0x2040001 )
+                    reader.ReadByte();
             }
 
             if ( flags.HasFlag( ModelFlags.HasBoundingBox ) )
