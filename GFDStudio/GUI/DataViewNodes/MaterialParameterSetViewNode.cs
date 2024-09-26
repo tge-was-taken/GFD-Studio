@@ -1,20 +1,12 @@
 ﻿using GFDLibrary.Materials;
+using System.Numerics;
 
 namespace GFDStudio.GUI.DataViewNodes
 {
-    // Soon
-    public class MaterialParameterSetType0ViewNode : DataViewNode<MaterialParameterSetType0>
+    public abstract class MaterialParameterSetViewNodeBase<T> : DataViewNode<T> where T : MaterialParameterSetBase
     {
-        public MaterialParameterSetType0ViewNode( string text, MaterialParameterSetType0 data ) : base( text, data )
+        protected MaterialParameterSetViewNodeBase( string text, T data ) : base( text, data )
         {
-        }
-
-        public override DataViewNodeMenuFlags ContextMenuFlags => 0;
-        public override DataViewNodeFlags NodeFlags => DataViewNodeFlags.Leaf;
-
-        protected override void InitializeCore()
-        {
-            
         }
     }
 }

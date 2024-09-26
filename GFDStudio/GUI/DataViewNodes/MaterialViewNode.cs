@@ -231,6 +231,10 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         [Browsable( false )]
+        //public DataViewNode<MaterialParameterSetBase> MaterialParameterSetViewNode { get; set; }
+        public DataViewNode MaterialParameterSetViewNode { get; set; }
+
+        [Browsable( false )]
         public TextureMapListViewNode TextureMapsViewNode { get; set; }
 
         [Browsable( false )]
@@ -281,6 +285,9 @@ namespace GFDStudio.GUI.DataViewNodes
                 material.ReflectionMap = null;
                 material.ShadowMap = null;
                 material.SpecularMap = null;
+
+                //if ( material.METAPHOR_UseMaterialParameterSet )
+                //    material.METAHPOR_MaterialParameterSet = MaterialParameterSetViewNode.Data;
 
                 if ( !TextureMapsViewNode.IsExpanded )
                 {
@@ -344,6 +351,11 @@ namespace GFDStudio.GUI.DataViewNodes
 
         protected override void InitializeViewCore()
         {
+            if ( Data.METAPHOR_UseMaterialParameterSet )
+            {
+                MaterialParameterSetViewNode = DataViewNodeFactory.Create( Data.METAHPOR_MaterialParameterSet.GetParameterName(), Data.METAHPOR_MaterialParameterSet );
+                AddChildNode( MaterialParameterSetViewNode );
+            }
             TextureMapsViewNode = ( TextureMapListViewNode)DataViewNodeFactory.Create( "Texture Maps", CreateTextureMapInfo() );
             AddChildNode( TextureMapsViewNode );
 

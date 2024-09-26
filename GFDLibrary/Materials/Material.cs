@@ -231,6 +231,8 @@ namespace GFDLibrary.Materials
         // METAPHOR REFANTAZIO
         // 0x2dc
         public ushort METAPHOR_MaterialParameterFormat { get; set; }
+        public bool METAPHOR_UseMaterialParameterSet { get; set; }
+        public MaterialParameterSetBase METAHPOR_MaterialParameterSet { get; set; }
 
         public bool IsPresetMaterial { get; internal set; }
 
@@ -313,6 +315,7 @@ namespace GFDLibrary.Materials
         {
             // Read material header
             METAPHOR_MaterialParameterFormat = 1;
+            METAPHOR_UseMaterialParameterSet = Version >= 0x2000000;
             if ( Version >= 0x2000000 )
             {
                 METAPHOR_MaterialParameterFormat = reader.ReadUInt16();
@@ -338,48 +341,48 @@ namespace GFDLibrary.Materials
                 switch ( METAPHOR_MaterialParameterFormat )
                 {
                     case 0:
-                        reader.ReadResource<MaterialParameterSetType0>( Version );
+                        METAHPOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType0>( Version );
                         break;
                     case 1:
-                        reader.ReadResource<MaterialParameterSetType1>( Version );
+                        METAHPOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType1>( Version );
                         break;
                     case 2:
                     case 3:
                     case 0xd:
-                        reader.ReadResource<MaterialParameterSetType2_3_13>( Version );
+                        METAHPOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType2_3_13>( Version );
                         break;
                     case 4:
-                        reader.ReadResource<MaterialParameterSetType4>( Version );
+                        METAHPOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType4>( Version );
                         break;
                     case 5:
-                        reader.ReadResource<MaterialParameterSetType5>( Version );
+                        METAHPOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType5>( Version );
                         break;
                     case 6:
-                        reader.ReadResource<MaterialParameterSetType6>( Version );
+                        METAHPOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType6>( Version );
                         break;
                     case 7:
-                        reader.ReadResource<MaterialParameterSetType7>( Version );
+                        METAHPOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType7>( Version );
                         break;
                     case 8:
-                        reader.ReadResource<MaterialParameterSetType8>( Version );
+                        METAHPOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType8>( Version );
                         break;
                     case 9:
-                        reader.ReadResource<MaterialParameterSetType9>( Version );
+                        METAHPOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType9>( Version );
                         break;
                     case 0xa:
-                        reader.ReadResource<MaterialParameterSetType10>( Version );
+                        METAHPOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType10>( Version );
                         break;
                     case 0xb:
-                        reader.ReadResource<MaterialParameterSetType11>( Version );
+                        METAHPOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType11>( Version );
                         break;
                     case 0xc:
-                        reader.ReadResource<MaterialParameterSetType12>( Version );
+                        METAHPOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType12>( Version );
                         break;
                     case 0xe:
-                        reader.ReadResource<MaterialParameterSetType14>( Version );
+                        METAHPOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType14>( Version );
                         break;
                     case 0xf:
-                        reader.ReadResource<MaterialParameterSetType15>( Version );
+                        METAHPOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType15>( Version );
                         break;
                     default:
                         throw new InvalidDataException( $"Unknown/Invalid material parameter version {METAPHOR_MaterialParameterFormat}" );

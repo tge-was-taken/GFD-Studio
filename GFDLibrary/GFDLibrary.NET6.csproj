@@ -32,8 +32,4 @@
     <ProjectReference Include="..\Dependencies\tga-decoder-cs\TgaDecoderTest.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Materials\NewFolder\" />
-  </ItemGroup>
-
 </Project>
