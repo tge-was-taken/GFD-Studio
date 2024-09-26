@@ -146,6 +146,12 @@ namespace GFDLibrary.Cameras
             {
                 writer.WriteSingle( Field190 );
             }
+            if ( Version > 0x2110050 )
+            {
+                writer.WriteByte( Field198 );
+                writer.WriteSingle( Field19C );
+                writer.WriteSingle( Field1A0 );
+            }
         }
     }
 }

@@ -233,6 +233,7 @@ namespace GFDLibrary.Materials
         public ushort METAPHOR_MaterialParameterFormat { get; set; }
         public bool METAPHOR_UseMaterialParameterSet { get; set; }
         public MaterialParameterSetBase METAHPOR_MaterialParameterSet { get; set; }
+        public float Field6C_2 { get; set; }
 
         public bool IsPresetMaterial { get; internal set; }
 
@@ -435,7 +436,7 @@ namespace GFDLibrary.Materials
             {
                 Field98 = reader.ReadUInt32();
             }
-            float Field6C_2 = 0;
+            Field6C_2 = 0;
             if ( Version > 0x2110160 )
                 Field6C_2 = reader.ReadSingle();
 
@@ -500,14 +501,21 @@ namespace GFDLibrary.Materials
 
         protected override void WriteCore( ResourceWriter writer )
         {
+            if ( Version >= 0x2000000 )
+                writer.WriteUInt16( METAPHOR_MaterialParameterFormat );
             writer.WriteStringWithHash( Version, Name );
             writer.WriteUInt32( ( uint )Flags );
-            writer.WriteVector4( AmbientColor );
-            writer.WriteVector4( DiffuseColor );
-            writer.WriteVector4( SpecularColor );
-            writer.WriteVector4( EmissiveColor );
-            writer.WriteSingle( Field40 );
-            writer.WriteSingle( Field44 );
+            if ( METAPHOR_UseMaterialParameterSet )
+                METAHPOR_MaterialParameterSet.Write( writer );
+            else
+            {
+                writer.WriteVector4( AmbientColor );
+                writer.WriteVector4( DiffuseColor );
+                writer.WriteVector4( SpecularColor );
+                writer.WriteVector4( EmissiveColor );
+                writer.WriteSingle( Field40 );
+                writer.WriteSingle( Field44 );
+            }
 
             if ( Version <= 0x1103040 )
             {
@@ -554,6 +562,8 @@ namespace GFDLibrary.Materials
             {
                 writer.WriteUInt32( Field98 );
             }
+            if ( Version > 0x2110160 )
+                writer.WriteSingle( Field6C_2 );
 
             if ( Flags.HasFlag( MaterialFlags.HasDiffuseMap ) )
             {

@@ -155,6 +155,10 @@ namespace GFDLibrary.Lights
                     writer.WriteSingle( AngleOuterCone );
                     goto case LightType.Point;
             }
+            if ( Version > 0x2110191 )
+                writer.WriteSingle( Field98 );
+            if ( Version >= 0x2110203 )
+                writer.WriteSingle( Field9C );
         }
     }
 

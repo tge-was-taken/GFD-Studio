@@ -90,6 +90,8 @@
         EplLight,
         EplLightMeshData,
         EplLightSceneData,
+        EplLightPointData,
+        EplLightSpotData,
         EplPostEffect,
         EplPostEffectRadiationBlurData,
         EplPostEffectStraightBlurData,
@@ -99,6 +101,8 @@
         EplPostEffectLensFlareData,
         EplPostEffectColorCorrectionData,
         EplPostEffectMonotoneData,
+        EplPostEffectChromaticAberrationData,
+        EplPostEffectColorCorrectionExcludeToonData,
         EplHelper,
         EplDirectionalParticles,
 

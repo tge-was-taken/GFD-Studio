@@ -7,6 +7,7 @@ namespace GFDLibrary.Materials
     public abstract class MaterialParameterSetBase : Resource
     {
         public abstract string GetParameterName();
+        public void Write( ResourceWriter writer ) => WriteCore( writer );
     }
 
     // 7.HLSL (probably?)
