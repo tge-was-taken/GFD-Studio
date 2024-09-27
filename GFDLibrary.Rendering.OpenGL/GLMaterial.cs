@@ -19,6 +19,8 @@ namespace GFDLibrary.Rendering.OpenGL
 
     public class GLMaterial : IGLMaterial
     {
+        public bool UseMetaphorMaterialParameterSet { get; set; }
+        public ResourceType MaterialParameterSetResource { get; set; }
         public Vector4 Ambient { get; set; }
 
         public Vector4 Diffuse { get; set; }
@@ -76,6 +78,11 @@ namespace GFDLibrary.Rendering.OpenGL
         public GLMaterial( Material material, MaterialTextureCreator textureCreator )
         {
             // color parameters
+            UseMetaphorMaterialParameterSet = material.METAPHOR_UseMaterialParameterSet;
+            if ( UseMetaphorMaterialParameterSet )
+                MaterialParameterSetResource = material.METAHPOR_MaterialParameterSet.ResourceType;
+            else
+                MaterialParameterSetResource = ResourceType.Invalid;
             MatFlags = Convert.ToInt32( material.Flags );
             Ambient = material.AmbientColor.ToOpenTK();
             Diffuse = material.DiffuseColor.ToOpenTK();

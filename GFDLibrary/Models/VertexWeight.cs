@@ -5,9 +5,16 @@ namespace GFDLibrary.Models
     public struct VertexWeight : IEquatable<VertexWeight>
     {
         public float[] Weights;
-        public byte[] Indices;
+        //public byte[] Indices;
+        public ushort[] Indices;
 
         public VertexWeight( float[] weight, byte[] indices )
+        {
+            Weights = weight;
+            Indices = new ushort[indices.Length];
+            Buffer.BlockCopy( indices, 0, Indices, 0, indices.Length );
+        }
+        public VertexWeight( float[] weight, ushort[] indices)
         {
             Weights = weight;
             Indices = indices;
@@ -21,11 +28,36 @@ namespace GFDLibrary.Models
             Weights[2] = weight3;
             Weights[3] = weight4;
 
-            Indices = new byte[4];
+            Indices = new ushort[4];
             Indices[0] = index1;
             Indices[1] = index2;
             Indices[2] = index3;
             Indices[3] = index4;
+        }
+        // METAPHOR
+        public VertexWeight(
+            float w0, float w1, float w2, float w3, float w4, float w5, float w6, float w7,
+            ushort i0, ushort i1, ushort i2, ushort i3, ushort i4, ushort i5, ushort i6, ushort i7 )
+        {
+            Weights = new float[8];
+            Weights[0] = w0;
+            Weights[1] = w1;
+            Weights[2] = w2;
+            Weights[3] = w3;
+            Weights[4] = w4;
+            Weights[5] = w5;
+            Weights[6] = w6;
+            Weights[7] = w7;
+
+            Indices = new ushort[8];
+            Indices[0] = i0;
+            Indices[1] = i1;
+            Indices[2] = i2;
+            Indices[3] = i3;
+            Indices[4] = i4;
+            Indices[5] = i5;
+            Indices[6] = i6;
+            Indices[7] = i7;
         }
 
         public override bool Equals( object obj )

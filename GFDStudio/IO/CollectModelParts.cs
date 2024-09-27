@@ -11,15 +11,19 @@ namespace GFDStudio.IO
         {
             string ModelDirectory = Path.GetDirectoryName( filePath );
             Logger.Debug( $"METAPHOR: Looking for loose chunks in {ModelDirectory}" );
-            MetaphorTexpack MRFTexpack = ModuleImportUtilities.ImportFile<MetaphorTexpack>( Path.Combine( ModelDirectory, Path.GetFileNameWithoutExtension( filePath ) + ".TEX" ) );
-            if ( MRFTexpack != null )
+            string TexPath = Path.Combine( ModelDirectory, Path.GetFileNameWithoutExtension( filePath ) + ".TEX" );
+            if (File.Exists( TexPath ))
             {
-                foreach ( var tex in MRFTexpack.TextureList )
+                MetaphorTexpack MRFTexpack = ModuleImportUtilities.ImportFile<MetaphorTexpack>( TexPath );
+                if ( MRFTexpack != null )
                 {
-                    Logger.Debug( $"METAPHOR: Texture bin got {tex.Key}" );
-                    if ( Pack.Textures.TryGetValue( tex.Key, out var modelTexPlaceholder ) )
-                        modelTexPlaceholder.Data = tex.Value;
+                    foreach ( var tex in MRFTexpack.TextureList )
+                    {
+                        Logger.Debug( $"METAPHOR: Texture bin got {tex.Key}" );
+                        if ( Pack.Textures.TryGetValue( tex.Key, out var modelTexPlaceholder ) )
+                            modelTexPlaceholder.Data = tex.Value;
 
+                    }
                 }
             }
         }

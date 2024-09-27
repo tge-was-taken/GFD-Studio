@@ -298,7 +298,7 @@ namespace GFDLibrary.Models
 
                 if ( includeWeights && VertexWeights != null )
                 {
-                    for ( int j = 0; j < 4; j++ )
+                    for ( int j = 0; j < VertexWeights[i].Weights.Length; j++ )
                     {
                         var weight = VertexWeights[i].Weights[j];
                         if ( weight == 0 )
@@ -382,7 +382,7 @@ namespace GFDLibrary.Models
                 Field14 = reader.ReadInt32();
             }
             AllocateBuffers( vertexCount );
-
+            long StartPos = reader.Position;
             for ( int i = 0; i < vertexCount; i++ )
             {
                 if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Position ) )
@@ -400,53 +400,54 @@ namespace GFDLibrary.Models
                 if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color0 ) )
                     ColorChannel0[i] = reader.ReadUInt32();
 
-                if ( Version < 0x2000000 || VertexAttributeFlags.HasFlag(VertexAttributeFlags.TexCoord3 ) )
-                {
-                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord0 ) )
-                        TexCoordsChannel0[i] = reader.ReadVector2();
-
-                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord1 ) )
-                        TexCoordsChannel1[i] = reader.ReadVector2();
-
-                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord2 ) )
-                        TexCoordsChannel2[i] = reader.ReadVector2();
-                } else
-                {
-                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord0 ) )
-                        TexCoordsChannel0[i] = new Vector2( reader.ReadHalf(), reader.ReadHalf() );
-
-                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord1 ) )
-                        TexCoordsChannel1[i] = new Vector2( reader.ReadHalf(), reader.ReadHalf() );
-
-                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord2 ) )
-                        TexCoordsChannel2[i] = new Vector2( reader.ReadHalf(), reader.ReadHalf() );
-                }
+                if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord0 ) )
+                    TexCoordsChannel0[i] = Version < 0x2000000 || VertexAttributeFlags.HasFlag( VertexAttributeFlags.Texcoord0UseUint16 )
+                    ? reader.ReadVector2() : new Vector2( (float)reader.ReadUInt16() / 0xffff, (float)reader.ReadUInt16() / 0xffff );
+                if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord1 ) )
+                    TexCoordsChannel1[i] = Version < 0x2000000 || VertexAttributeFlags.HasFlag( VertexAttributeFlags.Texcoord1UseUint16 )
+                    ? reader.ReadVector2() : new Vector2( (float)reader.ReadUInt16() / 0xffff, (float)reader.ReadUInt16() / 0xffff );
+                if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord2 ) )
+                    TexCoordsChannel2[i] = Version < 0x2000000 || VertexAttributeFlags.HasFlag( VertexAttributeFlags.Texcoord2UseUint16 )
+                    ? reader.ReadVector2() : new Vector2( (float)reader.ReadUInt16() / 0xffff, (float)reader.ReadUInt16() / 0xffff );
 
                 if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color1 ) )
                     ColorChannel1[i] = reader.ReadUInt32();
 
                 if ( Flags.HasFlag( GeometryFlags.HasVertexWeights ) )
                 {
-                    const int MAX_NUM_WEIGHTS = 4;
-                    VertexWeights[i].Weights = new float[MAX_NUM_WEIGHTS];
-
-                    for ( int j = 0; j < VertexWeights[i].Weights.Length; j++ )
+                    if ( Version < 0x2040001 )
                     {
-                        VertexWeights[i].Weights[j] = reader.ReadSingle();
-                    }
+                        const int MAX_NUM_WEIGHTS = 4;
+                        VertexWeights[i].Weights = new float[MAX_NUM_WEIGHTS];
 
-                    VertexWeights[i].Indices = new byte[MAX_NUM_WEIGHTS];
-                    uint indices = reader.ReadUInt32();
-                    if (Version >= 0x2040001 )
-                        reader.ReadVector3(); // extra vertex weighting info
+                        for ( int j = 0; j < VertexWeights[i].Weights.Length; j++ )
+                            VertexWeights[i].Weights[j] = reader.ReadSingle();
 
-                    for ( int j = 0; j < VertexWeights[i].Indices.Length; j++ )
+                        VertexWeights[i].Indices = new ushort[MAX_NUM_WEIGHTS];
+                        uint indices = reader.ReadUInt32();
+                        for ( int j = 0; j < VertexWeights[i].Indices.Length; j++ )
+                        {
+                            int shift = j * 8;
+                            VertexWeights[i].Indices[j] = (byte)( ( indices & ( 0xFF << shift ) ) >> shift );
+                        }
+                    } else
                     {
-                        int shift = j * 8;
-                        VertexWeights[i].Indices[j] = (byte)( ( indices & ( 0xFF << shift ) ) >> shift );
+                        const int MAX_NUM_WEIGHTS = 8;
+                        VertexWeights[i].Weights = new float[MAX_NUM_WEIGHTS];
+
+                        for ( int j = 0; j < VertexWeights[i].Weights.Length; j++ )
+                        {
+                            VertexWeights[i].Weights[j] = (float)reader.ReadUInt16() / 0xffff;
+                        }
+
+                        VertexWeights[i].Indices = new ushort[MAX_NUM_WEIGHTS];
+                        for ( int j = 0; j < VertexWeights[i].Indices.Length; j++ )
+                            VertexWeights[i].Indices[j] = reader.ReadUInt16();
                     }
                 }
             }
+            long StrideLength = ( reader.Position - StartPos ) / vertexCount;
+            Logger.Info( $"Stride Length: 0x{StrideLength:X}" );
 
             if ( Flags.HasFlag( GeometryFlags.HasVertexWeights ) && Version >= 0x2110213 )
                 reader.ReadByte();
@@ -604,14 +605,24 @@ namespace GFDLibrary.Models
 
                 if ( Flags.HasFlag( GeometryFlags.HasVertexWeights ) )
                 {
-                    var vertexWeight = VertexWeights[i];
-                    for ( int j = 0; j < 4; j++ )
-                        writer.WriteSingle( vertexWeight.Weights[j] );
+                    if ( Version < 0x2040001 )
+                    {
+                        var vertexWeight = VertexWeights[i];
+                        for ( int j = 0; j < 4; j++ )
+                            writer.WriteSingle( vertexWeight.Weights[j] );
 
-                    int indices = vertexWeight.Indices[0] << 00 | ( vertexWeight.Indices[1] << 08 ) |
-                                  vertexWeight.Indices[2] << 16 | ( vertexWeight.Indices[3] << 24 );
+                        int indices = vertexWeight.Indices[0] << 00 | ( vertexWeight.Indices[1] << 08 ) |
+                                      vertexWeight.Indices[2] << 16 | ( vertexWeight.Indices[3] << 24 );
 
-                    writer.WriteInt32( indices );
+                        writer.WriteInt32( indices );
+                    } else
+                    {
+                        var vertexWeight = VertexWeights[i];
+                        for ( int j = 0; j < 8; j++ )
+                            writer.WriteUInt16( (ushort)(vertexWeight.Weights[j] * 0xffff) );
+                        for ( int j = 0; j < 8; j++ )
+                            writer.WriteUInt16( vertexWeight.Indices[j] );
+                    }
                 }
             }
 
@@ -721,9 +732,9 @@ namespace GFDLibrary.Models
         TexCoord0 = 1 << 8,
         TexCoord1 = 1 << 9,
         TexCoord2 = 1 << 10,
-        TexCoord3 = 1 << 11,
-        TexCoord4 = 1 << 12,
-        TexCoord5 = 1 << 13,
+        Texcoord0UseUint16 = 1 << 11,
+        Texcoord1UseUint16= 1 << 12,
+        Texcoord2UseUint16 = 1 << 13,
         TexCoord6 = 1 << 14,
         TexCoord7 = 1 << 15,
         Bit16 = 1 << 16,

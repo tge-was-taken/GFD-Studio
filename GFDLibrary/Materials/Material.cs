@@ -351,6 +351,12 @@ namespace GFDLibrary.Materials
                     case 3:
                     case 0xd:
                         METAHPOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType2_3_13>( Version );
+                        // TEMPORARY: map metaphor material params to legacy params
+                        MaterialParameterSetType2_3_13 P2 = (MaterialParameterSetType2_3_13)METAHPOR_MaterialParameterSet;
+                        //AmbientColor = P2.P2_0;
+                        //DiffuseColor = new Vector4( 1, 1, 1, 1 );
+                        //SpecularColor = P2.P2_2;
+                        //EmissiveColor = P2.P2_2;
                         break;
                     case 4:
                         METAHPOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType4>( Version );

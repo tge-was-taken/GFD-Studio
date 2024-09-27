@@ -336,7 +336,7 @@ namespace GFDLibrary.Models
                         for ( int i = 0; i < geometry.VertexWeights.Length; i++ )
                         {
                             ref var weight = ref geometry.VertexWeights[i];
-                            weight.Indices = new byte[4];
+                            weight.Indices = new ushort[4];
                             weight.Indices[0] = ( byte )boneIndex;
                             weight.Weights = new float[4];
                             weight.Weights[0] = 1f;
