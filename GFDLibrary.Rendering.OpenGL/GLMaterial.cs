@@ -187,10 +187,11 @@ namespace GFDLibrary.Rendering.OpenGL
             shaderProgram.SetUniform( "uNight", 6 );
             shaderProgram.SetUniform( "uDetail", 7 );
             shaderProgram.SetUniform( "uShadow", 8 );
+            shaderProgram.SetUniform( "uMatHasDiffuse", HasDiffuseTexture );
             if ( HasDiffuseTexture )
             {
                 GL.ActiveTexture( TextureUnit.Texture0 );
-                DiffuseTexture.Bind();
+                DiffuseTexture.Bind();   
             }
             if ( HasNormalTexture )
             {

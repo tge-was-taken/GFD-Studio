@@ -134,6 +134,14 @@ namespace GFDLibrary.IO
             return value;
         }
 
+        public Vector2 ReadVector2Half()
+        {
+            Vector2 value;
+            value.X = ReadHalf();
+            value.Y = ReadHalf();
+            return value;
+        }
+
         public Vector3 ReadVector3Half()
         {
             Vector3 value;
