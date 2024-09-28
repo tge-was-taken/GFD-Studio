@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using GFDLibrary.Common;
 using GFDLibrary.Effects;
 using GFDLibrary.IO;
@@ -25,6 +26,7 @@ namespace GFDLibrary.Animations
         private AnimationBit31Data mField1C;
         private UserPropertyDictionary mProperties;
         private float? mSpeed;
+        private int mUnknown1;
         private int mUnknown2;
 
         public override ResourceType ResourceType => ResourceType.Animation;
@@ -131,11 +133,10 @@ namespace GFDLibrary.Animations
             Duration = reader.ReadSingle();
 
             var controllerCount = reader.ReadInt32();
-            if (IsCatherineFullBodyData)
+            if (Version > 0x01105100 || IsCatherineFullBodyData)
             {
-                var unknown1 = reader.ReadInt32(); // same as controller count
+                mUnknown1 = reader.ReadInt32(); // TODO
                 mUnknown2 = reader.ReadInt32(); // TODO: no idea what this is
-                Trace.Assert( unknown1 == controllerCount, "unknown1 != controllerCount" );
             }
 
             Logger.Debug( $"Animation: Reading {controllerCount} controllers" );

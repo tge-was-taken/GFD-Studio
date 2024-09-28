@@ -33,7 +33,7 @@ void main()
     vec3 diffuse = diff * uLightColor;
     
     // Specular
-    float specularStrength = 1.0;
+    float specularStrength = 0.5;
     vec3 reflectDir = reflect(-lightDir, normal);
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
     vec3 specular = specularStrength * spec * uLightColor;

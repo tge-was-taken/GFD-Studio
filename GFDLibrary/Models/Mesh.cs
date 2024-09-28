@@ -453,6 +453,8 @@ namespace GFDLibrary.Models
                         VertexAttributeFlags.Normal |
                         VertexAttributeFlags.Tangent |
                         VertexAttributeFlags.TexCoord0 |
+                        VertexAttributeFlags.TexCoord1 |
+                        VertexAttributeFlags.Color0 |
                         VertexAttributeFlags.Color1;
                     var unknownFlags = VertexAttributeFlags & ~knownFlags;
                     if ( unknownFlags != 0 )
@@ -464,13 +466,19 @@ namespace GFDLibrary.Models
                     if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord0 ) )
                         TexCoordsChannel0[i] = reader.ReadVector2Half();
 
+                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord1 ) )
+                        TexCoordsChannel1[i] = reader.ReadVector2Half();
+
                     if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Normal ) )
                         Normals[i] = reader.ReadVector3();
 
                     if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Tangent ) )
                         Tangents[i] = reader.ReadVector3();
 
-                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color1 ) )
+                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color0 ) ) // field object?
+                        ColorChannel0[i] = reader.ReadUInt32();
+
+                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color1 ) ) // character model?
                         ColorChannel1[i] = reader.ReadUInt32();
 
                     if ( Flags.HasFlag( GeometryFlags.HasVertexWeights ) )

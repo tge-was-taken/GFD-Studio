@@ -65,6 +65,12 @@
     <None Update="app_data\shaders\line.glsl.vs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="app_data\shaders\metaphor_toon.glsl.fs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="app_data\shaders\metaphor_toon.glsl.vs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="Presets\CFB_Character.yml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

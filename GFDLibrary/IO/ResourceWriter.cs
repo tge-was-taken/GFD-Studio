@@ -90,11 +90,14 @@ namespace GFDLibrary.IO
         {
             WriteString( value );
 
-            if ( isCatherineFullBodyData && withPadding )
-                WriteByte( 0 ); // padding byte
-
             if ( value.Length > 0 && version > 0x1080000 )
+            {
+                if ( withPadding && ( version > 0x01105100 || isCatherineFullBodyData ) )
+                {
+                    WriteByte( 0 ); // padding byte
+                }
                 WriteInt32( StringHasher.GenerateStringHash( value ) );
+            }
         }
 
         public void WriteVector2( Vector2 value )

@@ -55,11 +55,13 @@ namespace GFDLibrary.IO
         {
             var str = ReadString();
 
-            if ( isCatherineFullBodyData && withPadding )
-                SeekCurrent( 1 ); // padding byte
-
             if ( str.Length > 0 && version > 0x1080000 )
             {
+                if ( withPadding && ( version > 0x01105100 || isCatherineFullBodyData ) )
+                {
+                    SeekCurrent( 1 ); // padding byte
+                }
+
                 // hash
                 ReadUInt32();
             }
