@@ -8,7 +8,9 @@ layout(location = 3) in vec4 vBoneWeights;
 layout(location = 4) in uvec4 vBoneIndices;
 layout(location = 5) in vec2 vTex1;
 layout(location = 6) in vec2 vTex2;
-layout(location = 7) in vec4 vColor;
+layout(location = 7) in vec4 vColor0;
+layout(location = 8) in vec4 vColor1;
+layout(location = 9) in vec4 vColor2;
 
 // out
 out vec3 fPosition;
@@ -32,6 +34,6 @@ void main() {
     fTex0 = vTex0;
     fTex1 = vTex1;
     fTex2 = vTex2;
-    fColor0 = vColor.bgra;
+    fColor0 = vColor0.bgra;
     gl_Position = uProjection * uModelView * vec4(vPosition, 1.0);
 }

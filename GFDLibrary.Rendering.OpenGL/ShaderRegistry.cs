@@ -33,8 +33,8 @@ namespace GFDLibrary.Rendering.OpenGL
                 {
                     { ResourceType.MaterialParameterSetType0, GLShaderProgram.TryThrowOnFail( GetAppData( "shaders/basic.glsl.vs" ), GetAppData( "shaders/basic.glsl.fs" )) },
                     { ResourceType.MaterialParameterSetType1, GLShaderProgram.TryThrowOnFail( GetAppData( "shaders/basic.glsl.vs" ), GetAppData( "shaders/basic.glsl.fs" )) },
-                    { ResourceType.MaterialParameterSetType2_3_13, GLShaderProgram.TryThrowOnFail( GetAppData( "shaders/basic.glsl.vs" ), GetAppData( "shaders/basic.glsl.fs" )) },
-                    { ResourceType.MaterialParameterSetType4, GLShaderProgram.TryThrowOnFail( GetAppData( "shaders/basic.glsl.vs" ), GetAppData( "shaders/basic.glsl.fs" )) },
+                    { ResourceType.MaterialParameterSetType2_3_13, GLShaderProgram.TryThrowOnFail( GetAppData( "shaders/metaphor_toon.glsl.vs" ), GetAppData( "shaders/metaphor_toon.glsl.fs" )) },
+                    { ResourceType.MaterialParameterSetType4, GLShaderProgram.TryThrowOnFail( GetAppData( "shaders/metaphor_toon.glsl.vs" ), GetAppData( "shaders/metaphor_toon.glsl.fs" )) },
                     { ResourceType.MaterialParameterSetType5, GLShaderProgram.TryThrowOnFail( GetAppData( "shaders/basic.glsl.vs" ), GetAppData( "shaders/basic.glsl.fs" )) },
                     { ResourceType.MaterialParameterSetType6, GLShaderProgram.TryThrowOnFail( GetAppData( "shaders/basic.glsl.vs" ), GetAppData( "shaders/basic.glsl.fs" )) },
                     { ResourceType.MaterialParameterSetType7, GLShaderProgram.TryThrowOnFail( GetAppData( "shaders/basic.glsl.vs" ), GetAppData( "shaders/basic.glsl.fs" )) },

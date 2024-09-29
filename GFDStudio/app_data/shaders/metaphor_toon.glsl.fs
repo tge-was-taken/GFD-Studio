@@ -4,10 +4,10 @@
 #define FLAG0_SHADOWHATCHING_REF_ALPHA_BASECOLOR 0
 #define FLAG1_MATERIAL_LIGHT 1
 #define FLAG1_MATERIAL_TRANSPARENCY 0
-#define FLAG2_PUNCHTHROUGH 1
+#define FLAG2_PUNCHTHROUGH 0
 #define FLAG2_RAMP_REFLIGHTDIRECTION 1
 #define FLAG2_EDGE_BACKLIGHT 1
-#define FLAG2_EDGE_SEMITRANS 1
+#define FLAG2_EDGE_SEMITRANS 0
 
 const float matMetallic = 0.0;
 const float matSpecularThreshold = 1.0;
@@ -24,7 +24,7 @@ const vec4 matBaseColor = vec4(1.0);
 const vec3 matSpecularColor = vec3(1.0);
 const vec4 matShadowColor = vec4 (0.5);
 const vec4 matEmissiveColor = vec4(0.0);
-const vec4 matEdgeColor = vec4(0.98, 0.98, 0.98, 0.4);
+const vec4 matEdgeColor = vec4(0.98, 0.98, 0.98, 1.0);
 vec4 sceneEnvColorToon = vec4(1.0);
 
 const vec4 lightColor = vec4(1.0);
@@ -36,12 +36,12 @@ const float lightSpecularIntensity = 1.0;
 
 // in
 in vec3 fPosition;
-in vec3 fNormal;
+//in vec3 fNormal;
 in vec3 fFacingNormal;
 in vec2 fTex0;
 in vec2 fTex1;
 in vec2 fTex2;
-in vec4 fColor0;
+//in vec4 fColor0;
 
 // out
 out vec4 oColor;
@@ -53,34 +53,34 @@ uniform sampler2D uSpecular;
 uniform sampler2D uReflection;
 uniform sampler2D uHighlight;
 uniform sampler2D uGlow;
-uniform sampler2D uNight;
+//uniform sampler2D uNight;
 uniform sampler2D uDetail;
 uniform sampler2D uShadow;
 
 // material properties
 uniform int uMatFlags;
-uniform vec4 uMatAmbient;
-uniform vec4 uMatDiffuse;
-uniform vec4 uMatEmissive;
-uniform vec4 uMatSpecular;
-uniform float uMatReflectivity;
+//uniform vec4 uMatAmbient;
+//uniform vec4 uMatDiffuse;
+//uniform vec4 uMatEmissive;
+//uniform vec4 uMatSpecular;
+//uniform float uMatReflectivity;
 //uniform int DrawMethod;
 uniform int HighlightMapBlendMode;
-uniform int alphaClip;
-uniform int alphaClipMode;
-uniform int uMatFlags2;
+//uniform int alphaClip;
+//uniform int alphaClipMode;
+//uniform int uMatFlags2;
 uniform int TexcoordFlags;
-uniform bool uMatHasType0;
-uniform bool uMatHasType1;
-uniform bool uMatHasType4;
-uniform int uMatType0Flags;
+//uniform bool uMatHasType0;
+//uniform bool uMatHasType1;
+//uniform bool uMatHasType4;
+//uniform int uMatType0Flags;
 
-uniform vec4 uMatToonLightColor;
-uniform float uMatToonLightThreshold;
-uniform float uMatToonLightFactor;
-uniform float uMatToonShadowBrightness;
-uniform float uMatToonShadowThreshold;
-uniform float uMatToonShadowFactor;
+//uniform vec4 uMatToonLightColor;
+//uniform float uMatToonLightThreshold;
+//uniform float uMatToonLightFactor;
+//uniform float uMatToonShadowBrightness;
+//uniform float uMatToonShadowThreshold;
+//uniform float uMatToonShadowFactor;
 
 // material flags
 #define MatFlag_HasShadowMap     (1 << 28)
@@ -110,7 +110,8 @@ bool hasMatFlag(int bitFlag) {
 
 vec3 sRGBToLinear( vec3 color ) 
 {
-	return pow( abs( color ), vec3(2.2) );
+	//return pow( color, vec3(2.2) );
+	return color;
 }
 
 vec4 sRGBToLinear( vec4 color ) 
@@ -158,19 +159,11 @@ void main() {
 				break;
 		}
 	}
-	#if (FLAG0_SHADOWHATCHING_REF_ALPHA_BASECOLOR)
-		float shadowHatchingAlpha = baseColor.a;
-	#endif
 	baseColor *= matBaseColor;
 	#if (FLAG2_PUNCHTHROUGH)
 		float bayerThreshold = get_dither_value(int(gl_FragCoord.x) % 4, int(gl_FragCoord.y) % 4);
-		#if (FLAG0_SHADOWHATCHING_REF_ALPHA_BASECOLOR)
-			if( fColor0.a <= bayerThreshold )
-				discard;
-		#else
-			if( baseColor.a <= bayerThreshold )
-				discard;
-		#endif
+		if( baseColor.a < bayerThreshold )
+			discard;
 	#endif
 
 	#if (FLAG1_MATERIAL_LIGHT)
@@ -199,23 +192,22 @@ void main() {
 			normalColor.xyz = normalize(normalColor.xyz * 2.0 - 1.0);
 			normalColor.xyz = normalize(TBN * normalColor.xyz);
 		}
-		float intensity = 0.0;
 		float metallic  = matMetallic;
 		float specular  = 1.0;
 		float roughness = matRoughness;
 		float ramp      = matRampAlpha;
-		if(hasMatFlag(MatFlag_HasGlowMap)) {
+		if(hasMatFlag(MatFlag_HasDetailMap)) {
 			vec4 toonParams2 = vec4(0.0);
 			int texcoord = bitfieldExtract(TexcoordFlags, 15, 3);
 			switch(texcoord) {
 				case 0:
-					toonParams2 = texture(uGlow, fTex0);
+					toonParams2 = texture(uDetail, fTex0);
 					break;
 				case 1:
-					toonParams2 = texture(uGlow, fTex1);
+					toonParams2 = texture(uDetail, fTex1);
 					break;
 				case 2:
-					toonParams2 = texture(uGlow, fTex2);
+					toonParams2 = texture(uDetail, fTex2);
 					break;
 			}
 			metallic  = matMetallic * toonParams2.x;
@@ -225,14 +217,14 @@ void main() {
 		}
 		baseColor.rgb = baseColor.rgb * ( 1.0 - metallic );
 		vec3 viewNeg = normalize(-fPosition);
-		float NL = clamp(dot( lightNeg, normal ), 1.0, 1.0);
-		float shadowNoL = clamp( max( NL - pow( shadowThreshold, 1.8 ), 0.0 ) * shadowFactor, 1.0, 0.0 );
+		float NL = clamp(dot( lightNeg, normal ), 0.0, 1.0);
+		float shadowNoL = clamp( max( NL - pow( shadowThreshold, 1.8 ), 0.0 ) * shadowFactor, 0.0, 1.0 );
 		float rampV = 0.0;
 		vec3 rampColor;
-		if(hasMatFlag(MatFlag_HasVertexColors)) {
-			oColor *= fColor0.g;
-		}
-		if(hasMatFlag(MatFlag_HasSpecularMap)) {
+		//if(hasMatFlag(MatFlag_HasVertexColors)) {
+		//	oColor *= fColor0.g;
+		//}
+		/*if(hasMatFlag(MatFlag_HasSpecularMap)) {
 			int texcoord = bitfieldExtract(TexcoordFlags, 6, 3);
  			#if (FLAG2_RAMP_REFLIGHTDIRECTION)
 				rampColor = sRGBToLinear(texture(uSpecular, vec2( clamp( dot( normalize( lightNeg.xyz ), normal ) * 0.5 + 0.5, 1.0, 0.0 ), rampV )).rgb);
@@ -241,26 +233,26 @@ void main() {
 			#endif
 			rampColor += ( vec3( 1.f, 1.f, 1.f ) - rampColor ) * ( 1.f - ramp );
 		}
-		else{
+		else{*/
 			rampColor = vec3( 1.f, 1.f, 1.f );
-		}
+		//}
 		vec4 edgeColor;
 		#if (FLAG2_EDGE_BACKLIGHT)
-			float NVW = clamp( dot( normal, mix( viewNeg, normal, -min( NL, 0.f ) ) ), 1.0, 0.0 );
+			float NVW = clamp( dot( normal, mix( viewNeg, normal, -min( dot( lightNeg, normal ), 0.f ) ) ), 0.0, 1.0 );
 			float threshold = edgeThreshold;
-			float E = pow( ( min( 1.f - NVW, threshold ) / threshold ), edgeFactor );
+			float E = pow( ( min( 1.0 - NVW, threshold ) / threshold ), edgeFactor );
 			vec3 toonEdgeColor;
-			if(hasMatFlag(MatFlag_HasShadowMap)) {
+			if(hasMatFlag(MatFlag_HasSpecularMap)) {
 				int texcoord = bitfieldExtract(TexcoordFlags, 24, 3);
 				switch(texcoord) {
 					case 0:
-						toonEdgeColor = sRGBToLinear(texture(uShadow, fTex0).rgb);
+						toonEdgeColor = sRGBToLinear(texture(uSpecular, fTex0).rgb);
 						break;
 					case 1:
-						toonEdgeColor = sRGBToLinear(texture(uShadow, fTex1).rgb);
+						toonEdgeColor = sRGBToLinear(texture(uSpecular, fTex1).rgb);
 						break;
 					case 2:
-						toonEdgeColor = sRGBToLinear(texture(uShadow, fTex2).rgb);
+						toonEdgeColor = sRGBToLinear(texture(uSpecular, fTex2).rgb);
 						break;
 				}
 			}
@@ -287,7 +279,8 @@ void main() {
 			envColor = texture( uReflection, reflectMapVec.xy).rgb * metallic * sceneEnvColorToon.rgb;
 		}
 		oColor.rgb = baseColor.rgb * lightColor.rgb;
-		oColor.rgb += envColor;
+		//oColor.rgb += envColor;
+		//oColor.rgb *= rampColor;
 		vec3 rampShadowColor = mix( oColor.rgb, matShadowColor.rgb, matShadowColor.a );
 		rampShadowColor.rgb = clamp( rampShadowColor.rgb * lightAmbient.rgb, 1.0, 0.0);
 		rampShadowColor.rgb = mix( oColor.rgb, rampShadowColor.rgb, lightShadowAlpha);

@@ -77,7 +77,10 @@ namespace GFDLibrary.Rendering.OpenGL
                 indices[( i * 3 ) + 2] = mesh.Triangles[i].C;
             }
 
-            VertexArray = new GLVertexArray( vertices, normals, mesh.TexCoordsChannel0, mesh.TexCoordsChannel1, mesh.TexCoordsChannel2, mesh.ColorChannel0, indices, PrimitiveType.Triangles );
+            VertexArray = new GLVertexArray( vertices, normals, 
+                new[] { mesh.TexCoordsChannel0, mesh.TexCoordsChannel1, mesh.TexCoordsChannel2 }, 
+                new[] { mesh.ColorChannel0, mesh.ColorChannel1, mesh.ColorChannel2 },
+                indices, PrimitiveType.Triangles );
 
             // material
             if ( mesh.MaterialName != null && materials != null )
