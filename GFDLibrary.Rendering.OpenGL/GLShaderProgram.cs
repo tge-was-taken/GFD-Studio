@@ -100,6 +100,14 @@ namespace GFDLibrary.Rendering.OpenGL
             };
         }
 
+        public void SetUniform( string name, Vector3 value )
+        {
+            var uniform = GetUniform( name );
+            DebugSetUniformAssignedFlag( uniform, value );
+
+            GL.Uniform3( uniform.Location, value );
+        }
+
         public void SetUniform( string name, Vector4 value )
         {
             var uniform = GetUniform( name );

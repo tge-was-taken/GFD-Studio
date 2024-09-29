@@ -1,10 +1,13 @@
 ﻿using System;
+using System.IO;
+using System.Security.Cryptography.X509Certificates;
 using GFDLibrary.Animations;
 using GFDLibrary.IO;
 using GFDLibrary.Materials;
 using GFDLibrary.Misc;
 using GFDLibrary.Models;
 using GFDLibrary.Textures;
+using GFDLibrary.Textures.Texpack;
 
 namespace GFDLibrary
 {

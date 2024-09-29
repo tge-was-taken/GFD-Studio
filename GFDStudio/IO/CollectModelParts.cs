@@ -21,8 +21,10 @@ namespace GFDStudio.IO
                     {
                         Logger.Debug( $"METAPHOR: Texture bin got {tex.Key}" );
                         if ( Pack.Textures.TryGetValue( tex.Key, out var modelTexPlaceholder ) )
+                        {
                             modelTexPlaceholder.Data = tex.Value;
-
+                            modelTexPlaceholder.IsTexSourceExternal = true;
+                        }
                     }
                 }
             }

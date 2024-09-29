@@ -13,6 +13,7 @@ using GFDLibrary.Misc;
 using GFDLibrary.Models;
 using GFDLibrary.Shaders;
 using GFDLibrary.Textures;
+using GFDLibrary.Textures.Texpack;
 
 namespace GFDLibrary
 {
@@ -230,21 +231,39 @@ namespace GFDLibrary
                 memoryStream.Position = 0;
                 memoryStream.CopyTo( stream );
             }
+            // METAPHOR: Check if the textures were sourced externally, and if so, export those in a separate TEX file
+            // Do this here since Save() is aware of the file system location of the saved model pack
+            if ( (ResourceType == ResourceType.ModelPack || ResourceType == ResourceType.ModelPack_Metaphor) && Version >= 0x2000000 )
+            {
+                MetaphorTexpack extTexpack = new();
+                foreach ( var texture in ( (ModelPack)this ).Textures )
+                    if ( texture.Value.IsTexSourceExternal )
+                        extTexpack.TextureList.Add( texture.Key, texture.Value.Data );
+                if ( extTexpack.TextureList.Count > 0 )
+                {
+                    string ModelDirectory = Path.GetDirectoryName( path );
+                    string TexPath = Path.Combine( ModelDirectory, Path.GetFileNameWithoutExtension( path ) + ".TEX" );
+                    extTexpack.Save( FileUtils.Create( TexPath ) );
+                }
+            }
         }
 
         public void Save( Stream stream, bool leaveOpen )
         {
             using ( var writer = new ResourceWriter( stream, leaveOpen ) )
             {
+                ResourceType GetResourceType() => Version >= 0x2000000 ? ResourceType.ModelPack_Metaphor : ResourceType.ModelPack;
+                if ( Version >= 0x2000000 )
+                    writer.Endianness = Endianness.LittleEndian;
                 if ( ResourceType == ResourceType.AnimationPack )
                 {
                     // For AnimationPacks we write a model file header, and then a chunk containing the pack data.
-                    writer.WriteFileHeader( ResourceFileIdentifier.Model, Version, ResourceType.ModelPack );
+                    writer.WriteFileHeader( ResourceFileIdentifier.Model, Version, GetResourceType() );
                     writer.WriteResourceChunk( this );
                     return;
                 }
 
-                writer.WriteFileHeader( ResourceFileIdentifier.Model, Version, ResourceType );
+                writer.WriteFileHeader( ResourceFileIdentifier.Model, Version, ResourceType == ResourceType.Model ? GetResourceType() : ResourceType );
 
                 switch ( ResourceType )
                 {

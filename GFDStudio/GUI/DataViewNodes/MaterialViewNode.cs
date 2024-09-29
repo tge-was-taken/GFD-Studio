@@ -246,19 +246,19 @@ namespace GFDStudio.GUI.DataViewNodes
 
         private List<TextureMap> CreateTextureMapInfo()
         {
-            var textureMapList = new List<TextureMap>();
-             textureMapList.Add( Data.DiffuseMap );
-            textureMapList.Add( Data.NormalMap );
-            textureMapList.Add( Data.SpecularMap );
-            textureMapList.Add( Data.ReflectionMap );
-            textureMapList.Add( Data.HighlightMap );
-            textureMapList.Add( Data.GlowMap );
-            textureMapList.Add( Data.NightMap );
-
-            textureMapList.Add( Data.DetailMap );
-
-            textureMapList.Add( Data.ShadowMap );
-
+            var textureMapList = new List<TextureMap>()
+            {
+                Data.DiffuseMap,
+                Data.NormalMap,
+                Data.SpecularMap,
+                Data.ReflectionMap,
+                Data.HighlightMap,
+                Data.GlowMap,
+                Data.NightMap,
+                Data.DetailMap,
+                Data.ShadowMap,
+                Data.TextureMap10,
+            };
             return textureMapList;
         }
 
@@ -285,6 +285,7 @@ namespace GFDStudio.GUI.DataViewNodes
                 material.ReflectionMap = null;
                 material.ShadowMap = null;
                 material.SpecularMap = null;
+                material.TextureMap10 = null;
 
                 //if ( material.METAPHOR_UseMaterialParameterSet )
                 //    material.METAHPOR_MaterialParameterSet = MaterialParameterSetViewNode.Data;
@@ -326,6 +327,9 @@ namespace GFDStudio.GUI.DataViewNodes
                             break;
                         case 8:
                             material.ShadowMap = textureMap;
+                            break;
+                        case 9:
+                            material.TextureMap10 = textureMap;
                             break;
                     }
                 }

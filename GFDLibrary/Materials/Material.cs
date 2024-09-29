@@ -4,6 +4,7 @@ using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.IO;
 using System.Numerics;
+using System.Security.Cryptography.X509Certificates;
 using GFDLibrary.IO;
 using GFDLibrary.Models;
 using GFDLibrary.Models.Conversion;
@@ -201,6 +202,17 @@ namespace GFDLibrary.Materials
             }
         }
 
+        private TextureMap mTextureMap10;
+        public TextureMap TextureMap10
+        {
+            get => mTextureMap10;
+            set
+            {
+                mTextureMap10 = value;
+                ValidateFlags();
+            }
+        }
+
         public IEnumerable<TextureMap> TextureMaps
         {
             get
@@ -214,6 +226,7 @@ namespace GFDLibrary.Materials
                 yield return NightMap;
                 yield return DetailMap;
                 yield return ShadowMap;
+                yield return TextureMap10;
             }
         }
 
@@ -289,6 +302,7 @@ namespace GFDLibrary.Materials
             ValidateMapFlags( NightMap,      MaterialFlags.HasNightMap );
             ValidateMapFlags( DetailMap,     MaterialFlags.HasDetailMap );
             ValidateMapFlags( ShadowMap,     MaterialFlags.HasShadowMap );
+            ValidateMapFlags( TextureMap10,  MaterialFlags.HasTextureMap10 );
 
             if ( Attributes == null )
             {
@@ -351,12 +365,6 @@ namespace GFDLibrary.Materials
                     case 3:
                     case 0xd:
                         METAHPOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType2_3_13>( Version );
-                        // TEMPORARY: map metaphor material params to legacy params
-                        MaterialParameterSetType2_3_13 P2 = (MaterialParameterSetType2_3_13)METAHPOR_MaterialParameterSet;
-                        //AmbientColor = P2.P2_0;
-                        //DiffuseColor = new Vector4( 1, 1, 1, 1 );
-                        //SpecularColor = P2.P2_2;
-                        //EmissiveColor = P2.P2_2;
                         break;
                     case 4:
                         METAHPOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType4>( Version );
@@ -390,6 +398,9 @@ namespace GFDLibrary.Materials
                         break;
                     case 0xf:
                         METAHPOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType15>( Version );
+                        break;
+                    case 0x10:
+                        METAHPOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType16>( Version );
                         break;
                     default:
                         throw new InvalidDataException( $"Unknown/Invalid material parameter version {METAPHOR_MaterialParameterFormat}" );
@@ -446,49 +457,34 @@ namespace GFDLibrary.Materials
             if ( Version > 0x2110160 )
                 Field6C_2 = reader.ReadSingle();
 
+            TextureMap ReadTextureMapResource()
+            {
+                var texMap = reader.ReadResource<TextureMap>( Version );
+                if ( METAPHOR_UseMaterialParameterSet )
+                    texMap.METAPHOR_ParentMaterialParameterSet = METAHPOR_MaterialParameterSet;
+                return texMap;
+            }
+
             if ( flags.HasFlag( MaterialFlags.HasDiffuseMap ) )
-            {
-                DiffuseMap = reader.ReadResource<TextureMap>( Version );
-            }
+                DiffuseMap = ReadTextureMapResource();
             if ( flags.HasFlag( MaterialFlags.HasNormalMap ) )
-            {
-                NormalMap = reader.ReadResource<TextureMap>( Version );
-            }
-
+                NormalMap = ReadTextureMapResource();
             if ( flags.HasFlag( MaterialFlags.HasSpecularMap ) )
-            {
-                SpecularMap = reader.ReadResource<TextureMap>( Version );
-            }
-
+                SpecularMap = ReadTextureMapResource();
             if ( flags.HasFlag( MaterialFlags.HasReflectionMap ) )
-            {
-                ReflectionMap = reader.ReadResource<TextureMap>( Version );
-            }
-
+                ReflectionMap = ReadTextureMapResource();
             if ( flags.HasFlag( MaterialFlags.HasHighlightMap ) )
-            {
-                HighlightMap = reader.ReadResource<TextureMap>( Version );
-            }
-
+                HighlightMap = ReadTextureMapResource();
             if ( flags.HasFlag( MaterialFlags.HasGlowMap ) )
-            {
-                GlowMap = reader.ReadResource<TextureMap>( Version );
-            }
-
+                GlowMap = ReadTextureMapResource();
             if ( flags.HasFlag( MaterialFlags.HasNightMap ) )
-            {
-                NightMap = reader.ReadResource<TextureMap>( Version );
-            }
-
+                NightMap = ReadTextureMapResource();
             if ( flags.HasFlag( MaterialFlags.HasDetailMap ) )
-            {
-                DetailMap = reader.ReadResource<TextureMap>( Version );
-            }
-
+                DetailMap = ReadTextureMapResource();
             if ( flags.HasFlag( MaterialFlags.HasShadowMap ) )
-            {
-                ShadowMap = reader.ReadResource<TextureMap>( Version );
-            }
+                ShadowMap = ReadTextureMapResource();
+            if ( flags.HasFlag( MaterialFlags.HasTextureMap10 ) )
+                ShadowMap = ReadTextureMapResource();
 
             if ( flags.HasFlag( MaterialFlags.HasAttributes ) )
             {
@@ -616,6 +612,11 @@ namespace GFDLibrary.Materials
                 writer.WriteResource(  ShadowMap );
             }
 
+            if ( Flags.HasFlag( MaterialFlags.HasTextureMap10 ) )
+            {
+                writer.WriteResource( TextureMap10 );
+            }
+
             if ( Flags.HasFlag( MaterialFlags.HasAttributes ) )
             {
                 writer.WriteInt32( Attributes.Count );
@@ -675,7 +676,7 @@ namespace GFDLibrary.Materials
         HasNightMap = 1 << 26,
         HasDetailMap = 1 << 27,
         HasShadowMap = 1 << 28,
-        Bit29 = 1 << 29,
+        HasTextureMap10 = 1 << 29,
         ExtraDistortion = 1 << 30,
         Bit31 = 1u << 31
     }

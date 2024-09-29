@@ -1,4 +1,5 @@
-﻿using GFDLibrary.IO.Common;
+﻿using GFDLibrary.IO;
+using GFDLibrary.IO.Common;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -9,6 +10,10 @@ namespace GFDLibrary.Textures.Texpack
     public class MetaphorTexpack
     {
         public Dictionary<string, byte[]> TextureList;
+        public MetaphorTexpack()
+        {
+            TextureList = new();
+        }
         public MetaphorTexpack( Stream stream )
         {
             TextureList = new();
@@ -21,6 +26,19 @@ namespace GFDLibrary.Textures.Texpack
                     var textureFileSize = reader.ReadInt32();
                     byte[] CurrTextureData = reader.ReadBytes( textureFileSize );
                     TextureList.Add( CurrTextureName, CurrTextureData );
+                }
+            }
+        }
+        public void Save( Stream stream )
+        {
+            using ( var writer = new EndianBinaryWriter( stream, Endianness.BigEndian ))
+            {
+                writer.Write( TextureList.Count );
+                foreach ( var texture in TextureList)
+                {
+                    writer.Write( texture.Key, StringBinaryFormat.FixedLength, 256 );
+                    writer.Write( texture.Value.Length );
+                    writer.Write( texture.Value );
                 }
             }
         }

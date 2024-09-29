@@ -58,6 +58,8 @@ namespace GFDLibrary.Models
 
         public Node RootNode { get; set; }
 
+        public byte Field100_10 { get; set; }
+
         public IEnumerable<Node> Nodes
         {
             get
@@ -104,7 +106,7 @@ namespace GFDLibrary.Models
                 for ( int i = 0; i < boneCount; i++ )
                     Bones.Add( new Bone( boneToNodeIndices[ i ], inverseBindMatrices[ i ] ) );
                 if ( Version >= 0x2040001 )
-                    reader.ReadByte();
+                    Field100_10 = reader.ReadByte();
             }
 
             if ( flags.HasFlag( ModelFlags.HasBoundingBox ) )
@@ -130,6 +132,9 @@ namespace GFDLibrary.Models
 
                 foreach ( var bone in Bones )
                     writer.WriteUInt16( bone.NodeIndex );
+
+                if ( Version >= 0x2040001 )
+                    writer.WriteByte( Field100_10 );
             }
 
             if ( Flags.HasFlag( ModelFlags.HasBoundingBox ) )

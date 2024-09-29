@@ -8,6 +8,17 @@ namespace GFDLibrary.Materials
     {
         public abstract string GetParameterName();
         public void Write( ResourceWriter writer ) => WriteCore( writer );
+
+        public virtual string GetTextureMap1Name() => "Base Map";
+        public virtual string GetTextureMap2Name() => "Map 2";
+        public virtual string GetTextureMap3Name() => "Map 3";
+        public virtual string GetTextureMap4Name() => "Map 4";
+        public virtual string GetTextureMap5Name() => "Map 5";
+        public virtual string GetTextureMap6Name() => "Map 6";
+        public virtual string GetTextureMap7Name() => "Map 7";
+        public virtual string GetTextureMap8Name() => "Map 8";
+        public virtual string GetTextureMap9Name() => "Map 9";
+        public virtual string GetTextureMap10Name() => "Map 10";
     }
 
     // 7.HLSL (probably?)
@@ -40,8 +51,9 @@ namespace GFDLibrary.Materials
             P0_6 = 1;
             if ( Version > 0x2110040 )
                 P0_6 = reader.ReadUInt32();
+            // Unused parameter - value gets discarded in stream reader
             if ( Version == 0x2110140 )
-                reader.ReadSingle(); // idk!!
+                reader.ReadSingle();
         }
 
         protected override void WriteCore( ResourceWriter writer )
@@ -96,6 +108,7 @@ namespace GFDLibrary.Materials
         }
     }
 
+    // 11.HLSL
     public sealed class MaterialParameterSetType2_3_13 : MaterialParameterSetBase
     {
         public Vector4 P2_0 { get; set; } // 0x90
@@ -124,6 +137,12 @@ namespace GFDLibrary.Materials
         public float P2_23 { get; set; } // 0x12c
 
         public override string GetParameterName() => "Parameter Type 2";
+        public override string GetTextureMap2Name() => "Normal Map";
+        public override string GetTextureMap3Name() => "Toon Shadow Color Map";
+        public override string GetTextureMap5Name() => "Multiply Map";
+        public override string GetTextureMap6Name() => "Toon Params 2 Map";
+        public override string GetTextureMap8Name() => "Toon Params Map";
+        public override string GetTextureMap9Name() => "Toon Edge Color Map";
 
         public override ResourceType ResourceType => ResourceType.MaterialParameterSetType2_3_13;
 
@@ -229,7 +248,16 @@ namespace GFDLibrary.Materials
         public float P4_7 { get; set; } // 0xc0
         public float P4_8 { get; set; } // 0xc4
 
+        // 21.HLSL
+
         public override string GetParameterName() => "Parameter Type 4";
+        public override string GetTextureMap3Name() => "Dissolve Map";
+        public override string GetTextureMap5Name() => "Multiply Map";
+        public override string GetTextureMap6Name() => "Emissive Map";
+        public override string GetTextureMap7Name() => "Transparency Map";
+        public override string GetTextureMap8Name() => "Distortion Map";
+        public override string GetTextureMap9Name() => "Alpha Mask Map";
+        public override string GetTextureMap10Name() => "Alpha Map";
 
         public override ResourceType ResourceType => ResourceType.MaterialParameterSetType4;
 
@@ -656,7 +684,13 @@ namespace GFDLibrary.Materials
         public float P12_21 { get; set; } // 0x100
         public float P12_22 { get; set; } // 0x104
 
+        // 45.HLSL
         public override string GetParameterName() => "Parameter Type 12";
+        public override string GetTextureMap2Name() => "Normal Map";
+        public override string GetTextureMap3Name() => "Ramp Map";
+        public override string GetTextureMap5Name() => "Multiply Map";
+        public override string GetTextureMap6Name() => "Toon Params 2 Map";
+        public override string GetTextureMap9Name() => "Toon Edge Color Map";
 
         public override ResourceType ResourceType => ResourceType.MaterialParameterSetType12;
 
@@ -817,5 +851,17 @@ namespace GFDLibrary.Materials
             writer.WriteSingle(P15_TriPlanarScale);
             writer.WriteUInt32( P15_LerpBlendRate );
         }
+    }
+
+    public sealed class MaterialParameterSetType16 : MaterialParameterSetBase
+    {
+        public override string GetParameterName() => "Parameter Type 16";
+
+        public override ResourceType ResourceType => ResourceType.MaterialParameterSetType16;
+
+        // Empty
+        protected override void ReadCore( ResourceReader reader ) {}
+
+        protected override void WriteCore( ResourceWriter writer ) {}
     }
 }

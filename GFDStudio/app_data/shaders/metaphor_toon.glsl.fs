@@ -4,27 +4,28 @@
 #define FLAG0_SHADOWHATCHING_REF_ALPHA_BASECOLOR 0
 #define FLAG1_MATERIAL_LIGHT 1
 #define FLAG1_MATERIAL_TRANSPARENCY 0
-#define FLAG2_PUNCHTHROUGH 1
+#define FLAG2_PUNCHTHROUGH 0
 #define FLAG2_RAMP_REFLIGHTDIRECTION 1
 #define FLAG2_EDGE_BACKLIGHT 1
-#define FLAG2_EDGE_SEMITRANS 1
+#define FLAG2_EDGE_REFERENCE_NORMALALPHA 1
+#define FLAG2_EDGE_SEMITRANS 0
 
-const float matMetallic = 0.0;
-const float matSpecularThreshold = 1.0;
-const float matSpecularPower = 10.0;
-const float matRoughness = 1.0;
-const float matRampAlpha = 1.0;
-const float shadowThreshold = 0.5;
-const float shadowFactor = 20.0;
-const float edgeThreshold = 0.75;
-const float edgeFactor = 20;
+//const float matMetallic = 0.0;
+//const float matSpecularThreshold = 1.0;
+//const float matSpecularPower = 10.0;
+//const float matRoughness = 1.0;
+//const float matRampAlpha = 1.0;
+//const float shadowThreshold = 0.5;
+//const float shadowFactor = 20.0;
+//const float edgeThreshold = 0.75;
+//const float edgeFactor = 20;
 
 const vec3 lightNeg = normalize(vec3(90.0, 45.0, 90.0));
-const vec4 matBaseColor = vec4(1.0);
-const vec3 matSpecularColor = vec3(1.0);
-const vec4 matShadowColor = vec4 (0.5);
-const vec4 matEmissiveColor = vec4(0.0);
-const vec4 matEdgeColor = vec4(0.98, 0.98, 0.98, 0.4);
+//const vec4 matBaseColor = vec4(1.0);
+//const vec3 matSpecularColor = vec3(1.0);
+//const vec4 matShadowColor = vec4 (0.5);
+//const vec4 matEmissiveColor = vec4(0.0);
+//const vec4 matEdgeColor = vec4(0.98, 0.98, 0.98, 1.0);
 vec4 sceneEnvColorToon = vec4(1.0);
 
 const vec4 lightColor = vec4(1.0);
@@ -36,12 +37,14 @@ const float lightSpecularIntensity = 1.0;
 
 // in
 in vec3 fPosition;
-in vec3 fNormal;
+//in vec3 fNormal;
 in vec3 fFacingNormal;
 in vec2 fTex0;
 in vec2 fTex1;
 in vec2 fTex2;
 in vec4 fColor0;
+in vec4 fColor1;
+//in vec4 fColor2;
 
 // out
 out vec4 oColor;
@@ -53,34 +56,34 @@ uniform sampler2D uSpecular;
 uniform sampler2D uReflection;
 uniform sampler2D uHighlight;
 uniform sampler2D uGlow;
-uniform sampler2D uNight;
+//uniform sampler2D uNight;
 uniform sampler2D uDetail;
 uniform sampler2D uShadow;
 
 // material properties
 uniform int uMatFlags;
-uniform vec4 uMatAmbient;
-uniform vec4 uMatDiffuse;
-uniform vec4 uMatEmissive;
-uniform vec4 uMatSpecular;
-uniform float uMatReflectivity;
+//uniform vec4 uMatAmbient;
+//uniform vec4 uMatDiffuse;
+//uniform vec4 uMatEmissive;
+//uniform vec4 uMatSpecular;
+//uniform float uMatReflectivity;
 //uniform int DrawMethod;
 uniform int HighlightMapBlendMode;
-uniform int alphaClip;
-uniform int alphaClipMode;
-uniform int uMatFlags2;
+//uniform int alphaClip;
+//uniform int alphaClipMode;
+//uniform int uMatFlags2;
 uniform int TexcoordFlags;
-uniform bool uMatHasType0;
-uniform bool uMatHasType1;
-uniform bool uMatHasType4;
-uniform int uMatType0Flags;
+//uniform bool uMatHasType0;
+//uniform bool uMatHasType1;
+//uniform bool uMatHasType4;
+//uniform int uMatType0Flags;
 
-uniform vec4 uMatToonLightColor;
-uniform float uMatToonLightThreshold;
-uniform float uMatToonLightFactor;
-uniform float uMatToonShadowBrightness;
-uniform float uMatToonShadowThreshold;
-uniform float uMatToonShadowFactor;
+//uniform vec4 uMatToonLightColor;
+//uniform float uMatToonLightThreshold;
+//uniform float uMatToonLightFactor;
+//uniform float uMatToonShadowBrightness;
+//uniform float uMatToonShadowThreshold;
+//uniform float uMatToonShadowFactor;
 
 // material flags
 #define MatFlag_HasShadowMap     (1 << 28)
@@ -100,6 +103,30 @@ uniform float uMatToonShadowFactor;
 #define MatFlag_EnableLight      (1 << 7)
 #define MatFlag_HasVertexColors  (1 << 4)
 
+// METAPHOR
+uniform float matMetallic;
+uniform float matSpecularThreshold;
+uniform float matSpecularPower;
+uniform float matRoughness;
+uniform float matRampAlpha;
+uniform float shadowThreshold;
+uniform float shadowFactor;
+uniform float edgeThreshold;
+uniform float edgeFactor;
+
+uniform vec4 matBaseColor;
+uniform vec3 matSpecularColor;
+uniform vec4 matShadowColor;
+uniform vec4 matEmissiveColor;
+uniform vec4 matEdgeColor;
+
+/*int swapEndianness(int value) {
+	return ((value >> 24) & 0x000000FF) |
+		   ((value >> 8)  & 0x0000FF00) |
+		   ((value << 8)  & 0x00FF0000) |
+		   ((value << 24) & 0xFF000000);
+}*/
+
 int bitfieldExtract(int value, int offset, int bits) {
 	return (value >> offset) & ((1 << bits) - 1);
 }
@@ -110,7 +137,8 @@ bool hasMatFlag(int bitFlag) {
 
 vec3 sRGBToLinear( vec3 color ) 
 {
-	return pow( abs( color ), vec3(2.2) );
+	//return pow( color, vec3(2.2) );
+	return color;
 }
 
 vec4 sRGBToLinear( vec4 color ) 
@@ -158,21 +186,34 @@ void main() {
 				break;
 		}
 	}
-	#if (FLAG0_SHADOWHATCHING_REF_ALPHA_BASECOLOR)
-		float shadowHatchingAlpha = baseColor.a;
-	#endif
 	baseColor *= matBaseColor;
 	#if (FLAG2_PUNCHTHROUGH)
 		float bayerThreshold = get_dither_value(int(gl_FragCoord.x) % 4, int(gl_FragCoord.y) % 4);
-		#if (FLAG0_SHADOWHATCHING_REF_ALPHA_BASECOLOR)
-			if( fColor0.a <= bayerThreshold )
-				discard;
-		#else
-			if( baseColor.a <= bayerThreshold )
-				discard;
-		#endif
+		if( baseColor.a < bayerThreshold )
+			discard;
 	#endif
-
+		float metallic  = matMetallic;
+		float specular  = 1.0;
+		float emissive = 1.0;
+		float roughness      = matRoughness;
+		if(hasMatFlag(MatFlag_HasGlowMap)) {
+			vec4 toonParams2 = vec4(0.0);
+			int texcoord = bitfieldExtract(TexcoordFlags, 15, 3);
+			switch(texcoord) {
+				case 0:
+					toonParams2 = texture(uGlow, fTex0);
+					break;
+				case 1:
+					toonParams2 = texture(uGlow, fTex1);
+					break;
+				case 2:
+					toonParams2 = texture(uGlow, fTex2);
+					break;
+			}
+			metallic  = matMetallic * toonParams2.x;
+			specular  = toonParams2.y;
+			emissive = toonParams2.z;
+		}
 	#if (FLAG1_MATERIAL_LIGHT)
 		vec3 normal = normalize(fFacingNormal);
 		if(hasMatFlag(MatFlag_HasNormalMap)) {
@@ -199,57 +240,66 @@ void main() {
 			normalColor.xyz = normalize(normalColor.xyz * 2.0 - 1.0);
 			normalColor.xyz = normalize(TBN * normalColor.xyz);
 		}
-		float intensity = 0.0;
-		float metallic  = matMetallic;
-		float specular  = 1.0;
-		float roughness = matRoughness;
-		float ramp      = matRampAlpha;
-		if(hasMatFlag(MatFlag_HasGlowMap)) {
-			vec4 toonParams2 = vec4(0.0);
-			int texcoord = bitfieldExtract(TexcoordFlags, 15, 3);
+
+		float shadowMask = 0.0;
+		float edgeMask   = 0.0;
+		float shadowFix  = 0.0;
+		if(hasMatFlag(MatFlag_HasDetailMap)) {
+			vec4 toonParams;
+			int texcoord = bitfieldExtract(TexcoordFlags, 21, 3);
 			switch(texcoord) {
 				case 0:
-					toonParams2 = texture(uGlow, fTex0);
+					toonParams = texture(uDetail, fTex0);
 					break;
 				case 1:
-					toonParams2 = texture(uGlow, fTex1);
+					toonParams = texture(uDetail, fTex1);
 					break;
 				case 2:
-					toonParams2 = texture(uGlow, fTex2);
+					toonParams = texture(uDetail, fTex2);
 					break;
 			}
-			metallic  = matMetallic * toonParams2.x;
-			specular  = toonParams2.y;
-			roughness = matRoughness * toonParams2.z;
-			ramp      = matRampAlpha * toonParams2.w;
+			shadowMask = 1.0 - toonParams.x;
+			edgeMask   = toonParams.y;
+			shadowFix  = toonParams.z;
 		}
-		baseColor.rgb = baseColor.rgb * ( 1.0 - metallic );
+		//baseColor.rgb = baseColor.rgb * ( 1.0 - metallic );
 		vec3 viewNeg = normalize(-fPosition);
-		float NL = clamp(dot( lightNeg, normal ), 1.0, 1.0);
-		float shadowNoL = clamp( max( NL - pow( shadowThreshold, 1.8 ), 0.0 ) * shadowFactor, 1.0, 0.0 );
-		float rampV = 0.0;
-		vec3 rampColor;
-		if(hasMatFlag(MatFlag_HasVertexColors)) {
-			oColor *= fColor0.g;
-		}
+		float NL = clamp(dot( lightNeg, normal ), 0.0, 1.0);
+		float NoL = dot( lightNeg, normal );
+		float shadowNoL = clamp( max( NL - pow( shadowThreshold, 1.8 ), 0.0 ) * shadowFactor, 0.0, 1.0 );
+		if(hasMatFlag(MatFlag_HasDetailMap))
+			shadowNoL *= shadowFix;
+		//oColor.rgb = vec3(shadowMask, edgeMask, shadowFix);
+		//return;
+		vec4 toonShadowColor = matShadowColor;
 		if(hasMatFlag(MatFlag_HasSpecularMap)) {
 			int texcoord = bitfieldExtract(TexcoordFlags, 6, 3);
- 			#if (FLAG2_RAMP_REFLIGHTDIRECTION)
-				rampColor = sRGBToLinear(texture(uSpecular, vec2( clamp( dot( normalize( lightNeg.xyz ), normal ) * 0.5 + 0.5, 1.0, 0.0 ), rampV )).rgb);
-			#else
-				rampColor = sRGBToLinear(texture(uSpecular, vec2( clamp( dot( normalize( viewNeg.xyz ), normal ) * 0.5 + 0.5, 1.0, 0.0 ), rampV )).rgb);
-			#endif
-			rampColor += ( vec3( 1.f, 1.f, 1.f ) - rampColor ) * ( 1.f - ramp );
+			switch(texcoord) {
+				case 0:
+					toonShadowColor = sRGBToLinear(texture(uSpecular, fTex0));
+					break;
+				case 1:
+					toonShadowColor = sRGBToLinear(texture(uSpecular, fTex1));
+					break;
+				case 2:
+					toonShadowColor = sRGBToLinear(texture(uSpecular, fTex2));
+					break;
+			}
 		}
-		else{
-			rampColor = vec3( 1.f, 1.f, 1.f );
-		}
+		baseColor.rgb *= lightColor.rgb;
+		toonShadowColor.rgb = clamp( toonShadowColor.rgb * lightAmbient.rgb, 0.0, 1.0);
+		toonShadowColor.rgb = mix( baseColor.rgb, toonShadowColor.rgb, lightShadowAlpha);
+		vec3 diffuseColor = toonShadowColor.rgb * ( 1.f - shadowNoL ) + baseColor.rgb * shadowNoL;
 		vec4 edgeColor;
 		#if (FLAG2_EDGE_BACKLIGHT)
-			float NVW = clamp( dot( normal, mix( viewNeg, normal, -min( NL, 0.f ) ) ), 1.0, 0.0 );
+			float NVW = clamp( dot( normal, mix( viewNeg, normal, -min( NoL, 0.f ) ) ), 0.0, 1.0 );
 			float threshold = edgeThreshold;
+			//#if (FLAG0_EDGE_REMOVAL_LIGHT_YAXIS)
+			//	threshold = saturate( threshold + pow( abs( fragment.viewSpaceNormal.y ), edgeRemoveYAxisFactor ) );
+			//#endif
 			float E = pow( ( min( 1.f - NVW, threshold ) / threshold ), edgeFactor );
-			vec3 toonEdgeColor;
+
+			vec3 toonEdgeColor = matEdgeColor.rgb;
 			if(hasMatFlag(MatFlag_HasShadowMap)) {
 				int texcoord = bitfieldExtract(TexcoordFlags, 24, 3);
 				switch(texcoord) {
@@ -264,34 +314,32 @@ void main() {
 						break;
 				}
 			}
-			else{
-				toonEdgeColor = matEdgeColor.rgb;
-			}
 			edgeColor.rgb = toonEdgeColor * lightColor.rgb;
 			edgeColor.a   = matEdgeColor.a * E;
+			if(hasMatFlag(MatFlag_HasDetailMap))
+				edgeColor.a *= edgeMask;
 		#else
-			edgeColor = float4( 0.0 );
+			edgeColor = float4( 0.f, 0.f, 0.f, 0.f );
 		#endif
-		vec3 specularColor;
+
+		vec3 specularColor = vec3(0.0);;
 		if(hasMatFlag(4)) {
 			specularColor = matSpecularColor.rgb * clamp( pow( max( dot( normalize( lightNeg + viewNeg ), normal ), 0.0), matSpecularPower ) / matSpecularThreshold, 1.0, 0.0 ) * lightSpecularIntensity;
-			specularColor *= specular;
+			if(hasMatFlag(MatFlag_HasGlowMap))
+				specularColor *= specular;
+			#if (FLAG2_EDGE_REFERENCE_NORMALALPHA)
+				if(hasMatFlag(MatFlag_HasDetailMap))
+					specularColor *= edgeMask;
+			#endif
 		}
-		else{
-			specularColor = vec3(0.0);
-		}
-		vec3 envColor = vec3(0.0);
-		if(hasMatFlag(0x200)) {
-			vec3 reflectVec = reflect( -viewNeg, normal );
-			vec3 reflectMapVec = vec3( -reflectVec.x, reflectVec.y, reflectVec.z );
-			envColor = texture( uReflection, reflectMapVec.xy).rgb * metallic * sceneEnvColorToon.rgb;
-		}
-		oColor.rgb = baseColor.rgb * lightColor.rgb;
-		oColor.rgb += envColor;
-		vec3 rampShadowColor = mix( oColor.rgb, matShadowColor.rgb, matShadowColor.a );
-		rampShadowColor.rgb = clamp( rampShadowColor.rgb * lightAmbient.rgb, 1.0, 0.0);
-		rampShadowColor.rgb = mix( oColor.rgb, rampShadowColor.rgb, lightShadowAlpha);
-		oColor.rgb = rampShadowColor.rgb * ( 1.0 - shadowNoL ) + oColor.rgb * shadowNoL;
+		vec3 emissiveColor = matEmissiveColor.rgb * emissive;
+		#if (FLAG2_EDGE_SEMITRANS)
+			oColor.rgb = diffuseColor + specularColor;
+			oColor.rgb = mix( result.color.rgb, edgeColor.rgb, edgeColor.a );
+		#else
+			oColor.rgb = diffuseColor + specularColor + ( edgeColor.rgb * edgeColor.a );
+		#endif
+
 		if(hasMatFlag(MatFlag_HasHighlightMap)) {
 			vec4 highlightColor = vec4(0.0);
 			int texcoord = bitfieldExtract(TexcoordFlags, 12, 3);
@@ -321,14 +369,9 @@ void main() {
 					break;
 			}
 		}
-		#if (FLAG2_EDGE_SEMITRANS)
-			oColor.rgb += specularColor;
-			oColor.rgb  = mix( oColor.rgb, edgeColor.rgb, edgeColor.a );
-		#else
-			oColor.rgb += specularColor + ( edgeColor.rgb * edgeColor.a );
-		#endif
 		oColor.rgb += matEmissiveColor.rgb;
 	#else
 		oColor.rgb = baseColor.rgb;
 	#endif
+
 }
