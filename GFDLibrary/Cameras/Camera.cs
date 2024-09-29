@@ -52,6 +52,9 @@ namespace GFDLibrary.Cameras
         public float AspectRatio { get; set; }
 
         public float Field190 { get; set; }
+        public byte Field198 { get; set; }
+        public float Field19C { get; set; }
+        public float Field1A0 { get; set; }
 
         public Camera()
         {
@@ -123,6 +126,12 @@ namespace GFDLibrary.Cameras
             {
                 Field190 = reader.ReadSingle();
             }
+            if ( Version > 0x2110050 )
+            {
+                Field198 = reader.ReadByte();
+                Field19C = reader.ReadSingle();
+                Field1A0 = reader.ReadSingle();
+            }
         }
 
         protected override void WriteCore( ResourceWriter writer )
@@ -136,6 +145,12 @@ namespace GFDLibrary.Cameras
             if ( Version > 0x1104060 )
             {
                 writer.WriteSingle( Field190 );
+            }
+            if ( Version > 0x2110050 )
+            {
+                writer.WriteByte( Field198 );
+                writer.WriteSingle( Field19C );
+                writer.WriteSingle( Field1A0 );
             }
         }
     }

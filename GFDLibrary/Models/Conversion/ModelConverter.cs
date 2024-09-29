@@ -572,10 +572,11 @@ namespace GFDLibrary.Models.Conversion
             if ( aiMesh.HasBones )
             {
                 geometry.VertexWeights = new VertexWeight[geometry.VertexCount];
+                var weightCount = options.Version == ResourceVersion.MetaphorRefantazio ? 8 : 4;
                 for ( int i = 0; i < geometry.VertexWeights.Length; i++ )
                 {
-                    geometry.VertexWeights[i].Indices = new byte[4];
-                    geometry.VertexWeights[i].Weights = new float[4];
+                    geometry.VertexWeights[i].Indices = new ushort[weightCount];
+                    geometry.VertexWeights[i].Weights = new float[weightCount];
                 }
 
                 var vertexWeightCounts = new int[geometry.VertexCount];
@@ -630,7 +631,7 @@ namespace GFDLibrary.Models.Conversion
                     {
                         int vertexWeightCount = vertexWeightCounts[aiVertexWeight.VertexID]++;
 
-                        geometry.VertexWeights[aiVertexWeight.VertexID].Indices[vertexWeightCount] = ( byte )boneIndex;
+                        geometry.VertexWeights[aiVertexWeight.VertexID].Indices[vertexWeightCount] = ( ushort )boneIndex;
                         geometry.VertexWeights[aiVertexWeight.VertexID].Weights[vertexWeightCount] = aiVertexWeight.Weight;
                     }
                 }

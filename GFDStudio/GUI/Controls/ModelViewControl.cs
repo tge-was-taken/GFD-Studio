@@ -30,13 +30,13 @@ namespace GFDStudio.GUI.Controls
 
         public static ModelViewControl Instance => sInstance ?? ( sInstance = new ModelViewControl() );
 
-        private GLShaderProgram mDefaultShader;
+        
+        private ShaderRegistry mShaderRegistry;
         private GLPerspectiveCamera mCamera;
         private readonly bool mCanRender = true;
         private Point mLastMouseLocation;
 
         // Grid
-        private GLShaderProgram mLineShader;
         private int mGridVertexArrayID;
         private GLBuffer<Vector3> mGridVertexBuffer;
         private int mGridSize = 96;
@@ -272,7 +272,7 @@ namespace GFDStudio.GUI.Controls
             {
                 components?.Dispose();
 
-                mDefaultShader?.Dispose();
+                mShaderRegistry.mDefaultShader?.Dispose();
 
                 if ( mIsModelLoaded )
                     UnloadModel();
@@ -343,7 +343,7 @@ namespace GFDStudio.GUI.Controls
                 if ( mIsModelLoaded )
                 {
                     // Draw model
-                    mModel.Draw( mDefaultShader, mCamera, AnimationTime );
+                    mModel.Draw( mShaderRegistry, mCamera, AnimationTime );
                 }
 
                 SwapBuffers();
@@ -353,11 +353,11 @@ namespace GFDStudio.GUI.Controls
 
         private void DrawGrid( Matrix4 view, Matrix4 projection )
         {
-            mLineShader.Use();
-            mLineShader.SetUniform( "uView", view );
-            mLineShader.SetUniform( "uProjection", projection );
-            mLineShader.SetUniform( "uColor", GridLineColor );
-            mLineShader.SetUniform( "uMinZ", mGridMinZ );
+            mShaderRegistry.mLineShader.Use();
+            mShaderRegistry.mLineShader.SetUniform( "uView", view );
+            mShaderRegistry.mLineShader.SetUniform( "uProjection", projection );
+            mShaderRegistry.mLineShader.SetUniform( "uColor", GridLineColor );
+            mShaderRegistry.mLineShader.SetUniform( "uMinZ", mGridMinZ );
 
             GL.BindVertexArray( mGridVertexArrayID );
             GL.DrawArrays( PrimitiveType.Lines, 0, mGridVertexBuffer.Count );
@@ -426,22 +426,8 @@ namespace GFDStudio.GUI.Controls
         /// </summary>
         private bool InitializeShaders()
         {
-            if ( !GLShaderProgram.TryCreate( DataStore.GetPath( "shaders/default.glsl.vs" ),
-                                             DataStore.GetPath( "shaders/default.glsl.fs" ),
-                                             out mDefaultShader ) )
-            {
-                if ( !GLShaderProgram.TryCreate( DataStore.GetPath( "shaders/basic.glsl.vs" ),
-                                                 DataStore.GetPath( "shaders/basic.glsl.fs" ),
-                                                 out mDefaultShader ) )
-                {
-                    return false;
-                }
-            }
-
-            if ( !GLShaderProgram.TryCreate( DataStore.GetPath( "shaders/line.glsl.vs" ), DataStore.GetPath( "shaders/line.glsl.fs" ), out mLineShader ) )
-                return false;
-
-            return true;
+            mShaderRegistry = new ShaderRegistry();
+            return mShaderRegistry.InitializeShaders(x => DataStore.GetPath(x));
         }
 
         private void UnloadModel()

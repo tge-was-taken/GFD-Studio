@@ -19,6 +19,8 @@ namespace GFDLibrary.Rendering.OpenGL
 
     public class GLMaterial : IGLMaterial
     {
+        public bool UseMetaphorMaterialParameterSet { get; set; }
+        public ResourceType MaterialParameterSetResource { get; set; }
         public Vector4 Ambient { get; set; }
 
         public Vector4 Diffuse { get; set; }
@@ -43,7 +45,7 @@ namespace GFDLibrary.Rendering.OpenGL
         public GLTexture NightTexture { get; set; }
         public GLTexture DetailTexture { get; set; }
         public GLTexture ShadowTexture { get; set; }
-
+        public GLTexture TextureMap10 { get; set; }
 
         public int DrawMethod { get; set; }
         public int HighlightMapBlendMode { get; set; }
@@ -72,10 +74,17 @@ namespace GFDLibrary.Rendering.OpenGL
         public bool RenderWireframe { get; set; }
 
         public bool EnableBackfaceCulling { get; set; }
+        public bool METAPHOR_ToonShaderTest { get; set; }
+        public MaterialParameterSetType2_3_13 METAPHOR_ToonShaderTestParam { get; set; }
 
         public GLMaterial( Material material, MaterialTextureCreator textureCreator )
         {
             // color parameters
+            UseMetaphorMaterialParameterSet = material.METAPHOR_UseMaterialParameterSet;
+            if ( UseMetaphorMaterialParameterSet )
+                MaterialParameterSetResource = material.METAHPOR_MaterialParameterSet.ResourceType;
+            else
+                MaterialParameterSetResource = ResourceType.Invalid;
             MatFlags = Convert.ToInt32( material.Flags );
             Ambient = material.AmbientColor.ToOpenTK();
             Diffuse = material.DiffuseColor.ToOpenTK();
@@ -89,7 +98,7 @@ namespace GFDLibrary.Rendering.OpenGL
             MatFlags2 = Convert.ToInt32( material.Flags2 );
             TexcoordsFlags = (int)( material.Field6C );
             EnableBackfaceCulling = !(Convert.ToBoolean( material.DisableBackfaceCulling ));
-
+            
             if ( material.Attributes != null && material.Flags.HasFlag( MaterialFlags.HasAttributes ) )
             {
                 HasType0 = material.Attributes.Any( x => x.AttributeType == MaterialAttributeType.Type0 );
@@ -163,6 +172,22 @@ namespace GFDLibrary.Rendering.OpenGL
             {
                 ShadowTexture = textureCreator( material, material.ShadowMap.Name );
             }
+            if ( material.TextureMap10 != null )
+            {
+                TextureMap10 = textureCreator( material, material.TextureMap10.Name );
+            }
+
+            // Toon Shader test for mat type 2 (write proper code for this later)
+
+            METAPHOR_ToonShaderTest = false;
+            if (material.METAPHOR_UseMaterialParameterSet)
+            {
+                if (material.METAPHOR_MaterialParameterFormat == 2)
+                {
+                    METAPHOR_ToonShaderTest = true;
+                    METAPHOR_ToonShaderTestParam = (MaterialParameterSetType2_3_13)material.METAHPOR_MaterialParameterSet;
+                }
+            }
         }
 
         public GLMaterial()
@@ -180,10 +205,11 @@ namespace GFDLibrary.Rendering.OpenGL
             shaderProgram.SetUniform( "uNight", 6 );
             shaderProgram.SetUniform( "uDetail", 7 );
             shaderProgram.SetUniform( "uShadow", 8 );
+            shaderProgram.SetUniform( "uMatHasDiffuse", HasDiffuseTexture );
             if ( HasDiffuseTexture )
             {
                 GL.ActiveTexture( TextureUnit.Texture0 );
-                DiffuseTexture.Bind();
+                DiffuseTexture.Bind();   
             }
             if ( HasNormalTexture )
             {
@@ -256,6 +282,25 @@ namespace GFDLibrary.Rendering.OpenGL
             if ( !EnableBackfaceCulling )
             {
                 GL.Disable( EnableCap.CullFace );
+            }
+
+            if ( METAPHOR_ToonShaderTest )
+            {
+                shaderProgram.SetUniform( "matBaseColor", METAPHOR_ToonShaderTestParam.P2_0.ToOpenTK() );
+                shaderProgram.SetUniform( "matShadowColor", METAPHOR_ToonShaderTestParam.P2_1.ToOpenTK() );
+                shaderProgram.SetUniform( "matEdgeColor", METAPHOR_ToonShaderTestParam.P2_2.ToOpenTK() );
+                shaderProgram.SetUniform( "matEmissiveColor", METAPHOR_ToonShaderTestParam.P2_3.ToOpenTK() );
+                shaderProgram.SetUniform( "matSpecularColor", METAPHOR_ToonShaderTestParam.P2_4.ToOpenTK() );
+
+                shaderProgram.SetUniform( "matMetallic", METAPHOR_ToonShaderTestParam.P2_6 );
+                shaderProgram.SetUniform( "matSpecularThreshold", METAPHOR_ToonShaderTestParam.P2_15 );
+                shaderProgram.SetUniform( "matSpecularPower", METAPHOR_ToonShaderTestParam.P2_5 );
+                shaderProgram.SetUniform( "matRoughness", METAPHOR_ToonShaderTestParam.P2_21 );
+                //shaderProgram.SetUniform( "matRampAlpha", METAPHOR_ToonShaderTestParam.P2_21 ); // mat ramp is in mat 12
+                shaderProgram.SetUniform( "shadowThreshold", METAPHOR_ToonShaderTestParam.P2_9 );
+                shaderProgram.SetUniform( "shadowFactor", METAPHOR_ToonShaderTestParam.P2_10 );
+                shaderProgram.SetUniform( "edgeThreshold", METAPHOR_ToonShaderTestParam.P2_7 );
+                shaderProgram.SetUniform( "edgeFactor", METAPHOR_ToonShaderTestParam.P2_8 );
             }
         }
 

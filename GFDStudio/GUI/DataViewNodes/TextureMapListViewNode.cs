@@ -48,6 +48,8 @@ namespace GFDStudio.GUI.DataViewNodes
 
         [Browsable( false )]
         public TextureMapViewNode ShadowMap { get; set; }
+        [Browsable( false )]
+        public TextureMapViewNode TextureMap10 { get; set; }
 
         public TextureMapListViewNode( string text, List< TextureMap > data ) : base( text, data )
         {
@@ -69,7 +71,7 @@ namespace GFDStudio.GUI.DataViewNodes
 
             RegisterModelUpdateHandler(() =>
             {
-                var list = new List< TextureMap >( 9 );
+                var list = new List< TextureMap >( 10 );
                 list.Add( Nodes.Contains( DiffuseMap ) ? DiffuseMap.Data : null );
                 list.Add( Nodes.Contains( NormalMap ) ? NormalMap.Data : null );
                 list.Add( Nodes.Contains( SpecularMap ) ? SpecularMap.Data : null );
@@ -79,6 +81,7 @@ namespace GFDStudio.GUI.DataViewNodes
                 list.Add( Nodes.Contains( NightMap ) ? NightMap.Data : null );
                 list.Add( Nodes.Contains( DetailMap ) ? DetailMap.Data : null );
                 list.Add( Nodes.Contains( ShadowMap ) ? ShadowMap.Data : null );
+                list.Add( Nodes.Contains( TextureMap10 ) ? TextureMap10.Data : null );
                 return list;
             } );
         }
@@ -87,56 +90,71 @@ namespace GFDStudio.GUI.DataViewNodes
         {
             if ( Data[ 0 ] != null )
             {
-                DiffuseMap = ( TextureMapViewNode ) DataViewNodeFactory.Create( "Diffuse Map", Data[ 0 ] );
+                string TexName = Data[0].METAPHOR_ParentMaterialParameterSet != null ? Data[0].METAPHOR_ParentMaterialParameterSet.GetTextureMap1Name() : "Diffuse Map";
+                DiffuseMap = ( TextureMapViewNode ) DataViewNodeFactory.Create( TexName, Data[ 0 ] );
                 AddChildNode( DiffuseMap );
             }
 
             if ( Data[1] != null )
             {
-                NormalMap = ( TextureMapViewNode )DataViewNodeFactory.Create( "Normal Map", Data[1] );
+                string TexName = Data[1].METAPHOR_ParentMaterialParameterSet != null ? Data[1].METAPHOR_ParentMaterialParameterSet.GetTextureMap2Name() : "Normal Map";
+                NormalMap = ( TextureMapViewNode )DataViewNodeFactory.Create( TexName, Data[1] );
                 AddChildNode( NormalMap );
             }
 
             if ( Data[2] != null )
             {
-                SpecularMap = ( TextureMapViewNode )DataViewNodeFactory.Create( "Specular Map", Data[2] );
+                string TexName = Data[2].METAPHOR_ParentMaterialParameterSet != null ? Data[2].METAPHOR_ParentMaterialParameterSet.GetTextureMap3Name() : "Specular Map";
+                SpecularMap = ( TextureMapViewNode )DataViewNodeFactory.Create( TexName, Data[2] );
                 AddChildNode( SpecularMap );
             }
 
             if ( Data[3] != null )
             {
-                ReflectionMap = ( TextureMapViewNode )DataViewNodeFactory.Create( "Reflection Map", Data[3] );
+                string TexName = Data[3].METAPHOR_ParentMaterialParameterSet != null ? Data[3].METAPHOR_ParentMaterialParameterSet.GetTextureMap4Name() : "Reflection Map";
+                ReflectionMap = ( TextureMapViewNode )DataViewNodeFactory.Create( TexName, Data[3] );
                 AddChildNode( ReflectionMap );
             }
 
             if ( Data[4] != null )
             {
-                HighlightMap = ( TextureMapViewNode )DataViewNodeFactory.Create( "Highlight Map", Data[4] );
+                string TexName = Data[4].METAPHOR_ParentMaterialParameterSet != null ? Data[4].METAPHOR_ParentMaterialParameterSet.GetTextureMap5Name() : "Highlight Map";
+                HighlightMap = ( TextureMapViewNode )DataViewNodeFactory.Create( TexName, Data[4] );
                 AddChildNode( HighlightMap );
             }
 
             if ( Data[5] != null )
             {
-                GlowMap = ( TextureMapViewNode )DataViewNodeFactory.Create( "Glow Map", Data[5] );
+                string TexName = Data[5].METAPHOR_ParentMaterialParameterSet != null ? Data[5].METAPHOR_ParentMaterialParameterSet.GetTextureMap6Name() : "Glow Map";
+                GlowMap = ( TextureMapViewNode )DataViewNodeFactory.Create( TexName, Data[5] );
                 AddChildNode( GlowMap );
             }
 
             if ( Data[6] != null )
             {
-                NightMap = ( TextureMapViewNode )DataViewNodeFactory.Create( "Night Map", Data[6] );
+                string TexName = Data[6].METAPHOR_ParentMaterialParameterSet != null ? Data[6].METAPHOR_ParentMaterialParameterSet.GetTextureMap7Name() : "Night Map";
+                NightMap = ( TextureMapViewNode )DataViewNodeFactory.Create( TexName, Data[6] );
                 AddChildNode( NightMap );
             }
 
             if ( Data[7] != null )
             {
-                DetailMap = ( TextureMapViewNode )DataViewNodeFactory.Create( "Detail Map", Data[7] );
+                string TexName = Data[7].METAPHOR_ParentMaterialParameterSet != null ? Data[7].METAPHOR_ParentMaterialParameterSet.GetTextureMap8Name() : "Detail Map";
+                DetailMap = ( TextureMapViewNode )DataViewNodeFactory.Create( TexName, Data[7] );
                 AddChildNode( DetailMap );
             }
 
             if ( Data[8] != null )
             {
-                ShadowMap = ( TextureMapViewNode )DataViewNodeFactory.Create( "Shadow Map", Data[8] );
+                string TexName = Data[8].METAPHOR_ParentMaterialParameterSet != null ? Data[8].METAPHOR_ParentMaterialParameterSet.GetTextureMap9Name() : "Shadow Map";
+                ShadowMap = ( TextureMapViewNode )DataViewNodeFactory.Create( TexName, Data[8] );
                 AddChildNode( ShadowMap );
+            }
+            if ( Data[9] != null )
+            {
+                string TexName = Data[9].METAPHOR_ParentMaterialParameterSet != null ? Data[9].METAPHOR_ParentMaterialParameterSet.GetTextureMap10Name() : "Intensity Map";
+                TextureMap10 = (TextureMapViewNode)DataViewNodeFactory.Create( TexName, Data[9] );
+                AddChildNode( TextureMap10 );
             }
         }
 

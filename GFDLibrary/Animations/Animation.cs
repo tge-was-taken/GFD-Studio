@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using GFDLibrary.Common;
 using GFDLibrary.Effects;
 using GFDLibrary.IO;
@@ -25,6 +26,7 @@ namespace GFDLibrary.Animations
         private AnimationBit31Data mField1C;
         private UserPropertyDictionary mProperties;
         private float? mSpeed;
+        private int mUnknown1;
         private int mUnknown2;
 
         public override ResourceType ResourceType => ResourceType.Animation;
@@ -131,11 +133,10 @@ namespace GFDLibrary.Animations
             Duration = reader.ReadSingle();
 
             var controllerCount = reader.ReadInt32();
-            if (IsCatherineFullBodyData)
+            if (IsCatherineFullBodyData || Version >= 0x2000000 )
             {
-                var unknown1 = reader.ReadInt32(); // same as controller count
+                mUnknown1 = reader.ReadInt32(); // TODO
                 mUnknown2 = reader.ReadInt32(); // TODO: no idea what this is
-                Trace.Assert( unknown1 == controllerCount, "unknown1 != controllerCount" );
             }
 
             Logger.Debug( $"Animation: Reading {controllerCount} controllers" );
@@ -177,7 +178,7 @@ namespace GFDLibrary.Animations
                 Field1C = new AnimationBit31Data
                 {
                     Field00 = reader.ReadInt32(),
-                    Field04 = reader.ReadStringWithHash( Version, true ),
+                    Field04 = reader.ReadStringWithHash( Version, Version < 0x2000000 ),
                     Field20 = reader.ReadResource<AnimationLayer>( Version )
                 };
             }
@@ -200,9 +201,9 @@ namespace GFDLibrary.Animations
             writer.WriteSingle( Duration );
             writer.WriteInt32( Controllers.Count );
 
-            if (IsCatherineFullBodyData)
+            if ( IsCatherineFullBodyData || Version >= 0x2000000 )
             {
-                writer.WriteInt32( Controllers.Count );
+                writer.WriteInt32( mUnknown1 );
                 writer.WriteInt32( mUnknown2 ); 
             }
 
@@ -215,7 +216,7 @@ namespace GFDLibrary.Animations
                 foreach ( var entry in Field10 )
                 {
                     writer.WriteResource( entry.Field00 );
-                    writer.WriteStringWithHash( Version, entry.Field04, true );
+                    writer.WriteStringWithHash( Version, entry.Field04, Version < 0x2000000 );
                 }
             }
 
@@ -225,7 +226,7 @@ namespace GFDLibrary.Animations
             if ( Flags.HasFlag( AnimationFlags.Bit31 ) )
             {
                 writer.WriteInt32( Field1C.Field00 );
-                writer.WriteStringWithHash( Version, Field1C.Field04, true );
+                writer.WriteStringWithHash( Version, Field1C.Field04, Version < 0x2000000 );
                 writer.WriteResource( Field1C.Field20 );
             }
 

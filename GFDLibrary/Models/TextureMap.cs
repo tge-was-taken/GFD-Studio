@@ -1,4 +1,5 @@
 ﻿using GFDLibrary.IO;
+using GFDLibrary.Materials;
 
 namespace GFDLibrary.Models
 {
@@ -70,6 +71,8 @@ namespace GFDLibrary.Models
 
         // 0x88
         public float Field88 { get; set; }
+
+        public MaterialParameterSetBase METAPHOR_ParentMaterialParameterSet { get; set; }
 
         public TextureMap()
         {

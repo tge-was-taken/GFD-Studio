@@ -100,6 +100,36 @@ namespace GFDLibrary.Models
             }
         }
 
+        private uint[] mColorChannel1;
+        public uint[] ColorChannel1
+        {
+            get => mColorChannel1;
+            set
+            {
+                if ( value != null )
+                    VertexAttributeFlags |= VertexAttributeFlags.Color1;
+                else
+                    VertexAttributeFlags &= ~VertexAttributeFlags.Color1;
+
+                mColorChannel1 = value;
+            }
+        }
+
+        private uint[] mColorChannel2;
+        public uint[] ColorChannel2
+        {
+            get => mColorChannel2;
+            set
+            {
+                if ( value != null )
+                    VertexAttributeFlags |= VertexAttributeFlags.Color2;
+                else
+                    VertexAttributeFlags &= ~VertexAttributeFlags.Color2;
+
+                mColorChannel2 = value;
+            }
+        }
+
         private Vector2[] mTexCoordsChannel0;
         public Vector2[] TexCoordsChannel0
         {
@@ -142,21 +172,6 @@ namespace GFDLibrary.Models
                     VertexAttributeFlags &= ~VertexAttributeFlags.TexCoord2;
 
                 mTexCoordsChannel2 = value;
-            }
-        }
-
-        private uint[] mColorChannel1;
-        public uint[] ColorChannel1
-        {
-            get => mColorChannel1;
-            set
-            {
-                if ( value != null )
-                    VertexAttributeFlags |= VertexAttributeFlags.Color1;
-                else
-                    VertexAttributeFlags &= ~VertexAttributeFlags.Color1;
-
-                mColorChannel1 = value;
             }
         }
 
@@ -254,8 +269,11 @@ namespace GFDLibrary.Models
 
         public float FieldD8 { get; set; }
 
+        public byte Unk_StrideType { get; set; }
+        public byte Unk_VertexWeight { get; set; }
+
         public Vector2[][] TexCoordChannels => new[] { mTexCoordsChannel0, mTexCoordsChannel1, mTexCoordsChannel2 };
-        public uint[][] ColorChannels => new[] { mColorChannel0, mColorChannel1 };
+        public uint[][] ColorChannels => new[] { mColorChannel0, mColorChannel1, mColorChannel2 };
 
         public Mesh()
         {
@@ -298,7 +316,7 @@ namespace GFDLibrary.Models
 
                 if ( includeWeights && VertexWeights != null )
                 {
-                    for ( int j = 0; j < 4; j++ )
+                    for ( int j = 0; j < VertexWeights[i].Weights.Length; j++ )
                     {
                         var weight = VertexWeights[i].Weights[j];
                         if ( weight == 0 )
@@ -372,63 +390,133 @@ namespace GFDLibrary.Models
             }
 
             int vertexCount = reader.ReadInt32();
+            if ( Version > 0x2110205 )
+            {
+                Unk_StrideType = reader.ReadByte();
+            }
 
             if ( Version > 0x1103020 )
             {
                 Field14 = reader.ReadInt32();
             }
-
             AllocateBuffers( vertexCount );
-
+            long StartPos = reader.Position;
             for ( int i = 0; i < vertexCount; i++ )
             {
-                if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Position ) )
-                    Vertices[i] = reader.ReadVector3();
-
-                if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Normal ) )
-                    Normals[i] = reader.ReadVector3();
-
-                if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Tangent ) )
-                    Tangents[i] = reader.ReadVector3();
-
-                if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Binormal ) )
-                    Binormals[i] = reader.ReadVector3();
-
-                if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color0 ) )
-                    ColorChannel0[i] = reader.ReadUInt32();
-
-                if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord0 ) )
-                    TexCoordsChannel0[i] = reader.ReadVector2();
-
-                if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord1 ) )
-                    TexCoordsChannel1[i] = reader.ReadVector2();
-
-                if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord2 ) )
-                    TexCoordsChannel2[i] = reader.ReadVector2();
-
-                if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color1 ) )
-                    ColorChannel1[i] = reader.ReadUInt32();
-
-                if ( Flags.HasFlag( GeometryFlags.HasVertexWeights ) )
+                void ReadLegacyVertexWeights()
                 {
                     const int MAX_NUM_WEIGHTS = 4;
                     VertexWeights[i].Weights = new float[MAX_NUM_WEIGHTS];
 
                     for ( int j = 0; j < VertexWeights[i].Weights.Length; j++ )
-                    {
                         VertexWeights[i].Weights[j] = reader.ReadSingle();
-                    }
 
-                    VertexWeights[i].Indices = new byte[MAX_NUM_WEIGHTS];
+                    VertexWeights[i].Indices = new ushort[MAX_NUM_WEIGHTS];
                     uint indices = reader.ReadUInt32();
-
                     for ( int j = 0; j < VertexWeights[i].Indices.Length; j++ )
                     {
                         int shift = j * 8;
                         VertexWeights[i].Indices[j] = (byte)( ( indices & ( 0xFF << shift ) ) >> shift );
                     }
                 }
+
+                if ( Version < 0x2000000 )
+                {
+                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Position ) )
+                        Vertices[i] = reader.ReadVector3();
+
+                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Normal ) )
+                        Normals[i] = reader.ReadVector3();
+
+                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Tangent ) )
+                        Tangents[i] = reader.ReadVector3();
+
+                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Binormal ) )
+                        Binormals[i] = reader.ReadVector3();
+
+                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color0 ) )
+                        ColorChannel0[i] = reader.ReadUInt32();
+
+                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord0 ) )
+                        TexCoordsChannel0[i] = reader.ReadVector2();
+                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord1 ) )
+                        TexCoordsChannel1[i] = reader.ReadVector2();
+                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord2 ) )
+                        TexCoordsChannel2[i] = reader.ReadVector2();
+
+                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color2 ) )
+                        ColorChannel1[i] = reader.ReadUInt32();
+
+                    if ( Flags.HasFlag( GeometryFlags.HasVertexWeights ) )
+                        ReadLegacyVertexWeights();
+                }
+                else
+                {
+                    const VertexAttributeFlags knownFlags = VertexAttributeFlags.Position |
+                        VertexAttributeFlags.Normal |
+                        VertexAttributeFlags.Tangent |
+                        VertexAttributeFlags.TexCoord0 |
+                        VertexAttributeFlags.TexCoord1 |
+                        VertexAttributeFlags.TexCoord2 |
+                        VertexAttributeFlags.Color0 |
+                        VertexAttributeFlags.Color1;
+                    var unknownFlags = VertexAttributeFlags & ~knownFlags;
+                    if ( unknownFlags != 0 )
+                        throw new NotImplementedException( $"Model contains one or more vertex attributes that are not yet implemented: {unknownFlags}" );
+
+                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Position ) )
+                        Vertices[i] = reader.ReadVector3();
+
+                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord0 ) )
+                        TexCoordsChannel0[i] = reader.ReadVector2Half();
+
+                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord1 ) )
+                        TexCoordsChannel1[i] = reader.ReadVector2Half();
+
+                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord2 ) )
+                        TexCoordsChannel2[i] = reader.ReadVector2Half();
+
+                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Normal ) )
+                        Normals[i] = reader.ReadVector3();
+
+                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Tangent ) )
+                        Tangents[i] = reader.ReadVector3();
+
+                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color0 ) ) // field object?
+                        ColorChannel0[i] = reader.ReadUInt32();
+
+                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color1 ) ) // character model?
+                        ColorChannel1[i] = reader.ReadUInt32();
+
+                    if ( Flags.HasFlag( GeometryFlags.HasVertexWeights ) )
+                    {
+                        if ( Version < 0x2040001 )
+                        {
+                            ReadLegacyVertexWeights();
+                        }
+                        else
+                        {
+                            const int MAX_NUM_WEIGHTS = 8;
+                            VertexWeights[i].Weights = new float[MAX_NUM_WEIGHTS];
+
+                            for ( int j = 0; j < VertexWeights[i].Weights.Length; j++ )
+                            {
+                                VertexWeights[i].Weights[j] = (float)reader.ReadUInt16() / 0xffff;
+                            }
+
+                            VertexWeights[i].Indices = new ushort[MAX_NUM_WEIGHTS];
+                            for ( int j = 0; j < VertexWeights[i].Indices.Length; j++ )
+                                VertexWeights[i].Indices[j] = reader.ReadUInt16();
+                        }
+                    }
+                }
             }
+            long StrideLength = ( reader.Position - StartPos ) / vertexCount;
+            Logger.Info( $"Stride Length: 0x{StrideLength:X}" );
+
+            if ( Flags.HasFlag( GeometryFlags.HasVertexWeights ) && Version >= 0x2110213 )
+                Unk_VertexWeight = reader.ReadByte();
+
 
             if ( Flags.HasFlag( GeometryFlags.HasMorphTargets ) )
             {
@@ -508,6 +596,16 @@ namespace GFDLibrary.Models
                 ColorChannel0 = new uint[vertexCount];
             }
 
+            if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color1 ) )
+            {
+                ColorChannel1 = new uint[vertexCount];
+            }
+
+            if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color2 ) )
+            {
+                ColorChannel2 = new uint[vertexCount];
+            }
+
             if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord0 ) )
             {
                 TexCoordsChannel0 = new Vector2[vertexCount];
@@ -521,11 +619,6 @@ namespace GFDLibrary.Models
             if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord2 ) )
             {
                 TexCoordsChannel2 = new Vector2[vertexCount];
-            }
-
-            if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color1 ) )
-            {
-                ColorChannel1 = new uint[vertexCount];
             }
 
             if ( Flags.HasFlag( GeometryFlags.HasVertexWeights ) )
@@ -546,6 +639,10 @@ namespace GFDLibrary.Models
             }
 
             writer.WriteInt32( VertexCount );
+            if ( Version > 0x2110205 )
+            {
+                writer.WriteByte( Unk_StrideType );
+            }
 
             if ( Version > 0x1103020 )
             {
@@ -554,45 +651,86 @@ namespace GFDLibrary.Models
 
             for ( int i = 0; i < VertexCount; i++ )
             {
-                if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Position ) )
-                    writer.WriteVector3( Vertices[i] );
+                if ( Version < 0x2000000 )
+                {
+                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Position ) )
+                        writer.WriteVector3( Vertices[i] );
 
-                if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Normal ) )
-                    writer.WriteVector3( Normals[i] );
+                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Normal ) )
+                        writer.WriteVector3( Normals[i] );
 
-                if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Tangent ) )
-                    writer.WriteVector3( Tangents[i] );
+                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Tangent ) )
+                        writer.WriteVector3( Tangents[i] );
 
-                if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Binormal ) )
-                    writer.WriteVector3( Binormals[i] );
+                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Binormal ) )
+                        writer.WriteVector3( Binormals[i] );
 
-                if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color0 ) )
-                    writer.WriteUInt32( ColorChannel0[i] );
+                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color0 ) )
+                        writer.WriteUInt32( ColorChannel0[i] );
 
-                if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord0 ) )
-                    writer.WriteVector2( TexCoordsChannel0[i] );
+                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord0 ) )
+                        writer.WriteVector2( TexCoordsChannel0[i] );
 
-                if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord1 ) )
-                    writer.WriteVector2( TexCoordsChannel1[i] );
+                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord1 ) )
+                        writer.WriteVector2( TexCoordsChannel1[i] );
 
-                if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord2 ) )
-                    writer.WriteVector2( TexCoordsChannel2[i] );
+                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord2 ) )
+                        writer.WriteVector2( TexCoordsChannel2[i] );
 
-                if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color1 ) )
-                    writer.WriteUInt32( ColorChannel1[i] );
+                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color2 ) )
+                        writer.WriteUInt32( ColorChannel1[i] );
+                } else
+                {
+                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Position ) )
+                        writer.WriteVector3( Vertices[i] );
+
+                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord0 ) )
+                        writer.WriteVector2Half( TexCoordsChannel0[i] );
+
+                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord1 ) )
+                        writer.WriteVector2Half( TexCoordsChannel1[i] );
+
+                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord2 ) )
+                        writer.WriteVector2Half( TexCoordsChannel2[i] );
+
+                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Normal ) )
+                        writer.WriteVector3( Normals[i] );
+
+                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Tangent ) )
+                        writer.WriteVector3( Tangents[i] );
+
+                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color0 ) )
+                        writer.WriteUInt32( ColorChannel0[i] );
+
+                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color1 ) )
+                        writer.WriteUInt32( ColorChannel1[i] );
+                }
 
                 if ( Flags.HasFlag( GeometryFlags.HasVertexWeights ) )
                 {
-                    var vertexWeight = VertexWeights[i];
-                    for ( int j = 0; j < 4; j++ )
-                        writer.WriteSingle( vertexWeight.Weights[j] );
+                    if ( Version < 0x2040001 )
+                    {
+                        var vertexWeight = VertexWeights[i];
+                        for ( int j = 0; j < 4; j++ )
+                            writer.WriteSingle( vertexWeight.Weights[j] );
 
-                    int indices = vertexWeight.Indices[0] << 00 | ( vertexWeight.Indices[1] << 08 ) |
-                                  vertexWeight.Indices[2] << 16 | ( vertexWeight.Indices[3] << 24 );
+                        int indices = vertexWeight.Indices[0] << 00 | ( vertexWeight.Indices[1] << 08 ) |
+                                      vertexWeight.Indices[2] << 16 | ( vertexWeight.Indices[3] << 24 );
 
-                    writer.WriteInt32( indices );
+                        writer.WriteInt32( indices );
+                    } else
+                    {
+                        var vertexWeight = VertexWeights[i];
+                        for ( int j = 0; j < 8; j++ )
+                            writer.WriteUInt16( (ushort)(vertexWeight.Weights[j] * 0xffff) );
+                        for ( int j = 0; j < 8; j++ )
+                            writer.WriteUInt16( vertexWeight.Indices[j] );
+                    }
                 }
             }
+
+            if ( Flags.HasFlag( GeometryFlags.HasVertexWeights ) && Version >= 0x2110213 )
+                writer.WriteByte( Unk_VertexWeight );
 
             if ( Flags.HasFlag( GeometryFlags.HasMorphTargets ) )
             {
@@ -700,11 +838,11 @@ namespace GFDLibrary.Models
         TexCoord0 = 1 << 8,
         TexCoord1 = 1 << 9,
         TexCoord2 = 1 << 10,
-        TexCoord3 = 1 << 11,
-        TexCoord4 = 1 << 12,
-        TexCoord5 = 1 << 13,
-        TexCoord6 = 1 << 14,
-        TexCoord7 = 1 << 15,
+        Color1 = 1 << 11, // 4 bytes, after normals
+        Bit12 = 1 << 12,
+        Bit13 = 1 << 13,
+        Bit14 = 1 << 14,
+        Bit15 = 1 << 15,
         Bit16 = 1 << 16,
         Bit17 = 1 << 17,
         Bit18 = 1 << 18,
@@ -719,7 +857,7 @@ namespace GFDLibrary.Models
         Bit27 = 1 << 27,
         Tangent = 1 << 28,
         Binormal = 1 << 29, // 12 bytes, after tangent -- binormal?
-        Color1 = 1 << 30, // 4 bytes, after tex coord 2
+        Color2 = 1 << 30, // 4 bytes, after tex coord 2
         Bit31 = 1u << 31, // 20 bytes, after HasBoundingBox
     }
 }

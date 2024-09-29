@@ -51,8 +51,7 @@ namespace GFDLibrary.Rendering.OpenGL
 
                     var newPosition = Vector3.Zero;
                     var newNormal = Vector3.Zero;
-
-                    for ( int j = 0; j < 4; j++ )
+                    for ( int j = 0; j < mesh.VertexWeights[i].Weights.Length; j++ )
                     {
                         var weight = mesh.VertexWeights[i].Weights[j];
                         if ( weight == 0 )
@@ -101,7 +100,7 @@ namespace GFDLibrary.Rendering.OpenGL
             IsVisible = true;
         }
 
-        private static void TransformVertex( List<Bone> bones, List<GLNode> nodes, Vector3 position, Vector3 normal, ref Vector3 newPosition, ref Vector3 newNormal, float weight, byte boneIndex )
+        private static void TransformVertex( List<Bone> bones, List<GLNode> nodes, Vector3 position, Vector3 normal, ref Vector3 newPosition, ref Vector3 newNormal, float weight, ushort boneIndex )
         {
             var bone = bones[boneIndex];
             var boneNode = nodes[bone.NodeIndex];
