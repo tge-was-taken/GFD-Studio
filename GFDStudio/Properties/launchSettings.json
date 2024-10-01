@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "GFDStudio": {
+      "commandName": "Project",
+      "commandLineArgs": "\"F:\\Software\\Games\\PC\\SteamLibrary\\steamapps\\common\\P5R\\CPK\\BASE.CPK_unpacked\\BASE.CPK_unpacked\\MODEL\\CHARACTER\\0001\\C0001_001_00.GMD\"",
+      "nativeDebugging": true
+    }
+  }
+}

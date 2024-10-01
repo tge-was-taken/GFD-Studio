@@ -7,7 +7,7 @@ using namespace System::Text;
 
 struct Utf8String
 {
-	u8 buffer[ 1024 ];
+	u8 buffer[ 4096 ];
 
 	const char* ToCStr() const
 	{
@@ -18,7 +18,7 @@ struct Utf8String
 	{
 		const pin_ptr<const wchar_t> data = PtrToStringChars( string );
 		const int length = Encoding::UTF8->GetBytes( (wchar_t*)data, string->Length, buffer, sizeof( buffer ) );
-		assert( length < 1024 );
+		assert( length < 4096);
 		buffer[ length ] = NULL;
 	}
 };

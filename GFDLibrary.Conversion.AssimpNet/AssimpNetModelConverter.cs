@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Text.RegularExpressions;
 using GFDLibrary.Cameras;
 using GFDLibrary.Common;
 using GFDLibrary.Conversion.AssimpNet.Utilities;
@@ -366,58 +367,7 @@ namespace GFDLibrary.Conversion.AssimpNet
                         }
 
                         // Parse value
-                        if ( kvp.Value == null )
-                        {
-                            // Assume flag bool
-                            property = new UserBoolProperty( kvp.Key, true );
-                        }
-                        else if ( kvp.Value.StartsWith( "[" ) && kvp.Value.EndsWith( "]" ) )
-                        {
-                            // Array/Vector
-                            var arrayContents = kvp.Value.Substring( 1, kvp.Value.Length - 2 );
-                            var arrayValues = arrayContents.Split( new[] { ',' }, StringSplitOptions.RemoveEmptyEntries );
-
-                            var arrayFloatValues = new List<float>();
-                            foreach ( var arrayValue in arrayValues )
-                            {
-                                if ( !float.TryParse( arrayValue, out var arrayFloatValue ) )
-                                {
-                                    throw new Exception( $"Failed to parse array user property value as float: {arrayValue}" );
-                                }
-
-                                arrayFloatValues.Add( arrayFloatValue );
-                            }
-
-                            if ( arrayFloatValues.Count == 3 )
-                            {
-                                property = new UserVector3Property( kvp.Key, new Vector3( arrayFloatValues[0], arrayFloatValues[1], arrayFloatValues[2] ) );
-                            }
-                            else if ( arrayFloatValues.Count == 4 )
-                            {
-                                property = new UserVector4Property( kvp.Key, new Vector4( arrayFloatValues[0], arrayFloatValues[1], arrayFloatValues[2], arrayFloatValues[3] ) );
-                            }
-                            else
-                            {
-                                var arrayByteValues = arrayFloatValues.Cast<byte>();
-                                property = new UserByteArrayProperty( kvp.Key, arrayByteValues.ToArray() );
-                            }
-                        }
-                        else if ( int.TryParse( kvp.Value, out int intValue ) )
-                        {
-                            property = new UserIntProperty( kvp.Key, intValue );
-                        }
-                        else if ( float.TryParse( kvp.Value, out float floatValue ) )
-                        {
-                            property = new UserFloatProperty( kvp.Key, floatValue );
-                        }
-                        else if ( bool.TryParse( kvp.Value, out bool boolValue ) )
-                        {
-                            property = new UserBoolProperty( kvp.Key, boolValue );
-                        }
-                        else
-                        {
-                            property = new UserStringProperty( kvp.Key, kvp.Value );
-                        }
+                        property = UserPropertyParser.ParseProperty( kvp.Key, kvp.Value );
                     }
                 }
                 else
@@ -678,6 +628,171 @@ namespace GFDLibrary.Conversion.AssimpNet
                 Node = node;
                 Index = index;
                 IsMeshAttachment = isMesh;
+            }
+        }
+    }
+
+    public static class UserPropertyParser
+    {
+        private static readonly Dictionary<string, Func<string, string, UserProperty>> PropertyParsers = new Dictionary<string, Func<string, string, UserProperty>>( StringComparer.OrdinalIgnoreCase )
+        {
+            {"int", ParseIntProperty},
+            {"float", ParseFloatProperty},
+            {"bool", ParseBoolProperty},
+            {"string", ParseStringProperty},
+            {"bytevector3", ParseByteVector3Property},
+            {"bytevector4", ParseByteVector4Property},
+            {"vector3", ParseVector3Property},
+            {"vector4", ParseVector4Property},
+            {"bytearray", ParseByteArrayProperty}
+        };
+
+        public static UserProperty ParseProperty( string key, string value )
+        {
+            if ( value == null )
+            {
+                return new UserBoolProperty( key, true ); // Assume flag bool
+            }
+
+            var match = Regex.Match( value, @"^(\w+)\((.*)\)$" );
+            if ( match.Success )
+            {
+                var type = match.Groups[1].Value;
+                var content = match.Groups[2].Value;
+
+                if ( PropertyParsers.TryGetValue( type, out var parser ) )
+                {
+                    return parser( key, content );
+                }
+            }
+
+            if ( value.StartsWith( "[" ) && value.EndsWith( "]" ) )
+            {
+                return ParseArrayProperty( key, value );
+            }
+
+            // Try parsing as simple types
+            if ( int.TryParse( value, out int intValue ) )
+            {
+                return new UserIntProperty( key, intValue );
+            }
+            if ( float.TryParse( value, out float floatValue ) )
+            {
+                return new UserFloatProperty( key, floatValue );
+            }
+            if ( bool.TryParse( value, out bool boolValue ) )
+            {
+                return new UserBoolProperty( key, boolValue );
+            }
+
+            // Default to string if no other type matches
+            return new UserStringProperty( key, value );
+        }
+
+        private static UserProperty ParseIntProperty( string key, string content )
+        {
+            if ( int.TryParse( content, out var intValue ) )
+            {
+                return new UserIntProperty( key, intValue );
+            }
+            throw new FormatException( $"Invalid int format: {content}" );
+        }
+
+        private static UserProperty ParseFloatProperty( string key, string content )
+        {
+            if ( float.TryParse( content, out var floatValue ) )
+            {
+                return new UserFloatProperty( key, floatValue );
+            }
+            throw new FormatException( $"Invalid float format: {content}" );
+        }
+
+        private static UserProperty ParseBoolProperty( string key, string content )
+        {
+            if ( bool.TryParse( content, out var boolValue ) )
+            {
+                return new UserBoolProperty( key, boolValue );
+            }
+            throw new FormatException( $"Invalid bool format: {content}" );
+        }
+
+        private static UserProperty ParseStringProperty( string key, string content )
+        {
+            return new UserStringProperty( key, content );
+        }
+
+        private static UserProperty ParseByteVector3Property( string key, string content )
+        {
+            var values = content.Split( ',' );
+            if ( values.Length == 3 && byte.TryParse( values[0], out byte x ) && byte.TryParse( values[1], out byte y ) && byte.TryParse( values[2], out byte z ) )
+            {
+                return new UserByteVector3Property( key, new ByteVector3( x, y, z ) );
+            }
+            throw new FormatException( $"Invalid ByteVector3 format: {content}" );
+        }
+
+        private static UserProperty ParseByteVector4Property( string key, string content )
+        {
+            var values = content.Split( ',' );
+            if ( values.Length == 4 && byte.TryParse( values[0], out byte x ) && byte.TryParse( values[1], out byte y ) && byte.TryParse( values[2], out byte z ) && byte.TryParse( values[3], out byte w ) )
+            {
+                return new UserByteVector4Property( key, new ByteVector4( x, y, z, w ) );
+            }
+            throw new FormatException( $"Invalid ByteVector4 format: {content}" );
+        }
+
+        private static UserProperty ParseVector3Property( string key, string content )
+        {
+            var values = content.Split( ',' );
+            if ( values.Length == 3 && float.TryParse( values[0], out float x ) && float.TryParse( values[1], out float y ) && float.TryParse( values[2], out float z ) )
+            {
+                return new UserVector3Property( key, new Vector3( x, y, z ) );
+            }
+            throw new FormatException( $"Invalid Vector3 format: {content}" );
+        }
+
+        private static UserProperty ParseVector4Property( string key, string content )
+        {
+            var values = content.Split( ',' );
+            if ( values.Length == 4 && float.TryParse( values[0], out float x ) && float.TryParse( values[1], out float y ) && float.TryParse( values[2], out float z ) && float.TryParse( values[3], out float w ) )
+            {
+                return new UserVector4Property( key, new Vector4( x, y, z, w ) );
+            }
+            throw new FormatException( $"Invalid Vector4 format: {content}" );
+        }
+
+        private static UserProperty ParseByteArrayProperty( string key, string content )
+        {
+            try
+            {
+                byte[] byteArray = Convert.FromBase64String( content );
+                return new UserByteArrayProperty( key, byteArray );
+            }
+            catch ( FormatException )
+            {
+                throw new FormatException( $"Invalid Base64 string: {content}" );
+            }
+        }
+
+        private static UserProperty ParseArrayProperty( string key, string value )
+        {
+            var arrayContents = value.Substring( 1, value.Length - 2 );
+            var arrayValues = arrayContents.Split( new[] { ',' }, StringSplitOptions.RemoveEmptyEntries );
+
+            var arrayFloatValues = arrayValues.Select( v => float.TryParse( v, out float f ) ? f : throw new FormatException( $"Failed to parse array value as float: {v}" ) ).ToList();
+
+            if ( arrayFloatValues.Count == 3 )
+            {
+                return new UserVector3Property( key, new Vector3( arrayFloatValues[0], arrayFloatValues[1], arrayFloatValues[2] ) );
+            }
+            else if ( arrayFloatValues.Count == 4 )
+            {
+                return new UserVector4Property( key, new Vector4( arrayFloatValues[0], arrayFloatValues[1], arrayFloatValues[2], arrayFloatValues[3] ) );
+            }
+            else
+            {
+                var arrayByteValues = arrayFloatValues.Select( f => (byte)f ).ToArray();
+                return new UserByteArrayProperty( key, arrayByteValues );
             }
         }
     }

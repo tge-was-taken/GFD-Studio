@@ -253,11 +253,7 @@ namespace GFDLibrary.Conversion.AssimpNet
                 }
             }
 
-            var vertices = mesh.Vertices;
-            var normals = mesh.Normals;
-
-            if ( mesh.VertexWeights != null )
-                (vertices, normals) = mesh.Transform( geometryNode, model.Nodes.ToList(), model.Bones );
+            (var vertices, var normals) = mesh.Transform( geometryNode, model.Nodes.ToList(), model.Bones, true, true, null );
 
             if ( mesh.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Position ) )
             {
