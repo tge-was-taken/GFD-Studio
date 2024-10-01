@@ -4,14 +4,15 @@ using System.Linq;
 using System.Numerics;
 using GFDLibrary.Cameras;
 using GFDLibrary.Common;
+using GFDLibrary.Conversion.AssimpNet.Utilities;
 using GFDLibrary.Lights;
-using GFDLibrary.Models.Conversion.Utilities;
+using GFDLibrary.Models;
 using GFDLibrary.Utilities;
 using Ai = Assimp;
 
-namespace GFDLibrary.Models.Conversion
+namespace GFDLibrary.Conversion.AssimpNet
 {
-    public static class ModelConverter
+    public static class AssimpNetModelConverter
     {
         private static readonly Matrix4x4 YToZUpMatrix = new Matrix4x4( 1, 0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1 );
 
@@ -23,7 +24,7 @@ namespace GFDLibrary.Models.Conversion
             return ConvertFromAssimpScene( aiScene, options );
         }
 
-        public static Model ConvertFromAssimpScene( Ai.Scene aiScene, ModelConverterOptions options )
+        internal static Model ConvertFromAssimpScene( Ai.Scene aiScene, ModelConverterOptions options )
         {
             var scene = new Model( options.Version );
 
@@ -36,7 +37,7 @@ namespace GFDLibrary.Models.Conversion
             var nodeToBoneIndices = new Dictionary<int, List<int>>();
             int nextBoneIndex = 0;
             var boneInverseBindMatrices = new List<Matrix4x4>();
-            var transformedVertices = new List< Vector3 >();
+            var transformedVertices = new List<Vector3>();
             ProcessAssimpNodeMeshesRecursively( aiScene.RootNode, aiScene, nodeLookup, ref nextBoneIndex, nodeToBoneIndices, boneInverseBindMatrices, transformedVertices, options );
 
             // Don't build a bone palette if there are no skinned meshes
@@ -73,7 +74,7 @@ namespace GFDLibrary.Models.Conversion
             double diff = Math.Abs( a - b );
 
             if ( a == b )
-            { 
+            {
                 // shortcut, handles infinities
                 return true;
             }
@@ -84,7 +85,7 @@ namespace GFDLibrary.Models.Conversion
                 return diff < epsilon;
             }
             else
-            { 
+            {
                 // use relative error
                 return diff / ( absA + absB ) < epsilon;
             }
@@ -132,10 +133,10 @@ namespace GFDLibrary.Models.Conversion
 
         private static HashSet<string> sFullBodyObjectNames = new HashSet<string>()
         {
-            "bell", "bar", "heart", "clock", "drink01", "drink02", "item_block02", 
+            "bell", "bar", "heart", "clock", "drink01", "drink02", "item_block02",
         };
 
-        private static Node ConvertAssimpNodeRecursively( Assimp.Scene aiScene, Ai.Node aiNode, Dictionary<string, NodeInfo> nodeLookup, ref int nextIndex, ModelConverterOptions options )
+        private static Node ConvertAssimpNodeRecursively( Ai.Scene aiScene, Ai.Node aiNode, Dictionary<string, NodeInfo> nodeLookup, ref int nextIndex, ModelConverterOptions options )
         {
             aiNode.Transform.Decompose( out var scale, out var rotation, out var translation );
 
@@ -145,7 +146,7 @@ namespace GFDLibrary.Models.Conversion
                                  new Quaternion( rotation.X, rotation.Y, rotation.Z, rotation.W ),
                                  new Vector3( scale.X, scale.Y, scale.Z ) );
 
-            
+
 
             if ( !IsMeshAttachmentNode( aiNode ) )
             {
@@ -154,7 +155,7 @@ namespace GFDLibrary.Models.Conversion
 
                 if ( options.SetFullBodyNodeProperties )
                 {
-                    if (node.Name == "See User Defined Properties" )
+                    if ( node.Name == "See User Defined Properties" )
                     {
                         TryAddProperty( node.Properties, new UserIntProperty( "NiSortAdjustNode", 0 ) );
                     }
@@ -170,7 +171,7 @@ namespace GFDLibrary.Models.Conversion
 
                 if ( options.AutoAddGFDHelperIDs ) // for P5/R
                 {
-                    switch( node.Name )
+                    switch ( node.Name )
                     {
                         case "h_B_BD1":
                             TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 501 ) );
@@ -255,17 +256,18 @@ namespace GFDLibrary.Models.Conversion
                 var index = -1;
                 if ( ( index = aiScene.Cameras.FindIndex( x => x.Name == node.Name ) ) != -1 )
                 {
-                    var aiCamera = aiScene.Cameras[ index ];
+                    var aiCamera = aiScene.Cameras[index];
                     var camera = new Camera( -aiCamera.Direction.ToNumerics(), aiCamera.Up.ToNumerics(), aiCamera.Position.ToNumerics(),
                         aiCamera.ClipPlaneNear, aiCamera.ClipPlaneFar, MathHelper.RadiansToDegrees( aiCamera.FieldOfview ),
-                        aiCamera.AspectRatio, 0 
-                    ) { Version = options.Version };
+                        aiCamera.AspectRatio, 0
+                    )
+                    { Version = options.Version };
 
                     node.Attachments.Add( new NodeCameraAttachment( camera ) );
                 }
                 else if ( ( index = aiScene.Lights.FindIndex( x => x.Name == node.Name ) ) != -1 )
                 {
-                    var aiLight = aiScene.Lights[ index ];
+                    var aiLight = aiScene.Lights[index];
                     var lightType = LightType.Point;
                     switch ( aiLight.LightType )
                     {
@@ -284,13 +286,13 @@ namespace GFDLibrary.Models.Conversion
                     var light = new Light
                     {
                         Version = options.Version,
-                        AmbientColor   = aiLight.ColorAmbient.ToNumerics(),
-                        DiffuseColor   = aiLight.ColorDiffuse.ToNumerics(),
-                        SpecularColor  = aiLight.ColorSpecular.ToNumerics(),
+                        AmbientColor = aiLight.ColorAmbient.ToNumerics(),
+                        DiffuseColor = aiLight.ColorDiffuse.ToNumerics(),
+                        SpecularColor = aiLight.ColorSpecular.ToNumerics(),
                         AngleInnerCone = aiLight.AngleInnerCone,
                         AngleOuterCone = aiLight.AngleOuterCone,
-                        Type           = lightType,
-                        Flags          = LightFlags.Bit1 | LightFlags.Bit2
+                        Type = lightType,
+                        Flags = LightFlags.Bit1 | LightFlags.Bit2
                     };
                     node.Attachments.Add( new NodeLightAttachment( light ) );
                 }
@@ -342,7 +344,7 @@ namespace GFDLibrary.Models.Conversion
 
                 if ( metadataEntry.Key == "UDP3DSMAX" )
                 {
-                    var properties = ( ( string )metadataEntry.Value.Data )
+                    var properties = ( (string)metadataEntry.Value.Data )
                         .Split( new[] { "&cr;&lf;", "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries );
 
                     if ( properties.Length == 0 )
@@ -435,7 +437,7 @@ namespace GFDLibrary.Models.Conversion
                             property = new UserFloatProperty( metadataEntry.Key, metadataEntry.Value.DataAs<float>().Value );
                             break;
                         case Ai.MetaDataType.String:
-                            property = new UserStringProperty( metadataEntry.Key, ( string )metadataEntry.Value.Data );
+                            property = new UserStringProperty( metadataEntry.Key, (string)metadataEntry.Value.Data );
                             break;
                         case Ai.MetaDataType.Vector3D:
                             var data = metadataEntry.Value.DataAs<Ai.Vector3D>().Value;
@@ -459,7 +461,7 @@ namespace GFDLibrary.Models.Conversion
         {
             if ( aiNode.HasMeshes )
             {
-                var nodeInfo = nodeLookup[ AssimpConverterCommon.UnescapeName( aiNode.Name ) ];
+                var nodeInfo = nodeLookup[AssimpConverterCommon.UnescapeName( aiNode.Name )];
                 var node = nodeInfo.Node;
                 var nodeWorldTransform = node.WorldTransform;
                 Matrix4x4.Invert( nodeWorldTransform, out var nodeInverseWorldTransform );
@@ -494,14 +496,14 @@ namespace GFDLibrary.Models.Conversion
                 throw new Exception( "Assimp mesh has no vertices" );
 
             var geometry = new Mesh();
-            var geometryTransformedVertices = new Vector3[ aiMesh.VertexCount ];
+            var geometryTransformedVertices = new Vector3[aiMesh.VertexCount];
 
             geometry.Vertices = aiMesh.Vertices
                                       .Select( x => new Vector3( x.X, x.Y, x.Z ) )
                                       .ToArray();
 
             for ( int i = 0; i < geometry.Vertices.Length; i++ )
-                geometryTransformedVertices[ i ] = Vector3.Transform( geometry.Vertices[ i ], nodeWorldTransform );
+                geometryTransformedVertices[i] = Vector3.Transform( geometry.Vertices[i], nodeWorldTransform );
 
             transformedVertices.AddRange( geometryTransformedVertices );
 
@@ -513,10 +515,10 @@ namespace GFDLibrary.Models.Conversion
             }
 
 
-            if (aiMesh.HasTangentBasis)
+            if ( aiMesh.HasTangentBasis )
             {
                 geometry.Tangents = aiMesh.Tangents
-                                         .Select(x => new Vector3(x.X, x.Y, x.Z))
+                                         .Select( x => new Vector3( x.X, x.Y, x.Z ) )
                                          .ToArray();
             }
 
@@ -534,17 +536,17 @@ namespace GFDLibrary.Models.Conversion
                                                    .ToArray();
             }
 
-            if ( aiMesh.HasTextureCoords( 2) && !options.MinimalVertexAttributes )
+            if ( aiMesh.HasTextureCoords( 2 ) && !options.MinimalVertexAttributes )
             {
                 geometry.TexCoordsChannel2 = aiMesh.TextureCoordinateChannels[2]
                                                    .Select( x => new Vector2( x.X, x.Y ) )
                                                    .ToArray();
             }
 
-            if ( aiMesh.HasVertexColors( 0) && !options.MinimalVertexAttributes)
+            if ( aiMesh.HasVertexColors( 0 ) && !options.MinimalVertexAttributes )
             {
-                geometry.ColorChannel0 = aiMesh.VertexColorChannels[ 0 ]
-                                               .Select( x => ( uint ) ( ( byte ) ( x.B * 255f ) | ( byte ) ( x.G * 255f ) << 8 | ( byte ) ( x.R * 255f ) << 16 | ( byte ) ( x.A * 255f ) << 24 ) )
+                geometry.ColorChannel0 = aiMesh.VertexColorChannels[0]
+                                               .Select( x => (uint)( (byte)( x.B * 255f ) | (byte)( x.G * 255f ) << 8 | (byte)( x.R * 255f ) << 16 | (byte)( x.A * 255f ) << 24 ) )
                                                .ToArray();
             }
             else if ( options.GenerateVertexColors )
@@ -554,10 +556,10 @@ namespace GFDLibrary.Models.Conversion
                     geometry.ColorChannel0[i] = 0xFFFFFFFF;
             }
 
-            if ( aiMesh.HasVertexColors( 1) && !options.MinimalVertexAttributes)
+            if ( aiMesh.HasVertexColors( 1 ) && !options.MinimalVertexAttributes )
             {
                 geometry.ColorChannel1 = aiMesh.VertexColorChannels[1]
-                                               .Select( x => ( uint )( ( byte )( x.B * 255f ) | ( byte )( x.G * 255f ) << 8 | ( byte )( x.R * 255f ) << 16 | ( byte )( x.A * 255f ) << 24 ) )
+                                               .Select( x => (uint)( (byte)( x.B * 255f ) | (byte)( x.G * 255f ) << 8 | (byte)( x.R * 255f ) << 16 | (byte)( x.A * 255f ) << 24 ) )
                                                .ToArray();
             }
 
@@ -565,7 +567,7 @@ namespace GFDLibrary.Models.Conversion
             {
                 geometry.TriangleIndexFormat = aiMesh.VertexCount <= ushort.MaxValue ? TriangleIndexFormat.UInt16 : TriangleIndexFormat.UInt32;
                 geometry.Triangles = aiMesh.Faces
-                                           .Select( x => new Triangle( ( uint )x.Indices[0], ( uint )x.Indices[1], ( uint )x.Indices[2] ) )
+                                           .Select( x => new Triangle( (uint)x.Indices[0], (uint)x.Indices[1], (uint)x.Indices[2] ) )
                                            .ToArray();
             }
 
@@ -585,13 +587,13 @@ namespace GFDLibrary.Models.Conversion
                     var aiMeshBone = aiMesh.Bones[i];
 
                     // Find node index for the bone
-                    var boneLookupData = nodeLookup[ AssimpConverterCommon.UnescapeName( aiMeshBone.Name ) ];
+                    var boneLookupData = nodeLookup[AssimpConverterCommon.UnescapeName( aiMeshBone.Name )];
                     int nodeIndex = boneLookupData.Index;
 
                     // Calculate inverse bind matrix
                     var boneNode = boneLookupData.Node;
                     var bindMatrix = boneNode.WorldTransform * nodeInverseWorldTransform;
-                    
+
                     if ( options.ConvertSkinToZUp )
                         bindMatrix *= YToZUpMatrix;
 
@@ -630,7 +632,7 @@ namespace GFDLibrary.Models.Conversion
                     {
                         int vertexWeightCount = vertexWeightCounts[aiVertexWeight.VertexID]++;
 
-                        geometry.VertexWeights[aiVertexWeight.VertexID].Indices[vertexWeightCount] = ( byte )boneIndex;
+                        geometry.VertexWeights[aiVertexWeight.VertexID].Indices[vertexWeightCount] = (byte)boneIndex;
                         geometry.VertexWeights[aiVertexWeight.VertexID].Weights[vertexWeightCount] = aiVertexWeight.Weight;
                     }
                 }
@@ -651,12 +653,12 @@ namespace GFDLibrary.Models.Conversion
             for ( int i = 0; i < boneInverseBindMatrices.Count; i++ )
             {
                 // Reverse dictionary search
-                var boneToNodeIndex = ( ushort ) nodeToBoneIndices
+                var boneToNodeIndex = (ushort)nodeToBoneIndices
                                                  .Where( x => x.Value.Contains( i ) )
                                                  .Select( x => x.Key )
                                                  .Single();
 
-                var inverseBindMatrix = boneInverseBindMatrices[ i ];
+                var inverseBindMatrix = boneInverseBindMatrices[i];
                 usedBones.Add( new Bone( boneToNodeIndex, inverseBindMatrix ) );
             }
 
@@ -677,42 +679,6 @@ namespace GFDLibrary.Models.Conversion
                 Index = index;
                 IsMeshAttachment = isMesh;
             }
-        }
-    }
-
-    public class ModelConverterOptions
-    {
-        /// <summary>
-        /// Gets or sets the version to use for the converted resources.
-        /// </summary>
-        public uint Version { get; set; }
-
-        /// <summary>
-        /// Gets or sets whether to convert the up axis of the inverse bind pose matrices to Z-up. This is used by Persona 5's battle models for example.
-        /// </summary>
-        public bool ConvertSkinToZUp { get; set; }
-
-        /// <summary>
-        /// Gets or sets whether to generate dummy (white) vertex colors if they're not already present. Some material shaders rely on vertex colors being present, and the lack of them will cause graphics corruption.
-        /// </summary>
-        public bool GenerateVertexColors { get; set; }
-
-        /// <summary>
-        /// Gets or sets whether to generate dummy (white) vertex colors if they're not already present. Some material shaders rely on vertex colors being present, and the lack of them will cause graphics corruption.
-        /// </summary>
-        public bool MinimalVertexAttributes { get; set; }
-
-        public bool SetFullBodyNodeProperties { get; set; }
-
-        public bool AutoAddGFDHelperIDs { get; set; }
-
-        public ModelConverterOptions()
-        {
-            Version = ResourceVersion.Persona5;
-            ConvertSkinToZUp = false;
-            GenerateVertexColors = false;
-            MinimalVertexAttributes = true;
-            SetFullBodyNodeProperties = false;
         }
     }
 }

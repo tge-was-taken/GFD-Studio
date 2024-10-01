@@ -8,15 +8,14 @@ using System.Windows.Forms;
 using GFDLibrary;
 using GFDLibrary.Animations;
 using GFDLibrary.Materials;
-using GFDLibrary.Models.Conversion;
 using GFDStudio.FormatModules;
 using GFDStudio.GUI.Controls;
 using GFDStudio.GUI.DataViewNodes;
 using GFDStudio.IO;
 using GFDLibrary.Textures;
-using Ookii.Dialogs;
 using Ookii.Dialogs.Wpf;
 using System.Threading;
+using GFDLibrary.Conversion;
 
 namespace GFDStudio.GUI.Forms
 {
@@ -321,13 +320,13 @@ namespace GFDStudio.GUI.Forms
 
             var failures = new ConcurrentBag<string>();
 
-            ModelPackConverterOptions option;
+            ModelConverterOptions option;
             using (var dialog = new ModelConverterOptionsDialog(false))
             {
                 if (dialog.ShowDialog() != DialogResult.OK)
                     return;
 
-                ModelPackConverterOptions options = new ModelPackConverterOptions()
+                ModelConverterOptions options = new ModelConverterOptions()
                 {
                     MaterialPreset = dialog.MaterialPreset,
                     Version = dialog.Version

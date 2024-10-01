@@ -1,11 +1,30 @@
-﻿using System.IO;
-using Assimp;
-using GFDLibrary.Models.Conversion;
+﻿using System;
+using System.IO;
 using GFDStudio.IO;
 
 namespace GFDStudio.FormatModules
 {
-    public class AssimpSceneFormatModule : FormatModule<Scene>
+    /// <summary>
+    /// Proxy class for file formats that do not have a direct type representation.
+    /// </summary>
+    public class FileFormatProxy
+    {
+        public FileFormatProxy(Stream stream, string filename = null)
+        {
+            Stream = stream;
+            Filename = filename;
+        }
+
+        public Stream Stream { get; }
+        public string Filename { get; }
+    }
+
+    public class AssimpScene : FileFormatProxy
+    {
+        public AssimpScene(Stream stream, string filename) : base(stream, filename ) { }
+    }
+
+    public class AssimpSceneFormatModule : FormatModule<AssimpScene>
     {
         public override string Name
             => "Assimp Model";
@@ -21,14 +40,15 @@ namespace GFDStudio.FormatModules
             return PathUtilities.MatchesAnyExtension( filename, Extensions );
         }
 
-        protected override Scene ImportCore( Stream stream, string filename = null )
+        protected override AssimpScene ImportCore( Stream stream, string filename = null )
         {
-            return AssimpSceneImporter.ImportFile( filename );
+            return new AssimpScene( stream, filename );
         }
 
-        protected override void ExportCore( Scene obj, Stream stream, string filename = null )
+        protected override void ExportCore( AssimpScene obj, Stream stream, string filename = null )
         {
-            ModelPackExporter.ExportFile( obj, filename );
+            throw new NotImplementedException();
+            // ModelPackExporter.ExportFile( obj, filename );
         }
     }
 }

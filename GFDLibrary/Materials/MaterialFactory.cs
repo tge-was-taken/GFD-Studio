@@ -1,14 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Numerics;
+﻿using GFDLibrary.Conversion;
 using GFDLibrary.Models;
-using GFDLibrary.Models.Conversion;
 
 namespace GFDLibrary.Materials
 {
     public static class MaterialFactory
     {
         public static Material CreateMaterial( string name, string diffuseMapName, string lightmapName, string displacementMapName, string opacityMapName, string normalMapName, 
-            string heightMapName, string emissiveMapName, string ambientMapName, string specularMapName, string reflectionMapName, ModelPackConverterOptions options )
+            string heightMapName, string emissiveMapName, string ambientMapName, string specularMapName, string reflectionMapName, ModelConverterOptions options )
         {
             var MaterialPreset = (Material)options.MaterialPreset;
 
@@ -62,7 +60,7 @@ namespace GFDLibrary.Materials
             return material;
         }
 
-        public static Material CreateMaterial( string name, string diffuseMapName, ModelPackConverterOptions options )
+        public static Material CreateMaterial( string name, string diffuseMapName, ModelConverterOptions options )
         {
             return CreateMaterial(name, diffuseMapName, null, null, null, null, null, null, null, null, null, options);
         }

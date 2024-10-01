@@ -3,9 +3,9 @@ using System.ComponentModel;
 using System.Numerics;
 using System.Windows.Forms;
 using GFDLibrary;
+using GFDLibrary.Conversion;
 using GFDLibrary.Materials;
 using GFDLibrary.Models;
-using GFDLibrary.Models.Conversion;
 using GFDStudio.GUI.Forms;
 using GFDStudio.GUI.TypeConverters;
 
@@ -362,7 +362,7 @@ namespace GFDStudio.GUI.DataViewNodes
                 if (dialog.ShowDialog() != DialogResult.OK)
                     return;
 
-                ModelPackConverterOptions options = new ModelPackConverterOptions()
+                ModelConverterOptions options = new ModelConverterOptions()
                 {
                     MaterialPreset = dialog.MaterialPreset,
                     Version = dialog.Version

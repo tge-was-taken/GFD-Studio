@@ -7,7 +7,7 @@ using GFDLibrary.Graphics;
 using Matrix4x4 = Assimp.Matrix4x4;
 using Quaternion = Assimp.Quaternion;
 
-namespace GFDLibrary.Models.Conversion.Utilities
+namespace GFDLibrary.Conversion.AssimpNet.Utilities
 {
     public static class AssimpExtensions
     {
@@ -54,10 +54,10 @@ namespace GFDLibrary.Models.Conversion.Utilities
 
         public static Color ToNumerics( this Color4D value )
         {
-            return new Color( ( byte )( value.R * 255f ),
-                              ( byte )( value.G * 255f ),
-                              ( byte )( value.B * 255f ),
-                              ( byte )( value.A * 255f ) );
+            return new Color( (byte)( value.R * 255f ),
+                              (byte)( value.G * 255f ),
+                              (byte)( value.B * 255f ),
+                              (byte)( value.A * 255f ) );
         }
 
         public static Vector4 ToNumerics( this Color3D value )
@@ -108,7 +108,7 @@ namespace GFDLibrary.Models.Conversion.Utilities
                 return transform;
             }
 
-            return ToNumerics( CalculateWorldTransformInternal( node ) );
+            return CalculateWorldTransformInternal( node ) .ToNumerics( );
         }
 
         /// <summary>

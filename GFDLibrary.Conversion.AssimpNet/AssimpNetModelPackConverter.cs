@@ -2,15 +2,16 @@
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using GFDLibrary.Conversion.AssimpNet.Utilities;
 using GFDLibrary.Materials;
 using GFDLibrary.Textures;
 using Ai = Assimp;
 
-namespace GFDLibrary.Models.Conversion
+namespace GFDLibrary.Conversion.AssimpNet
 {
-    public static class ModelPackConverter
+    public static class AssimpNetModelPackConverter
     {
-        public static ModelPack ConvertFromAssimpScene( string filePath, ModelPackConverterOptions options )
+        public static ModelPack ConvertFromAssimpScene( string filePath, ModelConverterOptions options )
         {
             // For importing textures
             string baseDirectoryPath = Path.GetDirectoryName( filePath );
@@ -33,21 +34,12 @@ namespace GFDLibrary.Models.Conversion
             }
 
             // Create scene
-            var sceneConverterOptions = new ModelConverterOptions()
-            {
-                Version = options.Version,
-                ConvertSkinToZUp = options.ConvertSkinToZUp,
-                GenerateVertexColors = options.GenerateVertexColors,
-                MinimalVertexAttributes = options.MinimalVertexAttributes,
-                AutoAddGFDHelperIDs = options.AutoAddGFDHelperIDs,
-            };
-
-            model.Model = ModelConverter.ConvertFromAssimpScene( aiScene, sceneConverterOptions );
+            model.Model = AssimpNetModelConverter.ConvertFromAssimpScene( aiScene, options );
 
             return model;
         }
 
-        private static Material ConvertMaterialAndTextures( Ai.Material aiMaterial, ModelPackConverterOptions options, string baseDirectoryPath, TextureDictionary textureDictionary )
+        private static Material ConvertMaterialAndTextures( Ai.Material aiMaterial, ModelConverterOptions options, string baseDirectoryPath, TextureDictionary textureDictionary )
         {
             // Convert all textures
             TextureInfo diffuseTexture = null;
@@ -97,7 +89,7 @@ namespace GFDLibrary.Models.Conversion
             if ( diffuseTexture != null )
             {
                 textureDictionary.Add( diffuseTexture.Texture );
-                material = MaterialFactory.CreateMaterial( materialName, diffuseTexture.Name, options ); 
+                material = MaterialFactory.CreateMaterial( materialName, diffuseTexture.Name, options );
             }
 
             return material;
@@ -131,48 +123,6 @@ namespace GFDLibrary.Models.Conversion
         private static bool HasAlpha( TexturePixelFormat pixelFormat )
         {
             return pixelFormat == TexturePixelFormat.BC2 || pixelFormat == TexturePixelFormat.BC3;
-        }
-    }
-
-    public class ModelPackConverterOptions
-    {
-        /// <summary>
-        /// Gets or sets the material preset that should be used while converting the materials.
-        /// </summary>
-        public object MaterialPreset { get; set; }
-
-        /// <summary>
-        /// Gets or sets the version to use for the converted resources.
-        /// </summary>
-        public uint Version { get; set; }
-
-        /// <summary>
-        /// Gets or sets whether to convert the up axis of the inverse bind pose matrices to Z-up. This is used by Persona 5's battle models for example.
-        /// </summary>
-        public bool ConvertSkinToZUp { get; set; }
-
-        /// <summary>
-        /// Gets or sets whether to generate dummy (white) vertex colors if they're not already present. Some material shaders rely on vertex colors being present, and the lack of them will cause graphics corruption.
-        /// </summary>
-        public bool GenerateVertexColors { get; set; }
-
-        /// <summary>
-        /// Sometimes extra vertex attributes are generated for one reason or another, on games using the GFD formats after P5 this causes problems if the data for the attributes does not exist, this sets the minimal amount of attributes to circumvent this issue.
-        /// </summary>
-        public bool MinimalVertexAttributes { get; set; }
-
-        /// <summary>
-        /// If, for whatever reason, the GFD Helper IDs are missing, we try to add them
-        /// </summary>
-        public bool AutoAddGFDHelperIDs { get; set; }
-
-        public ModelPackConverterOptions()
-        {
-            // MaterialPreset = MaterialPreset.CharacterSkinP5;
-            Version = ResourceVersion.Persona5;
-            ConvertSkinToZUp = false;
-            GenerateVertexColors = false;
-            MinimalVertexAttributes = true;
         }
     }
 }
