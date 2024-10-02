@@ -35,7 +35,11 @@ namespace GFDLibrary.Conversion.AssimpNet
         {
             var aiContext = new Ai.AssimpContext();
             aiContext.XAxisRotation = 90;
-            aiContext.ExportFile( scene, path, "collada", Ai.PostProcessSteps.FlipUVs );
+
+            var ext = Path.GetExtension( path ).ToLower().TrimStart( '.' );
+            var exportFormat = aiContext.GetSupportedExportFormats()
+                .FirstOrDefault( x => x.FileExtension == ext )?.FormatId ?? "collada";
+            aiContext.ExportFile( scene, path, exportFormat, Ai.PostProcessSteps.FlipUVs );
         }
 
         private void Init( string path )

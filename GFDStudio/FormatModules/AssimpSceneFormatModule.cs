@@ -13,7 +13,7 @@ namespace GFDStudio.FormatModules
     public class AssimpSceneFormatModule : FormatModule<AssimpScene>
     {
         public override string Name
-            => "Assimp Model";
+            => "3D Model";
 
         public override string[] Extensions
             => new[] { "dae", "obj", "fbx", "ascii.fbx" };
@@ -33,8 +33,7 @@ namespace GFDStudio.FormatModules
 
         protected override void ExportCore( AssimpScene obj, Stream stream, string filename = null )
         {
-            throw new NotImplementedException();
-            // ModelPackExporter.ExportFile( obj, filename );
+            throw new NotSupportedException();
         }
     }
 }
