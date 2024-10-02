@@ -39,7 +39,7 @@ namespace GFDLibrary::Conversion::FbxSdk
 
 	private:
 		void Reset();
-		void ExportFbxScene(FbxScene* scene, String^ path, bool isAscii);
+		void ExportFbxScene(FbxScene* scene, String^ path);
 		FbxScene* ConvertToFbxScene(ModelPack^ modelPack);
 		void ConvertNode(FbxNode* fbxParentNode, Node^ parentNode);
 		void ConvertModel(FbxNode* fbxParentNode,Node^ parentNode, Model^ model, int typeIndex);

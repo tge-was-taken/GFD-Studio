@@ -88,15 +88,7 @@ namespace GFDStudio.GUI.DataViewNodes
 
             RegisterExportHandler<AssimpScene>( path =>
             {
-                var ext = Path.GetExtension( path );
-                if (ext.Equals(".fbx", System.StringComparison.OrdinalIgnoreCase))
-                {
-                    FbxSdkModelPackExporter.ExportFile( Data, path, new FbxSdkModelPackExporterConfig() );
-                }
-                else
-                {
-                    AssimpNetModelPackExporter.ExportFile( Data, path );
-                }
+                ModelPackExportHelper.ExportFile( Data, path );
             } );
 
             RegisterReplaceHandler<ModelPack>( path =>

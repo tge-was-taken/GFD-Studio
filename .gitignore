@@ -33,3 +33,4 @@ AtlusGfdLibTesting/
 /packages
 /.vs
 /Resources/TestData/
+/GFDLibrary.Conversion.FbxSdk/FbxSdkNet.cpp

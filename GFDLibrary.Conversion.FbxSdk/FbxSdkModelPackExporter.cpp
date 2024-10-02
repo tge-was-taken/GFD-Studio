@@ -907,10 +907,10 @@ namespace GFDLibrary::Conversion::FbxSdk
 
 		// Create scene
 		auto fbxScene = ConvertToFbxScene(modelPack);
-		ExportFbxScene(fbxScene, path, false);
+		ExportFbxScene(fbxScene, path);
 	}
 
-	void FbxSdkModelPackExporter::ExportFbxScene(FbxScene* fbxScene, String^ path, bool isAscii)
+	void FbxSdkModelPackExporter::ExportFbxScene(FbxScene* fbxScene, String^ path)
 	{
 		// Create exporter
 		auto fbxExporter = FbxExporter::Create(mFbxManager, "");
@@ -918,8 +918,9 @@ namespace GFDLibrary::Conversion::FbxSdk
 			throw gcnew FbxSdkModelPackExporterException("Failed to set FBX export version");
 
 		// Initialize exporter
+		const bool isAsciiFbx = path->EndsWith(".ascii.fbx", StringComparison::OrdinalIgnoreCase);
 		int pFileFormat = -1;
-		if (isAscii)
+		if (isAsciiFbx)
 		{
 			int lFormatIndex, lFormatCount = mFbxManager->GetIOPluginRegistry()->GetWriterFormatCount();
 			for (lFormatIndex = 0; lFormatIndex < lFormatCount; lFormatIndex++)
