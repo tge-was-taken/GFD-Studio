@@ -1,13 +1,9 @@
-﻿using System;
-using System.Data.Common;
-using System.Diagnostics;
-using System.IO;
+﻿using System.IO;
 using System.Windows.Forms;
 using GFDLibrary;
+using GFDLibrary.Conversion;
 using GFDLibrary.Materials;
-using GFDLibrary.Models.Conversion;
 using GFDStudio.GUI.Forms;
-using Ookii.Dialogs;
 using Ookii.Dialogs.Wpf;
 
 namespace GFDStudio.GUI.DataViewNodes
@@ -64,7 +60,7 @@ namespace GFDStudio.GUI.DataViewNodes
                 if (dialog.ShowDialog() != DialogResult.OK)
                     return;
 
-                ModelPackConverterOptions options = new ModelPackConverterOptions()
+                ModelConverterOptions options = new ModelConverterOptions()
                 {
                     MaterialPreset = dialog.MaterialPreset,
                     Version = dialog.Version

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Numerics;
+using GFDLibrary.Conversion;
 using GFDLibrary.IO;
 using GFDLibrary.Models;
-using GFDLibrary.Models.Conversion;
 
 namespace GFDLibrary.Materials
 {
@@ -539,7 +539,7 @@ namespace GFDLibrary.Materials
             }
         }
 
-        public static Material ConvertToMaterialPreset(Material material, ModelPackConverterOptions options)
+        public static Material ConvertToMaterialPreset(Material material, ModelConverterOptions options)
         {
             Material newMaterial = null;
 

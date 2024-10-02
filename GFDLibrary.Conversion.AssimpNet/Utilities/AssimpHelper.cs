@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using Assimp;
 
-namespace GFDLibrary.Models.Conversion.Utilities
+namespace GFDLibrary.Conversion.AssimpNet.Utilities
 {
     /// <summary>
     /// Provides various useful utilities for working with Assimp .
@@ -51,20 +51,20 @@ namespace GFDLibrary.Models.Conversion.Utilities
         /// <param name="nodeSearchFunc"></param>
         /// <param name="fallback"></param>
         /// <returns></returns>
-        public static T DetermineBestTargetNode<T>( Assimp.Mesh aiMesh, Assimp.Node aiNode, Func<string,T> nodeSearchFunc, T fallback )
+        public static T DetermineBestTargetNode<T>( Assimp.Mesh aiMesh, Assimp.Node aiNode, Func<string, T> nodeSearchFunc, T fallback )
         {
             if ( aiMesh.BoneCount > 1 )
             {
                 // Select node to which the mesh is weighted most
                 var boneWeightCoverage = CalculateBoneWeightCoverage( aiMesh );
-                var maxCoverage        = boneWeightCoverage.Max( x => x.Coverage );
-                var bestTargetBone     = boneWeightCoverage.First( x => x.Coverage == maxCoverage ).Bone;
+                var maxCoverage = boneWeightCoverage.Max( x => x.Coverage );
+                var bestTargetBone = boneWeightCoverage.First( x => x.Coverage == maxCoverage ).Bone;
                 return nodeSearchFunc( bestTargetBone.Name );
             }
             else if ( aiMesh.BoneCount == 1 )
             {
                 // Use our only bone as the target node
-                return nodeSearchFunc( aiMesh.Bones[ 0 ].Name );
+                return nodeSearchFunc( aiMesh.Bones[0].Name );
             }
             else
             {
@@ -125,7 +125,7 @@ namespace GFDLibrary.Models.Conversion.Utilities
                 foreach ( var vertexWeight in bone.VertexWeights )
                     weightTotal += vertexWeight.Weight;
 
-                float weightCoverage = ( weightTotal / aiMesh.VertexCount );
+                float weightCoverage =  weightTotal / aiMesh.VertexCount ;
                 boneScores.Add( (weightCoverage, bone) );
             }
 
@@ -158,7 +158,7 @@ namespace GFDLibrary.Models.Conversion.Utilities
                 {
                     var faceUsedBones = face.Indices.SelectMany( y => vertexWeights[y].Select( z => z.Item1 ) ).ToList();
                     var faceUniqueUsedBoneCount = faceUsedBones.Count( x => !usedBones.Contains( x ) );
-                    if ( ( usedBones.Count + faceUniqueUsedBoneCount ) > maxBoneCount )
+                    if (  usedBones.Count + faceUniqueUsedBoneCount  > maxBoneCount )
                     {
                         // Skip
                         continue;
@@ -263,7 +263,7 @@ namespace GFDLibrary.Models.Conversion.Utilities
                 foreach ( var face in remainingFaces )
                 {
                     var newVertices = new List<Vertex>();
-                    var newFace     = new Face();
+                    var newFace = new Face();
                     foreach ( var i in face.Indices )
                     {
                         var cacheIndex = FindVertexCacheIndex( mesh, i, vertexWeights, vertexCache, out var vertex );
@@ -314,15 +314,15 @@ namespace GFDLibrary.Models.Conversion.Utilities
             return subMeshes;
         }
 
-        private static int FindVertexCacheIndex(Assimp.Mesh mesh, int i, List<(Assimp.Bone,float)>[] vertexWeights, List<Vertex> vertexCache, out Vertex vertex )
+        private static int FindVertexCacheIndex( Assimp.Mesh mesh, int i, List<(Assimp.Bone, float)>[] vertexWeights, List<Vertex> vertexCache, out Vertex vertex )
         {
-            var position  = mesh.HasVertices ? mesh.Vertices[i] : new Vector3D();
-            var normal    = mesh.HasNormals ? mesh.Normals[i] : new Vector3D();
-            var tangent   = mesh.HasTangentBasis ? mesh.Tangents[i] : new Vector3D();
-            var texCoord  = mesh.HasTextureCoords( 0 ) ? mesh.TextureCoordinateChannels[0][i] : new Vector3D();
+            var position = mesh.HasVertices ? mesh.Vertices[i] : new Vector3D();
+            var normal = mesh.HasNormals ? mesh.Normals[i] : new Vector3D();
+            var tangent = mesh.HasTangentBasis ? mesh.Tangents[i] : new Vector3D();
+            var texCoord = mesh.HasTextureCoords( 0 ) ? mesh.TextureCoordinateChannels[0][i] : new Vector3D();
             var texCoord2 = mesh.HasTextureCoords( 1 ) ? mesh.TextureCoordinateChannels[1][i] : new Vector3D();
-            var color     = mesh.HasVertexColors( 0 ) ? mesh.VertexColorChannels[0][i] : new Color4D();
-            var weights   = mesh.HasBones ? vertexWeights[i] : new List<(Assimp.Bone, float)>();
+            var color = mesh.HasVertexColors( 0 ) ? mesh.VertexColorChannels[0][i] : new Color4D();
+            var weights = mesh.HasBones ? vertexWeights[i] : new List<(Assimp.Bone, float)>();
             var cacheIndex = vertexCache.FindIndex( y => y.Position == position && y.Normal == normal && y.Tangent == tangent && y.TexCoord == texCoord &&
                                                          y.TexCoord2 == texCoord2 && y.Color == color &&
                                                          y.Weights.SequenceEqual( weights ) );
@@ -342,7 +342,7 @@ namespace GFDLibrary.Models.Conversion.Utilities
 
                 if ( mesh.HasNormals )
                     subMesh.Normals.Add( vertex.Normal );
-                
+
                 if ( mesh.HasTangentBasis )
                     subMesh.Tangents.Add( vertex.Tangent );
 

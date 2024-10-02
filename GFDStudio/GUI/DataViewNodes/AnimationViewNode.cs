@@ -4,8 +4,9 @@ using System.Linq;
 using System.Windows.Forms;
 using GFDLibrary;
 using GFDLibrary.Animations;
-using GFDLibrary.Animations.Conversion;
 using GFDLibrary.Common;
+using GFDLibrary.Conversion;
+using GFDLibrary.Conversion.AssimpNet;
 using GFDStudio.FormatModules;
 using GFDStudio.GUI.TypeConverters;
 
@@ -90,9 +91,9 @@ namespace GFDStudio.GUI.DataViewNodes
             Properties = new VariantUserPropertyList( Data.Properties, () => Properties = mProperties );
             RegisterExportHandler<Animation>( path => Data.Save( path ) );
             RegisterReplaceHandler<Animation>( Resource.Load<Animation> );
-            RegisterReplaceHandler<Assimp.Scene>( file =>
+            RegisterReplaceHandler<AssimpScene>( file =>
             {
-                var animation = AnimationConverter.ConvertFromAssimpScene( file, new AnimationConverterOptions() );
+                var animation = AssimpNetAnimationConverter.ConvertFromAssimpScene( file, new AnimationConverterOptions() );
                 var modelViewModel = Parent?.Parent as ModelPackViewNode;
 
                 if ( modelViewModel?.Model != null )

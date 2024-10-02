@@ -1,11 +1,12 @@
-﻿using System.Linq;
+﻿using GFDLibrary.Animations;
+using GFDLibrary.Conversion.AssimpNet.Utilities;
+using System.Linq;
 using System.Numerics;
-using GFDLibrary.Models.Conversion;
 using Ai = Assimp;
 
-namespace GFDLibrary.Animations.Conversion
+namespace GFDLibrary.Conversion.AssimpNet
 {
-    public static class AnimationConverter
+    public static class AssimpNetAnimationConverter
     {
         public static Animation ConvertFromAssimpScene( string filePath, AnimationConverterOptions options )
         {
@@ -13,13 +14,13 @@ namespace GFDLibrary.Animations.Conversion
             return ConvertFromAssimpScene( aiScene, options );
         }
 
-        public static Animation ConvertFromAssimpScene( Ai.Scene aiScene, AnimationConverterOptions options )
+        private static Animation ConvertFromAssimpScene( Ai.Scene aiScene, AnimationConverterOptions options )
         {
             var aiAnimation = aiScene.Animations.FirstOrDefault();
             return aiAnimation != null ? ConvertFromAssimpScene( aiScene, aiAnimation, options ) : null;
         }
 
-        public static Animation ConvertFromAssimpScene( Ai.Scene aiScene, Ai.Animation aiAnimation, AnimationConverterOptions options )
+        private static Animation ConvertFromAssimpScene( Ai.Scene aiScene, Ai.Animation aiAnimation, AnimationConverterOptions options )
         {
             var animation = new Animation( options.Version );
             animation.Duration = ConvertTime( aiAnimation.DurationInTicks, aiAnimation.TicksPerSecond );
@@ -67,20 +68,20 @@ namespace GFDLibrary.Animations.Conversion
 
                 for ( var i = 0; i < aiKeyTimings.Count; i++ )
                 {
-                    var aiTime = aiKeyTimings[ i ];
+                    var aiTime = aiKeyTimings[i];
 
                     // Start building the keyframe
                     var key = new PRSKey( layer.KeyType )
                     {
                         Position = new Vector3( lastPosition.X, lastPosition.Y, lastPosition.Z ),
                         Rotation = new Quaternion( lastRotation.X, lastRotation.Y, lastRotation.Z, lastRotation.W ),
-                        Scale    = new Vector3( lastScale.X, lastScale.Y, lastScale.Z )
+                        Scale = new Vector3( lastScale.X, lastScale.Y, lastScale.Z )
                     };
 
                     // Fetch the Assimp keys for this time
                     var aiPositionKey = aiChannel.PositionKeys.SingleOrDefault( x => x.Time == aiTime );
                     var aiRotationKey = aiChannel.RotationKeys.SingleOrDefault( x => x.Time == aiTime );
-                    var aiScaleKey    = aiChannel.ScalingKeys.SingleOrDefault( x => x.Time == aiTime );
+                    var aiScaleKey = aiChannel.ScalingKeys.SingleOrDefault( x => x.Time == aiTime );
 
                     if ( aiPositionKey != default )
                     {
@@ -114,7 +115,7 @@ namespace GFDLibrary.Animations.Conversion
 
         private static float ConvertTime( double ticks, double ticksPerSecond )
         {
-            return ( float )( ticks / ( ( ticksPerSecond / 30f ) * 30f ) );
+            return (float)( ticks / ( ticksPerSecond / 30f * 30f ) );
         }
 
         private static int GetTargetIdForNode( Ai.Node rootNode, string nodeName )
@@ -143,19 +144,6 @@ namespace GFDLibrary.Animations.Conversion
                 return targetId;
             else
                 return -1;
-        }
-    }
-
-    public class AnimationConverterOptions
-    {
-        /// <summary>
-        /// Gets or sets the version to use for the converted resources.
-        /// </summary>
-        public uint Version { get; set; }
-
-        public AnimationConverterOptions()
-        {
-            Version = ResourceVersion.Persona5;
         }
     }
 }

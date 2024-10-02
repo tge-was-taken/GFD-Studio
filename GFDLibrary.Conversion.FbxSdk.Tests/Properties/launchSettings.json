@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "GFDLibrary.Conversion.FbxSdk.Tests": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}
