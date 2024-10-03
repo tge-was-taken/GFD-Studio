@@ -96,6 +96,10 @@ namespace GFDLibrary.Animations
                     Position = reader.ReadVector3Half();
                     Scale = reader.ReadVector3Half();
                     break;
+                case KeyType.Type31:
+                    Position = reader.ReadVector3();
+                    Rotation = reader.ReadQuaternion();
+                    break;
 
                 default:
                     throw new InvalidOperationException(nameof(Type));

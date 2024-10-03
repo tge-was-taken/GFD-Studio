@@ -83,17 +83,24 @@ namespace GFDLibrary.Models.Conversion
             }
         }
 
+        private Ai.Material InitializeAssimpMaterial( Material material )
+        {
+            var aiMaterial = new Ai.Material { Name = AssimpConverterCommon.EscapeName( material.Name ) };
+            if ( material.METAPHOR_MaterialParameterSet != null )
+                material.METAPHOR_MaterialParameterSet.ConvertToAssimp(ref aiMaterial);
+            else
+            {
+                aiMaterial.ColorAmbient = material.LegacyParameters.AmbientColor.ToAssimp();
+                aiMaterial.ColorDiffuse = material.LegacyParameters.DiffuseColor.ToAssimp();
+                aiMaterial.ColorSpecular = material.LegacyParameters.SpecularColor.ToAssimp();
+                aiMaterial.ColorEmissive = material.LegacyParameters.EmissiveColor.ToAssimp();
+            }
+            return aiMaterial;
+        }
+
         private Ai.Material ConvertMaterial( Material material )
         {
-            var aiMaterial = new Ai.Material
-            {
-                Name = AssimpConverterCommon.EscapeName(material.Name),
-                ColorAmbient = new Ai.Color4D( material.AmbientColor.X, material.AmbientColor.Y, material.AmbientColor.Z, material.AmbientColor.W ),
-                ColorDiffuse = new Ai.Color4D( material.DiffuseColor.X, material.DiffuseColor.Y, material.DiffuseColor.Z, material.DiffuseColor.W ),
-                ColorSpecular = new Ai.Color4D( material.SpecularColor.X, material.SpecularColor.Y, material.SpecularColor.Z, material.SpecularColor.W ),
-                ColorEmissive = new Ai.Color4D( material.EmissiveColor.X, material.EmissiveColor.Y, material.EmissiveColor.Z, material.EmissiveColor.W )
-            };
-
+            var aiMaterial = InitializeAssimpMaterial( material );
             if ( material.Flags.HasFlag( MaterialFlags.HasDiffuseMap ) )
             {
                 aiMaterial.TextureDiffuse = new Ai.TextureSlot( 

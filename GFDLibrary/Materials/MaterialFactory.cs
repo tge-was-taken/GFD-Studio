@@ -11,15 +11,10 @@ namespace GFDLibrary.Materials
             string heightMapName, string emissiveMapName, string ambientMapName, string specularMapName, string reflectionMapName, ModelPackConverterOptions options )
         {
             var MaterialPreset = (Material)options.MaterialPreset;
-
             var material = new Material( name )
             {
-                AmbientColor = MaterialPreset.AmbientColor,
-                DiffuseColor = MaterialPreset.DiffuseColor,
-                SpecularColor = MaterialPreset.SpecularColor,
-                EmissiveColor = MaterialPreset.EmissiveColor,
-                Field40 = MaterialPreset.Field40,
-                Field44 = MaterialPreset.Field44,
+                Version = MaterialPreset.Version,
+
                 DrawMethod = MaterialPreset.DrawMethod,
                 Field49 = MaterialPreset.Field49,
                 Field4A = MaterialPreset.Field4A,
@@ -44,8 +39,18 @@ namespace GFDLibrary.Materials
                 ShadowMap = null,
                 SpecularMap = null,
                 Flags = MaterialPreset.Flags,
-                Attributes = MaterialPreset.Attributes
+                Attributes = MaterialPreset.Attributes,
             };
+            if ( MaterialPreset.METAPHOR_MaterialParameterSet != null )
+            {
+                material.METAPHOR_UseMaterialParameterSet = MaterialPreset.METAPHOR_UseMaterialParameterSet;
+                material.METAPHOR_MaterialParameterSet = MaterialPreset.METAPHOR_MaterialParameterSet;
+                material.METAPHOR_MaterialParameterFormat = MaterialPreset.METAPHOR_MaterialParameterFormat;
+            }
+            else
+            {
+                material.LegacyParameters = MaterialPreset.LegacyParameters;
+            }
 
             // TODO: which one is which
             if ( MaterialPreset.DiffuseMap != null ) material.DiffuseMap = new TextureMap( diffuseMapName );

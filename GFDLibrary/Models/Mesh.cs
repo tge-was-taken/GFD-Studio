@@ -282,7 +282,8 @@ namespace GFDLibrary.Models
 
         public Mesh( uint version ) : base( version )
         {
-
+            TriangleIndexFormat = TriangleIndexFormat.UInt16;
+            Unk_StrideType = 3;
         }
 
         /// <summary>

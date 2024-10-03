@@ -194,4 +194,20 @@ namespace GFDLibrary.Shaders
         {
         }
     }
+
+    public class ShaderCacheMetaphorDX11 : ShaderCache<ShaderMetaphor>
+    {
+        public override ResourceType ResourceType => ResourceType.ShaderMetaphorDX11;
+        public ShaderCacheMetaphorDX11()
+        {
+        }
+
+        public ShaderCacheMetaphorDX11( uint version ) : base( version )
+        {
+        }
+
+        public ShaderCacheMetaphorDX11( uint version, uint cacheVersion ) : base( version, cacheVersion )
+        {
+        }
+    }
 }

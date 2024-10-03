@@ -48,12 +48,14 @@ namespace GFDLibrary.Animations
                     case KeyType.NodePRHalf:
                     case KeyType.NodePRSHalf:
                     case KeyType.NodePRHalf_2:
-                    case KeyType.NodeRHalf:
-                    case KeyType.NodeSHalf:
                         return true;
 
                     case KeyType.Type31:
                         return !IsCatherineFullBodyData;
+
+                    case KeyType.NodeRHalf:
+                    case KeyType.NodeSHalf:
+                        return Version < 0x2000000;
                 }
 
                 return false;

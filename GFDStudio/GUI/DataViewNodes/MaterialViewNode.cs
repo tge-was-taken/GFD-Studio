@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Numerics;
+using System.Reflection;
 using System.Windows.Forms;
 using GFDLibrary;
 using GFDLibrary.Materials;
@@ -11,30 +12,11 @@ using GFDStudio.GUI.TypeConverters;
 
 namespace GFDStudio.GUI.DataViewNodes
 {
-    public class MaterialViewNode : DataViewNode<Material>
+    public class MaterialLegacyParametersViewNode : DataViewNode<MaterialLegacyParameters>
     {
-        public override DataViewNodeMenuFlags ContextMenuFlags =>
-            DataViewNodeMenuFlags.Export | DataViewNodeMenuFlags.Replace | DataViewNodeMenuFlags.Move | DataViewNodeMenuFlags.Rename | DataViewNodeMenuFlags.Delete | DataViewNodeMenuFlags.Convert;
 
-        public override DataViewNodeFlags NodeFlags
-            => DataViewNodeFlags.Branch;
-
-        [Browsable( true )]
-        public new string Name
-        {
-            get => GetDataProperty< string >();
-            set => SetDataProperty( value );
-        }
-
-        [Browsable( true )]
-        [TypeConverter( typeof( EnumTypeConverter<MaterialFlags> ) )]
-        public MaterialFlags Flags
-        {
-            get => GetDataProperty< MaterialFlags >();
-            set => SetDataProperty( value );
-        }
         [TypeConverter( typeof( Vector4TypeConverter ) )]
-        [DisplayName("Ambient color (float)")]
+        [DisplayName( "Ambient color (float)" )]
         public Vector4 AmbientColor
         {
             get => Data.AmbientColor;
@@ -110,6 +92,42 @@ namespace GFDStudio.GUI.DataViewNodes
             set => SetDataProperty( value );
         }
 
+        public MaterialLegacyParametersViewNode( string text, MaterialLegacyParameters data ) : base( text, data )
+        {
+        }
+
+        public override DataViewNodeMenuFlags ContextMenuFlags => 0;
+        public override DataViewNodeFlags NodeFlags => DataViewNodeFlags.Leaf;
+
+        protected override void InitializeCore()
+        {
+
+        }
+    }
+    public class MaterialViewNode : DataViewNode<Material>
+    {
+        public override DataViewNodeMenuFlags ContextMenuFlags =>
+            DataViewNodeMenuFlags.Export | DataViewNodeMenuFlags.Replace | DataViewNodeMenuFlags.Move | DataViewNodeMenuFlags.Rename | DataViewNodeMenuFlags.Delete | DataViewNodeMenuFlags.Convert;
+
+        public override DataViewNodeFlags NodeFlags
+            => DataViewNodeFlags.Branch;
+
+        [Browsable( true )]
+        public new string Name
+        {
+            get => GetDataProperty< string >();
+            set => SetDataProperty( value );
+        }
+
+        [Browsable( true )]
+        [TypeConverter( typeof( EnumTypeConverter<MaterialFlags> ) )]
+        public MaterialFlags Flags
+        {
+            get => GetDataProperty< MaterialFlags >();
+            set => SetDataProperty( value );
+        }
+        
+
         [Browsable( true )]
         [TypeConverter( typeof( EnumTypeConverter<MaterialDrawMethod> ) )]
         [DisplayName( "Draw method" )]
@@ -120,6 +138,7 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         [Browsable( true )]
+        [DisplayName( "Blend Source Color" )]
         public byte Field49
         {
             get => GetDataProperty<byte>();
@@ -127,6 +146,7 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         [Browsable( true )]
+        [DisplayName( "Blend Destination Color" )]
         public byte Field4A
         {
             get => GetDataProperty<byte>();
@@ -134,6 +154,7 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         [Browsable( true )]
+        [DisplayName( "Source Alpha" )]
         public byte Field4B
         {
             get => GetDataProperty<byte>();
@@ -141,6 +162,7 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         [Browsable( true )]
+        [DisplayName( "Destination Alpha" )]
         public byte Field4C
         {
             get => GetDataProperty<byte>();
@@ -183,6 +205,7 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         [Browsable( true )]
+        [DisplayName( "Sort Priority" )]
         public short Field96
         {
             get => GetDataProperty<short>();
@@ -190,6 +213,7 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         [Browsable( true )]
+        [DisplayName( "Shader ID" )]
         public short Field5C
         {
             get => GetDataProperty<short>();
@@ -227,6 +251,11 @@ namespace GFDStudio.GUI.DataViewNodes
         public uint Field98
         {
             get => GetDataProperty<uint>();
+            set => SetDataProperty( value );
+        }
+        public float Field6C_2
+        {
+            get => GetDataProperty<float>();
             set => SetDataProperty( value );
         }
 
@@ -288,7 +317,7 @@ namespace GFDStudio.GUI.DataViewNodes
                 material.TextureMap10 = null;
 
                 //if ( material.METAPHOR_UseMaterialParameterSet )
-                //    material.METAHPOR_MaterialParameterSet = MaterialParameterSetViewNode.Data;
+                //    material.METAPHOR_MaterialParameterSet = MaterialParameterSetViewNode.Data;
 
                 if ( !TextureMapsViewNode.IsExpanded )
                 {
@@ -357,8 +386,11 @@ namespace GFDStudio.GUI.DataViewNodes
         {
             if ( Data.METAPHOR_UseMaterialParameterSet )
             {
-                MaterialParameterSetViewNode = DataViewNodeFactory.Create( Data.METAHPOR_MaterialParameterSet.GetParameterName(), Data.METAHPOR_MaterialParameterSet );
+                MaterialParameterSetViewNode = DataViewNodeFactory.Create( Data.METAPHOR_MaterialParameterSet.GetParameterName(), Data.METAPHOR_MaterialParameterSet );
                 AddChildNode( MaterialParameterSetViewNode );
+            } else
+            {
+                AddChildNode( DataViewNodeFactory.Create( "Parameters" , Data.LegacyParameters ) );
             }
             TextureMapsViewNode = ( TextureMapListViewNode)DataViewNodeFactory.Create( "Texture Maps", CreateTextureMapInfo() );
             AddChildNode( TextureMapsViewNode );

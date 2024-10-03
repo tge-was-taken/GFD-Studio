@@ -493,7 +493,7 @@ namespace GFDLibrary.Models.Conversion
             if ( !aiMesh.HasVertices )
                 throw new Exception( "Assimp mesh has no vertices" );
 
-            var geometry = new Mesh();
+            var geometry = new Mesh( options.Version );
             var geometryTransformedVertices = new Vector3[ aiMesh.VertexCount ];
 
             geometry.Vertices = aiMesh.Vertices
@@ -512,13 +512,14 @@ namespace GFDLibrary.Models.Conversion
                                          .ToArray();
             }
 
-
+            /*
             if (aiMesh.HasTangentBasis)
             {
                 geometry.Tangents = aiMesh.Tangents
                                          .Select(x => new Vector3(x.X, x.Y, x.Z))
                                          .ToArray();
             }
+            */
 
             if ( aiMesh.HasTextureCoords( 0 ) )
             {
@@ -640,7 +641,8 @@ namespace GFDLibrary.Models.Conversion
             geometry.MaterialName = AssimpConverterCommon.UnescapeName( material.Name );
             geometry.BoundingBox = BoundingBox.Calculate( geometry.Vertices );
             geometry.BoundingSphere = BoundingSphere.Calculate( geometry.BoundingBox.Value, geometry.Vertices );
-            geometry.Flags |= GeometryFlags.Bit31;
+            //geometry.Flags |= GeometryFlags.Bit31;
+            geometry.Flags |= GeometryFlags.Bit7;
 
             return geometry;
         }

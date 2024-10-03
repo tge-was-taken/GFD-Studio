@@ -114,6 +114,8 @@ namespace GFDLibrary.Rendering.OpenGL
 
         public void Draw( Matrix4 modelMatrix, GLShaderProgram shaderProgram )
         {
+            if ( Material.METAPHOR_DistortionMaterialTest )
+                return;
             shaderProgram.SetUniform( "uModel", modelMatrix);
             Material.Bind( shaderProgram );
             shaderProgram.Check();

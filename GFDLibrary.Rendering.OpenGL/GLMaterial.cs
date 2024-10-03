@@ -75,22 +75,33 @@ namespace GFDLibrary.Rendering.OpenGL
 
         public bool EnableBackfaceCulling { get; set; }
         public bool METAPHOR_ToonShaderTest { get; set; }
-        public MaterialParameterSetType2_3_13 METAPHOR_ToonShaderTestParam { get; set; }
+        public bool METAPHOR_DistortionMaterialTest { get; set; }
+        public MaterialParameterSetType2 METAPHOR_ToonShaderTestParam { get; set; }
 
         public GLMaterial( Material material, MaterialTextureCreator textureCreator )
         {
             // color parameters
             UseMetaphorMaterialParameterSet = material.METAPHOR_UseMaterialParameterSet;
             if ( UseMetaphorMaterialParameterSet )
-                MaterialParameterSetResource = material.METAHPOR_MaterialParameterSet.ResourceType;
+                MaterialParameterSetResource = material.METAPHOR_MaterialParameterSet.ResourceType;
             else
                 MaterialParameterSetResource = ResourceType.Invalid;
             MatFlags = Convert.ToInt32( material.Flags );
-            Ambient = material.AmbientColor.ToOpenTK();
-            Diffuse = material.DiffuseColor.ToOpenTK();
-            Specular = material.EmissiveColor.ToOpenTK();
-            Emissive = material.SpecularColor.ToOpenTK();
-            Reflectivity = material.Field40;
+            if ( material.METAPHOR_MaterialParameterSet != null )
+            {
+                Ambient = new System.Numerics.Vector4(1).ToOpenTK();
+                Diffuse = new System.Numerics.Vector4(1).ToOpenTK();
+                Specular = new System.Numerics.Vector4(0).ToOpenTK();
+                Emissive = new System.Numerics.Vector4(0).ToOpenTK();
+                Reflectivity = 0;
+            } else
+            {
+                Ambient = material.LegacyParameters.AmbientColor.ToOpenTK();
+                Diffuse = material.LegacyParameters.DiffuseColor.ToOpenTK();
+                Specular = material.LegacyParameters.EmissiveColor.ToOpenTK();
+                Emissive = material.LegacyParameters.SpecularColor.ToOpenTK();
+                Reflectivity = material.LegacyParameters.Field40;
+            }
             DrawMethod = (int)material.DrawMethod;
             HighlightMapBlendMode = (int)material.Field4D;
             AlphaClip = (int)material.Field90;
@@ -185,8 +196,9 @@ namespace GFDLibrary.Rendering.OpenGL
                 if (material.METAPHOR_MaterialParameterFormat == 2)
                 {
                     METAPHOR_ToonShaderTest = true;
-                    METAPHOR_ToonShaderTestParam = (MaterialParameterSetType2_3_13)material.METAHPOR_MaterialParameterSet;
+                    METAPHOR_ToonShaderTestParam = (MaterialParameterSetType2)material.METAPHOR_MaterialParameterSet;
                 }
+                METAPHOR_DistortionMaterialTest = material.METAPHOR_MaterialParameterFormat == 4;
             }
         }
 
@@ -286,21 +298,21 @@ namespace GFDLibrary.Rendering.OpenGL
 
             if ( METAPHOR_ToonShaderTest )
             {
-                shaderProgram.SetUniform( "matBaseColor", METAPHOR_ToonShaderTestParam.P2_0.ToOpenTK() );
-                shaderProgram.SetUniform( "matShadowColor", METAPHOR_ToonShaderTestParam.P2_1.ToOpenTK() );
-                shaderProgram.SetUniform( "matEdgeColor", METAPHOR_ToonShaderTestParam.P2_2.ToOpenTK() );
-                shaderProgram.SetUniform( "matEmissiveColor", METAPHOR_ToonShaderTestParam.P2_3.ToOpenTK() );
-                shaderProgram.SetUniform( "matSpecularColor", METAPHOR_ToonShaderTestParam.P2_4.ToOpenTK() );
+                shaderProgram.SetUniform( "matBaseColor", METAPHOR_ToonShaderTestParam.BaseColor.ToOpenTK() );
+                shaderProgram.SetUniform( "matShadowColor", METAPHOR_ToonShaderTestParam.ShadowColor.ToOpenTK() );
+                shaderProgram.SetUniform( "matEdgeColor", METAPHOR_ToonShaderTestParam.EdgeColor.ToOpenTK() );
+                shaderProgram.SetUniform( "matEmissiveColor", METAPHOR_ToonShaderTestParam.EmissiveColor.ToOpenTK() );
+                shaderProgram.SetUniform( "matSpecularColor", METAPHOR_ToonShaderTestParam.SpecularColor.ToOpenTK() );
 
-                shaderProgram.SetUniform( "matMetallic", METAPHOR_ToonShaderTestParam.P2_6 );
-                shaderProgram.SetUniform( "matSpecularThreshold", METAPHOR_ToonShaderTestParam.P2_15 );
-                shaderProgram.SetUniform( "matSpecularPower", METAPHOR_ToonShaderTestParam.P2_5 );
-                shaderProgram.SetUniform( "matRoughness", METAPHOR_ToonShaderTestParam.P2_21 );
-                //shaderProgram.SetUniform( "matRampAlpha", METAPHOR_ToonShaderTestParam.P2_21 ); // mat ramp is in mat 12
-                shaderProgram.SetUniform( "shadowThreshold", METAPHOR_ToonShaderTestParam.P2_9 );
-                shaderProgram.SetUniform( "shadowFactor", METAPHOR_ToonShaderTestParam.P2_10 );
-                shaderProgram.SetUniform( "edgeThreshold", METAPHOR_ToonShaderTestParam.P2_7 );
-                shaderProgram.SetUniform( "edgeFactor", METAPHOR_ToonShaderTestParam.P2_8 );
+                shaderProgram.SetUniform( "matMetallic", METAPHOR_ToonShaderTestParam.Metallic );
+                shaderProgram.SetUniform( "matSpecularThreshold", METAPHOR_ToonShaderTestParam.SpecularThreshold );
+                shaderProgram.SetUniform( "matSpecularPower", METAPHOR_ToonShaderTestParam.SpecularPower );
+                shaderProgram.SetUniform( "matRoughness", METAPHOR_ToonShaderTestParam.MatRoughness );
+                //shaderProgram.SetUniform( "matRampAlpha", METAPHOR_ToonShaderTestParam.MatRoughness ); // mat ramp is in mat 12
+                shaderProgram.SetUniform( "shadowThreshold", METAPHOR_ToonShaderTestParam.ShadowThreshold );
+                shaderProgram.SetUniform( "shadowFactor", METAPHOR_ToonShaderTestParam.ShadowFactor );
+                shaderProgram.SetUniform( "edgeThreshold", METAPHOR_ToonShaderTestParam.EdgeThreshold );
+                shaderProgram.SetUniform( "edgeFactor", METAPHOR_ToonShaderTestParam.EdgeFactor );
             }
         }
 

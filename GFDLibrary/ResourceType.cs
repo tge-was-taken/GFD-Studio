@@ -121,6 +121,9 @@
         MaterialParameterSetType14,
         MaterialParameterSetType15,
         MaterialParameterSetType16,
+        MaterialParameterSetLegacy,
+
+        ShaderMetaphorDX11,
 
         ModelPack_Metaphor_BIG_ENDIAN = 0x8000000
     }

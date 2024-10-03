@@ -10,15 +10,15 @@ namespace GFDLibrary.Shaders
 
         public ushort Field06 { get; set; }
 
-        public uint Field08 { get; set; }
+        public uint MatFlags0 { get; set; }
 
-        public uint Field0C { get; set; }
+        public uint MatFlags1 { get; set; }
 
-        public uint Field10 { get; set; }
+        public uint MatFlags2 { get; set; }
 
-        public uint Field14 { get; set; }
+        public uint Texcoord0 { get; set; }
 
-        public uint Field18 { get; set; }
+        public uint Texcoord1 { get; set; }
 
         public byte[] Data { get; set; }
 
@@ -33,11 +33,11 @@ namespace GFDLibrary.Shaders
             ShaderType = ( ShaderType )reader.ReadUInt16();
             int size = reader.ReadInt32();
             Field06 = reader.ReadUInt16();
-            Field08 = reader.ReadUInt32();
-            Field0C = reader.ReadUInt32();
-            Field10 = reader.ReadUInt32();
-            Field14 = reader.ReadUInt32();
-            Field18 = reader.ReadUInt32();
+            MatFlags0 = reader.ReadUInt32();
+            MatFlags1 = reader.ReadUInt32();
+            MatFlags2 = reader.ReadUInt32();
+            Texcoord0 = reader.ReadUInt32();
+            Texcoord1 = reader.ReadUInt32();
             Data = reader.ReadBytes( size );
         }
 
@@ -46,11 +46,11 @@ namespace GFDLibrary.Shaders
             writer.WriteUInt16( ( ushort ) ShaderType );
             writer.WriteInt32( Data.Length );
             writer.WriteUInt16( Field06 );
-            writer.WriteUInt32( Field08 );
-            writer.WriteUInt32( Field0C );
-            writer.WriteUInt32( Field10 );
-            writer.WriteUInt32( Field14 );
-            writer.WriteUInt32( Field18 );
+            writer.WriteUInt32( MatFlags0 );
+            writer.WriteUInt32( MatFlags1 );
+            writer.WriteUInt32( MatFlags2 );
+            writer.WriteUInt32( Texcoord0 );
+            writer.WriteUInt32( Texcoord1 );
             writer.WriteBytes( Data );
         }
     }
@@ -108,6 +108,44 @@ namespace GFDLibrary.Shaders
         {
             writer.WriteUInt32( ShaderType2 );
             base.WriteCore( writer );
+        }
+    }
+
+    public sealed class ShaderMetaphor : Shader
+    {
+        public override ResourceType ResourceType => ResourceType.ShaderMetaphorDX11;
+        public ushort Field06_2 { get; set; }
+        public uint Field1C { get; set; }
+        public ShaderMetaphor() { }
+        public ShaderMetaphor( uint version ) : base (version) { }
+        protected override void ReadCore( ResourceReader reader )
+        {
+            ShaderType = (ShaderType)reader.ReadUInt16();
+            int size = reader.ReadInt32();
+            Field06 = reader.ReadUInt16();
+            Field06_2 = reader.ReadUInt16();
+            MatFlags0 = reader.ReadUInt32();
+            MatFlags1 = reader.ReadUInt32();
+            MatFlags2 = reader.ReadUInt32();
+            Texcoord0 = reader.ReadUInt32();
+            Texcoord1 = reader.ReadUInt32();
+            Field1C = reader.ReadUInt32();
+            Data = reader.ReadBytes( size );
+        }
+
+        protected override void WriteCore( ResourceWriter writer )
+        {
+            writer.WriteUInt16( (ushort)ShaderType );
+            writer.WriteInt32( Data.Length );
+            writer.WriteUInt16( Field06 );
+            writer.WriteUInt16( Field06_2 );
+            writer.WriteUInt32( MatFlags0 );
+            writer.WriteUInt32( MatFlags1 );
+            writer.WriteUInt32( MatFlags2 );
+            writer.WriteUInt32( Texcoord0 );
+            writer.WriteUInt32( Texcoord1 );
+            writer.WriteUInt32( Field1C );
+            writer.WriteBytes( Data );
         }
     }
 

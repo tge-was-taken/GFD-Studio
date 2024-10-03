@@ -62,8 +62,9 @@ namespace GFDStudio.GUI.DataViewNodes
             get => GetDataProperty<float>(); 
             set => SetDataProperty(value); 
         } // 0xf8
-        public uint P12_6 { 
-            get => GetDataProperty<uint>(); 
+        [TypeConverter( typeof( EnumTypeConverter<MaterialParameterSetType12.Type12Flags> ) )]
+        public MaterialParameterSetType12.Type12Flags Flags { 
+            get => GetDataProperty<MaterialParameterSetType12.Type12Flags>(); 
             set => SetDataProperty(value); 
         } // 0x12c
         public float P12_7 { 

@@ -1,5 +1,6 @@
 ﻿using GFDLibrary.IO;
 using GFDLibrary.Materials;
+using YamlDotNet.Serialization;
 
 namespace GFDLibrary.Models
 {
@@ -72,6 +73,7 @@ namespace GFDLibrary.Models
         // 0x88
         public float Field88 { get; set; }
 
+        [YamlIgnore]
         public MaterialParameterSetBase METAPHOR_ParentMaterialParameterSet { get; set; }
 
         public TextureMap()
