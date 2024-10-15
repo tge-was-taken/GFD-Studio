@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Linq;
+using System.Reflection;
 using System.Reflection.Metadata;
 using System.Xml.Linq;
+using Assimp.Configs;
 using GFDLibrary.Materials;
 using GFDLibrary.Textures;
 using OpenTK;
@@ -13,29 +15,13 @@ namespace GFDLibrary.Rendering.OpenGL
     public interface IGLMaterial : IDisposable
     {
         void Bind( GLShaderProgram shaderProgram );
+        void Unbind( GLShaderProgram shaderProgram );
     }
 
     public delegate GLTexture MaterialTextureCreator( Material material, string textureName );
 
-    public class GLMaterial : IGLMaterial
+    public abstract class GLBaseMaterial : IGLMaterial
     {
-        public bool UseMetaphorMaterialParameterSet { get; set; }
-        public ResourceType MaterialParameterSetResource { get; set; }
-        public Vector4 Ambient { get; set; }
-
-        public Vector4 Diffuse { get; set; }
-
-        public Vector4 Specular { get; set; }
-
-        public Vector4 Emissive { get; set; }
-        public float Reflectivity { get; set; }
-        public Vector4 ToonLightColor { get; set; } = new Vector4(0.98f, 0.98f, 0.98f, 0.36f);
-        public float ToonLightThreshold { get; set; } = 0.7f;
-        public float ToonLightFactor { get; set; } = 14.0f;
-        public float ToonShadowBrightness { get; set; } = 0.5f;
-        public float ToonShadowThreshold { get; set; } = 0.5f;
-        public float ToonShadowFactor { get; set; } = 20.0f;
-
         public GLTexture DiffuseTexture { get; set; }
         public GLTexture NormalTexture { get; set; }
         public GLTexture SpecularTexture { get; set; }
@@ -46,20 +32,13 @@ namespace GFDLibrary.Rendering.OpenGL
         public GLTexture DetailTexture { get; set; }
         public GLTexture ShadowTexture { get; set; }
         public GLTexture TextureMap10 { get; set; }
-
         public int DrawMethod { get; set; }
         public int HighlightMapBlendMode { get; set; }
         public int AlphaClip { get; set; }
         public int AlphaClipMode { get; set; }
         public int TexcoordsFlags { get; set; }
-
-        public bool HasType0 { get; set; } = false;
-        public bool HasType1 { get; set; } = false;
-        public bool HasType4 { get; set; } = false;
         public int MatFlags { get; set; }
         public int MatFlags2 { get; set; }
-        public int Type0Flags { get; set; }
-
         public bool HasDiffuseTexture => DiffuseTexture != null;
         public bool HasNormalTexture => NormalTexture != null;
         public bool HasSpecularTexture => SpecularTexture != null;
@@ -69,84 +48,25 @@ namespace GFDLibrary.Rendering.OpenGL
         public bool HasNightTexture => NightTexture != null;
         public bool HasDetailTexture => DetailTexture != null;
         public bool HasShadowTexture => ShadowTexture != null;
-
-
+        public bool HasTexture10 => TextureMap10 != null;
         public bool RenderWireframe { get; set; }
-
         public bool EnableBackfaceCulling { get; set; }
-        public bool METAPHOR_ToonShaderTest { get; set; }
-        public bool METAPHOR_DistortionMaterialTest { get; set; }
-        public MaterialParameterSetType2 METAPHOR_ToonShaderTestParam { get; set; }
 
-        public GLMaterial( Material material, MaterialTextureCreator textureCreator )
+        public GLBaseMaterial()
         {
-            // color parameters
-            UseMetaphorMaterialParameterSet = material.METAPHOR_UseMaterialParameterSet;
-            if ( UseMetaphorMaterialParameterSet )
-                MaterialParameterSetResource = material.METAPHOR_MaterialParameterSet.ResourceType;
-            else
-                MaterialParameterSetResource = ResourceType.Invalid;
+        }
+
+        public GLBaseMaterial( Material material, MaterialTextureCreator textureCreator )
+        {
             MatFlags = Convert.ToInt32( material.Flags );
-            if ( material.METAPHOR_MaterialParameterSet != null )
-            {
-                Ambient = new System.Numerics.Vector4(1).ToOpenTK();
-                Diffuse = new System.Numerics.Vector4(1).ToOpenTK();
-                Specular = new System.Numerics.Vector4(0).ToOpenTK();
-                Emissive = new System.Numerics.Vector4(0).ToOpenTK();
-                Reflectivity = 0;
-            } else
-            {
-                Ambient = material.LegacyParameters.AmbientColor.ToOpenTK();
-                Diffuse = material.LegacyParameters.DiffuseColor.ToOpenTK();
-                Specular = material.LegacyParameters.EmissiveColor.ToOpenTK();
-                Emissive = material.LegacyParameters.SpecularColor.ToOpenTK();
-                Reflectivity = material.LegacyParameters.Field40;
-            }
             DrawMethod = (int)material.DrawMethod;
             HighlightMapBlendMode = (int)material.Field4D;
             AlphaClip = (int)material.Field90;
             AlphaClipMode = (int)material.Field92;
             MatFlags2 = Convert.ToInt32( material.Flags2 );
             TexcoordsFlags = (int)( material.Field6C );
-            EnableBackfaceCulling = !(Convert.ToBoolean( material.DisableBackfaceCulling ));
-            
-            if ( material.Attributes != null && material.Flags.HasFlag( MaterialFlags.HasAttributes ) )
-            {
-                HasType0 = material.Attributes.Any( x => x.AttributeType == MaterialAttributeType.Type0 );
-                HasType1 = material.Attributes.Any( x => x.AttributeType == MaterialAttributeType.Type1 );
-                HasType4 = material.Attributes.Any( x => x.AttributeType == MaterialAttributeType.Type4 );
-            }
+            EnableBackfaceCulling = !( Convert.ToBoolean( material.DisableBackfaceCulling ) );
 
-            if (HasType0)
-            {
-                MaterialAttributeType0 type0 = (MaterialAttributeType0)material.Attributes.Single(
-                    x => x.AttributeType == MaterialAttributeType.Type0 );
-                ToonLightColor = type0.Color.ToOpenTK();
-                ToonLightThreshold = type0.Field1C;
-                ToonLightFactor = type0.Field20;
-                ToonShadowBrightness = type0.Field24;
-                ToonShadowThreshold = type0.Field28;
-                ToonShadowFactor = type0.Field2C;
-                Type0Flags = ((int)type0.Type0Flags);
-            }
-            if (HasType1)
-            {
-                MaterialAttributeType1 type1 = (MaterialAttributeType1)material.Attributes.Single(
-                    x => x.AttributeType == MaterialAttributeType.Type1 );
-                ToonLightColor = type1.InnerGlow.ToOpenTK();
-                ToonLightThreshold = type1.Field1C;
-                ToonLightFactor = type1.Field20;
-            }
-            if (HasType4)
-            {
-                MaterialAttributeType4 type4 = (MaterialAttributeType4)material.Attributes.Single(
-                    x => x.AttributeType == MaterialAttributeType.Type4 );
-                ToonLightColor = type4.Field0C.ToOpenTK();
-                ToonLightThreshold = type4.Field1C;
-                ToonLightFactor = type4.Field20;
-            }
-
-            // texture
             if ( material.DiffuseMap != null )
             {
                 DiffuseTexture = textureCreator( material, material.DiffuseMap.Name );
@@ -187,26 +107,9 @@ namespace GFDLibrary.Rendering.OpenGL
             {
                 TextureMap10 = textureCreator( material, material.TextureMap10.Name );
             }
-
-            // Toon Shader test for mat type 2 (write proper code for this later)
-
-            METAPHOR_ToonShaderTest = false;
-            if (material.METAPHOR_UseMaterialParameterSet)
-            {
-                if (material.METAPHOR_MaterialParameterFormat == 2)
-                {
-                    METAPHOR_ToonShaderTest = true;
-                    METAPHOR_ToonShaderTestParam = (MaterialParameterSetType2)material.METAPHOR_MaterialParameterSet;
-                }
-                METAPHOR_DistortionMaterialTest = material.METAPHOR_MaterialParameterFormat == 4;
-            }
         }
 
-        public GLMaterial()
-        {       
-        }
-
-        public void Bind( GLShaderProgram shaderProgram )
+        public virtual void Bind( GLShaderProgram shaderProgram )
         {
             shaderProgram.SetUniform( "uDiffuse", 0 );
             shaderProgram.SetUniform( "uNormal", 1 );
@@ -217,11 +120,20 @@ namespace GFDLibrary.Rendering.OpenGL
             shaderProgram.SetUniform( "uNight", 6 );
             shaderProgram.SetUniform( "uDetail", 7 );
             shaderProgram.SetUniform( "uShadow", 8 );
+            shaderProgram.SetUniform( "uTex10", 9 );
             shaderProgram.SetUniform( "uMatHasDiffuse", HasDiffuseTexture );
+
+            shaderProgram.SetUniform( "DrawMethod", DrawMethod );
+            shaderProgram.SetUniform( "HighlightMapBlendMode", HighlightMapBlendMode );
+            shaderProgram.SetUniform( "alphaClip", AlphaClip );
+            shaderProgram.SetUniform( "alphaClipMode", AlphaClipMode );
+            shaderProgram.SetUniform( "TexcoordFlags", TexcoordsFlags );
+            shaderProgram.SetUniform( "uMatFlags", MatFlags );
+            shaderProgram.SetUniform( "uMatFlags2", MatFlags2 );
             if ( HasDiffuseTexture )
             {
                 GL.ActiveTexture( TextureUnit.Texture0 );
-                DiffuseTexture.Bind();   
+                DiffuseTexture.Bind();
             }
             if ( HasNormalTexture )
             {
@@ -263,59 +175,21 @@ namespace GFDLibrary.Rendering.OpenGL
                 GL.ActiveTexture( TextureUnit.Texture8 );
                 ShadowTexture.Bind();
             }
-            shaderProgram.SetUniform( "uMatAmbient",              Ambient );
-            shaderProgram.SetUniform( "uMatDiffuse",              Diffuse );
-            shaderProgram.SetUniform( "uMatSpecular",             Specular );
-            shaderProgram.SetUniform( "uMatEmissive",             Emissive );
-            shaderProgram.SetUniform( "uMatReflectivity",         Reflectivity );
-            shaderProgram.SetUniform( "DrawMethod",               DrawMethod );
-            shaderProgram.SetUniform( "HighlightMapBlendMode",    HighlightMapBlendMode );
-            shaderProgram.SetUniform( "alphaClip",                AlphaClip );
-            shaderProgram.SetUniform( "alphaClipMode",            AlphaClipMode );
-            shaderProgram.SetUniform( "TexcoordFlags",            TexcoordsFlags );
-            shaderProgram.SetUniform( "uMatHasType0",             HasType0 );
-            shaderProgram.SetUniform( "uMatHasType1",             HasType1 );
-            shaderProgram.SetUniform( "uMatHasType4",             HasType4 );
-            shaderProgram.SetUniform( "uMatFlags",                MatFlags );
-            shaderProgram.SetUniform( "uMatFlags2",               MatFlags2 );
-            shaderProgram.SetUniform( "uMatType0Flags",           Type0Flags );
-            shaderProgram.SetUniform( "uMatToonLightColor",       ToonLightColor );
-            shaderProgram.SetUniform( "uMatToonLightFactor",      ToonLightFactor );
-            shaderProgram.SetUniform( "uMatToonLightThreshold",   ToonLightThreshold );
-            shaderProgram.SetUniform( "uMatToonShadowBrightness", ToonShadowBrightness );
-            shaderProgram.SetUniform( "uMatToonShadowThreshold",  ToonShadowThreshold );
-            shaderProgram.SetUniform( "uMatToonShadowFactor",     ToonShadowFactor );
-
+            if ( HasTexture10 )
+            {
+                GL.ActiveTexture( TextureUnit.Texture9 );
+                TextureMap10.Bind();
+            }
             if ( RenderWireframe )
             {
                 GL.PolygonMode( MaterialFace.FrontAndBack, PolygonMode.Line );
             }
-            
+
             if ( !EnableBackfaceCulling )
             {
                 GL.Disable( EnableCap.CullFace );
             }
-
-            if ( METAPHOR_ToonShaderTest )
-            {
-                shaderProgram.SetUniform( "matBaseColor", METAPHOR_ToonShaderTestParam.BaseColor.ToOpenTK() );
-                shaderProgram.SetUniform( "matShadowColor", METAPHOR_ToonShaderTestParam.ShadowColor.ToOpenTK() );
-                shaderProgram.SetUniform( "matEdgeColor", METAPHOR_ToonShaderTestParam.EdgeColor.ToOpenTK() );
-                shaderProgram.SetUniform( "matEmissiveColor", METAPHOR_ToonShaderTestParam.EmissiveColor.ToOpenTK() );
-                shaderProgram.SetUniform( "matSpecularColor", METAPHOR_ToonShaderTestParam.SpecularColor.ToOpenTK() );
-
-                shaderProgram.SetUniform( "matMetallic", METAPHOR_ToonShaderTestParam.Metallic );
-                shaderProgram.SetUniform( "matSpecularThreshold", METAPHOR_ToonShaderTestParam.SpecularThreshold );
-                shaderProgram.SetUniform( "matSpecularPower", METAPHOR_ToonShaderTestParam.SpecularPower );
-                shaderProgram.SetUniform( "matRoughness", METAPHOR_ToonShaderTestParam.MatRoughness );
-                //shaderProgram.SetUniform( "matRampAlpha", METAPHOR_ToonShaderTestParam.MatRoughness ); // mat ramp is in mat 12
-                shaderProgram.SetUniform( "shadowThreshold", METAPHOR_ToonShaderTestParam.ShadowThreshold );
-                shaderProgram.SetUniform( "shadowFactor", METAPHOR_ToonShaderTestParam.ShadowFactor );
-                shaderProgram.SetUniform( "edgeThreshold", METAPHOR_ToonShaderTestParam.EdgeThreshold );
-                shaderProgram.SetUniform( "edgeFactor", METAPHOR_ToonShaderTestParam.EdgeFactor );
-            }
         }
-
         public void Unbind( GLShaderProgram shaderProgram )
         {
             if ( !EnableBackfaceCulling )
@@ -359,5 +233,132 @@ namespace GFDLibrary.Rendering.OpenGL
             Dispose( true );
         }
         #endregion
+
+        public static GLBaseMaterial CreateGLMaterial( Material material, MaterialTextureCreator textureCreator ) =>
+            material.METAPHOR_MaterialParameterSet != null ? new GLMetaphorMaterial( material, textureCreator ) : new GLP5Material( material, textureCreator );
+        public abstract bool IsMaterialTransparent();
+    }
+
+    public class GLP5Material : GLBaseMaterial
+    {
+        public Vector4 Ambient { get; set; }
+
+        public Vector4 Diffuse { get; set; }
+
+        public Vector4 Specular { get; set; }
+
+        public Vector4 Emissive { get; set; }
+        public float Reflectivity { get; set; }
+        public Vector4 ToonLightColor { get; set; } = new Vector4( 0.98f, 0.98f, 0.98f, 0.36f );
+        public float ToonLightThreshold { get; set; } = 0.7f;
+        public float ToonLightFactor { get; set; } = 14.0f;
+        public float ToonShadowBrightness { get; set; } = 0.5f;
+        public float ToonShadowThreshold { get; set; } = 0.5f;
+        public float ToonShadowFactor { get; set; } = 20.0f;
+        public bool HasType0 { get; set; } = false;
+        public bool HasType1 { get; set; } = false;
+        public bool HasType4 { get; set; } = false;
+        public int Type0Flags { get; set; }
+
+        public GLP5Material()
+        {
+        }
+
+        public GLP5Material( Material material, MaterialTextureCreator textureCreator ) : base (material, textureCreator)
+        {
+            Ambient = material.LegacyParameters.AmbientColor.ToOpenTK();
+            Diffuse = material.LegacyParameters.DiffuseColor.ToOpenTK();
+            Specular = material.LegacyParameters.EmissiveColor.ToOpenTK();
+            Emissive = material.LegacyParameters.SpecularColor.ToOpenTK();
+            Reflectivity = material.LegacyParameters.Field40;
+
+
+            if ( material.Attributes != null && material.Flags.HasFlag( MaterialFlags.HasAttributes ) )
+            {
+                HasType0 = material.Attributes.Any( x => x.AttributeType == MaterialAttributeType.Type0 );
+                HasType1 = material.Attributes.Any( x => x.AttributeType == MaterialAttributeType.Type1 );
+                HasType4 = material.Attributes.Any( x => x.AttributeType == MaterialAttributeType.Type4 );
+            }
+
+            if ( HasType0 )
+            {
+                MaterialAttributeType0 type0 = (MaterialAttributeType0)material.Attributes.Single(
+                    x => x.AttributeType == MaterialAttributeType.Type0 );
+                ToonLightColor = type0.Color.ToOpenTK();
+                ToonLightThreshold = type0.Field1C;
+                ToonLightFactor = type0.Field20;
+                ToonShadowBrightness = type0.Field24;
+                ToonShadowThreshold = type0.Field28;
+                ToonShadowFactor = type0.Field2C;
+                Type0Flags = ( (int)type0.Type0Flags );
+            }
+            if ( HasType1 )
+            {
+                MaterialAttributeType1 type1 = (MaterialAttributeType1)material.Attributes.Single(
+                    x => x.AttributeType == MaterialAttributeType.Type1 );
+                ToonLightColor = type1.InnerGlow.ToOpenTK();
+                ToonLightThreshold = type1.Field1C;
+                ToonLightFactor = type1.Field20;
+            }
+            if ( HasType4 )
+            {
+                MaterialAttributeType4 type4 = (MaterialAttributeType4)material.Attributes.Single(
+                    x => x.AttributeType == MaterialAttributeType.Type4 );
+                ToonLightColor = type4.Field0C.ToOpenTK();
+                ToonLightThreshold = type4.Field1C;
+                ToonLightFactor = type4.Field20;
+            }
+        }
+
+        public override void Bind( GLShaderProgram shaderProgram )
+        {
+            base.Bind( shaderProgram );
+            shaderProgram.SetUniform( "uMatAmbient", Ambient );
+            shaderProgram.SetUniform( "uMatDiffuse", Diffuse );
+            shaderProgram.SetUniform( "uMatSpecular", Specular );
+            shaderProgram.SetUniform( "uMatEmissive", Emissive );
+            shaderProgram.SetUniform( "uMatReflectivity", Reflectivity );
+            shaderProgram.SetUniform( "uMatHasType0", HasType0 );
+            shaderProgram.SetUniform( "uMatHasType1", HasType1 );
+            shaderProgram.SetUniform( "uMatHasType4", HasType4 );
+            shaderProgram.SetUniform( "uMatType0Flags", Type0Flags );
+            shaderProgram.SetUniform( "uMatToonLightColor", ToonLightColor );
+            shaderProgram.SetUniform( "uMatToonLightFactor", ToonLightFactor );
+            shaderProgram.SetUniform( "uMatToonLightThreshold", ToonLightThreshold );
+            shaderProgram.SetUniform( "uMatToonShadowBrightness", ToonShadowBrightness );
+            shaderProgram.SetUniform( "uMatToonShadowThreshold", ToonShadowThreshold );
+            shaderProgram.SetUniform( "uMatToonShadowFactor", ToonShadowFactor );
+        }
+        public override bool IsMaterialTransparent() => DrawMethod != 0 || ( DrawMethod == 0 && Diffuse.W < 1.0 );
+    }
+
+    public class GLMetaphorMaterial : GLBaseMaterial
+    {
+        public MaterialParameterSetBase ParameterSet { get; private set; }
+        public GLMetaphorMaterial() { }
+        public GLMetaphorMaterial( Material material, MaterialTextureCreator textureCreator ) : base( material, textureCreator )
+        { ParameterSet = material.METAPHOR_MaterialParameterSet; }
+
+        public override void Bind( GLShaderProgram shaderProgram )
+        {
+            base.Bind( shaderProgram );
+            foreach ( var prop in ParameterSet.GetType().GetProperties().Where( x => x.GetCustomAttribute<ShaderUniformAttribute>() != null ) )
+            {
+                if ( prop.PropertyType == typeof( System.Numerics.Vector3 ))
+                {
+                    shaderProgram.SetUniform( prop.GetCustomAttribute<ShaderUniformAttribute>().Uniform, ((System.Numerics.Vector3)prop.GetValue( ParameterSet )).ToOpenTK() );
+                } else if ( prop.PropertyType == typeof( System.Numerics.Vector4 ) )
+                {
+                    shaderProgram.SetUniform( prop.GetCustomAttribute<ShaderUniformAttribute>().Uniform, ( (System.Numerics.Vector4)prop.GetValue( ParameterSet ) ).ToOpenTK() );
+                } else if ( prop.PropertyType == typeof( float ) )
+                {
+                    shaderProgram.SetUniform( prop.GetCustomAttribute<ShaderUniformAttribute>().Uniform, (float)prop.GetValue( ParameterSet ) );
+                } else if ( prop.PropertyType == typeof( int) )
+                {
+                    shaderProgram.SetUniform( prop.GetCustomAttribute<ShaderUniformAttribute>().Uniform, (int)prop.GetValue( ParameterSet ) );
+                }
+            }
+        }
+        public override bool IsMaterialTransparent() => ParameterSet.IsMaterialTransparent();
     }
 }

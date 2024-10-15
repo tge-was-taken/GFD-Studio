@@ -8,6 +8,15 @@ using Ai = Assimp;
 
 namespace GFDLibrary.Materials
 {
+    [AttributeUsage( AttributeTargets.Property, Inherited = false )]
+    public class ShaderUniformAttribute : Attribute
+    {
+        public string Uniform { get; protected set; }
+        public ShaderUniformAttribute( string _Uniform )
+        {
+            Uniform = _Uniform;
+        }
+    }
     public abstract class MaterialParameterSetBase : Resource
     {
         public abstract string GetParameterName();
@@ -25,17 +34,23 @@ namespace GFDLibrary.Materials
         public virtual string GetTextureMap10Name() => "Map 10";
         public virtual void ConvertToAssimp( ref Ai.Material material ) { }
         public abstract void SetShaderFlags( Material mat );
-        public virtual bool IsMaterialTransparent( Material mat ) => true;
+        public virtual bool IsMaterialTransparent() => false;
     }
 
     // 7.HLSL or 9.HLSL
     public sealed class MaterialParameterSetType0 : MaterialParameterSetBase
     {
+        [ShaderUniform( "baseColor" )]
         public Vector4 P0_0 { get; set; } // 0x90
+        [ShaderUniform( "emissiveStrength" )]
         public float P0_1 { get; set; } // 0xa0
+        [ShaderUniform( "roughness" )]
         public float P0_2 { get; set; } // 0xa4
+        [ShaderUniform( "metallic" )]
         public float P0_3 { get; set; } // 0xa8
+        [ShaderUniform( "multiAlpha" )]
         public float P0_4 { get; set; } // 0xac
+        [ShaderUniform( "bloomIntensity" )]
         public float P0_5 { get; set; } // 0xb0
         public Type0Flags Flags { get; set; } // 0xb4
 
@@ -118,16 +133,21 @@ namespace GFDLibrary.Materials
                     mat.MatFlags2 |= METAPHOR_MaterialFlags2.FLAG2_PUNCHTHROUGH;
         }
 
-        public override bool IsMaterialTransparent( Material mat ) => Flags.HasFlag( Type0Flags.Transparency );
+        public override bool IsMaterialTransparent() => Flags.HasFlag( Type0Flags.Transparency );
     }
 
     // 3.HLSL
     public sealed class MaterialParameterSetType1 : MaterialParameterSetBase
     {
+        [ShaderUniform( "matAmbient" )]
         public Vector4 AmbientColor { get; set; } // 0x90
+        [ShaderUniform( "matDiffuse" )]
         public Vector4 DiffuseColor { get; set; } // 0xa0
+        [ShaderUniform( "matSpecular" )]
         public Vector4 SpecularColor { get; set; } // 0xb0
+        [ShaderUniform( "matEmissive" )]
         public Vector4 EmissiveColor { get; set; } // 0xc0
+        [ShaderUniform( "matReflectivity" )]
         public float Reflectivity { get; set; } // 0xd0
         public float LerpBlendRate { get; set; } // 0xd4
 
@@ -168,34 +188,50 @@ namespace GFDLibrary.Materials
 
             }
         }
-        public override bool IsMaterialTransparent( Material mat ) => true;
+        public override bool IsMaterialTransparent() => DiffuseColor.W < 1.0;
     }
 
     public abstract class MaterialParameterSetType2Base : MaterialParameterSetBase
     {
+        [ShaderUniform( "matBaseColor" )]
         public Vector4 BaseColor { get; set; } // 0x90
+        [ShaderUniform( "matShadowColor" )]
         public Vector4 ShadowColor { get; set; } // 0xa0
+        [ShaderUniform( "matEdgeColor" )]
         public Vector4 EdgeColor { get; set; } // 0xb0
+        [ShaderUniform( "matEmissiveColor" )]
         public Vector4 EmissiveColor { get; set; } // 0xc0
+        [ShaderUniform( "matSpecularColor" )]
         public Vector3 SpecularColor { get; set; } // 0xd0
+        [ShaderUniform( "matSpecularPower" )]
         public float SpecularPower { get; set; } // 0xe0
+        [ShaderUniform( "matMetallic" )]
         public float Metallic { get; set; } // 0xe4
+        [ShaderUniform( "edgeThreshold" )]
         public float EdgeThreshold { get; set; } // 0xf0
+        [ShaderUniform( "edgeFactor" )]
         public float EdgeFactor { get; set; } // 0xf4
+        [ShaderUniform( "shadowThreshold" )]
         public float ShadowThreshold { get; set; } // 0xfc
+        [ShaderUniform( "shadowFactor" )]
         public float ShadowFactor { get; set; } // 0x100
         public Type2Flags Flags { get; set; } // 0x130
         public float P2_12 { get; set; } // 0x104
         public Vector3 P2_13 { get; set; } // 0x10c
         public float MatBloomIntensity { get; set; } // 0xec
+        [ShaderUniform( "matSpecularThreshold" )]
         public float SpecularThreshold { get; set; } // 0xdc
+        [ShaderUniform( "edgeRemoveYAxisFactor" )]
         public float EdgeRemoveYAxisFactor { get; set; } // 0xf8
         public float P2_17 { get; set; } // 0x118
         public float P2_18 { get; set; } // 0x11c
         public float P2_19 { get; set; } // 0x120
         public float P2_20 { get; set; } // 0x108
+        [ShaderUniform( "matRoughness" )]
         public float MatRoughness { get; set; } // 0xe8
+        [ShaderUniform( "fittingTile" )]
         public float FittingTile { get; set; } // 0x128
+        [ShaderUniform( "multiFittingTile" )]
         public float MultiFittingTile { get; set; } // 0x12c
 
         [Flags]
@@ -319,7 +355,7 @@ namespace GFDLibrary.Materials
             if ( Version > 0x2110209 )
                 writer.WriteSingle( MultiFittingTile );
         }
-        public override bool IsMaterialTransparent( Material mat ) => Flags.HasFlag( Type2Flags.FLAG10 );
+        //public override bool IsMaterialTransparent( ) => Flags.HasFlag( Type2Flags.FLAG10 );
     }
     // 11.HLSL
     public sealed class MaterialParameterSetType2 : MaterialParameterSetType2Base
@@ -372,12 +408,17 @@ namespace GFDLibrary.Materials
     // 21.HLSL
     public sealed class MaterialParameterSetType4 : MaterialParameterSetBase
     {
+        [ShaderUniform( "baseColor" )]
         public Vector4 BaseColor { get; set; } // 0x90
+        [ShaderUniform( "emissiveColor" )]
         public Vector4 EmissiveColor { get; set; } // 0xa0
+        [ShaderUniform( "distortionPower" )]
         public float DistortionPower { get; set; } // 0xb0
+        [ShaderUniform( "distortionThreshold" )]
         public float DistortionThreshold { get; set; } // 0xb4
         public float P4_4 { get; set; } // 0xb8
         public Type4Flags Flags { get; set; } // 0xcc
+        [ShaderUniform( "matBloomIntensity" )]
         public float MatBloomIntensity { get; set; } // 0xbc
         public float P4_7 { get; set; } // 0xc0
         public float P4_8 { get; set; } // 0xc4
@@ -486,7 +527,8 @@ namespace GFDLibrary.Materials
             if ( mat.DrawMethod == MaterialDrawMethod.Opaque )
                 mat.MatFlags2 |= METAPHOR_MaterialFlags2.FLAG2_PUNCHTHROUGH;
         }
-        public override bool IsMaterialTransparent( Material mat ) => Flags.HasFlag( Type4Flags.FLAG15 );
+        //public override bool IsMaterialTransparent( ) => Flags.HasFlag( Type4Flags.FLAG15 );
+        public override bool IsMaterialTransparent( ) => true;
     }
 
     // 23.HLSL
@@ -494,16 +536,25 @@ namespace GFDLibrary.Materials
     {
         public float P5_0 { get; set; } // 0x90
         public float P5_1 { get; set; } // 0x94
+        [ShaderUniform( "tcScale" )]
         public float P5_2 { get; set; } // 0x98
         public float P5_3 { get; set; } // 0x9c
+        [ShaderUniform( "oceanDepthScale" )]
         public float P5_4 { get; set; } // 0xa0
+        [ShaderUniform( "disturbanceCameraScale" )]
         public float P5_5 { get; set; } // 0xa4
+        [ShaderUniform( "disturbanceDepthScale" )]
         public float P5_6 { get; set; } // 0xa8
+        [ShaderUniform( "scatteringCameraScale" )]
         public float P5_7 { get; set; } // 0xac
+        [ShaderUniform( "disturbanceTolerance" )]
         public float P5_8 { get; set; } // 0xb0
+        [ShaderUniform( "foamDistance" )]
         public float P5_9 { get; set; } // 0xb4
+        [ShaderUniform( "causticsTolerance" )]
         public float P5_10 { get; set; } // 0xb8
         public float P5_11 { get; set; } // 0xbc
+        [ShaderUniform( "textureAnimationSpeed" )]
         public float P5_12 { get; set; } // 0xc0
         public float P5_13 { get; set; } // 0xc4
         public Type5Flags Flags { get; set; } // 0xc8
@@ -580,7 +631,7 @@ namespace GFDLibrary.Materials
             if ( Flags.HasFlag( Type5Flags.OutlineAttenuationInvalid ) )
                 mat.MatFlags0 |= METAPHOR_MaterialFlags0.FLAG0_OUTLINE_ATTENUATION_INVALID;
         }
-        public override bool IsMaterialTransparent( Material mat ) => false;
+        //public override bool IsMaterialTransparent( ) => false;
     }
     // 27.HLSL or 25.HLSL
     public sealed class MaterialParameterSetType6 : MaterialParameterSetBase
@@ -702,7 +753,7 @@ namespace GFDLibrary.Materials
                 mat.MatFlags2 |= METAPHOR_MaterialFlags2.FLAG2_SKY;
 
         }
-        public override bool IsMaterialTransparent( Material mat ) => true;
+        //public override bool IsMaterialTransparent( ) => true;
     }
     // 29.HLSL
     public sealed class MaterialParameterSetType7 : MaterialParameterSetBase
@@ -783,7 +834,7 @@ namespace GFDLibrary.Materials
             if ( Flags.HasFlag( Type7Flags.FLAG1 ) )
                 mat.MatFlags2 |= METAPHOR_MaterialFlags2.FLAG2_SKY;
         }
-        public override bool IsMaterialTransparent( Material mat ) => false;
+        //public override bool IsMaterialTransparent( ) => false;
     }
     // 33.HLSL or 31.HLSL
     public sealed class MaterialParameterSetType8 : MaterialParameterSetBase
@@ -831,7 +882,7 @@ namespace GFDLibrary.Materials
         {
 
         }
-        public override bool IsMaterialTransparent( Material mat ) => true;
+        //public override bool IsMaterialTransparent( ) => true;
     }
     // 35.HLSL
     public sealed class MaterialParameterSetType9 : MaterialParameterSetBase
@@ -942,7 +993,7 @@ namespace GFDLibrary.Materials
                 mat.MatFlags2 |= METAPHOR_MaterialFlags2.FLAG2_EDGE_SEMITRANS;
 
         }
-        public override bool IsMaterialTransparent( Material mat ) => true;
+        //public override bool IsMaterialTransparent( ) => true;
     }
     // 37.HLSL
     public sealed class MaterialParameterSetType10 : MaterialParameterSetBase
@@ -988,7 +1039,7 @@ namespace GFDLibrary.Materials
             if ( Flags.HasFlag( Type10Flags.FLAG0 ) )
                 mat.MatFlags2 |= METAPHOR_MaterialFlags2.FLAG2_BLEND_CLEARCOLOR;
         }
-        public override bool IsMaterialTransparent( Material mat ) => true;
+        //public override bool IsMaterialTransparent( ) => true;
     }
     // 41.HLSL or 39.HLSL
     public sealed class MaterialParameterSetType11 : MaterialParameterSetBase
@@ -1021,33 +1072,50 @@ namespace GFDLibrary.Materials
         {
 
         }
-        public override bool IsMaterialTransparent( Material mat ) => true;
+        //public override bool IsMaterialTransparent( ) => true;
     }
 
     public sealed class MaterialParameterSetType12 : MaterialParameterSetBase
     {
+        [ShaderUniform( "baseColor" )]
         public Vector4 P12_0 { get; set; } // 0x90
+        [ShaderUniform( "edgeColor" )]
         public Vector4 P12_1 {get; set;} // 0xb0
+        [ShaderUniform( "emissiveColor" )]
         public Vector4 P12_2 {get; set;} // 0xc0
+        [ShaderUniform( "metallic" )]
         public float P12_3 {get; set;} // 0xe8
+        [ShaderUniform( "edgeThreshold" )]
         public float P12_4 {get; set;} // 0xf4
+        [ShaderUniform( "edgeFactor" )]
         public float P12_5 {get; set;} // 0xf8
         public Type12Flags Flags {get; set;} // 0x12c
         public float P12_7 {get; set;} // 0x108
         public Vector3 P12_8 {get; set;} // 0x110
+        [ShaderUniform( "matBloomIntensity" )]
         public float P12_9 {get; set;} // 0xf0
+        [ShaderUniform( "edgeRemoveYAxisFactor" )]
         public float P12_10 {get; set;} // 0xfc
         public float P12_11 { get; set; } // 0x11c
         public float P12_12 { get; set; } // 0x120
         public float P12_13 { get; set; } // 0x124
+        [ShaderUniform( "matBloomIntensity" )]
         public float P12_14 { get; set; } // 0x10c
+        [ShaderUniform( "specularColor" )]
         public Vector3 P12_15 { get; set; } // 0xd0
+        [ShaderUniform( "specularThreshold" )]
         public float P12_16 { get; set; } // 0xdc
+        [ShaderUniform( "specularPower" )]
         public float P12_17 { get; set; } // 0xe0
+        [ShaderUniform( "matRoughness" )]
         public float P12_18 { get; set; } // 0xec
+        [ShaderUniform( "matRampAlpha" )]
         public float P12_19 { get; set; } // 0xe4
+        [ShaderUniform( "shadowColor" )]
         public Vector4 P12_20 { get; set; } // 0xa0
+        [ShaderUniform( "shadowThreshold" )]
         public float P12_21 { get; set; } // 0x100
+        [ShaderUniform( "shadowFactor" )]
         public float P12_22 { get; set; } // 0x104
 
         [Flags]
@@ -1160,57 +1228,6 @@ namespace GFDLibrary.Materials
         }
         public override void SetShaderFlags( Material mat )
         {
-            // TODO: Reflection map check
-            /*
-            if ((param_1->field_0x12c & 1) != 0) {
-                param_4->flag2 = param_4->flag2 | 0x200000;
-            }
-            if ((param_1->field_0x12c & 4) != 0) {
-                param_4->flag2 = param_4->flag2 | 0x2000;
-            }
-            if ((param_1->field_0x12c & 0x40) != 0) {
-                param_4->flag2 = param_4->flag2 | 0x100000;
-            }
-            if ((param_1->field_0x12c & 0x80) != 0) {
-                uVar8 = uVar8 | 0x800000;
-                param_4->flag0 = uVar8;
-            }
-            if ((*(uint *)&param_1->field_0x12c & 0x200) != 0) {
-                param_4->flag2 = param_4->flag2 | 1;
-            }
-            bVar5 = (*(uint *)&param_1->field_0x12c & 0x400) != 0;
-            if (bVar5) {
-                vmovss_avx(0x3f800000);
-                vcomiss_avx(ZEXT416(*(uint *)&param_1->field_0x9c));
-                if ((((bVar5) || (*(char *)&param_1->constant != -1)) || ((uVar2 & 0x40) != 0)) &&
-                    ((param_1->blend).type == 0)) {
-                param_4->flag2 = param_4->flag2 | 0x2000000;
-                }
-            }
-            vcomiss_avx(ZEXT416(*(uint *)&param_1->field_0xe0));
-            if ((vertex >> 0xb & 1) != 0) {
-                uVar8 = uVar8 | 0x40000000;
-                param_4->flag0 = uVar8;
-            }
-            if ((*(uint *)&param_1->field_0x12c & 0x800) != 0) {
-                param_4->flag2 = param_4->flag2 | 0x80000000;
-            }
-            if ((*(uint *)&param_1->field_0x12c & 0x1000) != 0) {
-                param_4->flag2 = param_4->flag2 | 0x4000;
-            }
-            if ((*(uint *)&param_1->field_0x12c & 0x2000) != 0) {
-                uVar8 = uVar8 | 0x100;
-                param_4->flag0 = uVar8;
-            }
-            if ((*(uint *)&param_1->field_0x12c >> 0xe & 1) == 0) {
-                if ((*(uint *)&param_1->field_0x12c >> 0xf & 1) != 0) {
-                param_4->flag0 = uVar8 | 0x80;
-                }
-            }
-            else {
-                param_4->flag1 = param_4->flag1 | 0x20000;
-            }
-            */
             if ( Flags.HasFlag( Type12Flags.FLAG0 ) )
                 mat.MatFlags2 |= METAPHOR_MaterialFlags2.FLAG2_TOON_REFERENCE_NORMALMAP;
             if ( Flags.HasFlag( Type12Flags.FLAG2 ) )
@@ -1228,7 +1245,7 @@ namespace GFDLibrary.Materials
             if ( Flags.HasFlag( Type12Flags.FLAG12 ) )
                 mat.MatFlags2 |= METAPHOR_MaterialFlags2.FLAG2_SPECULAR_NORMALMAPALPHA; // FLAG2_FORCED_BLOOMINTENSITY
         }
-        public override bool IsMaterialTransparent( Material mat ) => true;
+        //public override bool IsMaterialTransparent( ) => true;
     }
 
     // 47.HLSL
@@ -1256,7 +1273,7 @@ namespace GFDLibrary.Materials
         {
 
         }
-        public override bool IsMaterialTransparent( Material mat ) => false;
+        //public override bool IsMaterialTransparent( ) => false;
     }
 
     // 49.HLSL
@@ -1335,7 +1352,7 @@ namespace GFDLibrary.Materials
             if ( Flags.HasFlag( Type15Flags.GBufferSkyFlag ) )
                 mat.MatFlags2 |= METAPHOR_MaterialFlags2.FLAG2_SKY;
         }
-        public override bool IsMaterialTransparent( Material mat ) => false;
+        //public override bool IsMaterialTransparent( ) => false;
     }
 
     public sealed class MaterialParameterSetType16 : MaterialParameterSetBase

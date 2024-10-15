@@ -61,7 +61,7 @@ namespace GFDStudio.GUI.Controls
         public GLMesh Instantiate( bool renderWireframe, bool enableBackfaceCulling, Vector4 color )
         {
             return new GLMesh( new GLVertexArray( mVertices, null, null, null, null, null, mIndices, mPrimitiveType ),
-                               new GLMaterial { RenderWireframe = renderWireframe, Diffuse = color, EnableBackfaceCulling = enableBackfaceCulling }, true );
+                               new GLP5Material { RenderWireframe = renderWireframe, Diffuse = color, EnableBackfaceCulling = enableBackfaceCulling }, true );
         }
     }
 }

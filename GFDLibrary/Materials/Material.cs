@@ -365,7 +365,7 @@ namespace GFDLibrary.Materials
                 return false;
             if ( DrawMethod == MaterialDrawMethod.Opaque )
                 return true;
-            return METAPHOR_MaterialParameterSet.IsMaterialTransparent( this );
+            return METAPHOR_MaterialParameterSet.IsMaterialTransparent( );
         }
 
         // from gfdMaterialGetShaderFlags(gfdMaterial*, shaderId, vertexFlags, uint* flags)

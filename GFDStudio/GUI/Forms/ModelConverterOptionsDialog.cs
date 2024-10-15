@@ -16,7 +16,7 @@ namespace GFDStudio.GUI.Forms
     {
 
         private static string BasePresetLibraryPath = System.IO.Path.GetDirectoryName( Application.ExecutablePath ) + @"\Presets\";
-        private string PresetPath => Version == ResourceVersion.MetaphorRefantazio ? BasePresetLibraryPath + @"Metaphor\" : BasePresetLibraryPath;
+        private string PresetPath => Version >= 0x02000000 ? BasePresetLibraryPath + @"Metaphor\" : BasePresetLibraryPath;
         private string[] Presets;
 
         public object MaterialPreset
@@ -75,7 +75,11 @@ namespace GFDStudio.GUI.Forms
             PropVersions = PropVersions.Append( "Custom Version" );
             return PropVersions.ToArray();
         }
-        private void RefreshPresetList() => Presets = Directory.GetFiles( PresetPath, "*.yml" ).Select( file => Path.GetFileName( file ) ).ToArray();
+        private void RefreshPresetList()
+        {
+            Presets = Directory.GetFiles( PresetPath, "*.yml" ).Select( file => Path.GetFileName( file ) ).ToArray();
+            MaterialPresetComboBox.DataSource = Presets;
+        }
 
         private void OpenEditPreset( string preset )
         {
@@ -85,6 +89,12 @@ namespace GFDStudio.GUI.Forms
                 UseShellExecute = true
             };
             PresetEdit.Start();
+        }
+
+        private void VersionTextUserUpdated( object? sender, EventArgs e )
+        {
+            if ( VersionComboBox.SelectedIndex == VersionPresets.Length - 1 ) // Custom version only
+                RefreshPresetList();
         }
 
         private void RefreshVersionID( object sender, EventArgs e )
@@ -121,6 +131,7 @@ namespace GFDStudio.GUI.Forms
             else
             {
                 MaterialPresetComboBox.DataSource = Presets;
+                VersionTextBox.TextChanged += VersionTextUserUpdated;
             }
         }
 

@@ -18,7 +18,7 @@ namespace GFDLibrary.Rendering.OpenGL
 
         public List<GLNode> Nodes { get; }
 
-        public Dictionary<string, GLMaterial> Materials { get; }
+        public Dictionary<string, GLBaseMaterial> Materials { get; }
 
         public Animation Animation { get; private set; }
 
@@ -29,8 +29,8 @@ namespace GFDLibrary.Rendering.OpenGL
             var nodes = modelPack.Model.Nodes.ToList();
             Nodes = nodes.Select( x => new GLNode( x ) ).ToList();
 
-            Materials = modelPack.Materials?.ToDictionary( x => x.Key, y => new GLMaterial( y.Value, textureCreator ) ) ??
-                        new Dictionary<string, GLMaterial>();
+            Materials = modelPack.Materials?.ToDictionary( x => x.Key, y => GLBaseMaterial.CreateGLMaterial( y.Value, textureCreator ) ) ??
+                        new Dictionary<string, GLBaseMaterial>();
 
             foreach ( var glNode in Nodes )
             {
@@ -100,6 +100,22 @@ namespace GFDLibrary.Rendering.OpenGL
             Draw( shaderRegistry, ref view, ref proj, animationTime, camera );
         }
 
+        private GLShaderProgram GetTargetShader(ShaderRegistry shaderRegistry, GLMesh glMesh, ref Matrix4 view, ref Matrix4 projection, ref HashSet<ResourceType> shaderPrograms )
+        {
+            if ( typeof( GLMetaphorMaterial ).IsInstanceOfType( glMesh.Material )
+                && shaderRegistry.mMetaphorShaders.TryGetValue( ( (GLMetaphorMaterial)glMesh.Material ).ParameterSet.ResourceType, out var metaphorShader ) )
+            {
+                if ( !shaderPrograms.Contains( ((GLMetaphorMaterial)glMesh.Material).ParameterSet.ResourceType ) )
+                {
+                    metaphorShader.Use();
+                    metaphorShader.SetUniform( "uView", view );
+                    metaphorShader.SetUniform( "uProjection", projection );
+                }
+                return metaphorShader;
+            }
+            return shaderRegistry.mDefaultShader;
+        }
+
         public void Draw( ShaderRegistry shaderRegistry, ref Matrix4 view, ref Matrix4 projection, double animationTime, GLCamera camera )
         {
             if ( Animation != null )
@@ -111,7 +127,7 @@ namespace GFDLibrary.Rendering.OpenGL
             HashSet<ResourceType> ShaderProgramsInUse = new();
 
             // List to hold transparent meshes and their world transforms
-            List<Tuple<GLMesh, Matrix4>> transparentMeshes = new List<Tuple<GLMesh, Matrix4>>();
+            List<Tuple<GLMesh, Matrix4, GLShaderProgram>> transparentMeshes = new();
 
             // Draw opaque objects first
             foreach ( var glNode in Nodes )
@@ -122,11 +138,6 @@ namespace GFDLibrary.Rendering.OpenGL
                 for ( var i = 0; i < glNode.Meshes.Count; i++ )
                 {
                     var glMesh = glNode.Meshes[i];
-                    bool transparentMesh = false;
-                    if ( glMesh.Material.DrawMethod != 0 || (glMesh.Material.DrawMethod == 0 && glMesh.Material.Diffuse.W < 1.0) )
-                    {
-                        transparentMesh = true;
-                    }
 
                     if ( Animation != null && glMesh.Mesh != null )
                     {
@@ -134,30 +145,15 @@ namespace GFDLibrary.Rendering.OpenGL
                         glMesh = glNode.Meshes[i] = new GLMesh( oldGlMesh.Mesh, glNode.WorldTransform, ModelPack.Model.Bones, Nodes, Materials );
                         oldGlMesh.Dispose();
                     }
-                    if (glMesh.Material.UseMetaphorMaterialParameterSet && shaderRegistry.mMetaphorShaders.TryGetValue( glMesh.Material.MaterialParameterSetResource, out var metaphorShader ) )
+                    GLShaderProgram targetShader = GetTargetShader( shaderRegistry, glMesh, ref view, ref projection, ref ShaderProgramsInUse );
+                    if ( !glMesh.Material.IsMaterialTransparent() ) // If opaque
                     {
-                        if ( !ShaderProgramsInUse.Contains( glMesh.Material.MaterialParameterSetResource ) )
-                        {
-                            metaphorShader.Use();
-                            metaphorShader.SetUniform( "uView", view );
-                            metaphorShader.SetUniform( "uProjection", projection );
-                        }
-                        glMesh.Draw( glNode.WorldTransform.ToOpenTK(), metaphorShader );
-                    }
-                    else
-                    {
-                        glMesh.Draw( glNode.WorldTransform.ToOpenTK(), shaderRegistry.mDefaultShader );
-                    }
-                    /*
-                    if ( !transparentMesh ) // If opaque
-                    {
-                        glMesh.Draw( glNode.WorldTransform.ToOpenTK(), shaderProgram );
+                        glMesh.Draw( glNode.WorldTransform.ToOpenTK(), targetShader );
                     }
                     else // If transparent
                     {
-                        transparentMeshes.Add( Tuple.Create( glMesh, glNode.WorldTransform.ToOpenTK() ) );
+                        transparentMeshes.Add( Tuple.Create( glMesh, glNode.WorldTransform.ToOpenTK(), targetShader ) );
                     }
-                    */
                 }
             }
 
@@ -190,7 +186,7 @@ namespace GFDLibrary.Rendering.OpenGL
                         break;
                 }
 
-                //glMesh.Draw( worldTransform, shaderProgram ); // TODO: Fix transparent objects
+                glMesh.Draw( worldTransform, tuple.Item3 );
             }
 
             // Re-enable depth mask
