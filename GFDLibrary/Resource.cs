@@ -40,7 +40,7 @@ namespace GFDLibrary
 
         public static T Load<T>( Stream stream, bool leaveOpen = false ) where T : Resource
         {
-            return Load( stream, leaveOpen, typeof(T) ) as T;
+            return Load( null, stream, leaveOpen, typeof(T) ) as T;
         }
 
         public static ResourceType GetResourceType( Stream stream )
@@ -74,16 +74,16 @@ namespace GFDLibrary
                 stream.CopyTo( memoryStream );
                 memoryStream.Position = 0;
 
-                return Load( memoryStream, false, type );
+                return Load( path, memoryStream, false, type );
             }
         }
 
         public static Resource Load( Stream stream, bool leaveOpen )
         {
-            return Load( stream, leaveOpen, null ); 
+            return Load( null, stream, leaveOpen, null ); 
         }
 
-        private static Resource Load( Stream stream, bool leaveOpen, Type type )
+        private static Resource Load( string source, Stream stream, bool leaveOpen, Type type )
         {
             if ( stream.Length < ResourceFileHeader.SIZE )
                 throw new InvalidDataException( "Stream is too small to be a valid resource file." );
@@ -213,6 +213,37 @@ namespace GFDLibrary
                         res = model.AnimationPack;
                     }
                 }
+                if ( ( res.ResourceType == ResourceType.ModelPack || res.ResourceType == ResourceType.ModelPack_Metaphor )
+                    && res.Version >= 0x02000000 )
+                {
+                    // try loading a TEX from an external file, bundled in the same folder as the model.
+                    var model = (ModelPack)res;
+                    if (source != null)
+                    {
+                        string ModelDirectory = Path.GetDirectoryName( source );
+                        Logger.Debug( $"METAPHOR: Looking for loose chunks in {ModelDirectory}" );
+                        string TexPath = Path.Combine( ModelDirectory, Path.GetFileNameWithoutExtension( source ) + ".TEX" );
+                        if ( File.Exists( TexPath ) )
+                        {
+                            using (var texpackStream = File.OpenRead( TexPath ))
+                            {
+                                MetaphorTexpack MRFTexpack = new( texpackStream );
+                                if (MRFTexpack != null)
+                                {
+                                    foreach ( var tex in MRFTexpack.TextureList )
+                                    {
+                                        Logger.Debug( $"METAPHOR: Texture bin got {tex.Key}" );
+                                        if ( model.Textures.TryGetValue( tex.Key, out var modelTexPlaceholder ) )
+                                        {
+                                            modelTexPlaceholder.Data = tex.Value;
+                                            modelTexPlaceholder.IsTexSourceExternal = true;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
 
                 return res;
             }
@@ -233,7 +264,9 @@ namespace GFDLibrary
             }
             // METAPHOR: Check if the textures were sourced externally, and if so, export those in a separate TEX file
             // Do this here since Save() is aware of the file system location of the saved model pack
-            if ( (ResourceType == ResourceType.ModelPack || ResourceType == ResourceType.ModelPack_Metaphor) && Version >= 0x2000000 )
+            if ( (ResourceType == ResourceType.ModelPack || ResourceType == ResourceType.ModelPack_Metaphor) 
+                && Version >= 0x2000000
+                && ((ModelPack)this ).Textures != null )
             {
                 MetaphorTexpack extTexpack = new();
                 foreach ( var texture in ( (ModelPack)this ).Textures )
@@ -292,17 +325,17 @@ namespace GFDLibrary
         internal void Read( ResourceReader reader )
         {
             Logger.Debug( $"Resource: reading {ResourceType} @ 0x{reader.Position:X8}" );
-            Logger.Indent();
+            Logger.IndentDebug();
             ReadCore( reader );
-            Logger.Unindent();
+            Logger.UnindentDebug();
         }
 
         internal void Write( ResourceWriter writer )
         {
             Logger.Debug( $"Resource: writing {ResourceType} @ 0x{writer.Position:X8}" );
-            Logger.Indent();
+            Logger.IndentDebug();
             WriteCore( writer );
-            Logger.Unindent();
+            Logger.UnindentDebug();
         }
 
         protected abstract void ReadCore( ResourceReader reader );

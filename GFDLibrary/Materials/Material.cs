@@ -483,7 +483,7 @@ namespace GFDLibrary.Materials
 
             if ( Version < 0x1104000 )
             {
-                flags = ( MaterialFlags )( ( uint )Flags & 0x7FFFFFFF );
+                flags = ( MaterialFlags )( ( uint )flags & 0x7FFFFFFF );
             }
 
             if (Version < 0x2000000 )
@@ -591,7 +591,7 @@ namespace GFDLibrary.Materials
             Field70 = reader.ReadUInt32();
             DisableBackfaceCulling = reader.ReadInt16();
 
-            if ( Version <= 0x1105070 || Version >= 0x1105090 || Version == 0x1105080 )
+            if ( Version > 0x1103040 )
             {
                 Field98 = reader.ReadUInt32();
             }
@@ -697,7 +697,7 @@ namespace GFDLibrary.Materials
             writer.WriteUInt32( Field70 );
             writer.WriteInt16(DisableBackfaceCulling);
 
-            if ( Version <= 0x1105070 || Version >= 0x1105090 )
+            if ( Version > 0x1103040 )
             {
                 writer.WriteUInt32( Field98 );
             }

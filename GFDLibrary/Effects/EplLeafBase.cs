@@ -61,6 +61,11 @@ namespace GFDLibrary.Effects
         protected override void WriteCore( ResourceWriter writer )
         {
             //     SetRandomBackColor();
+            if ( Version > 0x2110060 )
+            {
+                writer.WriteVector2( Field34 );
+                writer.WriteVector2( Field3C );
+            }
             writer.WriteInt32( (int)Flags );
             writer.WriteStringWithHash( Version, Name );
             writer.WriteResource( Data );
@@ -354,6 +359,8 @@ namespace GFDLibrary.Effects
             }
             writer.WriteVector4( Field14_ );
             writer.WriteBytes( Field24 );
+            if ( Version > 0x2110186 )
+                writer.WriteUInt16( Field62 );
         }
     }
 

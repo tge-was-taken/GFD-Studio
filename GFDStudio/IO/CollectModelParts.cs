@@ -9,6 +9,8 @@ namespace GFDStudio.IO
     {
         public static void CollectDisconnectedModelPartsForModelPack(ModelPack Pack, string filePath)
         {
+            MetaphorTexpack.ReplaceTextures( Pack, filePath );
+            /*
             string ModelDirectory = Path.GetDirectoryName( filePath );
             Logger.Debug( $"METAPHOR: Looking for loose chunks in {ModelDirectory}" );
             string TexPath = Path.Combine( ModelDirectory, Path.GetFileNameWithoutExtension( filePath ) + ".TEX" );
@@ -28,6 +30,7 @@ namespace GFDStudio.IO
                     }
                 }
             }
+            */
         }
     }
 }

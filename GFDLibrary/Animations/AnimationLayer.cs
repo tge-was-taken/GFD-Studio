@@ -149,16 +149,17 @@ namespace GFDLibrary.Animations
                     case KeyType.Single5:
                     case KeyType.Single5_2:
                     case KeyType.Single5Alt:
+                    case KeyType.Type36_P5R:
                         key = new Single5Key( KeyType );
                         break;
                     case KeyType.NodePRSByte:
                         key = new PRSByteKey();
                         break;
                     case KeyType.Single4Byte:
-                        if (Version >= 0x2000000 )
+                        //if (Version >= 0x2000000 )
                             key = new Single3ByteKey();
-                        else
-                            key = new Single4ByteKey();
+                        //else
+                            //key = new Single4ByteKey();
                         break;
                     case KeyType.SingleByte:
                         key = new SingleByteKey();

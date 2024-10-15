@@ -42,8 +42,15 @@ namespace GFDLibrary.Effects
                 case 6: Data = reader.ReadResource<EplPostEffectLensFlareData>( Version ); break;
                 case 7: Data = reader.ReadResource<EplPostEffectColorCorrectionData>( Version ); break;
                 case 8: Data = reader.ReadResource<EplPostEffectMonotoneData>( Version ); break;
-                case 9: Data = reader.ReadResource<EplPostEffectChromaticAberration>( Version ); break;
-                case 10: Data = reader.ReadResource<EplPostEffectColorCorrectionExcludeToon>( Version ); break;
+                case 9:
+                    if ( Version >= 0x2000000 ) Data = reader.ReadResource<EplPostEffectChromaticAberration>( Version );
+                    else Data = reader.ReadResource<EplPostEffectLensFlareMakeData>( Version );
+                    break;
+                case 10:
+                    if ( Version >= 0x2000000 ) Data = reader.ReadResource<EplPostEffectColorCorrectionExcludeToon>( Version );
+                    else Data = reader.ReadResource<EplPostEffectMotionBlurData>( Version );
+                    break;
+                case 11: Data = reader.ReadResource<EplPostEffectAfterimageBlurData>( Version ); break; // Only in P5R
                 default: Debug.Assert( false, "Not implemented" ); break;
             }
             HasEmbeddedFile = reader.ReadBoolean();
@@ -428,6 +435,125 @@ namespace GFDLibrary.Effects
             writer.WriteSingle( Field2C );
             writer.WriteSingle( Field30 );
             writer.WriteVector2( Field34 );
+        }
+    }
+
+    public sealed class EplPostEffectLensFlareMakeData : Resource
+    {
+        public override ResourceType ResourceType => ResourceType.EplPostEffectLensFlareMakeData;
+
+        public uint Field10 { get; set; }
+        public uint Field20 { get; set; }
+        public EplLeafCommonData2 FieldA0 { get; set; }
+        public float Field60 { get; set; }
+        public float Field64 { get; set; }
+        public float Field68 { get; set; }
+        public float Field6C { get; set; }
+        public float Field70 { get; set; }
+        public float Field74 { get; set; }
+        public float Field78 { get; set; }
+        public float Field7C { get; set; }
+        public float Field80 { get; set; }
+        public float Field84 { get; set; }
+        public float Field88 { get; set; }
+        public float Field8C { get; set; }
+        public float Field90 { get; set; }
+        public float Field94 { get; set; }
+        public float Field98 { get; set; }
+        public float Field9C { get; set; }
+        protected override void ReadCore( ResourceReader reader )
+        {
+            Field10 = reader.ReadUInt32();
+            Field20 = reader.ReadUInt32();
+            FieldA0 = reader.ReadResource<EplLeafCommonData2>( Version );
+            Field60 = reader.ReadSingle();
+            Field64 = reader.ReadSingle();
+            Field68 = reader.ReadSingle();
+            Field6C = reader.ReadSingle();
+            Field70 = reader.ReadSingle();
+            Field74 = reader.ReadSingle();
+            Field78 = reader.ReadSingle();
+            Field7C = reader.ReadSingle();
+            Field80 = reader.ReadSingle();
+            Field84 = reader.ReadSingle();
+            Field88 = reader.ReadSingle();
+            Field8C = reader.ReadSingle();
+            Field90 = reader.ReadSingle();
+            Field94 = reader.ReadSingle();
+            Field98 = reader.ReadSingle();
+            Field9C = reader.ReadSingle();
+        }
+        protected override void WriteCore( ResourceWriter writer )
+        {
+            writer.WriteUInt32( Field10 );
+            writer.WriteUInt32( Field20 );
+            writer.WriteResource( FieldA0 );
+            writer.WriteSingle( Field60 );
+            writer.WriteSingle( Field64 );
+            writer.WriteSingle( Field68 );
+            writer.WriteSingle( Field6C );
+            writer.WriteSingle( Field70 );
+            writer.WriteSingle( Field74 );
+            writer.WriteSingle( Field78 );
+            writer.WriteSingle( Field7C );
+            writer.WriteSingle( Field80 );
+            writer.WriteSingle( Field84 );
+            writer.WriteSingle( Field88 );
+            writer.WriteSingle( Field8C );
+            writer.WriteSingle( Field90 );
+            writer.WriteSingle( Field94 );
+            writer.WriteSingle( Field98 );
+            writer.WriteSingle( Field9C );
+        }
+    }
+    public sealed class EplPostEffectMotionBlurData : Resource
+    {
+        public override ResourceType ResourceType => ResourceType.EplPostEffectMotionBlurData;
+
+        public EplLeafCommonData2 Field10 { get; set; }
+        public uint Field74 { get; set; }
+        public EplLeafCommonData2 Field78 { get; set; }
+        public float FieldDC { get; set; }
+        public float FieldE0 { get; set; }
+        protected override void ReadCore( ResourceReader reader )
+        {
+            Field10 = reader.ReadResource<EplLeafCommonData2>(Version);
+            Field74 = reader.ReadUInt32();
+            Field78 = reader.ReadResource<EplLeafCommonData2>(Version);
+            FieldDC = reader.ReadSingle();
+            FieldE0 = reader.ReadSingle();
+        }
+        protected override void WriteCore( ResourceWriter writer )
+        {
+            writer.WriteResource( Field10);
+            writer.WriteUInt32(Field74);
+            writer.WriteResource( Field78);
+            writer.WriteSingle(FieldDC);
+            writer.WriteSingle( FieldE0 );
+        }
+    }
+
+    public sealed class EplPostEffectAfterimageBlurData : Resource
+    {
+        public override ResourceType ResourceType => ResourceType.EplPostEffectAfterimageBlurData;
+
+        public EplLeafCommonData2 Field10 { get; set; }
+        public uint Field74 { get; set; }
+        public EplLeafCommonData2 Field78 { get; set; }
+        public float FieldDC { get; set; }
+        protected override void ReadCore( ResourceReader reader )
+        {
+            Field10 = reader.ReadResource<EplLeafCommonData2>( Version );
+            Field74 = reader.ReadUInt32();
+            Field78 = reader.ReadResource<EplLeafCommonData2>( Version );
+            FieldDC = reader.ReadSingle();
+        }
+        protected override void WriteCore( ResourceWriter writer )
+        {
+            writer.WriteResource( Field10 );
+            writer.WriteUInt32( Field74 );
+            writer.WriteResource( Field78 );
+            writer.WriteSingle( FieldDC );
         }
     }
 }

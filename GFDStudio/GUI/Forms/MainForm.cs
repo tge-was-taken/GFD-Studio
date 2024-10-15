@@ -150,7 +150,6 @@ namespace GFDStudio.GUI.Forms
             }
 
             RecordOpenedFile( filePath );
-            
             if (node.DataType == typeof(Animation) || node.DataType == typeof(AnimationPack))
             {
                 mAnimationListTreeView.SetTopNode( node );
@@ -162,7 +161,6 @@ namespace GFDStudio.GUI.Forms
                     CollectModelParts.CollectDisconnectedModelPartsForModelPack( (ModelPack)node.Data, filePath );
                 ModelEditorTreeView.SetTopNode( node );
             }
-
             UpdateSelection( node );
         }
 

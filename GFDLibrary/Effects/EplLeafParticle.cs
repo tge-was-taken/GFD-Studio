@@ -125,6 +125,10 @@ namespace GFDLibrary.Effects
             writer.WriteUInt32( Field164 );
             writer.WriteSingle( Field040 );
             writer.WriteVector2( Field44 );
+            if ( Version > 0x2107001 )
+                writer.WriteVector2( Field4C );
+            if ( Version > 0x2110193 )
+                writer.WriteVector2( Field54 );
             writer.WriteSingle( FieldB4 );
             writer.WriteUInt32( FieldC4 );
             writer.WriteVector2( FieldB8 );
@@ -133,16 +137,33 @@ namespace GFDLibrary.Effects
             if ( Version >= 0x1104701 )
                 writer.WriteSingle( FieldC0 );
             writer.WriteResource( FieldC8 );
-            writer.WriteSingle( Field12C );
-            writer.WriteSingle( Field130 );
-            writer.WriteVector2( Field134 );
-            writer.WriteVector2( Field13C );
+            if ( Version > 0x1104041 )
+            {
+                writer.WriteSingle( Field12C );
+                writer.WriteSingle( Field130 );
+            }
+            if ( Version > 0x2107001 )
+                writer.WriteVector2( Field140 );
+            if (Version < 0x1104041)
+            {
+                writer.WriteResource( Field134_Old );
+            } else
+            {
+                writer.WriteVector2( Field134 );
+                writer.WriteVector2( Field13C );
+            }
             writer.WriteSingle( Field144 );
             writer.WriteUInt32( Field148 );
-            writer.WriteUInt32( Field14C );
-            writer.WriteSingle( Field150 );
-            writer.WriteSingle( Field154 );
-            writer.WriteSingle( Field158 );
+            if ( Version > 0x1104171 )
+            {
+                writer.WriteUInt32( Field14C );
+                writer.WriteSingle( Field150 );
+            }
+            if ( Version > 0x1104051 )
+            {
+                writer.WriteSingle( Field154 );
+                writer.WriteSingle( Field158 );
+            }
             if ( Params != null )
                 writer.WriteResource( Params );
         }
@@ -449,7 +470,7 @@ namespace GFDLibrary.Effects
             //     SetRandomBackColor();
             Header = reader.ReadResource<EplLeafDataHeader>( Version );
             Type = reader.ReadUInt32();
-            if ( Version > 0x11084180 )
+            if ( Version > 0x1104080 )
             {
                 Field00 = reader.ReadUInt32();
             }
@@ -462,7 +483,7 @@ namespace GFDLibrary.Effects
             //     SetRandomBackColor();
             writer.WriteResource( Header );
             writer.WriteUInt32( Type );
-            if ( Version > 0x11084180 )
+            if ( Version > 0x1104080 )
             {
                 writer.WriteUInt32( Field00 );
             }

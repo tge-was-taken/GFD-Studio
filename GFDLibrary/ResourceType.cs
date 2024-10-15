@@ -124,6 +124,9 @@
         MaterialParameterSetLegacy,
 
         ShaderMetaphorDX11,
+        EplPostEffectLensFlareMakeData,
+        EplPostEffectMotionBlurData,
+        EplPostEffectAfterimageBlurData,
 
         ModelPack_Metaphor_BIG_ENDIAN = 0x8000000
     }

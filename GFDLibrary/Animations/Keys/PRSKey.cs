@@ -141,6 +141,10 @@ namespace GFDLibrary.Animations
                     writer.WriteVector3Half( Position );
                     writer.WriteVector3Half( Scale );
                     break;
+                case KeyType.Type31:
+                    writer.WriteVector3( Position );
+                    writer.WriteQuaternion( Rotation );
+                    break;
 
                 default:
                     throw new InvalidOperationException( nameof( Type ) );

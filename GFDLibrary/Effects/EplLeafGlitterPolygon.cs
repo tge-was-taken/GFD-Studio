@@ -61,7 +61,6 @@ namespace GFDLibrary.Effects
             Field144 = reader.ReadSingle();
             Field148 = reader.ReadSingle();
             Field14C = reader.ReadSingle();
-            Field70 = reader.ReadBoolean();
             switch ( Type )
             {
                 case 0: break;
@@ -71,6 +70,7 @@ namespace GFDLibrary.Effects
                 case 4: Polygon = reader.ReadResource<EplGlitterPolygonWall>( Version ); break;
                 default: Debug.Assert( false, "Not implemented" ); break;
             }
+            Field70 = reader.ReadBoolean();
             if ( Field70 )
             {
                 EmbeddedFile = reader.ReadResource<EplEmbeddedFile>( Version );
@@ -97,9 +97,9 @@ namespace GFDLibrary.Effects
             writer.WriteSingle( Field144 );
             writer.WriteSingle( Field148 );
             writer.WriteSingle( Field14C );
-            writer.WriteBoolean( Field70 );
             if ( Polygon != null )
                 writer.WriteResource( Polygon );
+            writer.WriteBoolean( Field70 );
             if ( Field70 )
             {
                 writer.WriteResource( EmbeddedFile );

@@ -17,6 +17,7 @@ using GFDLibrary.Textures;
 using Ookii.Dialogs;
 using Ookii.Dialogs.Wpf;
 using System.Threading;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace GFDStudio.GUI.Forms
 {
@@ -199,6 +200,7 @@ namespace GFDStudio.GUI.Forms
 
             using ( var dialog = new ProgressDialog() )
             {
+                dialog.WindowTitle = "Retargeting Animations";
                 dialog.DoWork += async ( o, progress ) =>
                 {
                     var filePaths = Directory.EnumerateFiles( directoryPath, "*.GAP", SearchOption.AllDirectories ).ToList();
@@ -230,16 +232,18 @@ namespace GFDStudio.GUI.Forms
                     } );
 
                     await Task.WhenAll( tasks );
+                    // Retargeting Metaphor anim packs in particular is quite memory intensive
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+                    if ( !failures.IsEmpty )
+                    {
+                        MessageBox.Show( "An error occured while processing the following files:\n" + string.Join( "\n", failures ) );
+                    }
+                    else MessageBox.Show( "All animation packs successfully retargeted!" );
                 };
 
                 dialog.ShowDialog();
             }
-
-            if ( !failures.IsEmpty )
-            {
-                MessageBox.Show( "An error occured while processing the following files:\n" + string.Join( "\n", failures ) );
-            }
-            else MessageBox.Show( "All animation packs successfully retargeted!" );
         }
 		
         private void HandleConvertAnimationsToolStripMenuItemClick(object sender, EventArgs e)
@@ -488,9 +492,10 @@ namespace GFDStudio.GUI.Forms
             {
                 try
                 {
-                    //var targetModel = ModuleImportUtilities.ImportFile<ModelPack>( filePath )?.Model;
-                    var targetModelTexDic = ModuleImportUtilities.ImportFile<ModelPack>( filePath )?.Textures;
-
+                    var targetModel = ModuleImportUtilities.ImportFile<ModelPack>( filePath );
+                    if ( targetModel.Version >= 0x2000000 )
+                        CollectModelParts.CollectDisconnectedModelPartsForModelPack( targetModel, filePath );
+                    var targetModelTexDic = targetModel.Textures;
                     if ( targetModelTexDic == null )
                         continue;
 
@@ -501,7 +506,7 @@ namespace GFDStudio.GUI.Forms
                         switch ( tex.Format )
                         {
                             case TextureFormat.DDS:
-                                texPath = Path.Combine( outpath, tex.Name );
+                                texPath = Path.Combine( outpath, Path.ChangeExtension( tex.Name, ".dds" ) );
                                 File.WriteAllBytes( texPath, tex.Data );
                                 break;
                             case TextureFormat.TGA:

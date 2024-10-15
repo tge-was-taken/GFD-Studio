@@ -42,5 +42,33 @@ namespace GFDLibrary.Textures.Texpack
                 }
             }
         }
+        public static void ReplaceTextures( ModelPack model, string source )
+        {
+            if ( source != null )
+            {
+                string ModelDirectory = Path.GetDirectoryName( source );
+                Logger.Debug( $"METAPHOR: Looking for loose chunks in {ModelDirectory}" );
+                string TexPath = Path.Combine( ModelDirectory, Path.GetFileNameWithoutExtension( source ) + ".TEX" );
+                if ( File.Exists( TexPath ) )
+                {
+                    using ( var texpackStream = File.OpenRead( TexPath ) )
+                    {
+                        MetaphorTexpack MRFTexpack = new( texpackStream );
+                        if ( MRFTexpack != null )
+                        {
+                            foreach ( var tex in MRFTexpack.TextureList )
+                            {
+                                Logger.Debug( $"METAPHOR: Texture bin got {tex.Key}" );
+                                if ( model.Textures.TryGetValue( tex.Key, out var modelTexPlaceholder ) )
+                                {
+                                    modelTexPlaceholder.Data = tex.Value;
+                                    modelTexPlaceholder.IsTexSourceExternal = true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

@@ -39,14 +39,24 @@ namespace GFDLibrary
 
         public static void Indent()
         {
-            sIndent++;
-            sPrefix = new string( '\t', sIndent );
+            lock (Log)
+            {
+                sIndent++;
+                sPrefix = new string( '\t', sIndent );
+            }
         }
 
         public static void Unindent()
         {
-            sIndent--;
-            sPrefix = new string( '\t', sIndent );
+            lock ( Log )
+            {
+                sIndent--;
+                sPrefix = new string( '\t', sIndent );
+            }
         }
+        [Conditional( "DEBUG" )]
+        public static void IndentDebug() => Indent();
+        [Conditional( "DEBUG" )]
+        public static void UnindentDebug() => Unindent();
     }
 }
