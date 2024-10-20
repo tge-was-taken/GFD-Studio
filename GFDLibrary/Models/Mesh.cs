@@ -471,14 +471,14 @@ namespace GFDLibrary.Models
                     if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord0 ) )
                         TexCoordsChannel0[i] = reader.ReadVector2Half();
 
+                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Normal ) )
+                        Normals[i] = reader.ReadVector3();
+
                     if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord1 ) )
                         TexCoordsChannel1[i] = reader.ReadVector2Half();
 
                     if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord2 ) )
                         TexCoordsChannel2[i] = reader.ReadVector2Half();
-
-                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Normal ) )
-                        Normals[i] = reader.ReadVector3();
 
                     if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Tangent ) )
                         Tangents[i] = reader.ReadVector3();
@@ -688,14 +688,14 @@ namespace GFDLibrary.Models
                     if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord0 ) )
                         writer.WriteVector2Half( TexCoordsChannel0[i] );
 
+                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Normal ) )
+                        writer.WriteVector3( Normals[i] );
+
                     if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord1 ) )
                         writer.WriteVector2Half( TexCoordsChannel1[i] );
 
                     if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord2 ) )
                         writer.WriteVector2Half( TexCoordsChannel2[i] );
-
-                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Normal ) )
-                        writer.WriteVector3( Normals[i] );
 
                     if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Tangent ) )
                         writer.WriteVector3( Tangents[i] );
