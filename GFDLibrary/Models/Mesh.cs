@@ -512,8 +512,8 @@ namespace GFDLibrary.Models
                     }
                 }
             }
-            long StrideLength = ( reader.Position - StartPos ) / vertexCount;
-            Logger.Info( $"Stride Length: 0x{StrideLength:X}" );
+            //long StrideLength = ( reader.Position - StartPos ) / vertexCount;
+            //Logger.Info( $"Stride Length: 0x{StrideLength:X}" );
 
             if ( Flags.HasFlag( GeometryFlags.HasVertexWeights ) && Version >= 0x2110213 )
                 Unk_VertexWeight = reader.ReadByte();

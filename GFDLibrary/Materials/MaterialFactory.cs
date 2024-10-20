@@ -45,22 +45,42 @@ namespace GFDLibrary.Materials
             {
                 material.METAPHOR_UseMaterialParameterSet = MaterialPreset.METAPHOR_UseMaterialParameterSet;
                 material.METAPHOR_MaterialParameterSet = MaterialPreset.METAPHOR_MaterialParameterSet;
-                material.METAPHOR_MaterialParameterFormat = MaterialPreset.METAPHOR_MaterialParameterFormat;
             }
             else
             {
                 material.LegacyParameters = MaterialPreset.LegacyParameters;
             }
 
+            TextureMap NewTextureMapResource(string name)
+            {
+                TextureMap newMap = new( name );
+                if (material.METAPHOR_UseMaterialParameterSet)
+                    newMap.METAPHOR_ParentMaterialParameterSet = material.METAPHOR_MaterialParameterSet;
+                return newMap;
+            }
+
             // TODO: which one is which
-            if ( MaterialPreset.DiffuseMap != null ) material.DiffuseMap = new TextureMap( diffuseMapName );
+            if ( MaterialPreset.DiffuseMap != null ) material.DiffuseMap = NewTextureMapResource( diffuseMapName );
             // if ( MaterialPreset.GlowMap != null ) material.GlowMap = new TextureMap( diffuseMapName );
             // if ( MaterialPreset.HighlightMap != null ) material.HighlightMap = new TextureMap( diffuseMapName );
             // if ( MaterialPreset.NightMap != null ) material.NightMap = new TextureMap( diffuseMapName );
-            if ( MaterialPreset.NormalMap != null ) material.NormalMap = new TextureMap( normalMapName );
-            if ( MaterialPreset.ReflectionMap != null ) material.ReflectionMap = new TextureMap( reflectionMapName );
+            //if ( MaterialPreset.NormalMap != null ) material.NormalMap = NewTextureMapResource( normalMapName );
+            //if ( MaterialPreset.ReflectionMap != null ) material.ReflectionMap = NewTextureMapResource( reflectionMapName );
             // if ( MaterialPreset.ShadowMap != null ) material.ShadowMap = new TextureMap( diffuseMapName );
-            if ( MaterialPreset.SpecularMap != null ) material.SpecularMap = new TextureMap( specularMapName );
+            if (options.Version >= 0x2000000)
+            {
+                // force adding toon shadow map to character models so that they don't crash by default
+                if ( material.METAPHOR_MaterialParameterSet.ResourceType == ResourceType.MaterialParameterSetType2_3_13)
+                    material.SpecularMap = NewTextureMapResource( diffuseMapName );
+                // distortion multiply map
+                if ( material.METAPHOR_MaterialParameterSet.ResourceType == ResourceType.MaterialParameterSetType4 )
+                    material.HighlightMap = NewTextureMapResource( diffuseMapName );
+            } else
+            {
+                if ( MaterialPreset.NormalMap != null ) material.NormalMap = NewTextureMapResource( normalMapName );
+                if ( MaterialPreset.ReflectionMap != null ) material.ReflectionMap = NewTextureMapResource( reflectionMapName );
+                if ( MaterialPreset.SpecularMap != null ) material.SpecularMap = NewTextureMapResource( specularMapName );
+            }
 
             material.IsPresetMaterial = false;
 

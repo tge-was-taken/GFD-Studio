@@ -1,7 +1,8 @@
-﻿using Assimp;
-using GFDLibrary.IO;
+﻿using GFDLibrary.IO;
+using GFDLibrary.Models.Conversion;
 using GFDLibrary.Models.Conversion.Utilities;
 using System;
+using System.IO;
 using System.Numerics;
 
 using Ai = Assimp;
@@ -32,9 +33,10 @@ namespace GFDLibrary.Materials
         public virtual string GetTextureMap8Name() => "Map 8";
         public virtual string GetTextureMap9Name() => "Map 9";
         public virtual string GetTextureMap10Name() => "Map 10";
-        public virtual void ConvertToAssimp( ref Ai.Material material ) { }
+        public virtual void ConvertToAssimp( ref Ai.Material aiMaterial, Material material, string textureRelDir ) { }
         public abstract void SetShaderFlags( Material mat );
         public virtual bool IsMaterialTransparent() => false;
+        public abstract ushort GetExportTypeId();
     }
 
     // 7.HLSL or 9.HLSL
@@ -134,6 +136,17 @@ namespace GFDLibrary.Materials
         }
 
         public override bool IsMaterialTransparent() => Flags.HasFlag( Type0Flags.Transparency );
+        public override ushort GetExportTypeId() => 0;
+        public override void ConvertToAssimp( ref Ai.Material aiMaterial, Material material, string textureRelDir )
+        {
+            aiMaterial.ColorDiffuse = P0_0.ToAssimp();
+            if ( material.Flags.HasFlag( MaterialFlags.HasNormalMap ) )
+            {
+                aiMaterial.TextureNormal = new Ai.TextureSlot(
+                        Path.Combine( textureRelDir, AssimpConverterCommon.EscapeName( material.NormalMap.Name ) ),
+                        Ai.TextureType.Normals, 1, Ai.TextureMapping.FromUV, 0, 0, Ai.TextureOperation.Add, Ai.TextureWrapMode.Wrap, Ai.TextureWrapMode.Wrap, 0 );
+            }
+        }
     }
 
     // 3.HLSL
@@ -189,6 +202,27 @@ namespace GFDLibrary.Materials
             }
         }
         public override bool IsMaterialTransparent() => DiffuseColor.W < 1.0;
+        public override ushort GetExportTypeId() => 1;
+        public override void ConvertToAssimp( ref Ai.Material aiMaterial, Material material, string textureRelDir )
+        {
+            aiMaterial.ColorAmbient = AmbientColor.ToAssimp();
+            aiMaterial.ColorDiffuse = DiffuseColor.ToAssimp();
+            aiMaterial.ColorSpecular = SpecularColor.ToAssimp();
+            aiMaterial.ColorEmissive = EmissiveColor.ToAssimp();
+            aiMaterial.Reflectivity = Reflectivity;
+            if ( material.Flags.HasFlag( MaterialFlags.HasNormalMap ) )
+            {
+                aiMaterial.TextureNormal = new Ai.TextureSlot(
+                        Path.Combine( textureRelDir, AssimpConverterCommon.EscapeName( material.NormalMap.Name ) ),
+                        Ai.TextureType.Normals, 1, Ai.TextureMapping.FromUV, 0, 0, Ai.TextureOperation.Add, Ai.TextureWrapMode.Wrap, Ai.TextureWrapMode.Wrap, 0 );
+            }
+            if ( material.Flags.HasFlag( MaterialFlags.HasGlowMap ) )
+            {
+                aiMaterial.TextureNormal = new Ai.TextureSlot(
+                    Path.Combine( textureRelDir, AssimpConverterCommon.EscapeName( material.GlowMap.Name ) ),
+                    Ai.TextureType.Emissive, 5, Ai.TextureMapping.FromUV, 0, 0, Ai.TextureOperation.Add, Ai.TextureWrapMode.Wrap, Ai.TextureWrapMode.Wrap, 0 );
+            }
+        }
     }
 
     public abstract class MaterialParameterSetType2Base : MaterialParameterSetBase
@@ -356,6 +390,18 @@ namespace GFDLibrary.Materials
                 writer.WriteSingle( MultiFittingTile );
         }
         //public override bool IsMaterialTransparent( ) => Flags.HasFlag( Type2Flags.FLAG10 );
+        public override void ConvertToAssimp( ref Ai.Material aiMaterial, Material material, string textureRelDir )
+        {
+            aiMaterial.ColorDiffuse = BaseColor.ToAssimp();
+            aiMaterial.ColorSpecular = new Vector4( SpecularColor, SpecularPower ).ToAssimp();
+            aiMaterial.ColorEmissive = EmissiveColor.ToAssimp();
+            if ( material.Flags.HasFlag(MaterialFlags.HasNormalMap))
+            {
+                aiMaterial.TextureNormal = new Ai.TextureSlot(
+                        Path.Combine( textureRelDir, AssimpConverterCommon.EscapeName( material.NormalMap.Name ) ),
+                        Ai.TextureType.Normals, 1, Ai.TextureMapping.FromUV, 0, 0, Ai.TextureOperation.Add, Ai.TextureWrapMode.Wrap, Ai.TextureWrapMode.Wrap, 0 );
+            }
+        }
     }
     // 11.HLSL
     public sealed class MaterialParameterSetType2 : MaterialParameterSetType2Base
@@ -387,6 +433,7 @@ namespace GFDLibrary.Materials
             if ( Flags.HasFlag( Type2Flags.FLAG14 ) )
                 mat.MatFlags2 |= METAPHOR_MaterialFlags2.FLAG2_SPECULAR_NORMALMAPALPHA;
         }
+        public override ushort GetExportTypeId() => 2;
     }
     // 13.HLSL
     public sealed class MaterialParameterSetType3 : MaterialParameterSetType2Base
@@ -395,6 +442,7 @@ namespace GFDLibrary.Materials
         {
 
         }
+        public override ushort GetExportTypeId() => 3;
     }
     // 15.HLSL
     public sealed class MaterialParameterSetType13 : MaterialParameterSetType2Base
@@ -403,6 +451,7 @@ namespace GFDLibrary.Materials
         {
 
         }
+        public override ushort GetExportTypeId() => 13;
     }
 
     // 21.HLSL
@@ -529,6 +578,7 @@ namespace GFDLibrary.Materials
         }
         //public override bool IsMaterialTransparent( ) => Flags.HasFlag( Type4Flags.FLAG15 );
         public override bool IsMaterialTransparent( ) => true;
+        public override ushort GetExportTypeId() => 4;
     }
 
     // 23.HLSL
@@ -632,6 +682,7 @@ namespace GFDLibrary.Materials
                 mat.MatFlags0 |= METAPHOR_MaterialFlags0.FLAG0_OUTLINE_ATTENUATION_INVALID;
         }
         //public override bool IsMaterialTransparent( ) => false;
+        public override ushort GetExportTypeId() => 5;
     }
     // 27.HLSL or 25.HLSL
     public sealed class MaterialParameterSetType6 : MaterialParameterSetBase
@@ -754,6 +805,7 @@ namespace GFDLibrary.Materials
 
         }
         //public override bool IsMaterialTransparent( ) => true;
+        public override ushort GetExportTypeId() => 6;
     }
     // 29.HLSL
     public sealed class MaterialParameterSetType7 : MaterialParameterSetBase
@@ -835,6 +887,7 @@ namespace GFDLibrary.Materials
                 mat.MatFlags2 |= METAPHOR_MaterialFlags2.FLAG2_SKY;
         }
         //public override bool IsMaterialTransparent( ) => false;
+        public override ushort GetExportTypeId() => 7;
     }
     // 33.HLSL or 31.HLSL
     public sealed class MaterialParameterSetType8 : MaterialParameterSetBase
@@ -883,6 +936,7 @@ namespace GFDLibrary.Materials
 
         }
         //public override bool IsMaterialTransparent( ) => true;
+        public override ushort GetExportTypeId() => 8;
     }
     // 35.HLSL
     public sealed class MaterialParameterSetType9 : MaterialParameterSetBase
@@ -994,6 +1048,7 @@ namespace GFDLibrary.Materials
 
         }
         //public override bool IsMaterialTransparent( ) => true;
+        public override ushort GetExportTypeId() => 9;
     }
     // 37.HLSL
     public sealed class MaterialParameterSetType10 : MaterialParameterSetBase
@@ -1040,6 +1095,7 @@ namespace GFDLibrary.Materials
                 mat.MatFlags2 |= METAPHOR_MaterialFlags2.FLAG2_BLEND_CLEARCOLOR;
         }
         //public override bool IsMaterialTransparent( ) => true;
+        public override ushort GetExportTypeId() => 10;
     }
     // 41.HLSL or 39.HLSL
     public sealed class MaterialParameterSetType11 : MaterialParameterSetBase
@@ -1073,6 +1129,7 @@ namespace GFDLibrary.Materials
 
         }
         //public override bool IsMaterialTransparent( ) => true;
+        public override ushort GetExportTypeId() => 11;
     }
 
     public sealed class MaterialParameterSetType12 : MaterialParameterSetBase
@@ -1246,6 +1303,7 @@ namespace GFDLibrary.Materials
                 mat.MatFlags2 |= METAPHOR_MaterialFlags2.FLAG2_SPECULAR_NORMALMAPALPHA; // FLAG2_FORCED_BLOOMINTENSITY
         }
         //public override bool IsMaterialTransparent( ) => true;
+        public override ushort GetExportTypeId() => 12;
     }
 
     // 47.HLSL
@@ -1274,6 +1332,7 @@ namespace GFDLibrary.Materials
 
         }
         //public override bool IsMaterialTransparent( ) => false;
+        public override ushort GetExportTypeId() => 14;
     }
 
     // 49.HLSL
@@ -1353,6 +1412,7 @@ namespace GFDLibrary.Materials
                 mat.MatFlags2 |= METAPHOR_MaterialFlags2.FLAG2_SKY;
         }
         //public override bool IsMaterialTransparent( ) => false;
+        public override ushort GetExportTypeId() => 15;
     }
 
     public sealed class MaterialParameterSetType16 : MaterialParameterSetBase
@@ -1366,5 +1426,6 @@ namespace GFDLibrary.Materials
 
         protected override void WriteCore( ResourceWriter writer ) {}
         public override void SetShaderFlags( Material mat ) {}
+        public override ushort GetExportTypeId() => 16;
     }
 }

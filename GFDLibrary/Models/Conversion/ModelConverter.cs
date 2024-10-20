@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing.Text;
 using System.Linq;
 using System.Numerics;
 using GFDLibrary.Cameras;
@@ -135,6 +136,125 @@ namespace GFDLibrary.Models.Conversion
             "bell", "bar", "heart", "clock", "drink01", "drink02", "item_block02", 
         };
 
+        private static void AddUserProperties_P5R( Node node )
+        {
+            switch ( node.Name )
+            {
+                case "h_B_BD1":
+                    TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 501 ) );
+                    break;
+
+                case "h_C_US3":
+                    TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 3 ) );
+                    break;
+
+                case "h_C_FS1":
+                    TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 21 ) );
+                    break;
+
+                case "h_M_HR3":
+                    TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 103 ) );
+                    break;
+
+                case "h_B_KA1":
+                    TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 502 ) );
+                    break;
+
+                case "h_B_CT1":
+                    TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 521 ) );
+                    break;
+
+                case "h_C_US2":
+                    TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 2 ) );
+                    break;
+
+                case "h_C_BS1":
+                    TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 11 ) );
+                    break;
+
+                case "h_M_HL2":
+                    TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 152 ) );
+                    break;
+
+                case "h_B_MZ1":
+                    TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 511 ) );
+                    break;
+
+                case "h_M_HR2":
+                    TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 102 ) );
+                    break;
+
+                case "h_M_HL1":
+                    TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 151 ) );
+                    break;
+
+                case "h_M_BC1":
+                    TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 301 ) );
+                    break;
+
+                case "h_C_US1":
+                    TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 1 ) );
+                    break;
+
+                case "h_M_HL3":
+                    TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 153 ) );
+                    break;
+
+                case "h_M_HR1":
+                    TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 101 ) );
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        private static void AddUserProperties_Metaphor(Node node)
+        {
+
+            void AddEyeAngleLimitProperties(string side, Node node)
+            {
+                TryAddProperty( node.Properties, new UserFloatProperty( $"{side}eyeAngleUpLimit", 2f ) );
+                TryAddProperty( node.Properties, new UserFloatProperty( $"{side}eyeAngleDownLimit", 3f ) );
+                TryAddProperty( node.Properties, new UserFloatProperty( $"{side}eyeAngleInLimit", 5f ) );
+                TryAddProperty( node.Properties, new UserFloatProperty( $"{side}eyeAngleOutLimit", 7f ) );
+            }
+
+            switch (node.Name)
+            {
+                case "root":
+                    TryAddProperty( node.Properties, new UserBoolProperty( "no_anim_export", false ) );
+                    AddEyeAngleLimitProperties( "L", node );
+                    AddEyeAngleLimitProperties( "R", node );
+                    TryAddProperty( node.Properties, new UserFloatProperty( "HeadAngleUpLimit", 20f ) );
+                    TryAddProperty( node.Properties, new UserFloatProperty( "HeadAngleDownLimit", 4f ) );
+                    TryAddProperty( node.Properties, new UserFloatProperty( "HeadAngleLeftLimit", 50f ) );
+                    TryAddProperty( node.Properties, new UserFloatProperty( "HeadAngleRightLimit", 50f ) );
+                    TryAddProperty( node.Properties, new UserFloatProperty( "UbodyAngleUpLimit", 20f ) );
+                    TryAddProperty( node.Properties, new UserFloatProperty( "UbodyAngleDownLimit", 20f ) );
+                    TryAddProperty( node.Properties, new UserFloatProperty( "UbodyAngleLeftLimit", 10f ) );
+                    TryAddProperty( node.Properties, new UserFloatProperty( "UbodyAngleRightLimit", 10f ) );
+                    break;
+                case "mesh_cha":
+                    TryAddProperty( node.Properties, new UserVector3Property( "gfdGradationColor", new Vector3(0, 0, 0) ) );
+                    TryAddProperty( node.Properties, new UserFloatProperty( "gfdGradationScale", 2f ));
+                    TryAddProperty( node.Properties, new UserFloatProperty( "gfdGradationFade", 0.2f ));
+                    TryAddProperty( node.Properties, new UserFloatProperty( "gfdGradiationAlpha", 0.5f ));
+                    TryAddProperty( node.Properties, new UserStringProperty( "gfdGradationHipNode", "c_pelvis" ));
+                    TryAddProperty( node.Properties, new UserStringProperty( "gfdGradationRightHeelNode", "r_foot" ));
+                    TryAddProperty( node.Properties, new UserStringProperty( "gfdGradationLeftHeelNode", "l_foot" ));
+                    TryAddProperty( node.Properties, new UserBoolProperty( "gfdShadowCaster", false ));
+                    TryAddProperty( node.Properties, new UserBoolProperty( "gfdShadowReceiver", false ));
+                    TryAddProperty( node.Properties, new UserBoolProperty( "gfdWaterCaster", true ));
+                    TryAddProperty( node.Properties, new UserBoolProperty( "gfdHide", false ));
+                    TryAddProperty( node.Properties, new UserBoolProperty( "gfdSplitPerVertexNormals", false ));
+                    TryAddProperty( node.Properties, new UserBoolProperty( "gfdGeomType", true ));
+                    TryAddProperty( node.Properties, new UserBoolProperty( "gfdBillboard", true ));
+                    TryAddProperty( node.Properties, new UserBoolProperty( "gfdSortByName", false ));
+                    break;
+            }
+        }
+
         private static Node ConvertAssimpNodeRecursively( Assimp.Scene aiScene, Ai.Node aiNode, Dictionary<string, NodeInfo> nodeLookup, ref int nextIndex, ModelConverterOptions options )
         {
             aiNode.Transform.Decompose( out var scale, out var rotation, out var translation );
@@ -168,77 +288,12 @@ namespace GFDLibrary.Models.Conversion
                     }
                 }
 
-                if ( options.AutoAddGFDHelperIDs ) // for P5/R
+                if ( options.AutoAddGFDHelperIDs )
                 {
-                    switch( node.Name )
-                    {
-                        case "h_B_BD1":
-                            TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 501 ) );
-                            break;
-
-                        case "h_C_US3":
-                            TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 3 ) );
-                            break;
-
-                        case "h_C_FS1":
-                            TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 21 ) );
-                            break;
-
-                        case "h_M_HR3":
-                            TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 103 ) );
-                            break;
-
-                        case "h_B_KA1":
-                            TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 502 ) );
-                            break;
-
-                        case "h_B_CT1":
-                            TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 521 ) );
-                            break;
-
-                        case "h_C_US2":
-                            TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 2 ) );
-                            break;
-
-                        case "h_C_BS1":
-                            TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 11 ) );
-                            break;
-
-                        case "h_M_HL2":
-                            TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 152 ) );
-                            break;
-
-                        case "h_B_MZ1":
-                            TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 511 ) );
-                            break;
-
-                        case "h_M_HR2":
-                            TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 102 ) );
-                            break;
-
-                        case "h_M_HL1":
-                            TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 151 ) );
-                            break;
-
-                        case "h_M_BC1":
-                            TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 301 ) );
-                            break;
-
-                        case "h_C_US1":
-                            TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 1 ) );
-                            break;
-
-                        case "h_M_HL3":
-                            TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 153 ) );
-                            break;
-
-                        case "h_M_HR1":
-                            TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 101 ) );
-                            break;
-
-                        default:
-                            break;
-                    }
+                    if (options.Version >= 0x2000000)
+                        AddUserProperties_Metaphor( node );
+                    else 
+                        AddUserProperties_P5R( node );
                 }
 
                 if ( !nodeLookup.ContainsKey( node.Name ) )

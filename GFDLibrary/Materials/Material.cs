@@ -274,7 +274,7 @@ namespace GFDLibrary.Materials
 
         // METAPHOR REFANTAZIO
         // 0x2dc
-        public ushort METAPHOR_MaterialParameterFormat { get; set; }
+        //public ushort METAPHOR_MaterialParameterFormat { get; set; }
         public bool METAPHOR_UseMaterialParameterSet { get; set; }
         public MaterialParameterSetBase METAPHOR_MaterialParameterSet { get; set; }
         public float Field6C_2 { get; set; }
@@ -472,7 +472,7 @@ namespace GFDLibrary.Materials
         protected override void ReadCore( ResourceReader reader )
         {
             // Read material header
-            METAPHOR_MaterialParameterFormat = 1;
+            ushort METAPHOR_MaterialParameterFormat = 1;
             METAPHOR_UseMaterialParameterSet = Version >= 0x2000000;
             if ( Version >= 0x2000000 )
             {
@@ -646,7 +646,7 @@ namespace GFDLibrary.Materials
         protected override void WriteCore( ResourceWriter writer )
         {
             if ( Version >= 0x2000000 )
-                writer.WriteUInt16( METAPHOR_MaterialParameterFormat );
+                writer.WriteUInt16( METAPHOR_MaterialParameterSet.GetExportTypeId() );
             writer.WriteStringWithHash( Version, Name );
             writer.WriteUInt32( ( uint )Flags );
             if ( METAPHOR_UseMaterialParameterSet )

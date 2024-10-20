@@ -1,4 +1,6 @@
 ﻿using GFDLibrary.Materials;
+using GFDStudio.GUI.TypeConverters;
+using System.ComponentModel;
 using System.Numerics;
 
 namespace GFDStudio.GUI.DataViewNodes
@@ -21,8 +23,9 @@ namespace GFDStudio.GUI.DataViewNodes
             get => GetDataProperty<float>(); 
             set => SetDataProperty(value); 
         } // 0xa4
-        public uint P10_3 { 
-            get => GetDataProperty<uint>(); 
+        [TypeConverter( typeof( EnumTypeConverter<MaterialParameterSetType10.Type10Flags> ) )]
+        public MaterialParameterSetType10.Type10Flags Flags { 
+            get => GetDataProperty<MaterialParameterSetType10.Type10Flags>(); 
             set => SetDataProperty(value); 
         } // 0xa8
 

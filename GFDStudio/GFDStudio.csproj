@@ -95,7 +95,22 @@
     <None Update="Presets\1_gfdDefaultMat0.yml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Presets\Metaphor\Metaphor_Character.yml">
+    <None Update="Presets\Metaphor\1_Metaphor_Character_Toon.yml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Presets\Metaphor\Metaphor_Character_Distortion.yml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Presets\Metaphor\Metaphor_Character_Ramp.yml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Presets\Metaphor\Metaphor_Field.yml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Presets\Metaphor\Metaphor_Lambert.yml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Presets\Metaphor\Metaphor_Water.yml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Presets\P5_Character.yml">
@@ -104,10 +119,6 @@
     <None Update="Presets\P5_PersonaP5.yml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Presets\Metaphor\" />
   </ItemGroup>
 
 </Project>
