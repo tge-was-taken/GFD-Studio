@@ -18,6 +18,7 @@ using Ookii.Dialogs;
 using Ookii.Dialogs.Wpf;
 using System.Threading;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
+using System.Windows.Markup;
 
 namespace GFDStudio.GUI.Forms
 {
@@ -540,6 +541,14 @@ namespace GFDStudio.GUI.Forms
             }
             else MessageBox.Show( "All Textures successfully mass dumped!" );
         }
+
+        public Texture HandleTextureToReplace( uint ver, Texture tex )
+        {
+            tex.Version = ver;
+            if ( settings.SaveReplacedTexturesExternally && tex.Version >= 0x2000000 )
+                tex.IsTexSourceExternal = true;
+            return tex;
+        }
         private void MassReplaceTexturesToolStripMenuItem_Click( object sender, EventArgs e )
         {
             string directoryPath;
@@ -569,6 +578,13 @@ namespace GFDStudio.GUI.Forms
             }
             string[] formats = { ".GFS", ".GMD" };
 
+            string GetTextureToReplacePath(uint version, string texpath)
+                => (version >= 0x2000000) ? Path.GetFileNameWithoutExtension(texpath) : Path.GetFileName( texpath );
+            string GetOriginalTextureNamePath(uint version, string name )
+                => ( version >= 0x2000000 ) ? Path.GetFileNameWithoutExtension(name) : name;
+
+            var TargetTextures = Directory.EnumerateFiles( TexReplaceDir, "*.dds", SearchOption.AllDirectories ).ToList();
+
             foreach ( var filePath in Directory.EnumerateFiles( directoryPath, "*.*", SearchOption.AllDirectories ).Where( x => formats.Any( x.EndsWith ) ) )
             {
                 try
@@ -581,27 +597,26 @@ namespace GFDStudio.GUI.Forms
                     if ( targetModelTexDic == null )
                         continue;
 
-                    var TargetTextures = Directory.EnumerateFiles( TexReplaceDir, "*.dds", SearchOption.AllDirectories ).ToList();
-
-                    var newTexDic = new TextureDictionary( 0x01105100 );
-
-                    string FoundTexPath = null;
+                    var newTexDic = new TextureDictionary( targetModel.Version );
                     foreach ( var tex in targetModelTexDic.Textures )
                     {
-                        Logger.Debug( $"Tex Replace: Attempting to replace {tex.Name}" );
-                        foreach ( var texpath in TargetTextures )
+                        string OriginalTexName = GetOriginalTextureNamePath( targetModel.Version, tex.Name );
+                        Logger.Debug( $"Tex Replace: For model {filePath}, try replacing {OriginalTexName}" );
+                        string FoundTexPath = null;
+                        foreach ( var replaceTex in TargetTextures )
                         {
-                            Logger.Debug( $"Tex Replace: Iterating Textures, Current item {Path.GetFileName( texpath )}" );
-                            if ( tex.Name == Path.GetFileName( texpath ) )
+                            string ReplaceTexName = GetTextureToReplacePath( targetModel.Version, replaceTex );
+                            if ( ReplaceTexName == OriginalTexName )
                             {
-                                Logger.Debug( $"Tex Replace: Found Match in {Path.GetFileName( texpath )}, replacing with {texpath}" );
-                                FoundTexPath = texpath;
+                                FoundTexPath = replaceTex;
+                                break;
                             }
                         }
                         if ( FoundTexPath != null )
                         {
-                            newTexDic.Add( new Texture( tex.Name, TextureFormat.DDS, File.ReadAllBytes( FoundTexPath ) ) );
-                            FoundTexPath = null;
+                            Logger.Debug( $"Tex Replace: replacing texture with { FoundTexPath }" );
+                            Texture newTexture = HandleTextureToReplace( targetModel.Version, new Texture( tex.Name, TextureFormat.DDS, File.ReadAllBytes( FoundTexPath ) ) );
+                            newTexDic.Add( newTexture );
                         }
                         else newTexDic.Add( tex );
                     }
@@ -835,6 +850,12 @@ namespace GFDStudio.GUI.Forms
 
             // Change appearance of form elements
             Theme.Apply( this );
+        }
+
+        private void handleSaveReplacedTexturesExternally( object sender, EventArgs e )
+        {
+            settings.SaveReplacedTexturesExternally = metaphorSaveReplacedTexturesExternallyToolStripMenuItem.Checked;
+            settings.SaveJson( settings );
         }
     }
 }
