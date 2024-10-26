@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel;
-using GFDLibrary;
 using GFDLibrary.Common;
+using GFDLibrary.Conversion;
+using GFDLibrary.Conversion.AssimpNet;
 using GFDLibrary.Models;
-using GFDLibrary.Models.Conversion;
+using GFDStudio.FormatModules;
 using GFDStudio.GUI.Forms;
 using GFDStudio.GUI.TypeConverters;
 
@@ -51,7 +52,7 @@ namespace GFDStudio.GUI.DataViewNodes
         protected override void InitializeCore()
         {
             base.InitializeCore();
-            RegisterReplaceHandler<Assimp.Scene>( path =>
+            RegisterReplaceHandler<AssimpScene>( path =>
             {
                 using ( var dialog = new ModelConverterOptionsDialog( true ) )
                 {
@@ -67,7 +68,7 @@ namespace GFDStudio.GUI.DataViewNodes
                         AutoAddGFDHelperIDs = dialog.AutoAddGFDHelperIDs
                     };
 
-                    var scene = ModelConverter.ConvertFromAssimpScene( path, options );
+                    var scene = AssimpNetModelConverter.ConvertFromAssimpScene( path, options );
                     if ( scene != null )
                         Data.ReplaceWith( scene );
 

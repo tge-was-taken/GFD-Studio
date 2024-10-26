@@ -1,8 +1,8 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace GFDLibrary.Models.Conversion
+namespace GFDLibrary.Conversion.AssimpNet.Utilities
 {
-    public static class AssimpConverterCommon
+    internal static class AssimpConverterCommon
     {
         public static readonly Regex MeshAttachmentNameRegex = new Regex( "_Mesh([0-9]+)", RegexOptions.Compiled );
 

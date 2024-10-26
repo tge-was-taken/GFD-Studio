@@ -1,6 +1,7 @@
 ﻿using System.Windows.Forms;
 using GFDLibrary;
-using GFDLibrary.Models.Conversion;
+using GFDLibrary.Conversion;
+using GFDLibrary.Conversion.AssimpNet;
 using GFDStudio.FormatModules;
 using GFDStudio.GUI.Forms;
 
@@ -15,7 +16,7 @@ namespace GFDStudio.IO
                 dialog.AutoUpgradeEnabled = true;
                 dialog.CheckPathExists = true;
                 dialog.CheckFileExists = true;
-                dialog.Filter = ModuleFilterGenerator.GenerateFilter( FormatModuleUsageFlags.ImportForEditing, typeof( Assimp.Scene ) ).Filter;
+                dialog.Filter = ModuleFilterGenerator.GenerateFilter( FormatModuleUsageFlags.ImportForEditing, typeof( AssimpScene ) ).Filter;
                 dialog.Multiselect = false;
                 dialog.SupportMultiDottedExtensions = true;
                 dialog.Title = "Select an Assimp model.";
@@ -37,7 +38,7 @@ namespace GFDStudio.IO
                 if ( dialog.ShowDialog() != DialogResult.OK )
                     return null;
 
-                ModelPackConverterOptions options = new ModelPackConverterOptions()
+                ModelConverterOptions options = new ModelConverterOptions()
                 {
                     MaterialPreset = dialog.MaterialPreset,
                     Version = dialog.Version,
@@ -47,7 +48,7 @@ namespace GFDStudio.IO
                     AutoAddGFDHelperIDs = dialog.AutoAddGFDHelperIDs
                 };
 
-                return ModelPackConverter.ConvertFromAssimpScene( path, options );
+                return AssimpNetModelPackConverter.ConvertFromAssimpScene( path, options );
             }
         }
     }

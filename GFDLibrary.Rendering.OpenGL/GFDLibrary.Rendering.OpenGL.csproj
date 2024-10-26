@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net6.0-windows</TargetFramework>
     <Version>0.7.6</Version>
   </PropertyGroup>
 
@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\GFDLibrary\GFDLibrary.NET6.csproj" />
+    <ProjectReference Include="..\GFDLibrary\GFDLibrary.csproj" />
   </ItemGroup>
 
 </Project>

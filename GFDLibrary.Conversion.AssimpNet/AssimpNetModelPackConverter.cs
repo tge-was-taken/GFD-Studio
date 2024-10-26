@@ -2,15 +2,16 @@
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using GFDLibrary.Conversion.AssimpNet.Utilities;
 using GFDLibrary.Materials;
 using GFDLibrary.Textures;
 using Ai = Assimp;
 
-namespace GFDLibrary.Models.Conversion
+namespace GFDLibrary.Conversion.AssimpNet
 {
-    public static class ModelPackConverter
+    public static class AssimpNetModelPackConverter
     {
-        public static ModelPack ConvertFromAssimpScene( string filePath, ModelPackConverterOptions options )
+        public static ModelPack ConvertFromAssimpScene( string filePath, ModelConverterOptions options )
         {
             // For importing textures
             string baseDirectoryPath = Path.GetDirectoryName( filePath );
@@ -33,21 +34,12 @@ namespace GFDLibrary.Models.Conversion
             }
 
             // Create scene
-            var sceneConverterOptions = new ModelConverterOptions()
-            {
-                Version = options.Version,
-                ConvertSkinToZUp = options.ConvertSkinToZUp,
-                GenerateVertexColors = options.GenerateVertexColors,
-                MinimalVertexAttributes = options.MinimalVertexAttributes,
-                AutoAddGFDHelperIDs = options.AutoAddGFDHelperIDs,
-            };
-
-            model.Model = ModelConverter.ConvertFromAssimpScene( aiScene, sceneConverterOptions );
+            model.Model = AssimpNetModelConverter.ConvertFromAssimpScene( aiScene, options );
 
             return model;
         }
 
-        private static Material ConvertMaterialAndTextures( Ai.Material aiMaterial, ModelPackConverterOptions options, string baseDirectoryPath, TextureDictionary textureDictionary )
+        private static Material ConvertMaterialAndTextures( Ai.Material aiMaterial, ModelConverterOptions options, string baseDirectoryPath, TextureDictionary textureDictionary )
         {
             // Convert all textures
             TextureInfo diffuseTexture = null;
@@ -98,13 +90,13 @@ namespace GFDLibrary.Models.Conversion
             if ( diffuseTexture != null )
             {
                 textureDictionary.Add( diffuseTexture.Texture );
-                material = MaterialFactory.CreateMaterial( materialName, diffuseTexture.Name, options ); 
+                material = MaterialFactory.CreateMaterial( materialName, diffuseTexture.Name, options );
             }
 
             return material;
         }
 
-        private static TextureInfo ConvertTexture( Ai.TextureSlot aiTextureSlot, ModelPackConverterOptions options, string baseDirectoryPath )
+        private static TextureInfo ConvertTexture( Ai.TextureSlot aiTextureSlot, ModelConverterOptions options, string baseDirectoryPath )
         {
             var relativeFilePath = aiTextureSlot.FilePath;
             var fullFilePath = Path.GetFullPath( Path.Combine( baseDirectoryPath, relativeFilePath ) );
@@ -172,8 +164,7 @@ namespace GFDLibrary.Models.Conversion
         public ModelPackConverterOptions()
         {
             // MaterialPreset = MaterialPreset.CharacterSkinP5;
-            //Version = ResourceVersion.Persona5;
-            Version = ResourceVersion.MetaphorRefantazio;
+            Version = ResourceVersion.Persona5;
             ConvertSkinToZUp = false;
             GenerateVertexColors = false;
             MinimalVertexAttributes = true;

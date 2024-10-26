@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
-using System.Diagnostics;
 using System.IO;
 using System.Numerics;
-using System.Security.Cryptography.X509Certificates;
+using GFDLibrary.Conversion;
 using GFDLibrary.IO;
 using GFDLibrary.Models;
-using GFDLibrary.Models.Conversion;
-using YamlDotNet.Core;
 
 namespace GFDLibrary.Materials
 {
@@ -472,11 +468,11 @@ namespace GFDLibrary.Materials
         protected override void ReadCore( ResourceReader reader )
         {
             // Read material header
-            ushort METAPHOR_MaterialParameterFormat = 1;
+            METAPHOR_MaterialParameterFormat METAPHOR_MaterialParameterFormat = METAPHOR_MaterialParameterFormat.Type1;
             METAPHOR_UseMaterialParameterSet = Version >= 0x2000000;
             if ( Version >= 0x2000000 )
             {
-                METAPHOR_MaterialParameterFormat = reader.ReadUInt16();
+                METAPHOR_MaterialParameterFormat = ( METAPHOR_MaterialParameterFormat)reader.ReadUInt16();
             }
             Name = reader.ReadStringWithHash( Version );
             var flags = ( MaterialFlags )reader.ReadUInt32();
@@ -493,55 +489,55 @@ namespace GFDLibrary.Materials
             {
                 switch ( METAPHOR_MaterialParameterFormat )
                 {
-                    case 0:
+                    case METAPHOR_MaterialParameterFormat.Type0:
                         METAPHOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType0>( Version );
                         break;
-                    case 1:
+                    case METAPHOR_MaterialParameterFormat.Type1:
                         METAPHOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType1>( Version );
                         break;
-                    case 2:
+                    case METAPHOR_MaterialParameterFormat.Type2:
                         METAPHOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType2>( Version );
                         break;
-                    case 3:
+                    case METAPHOR_MaterialParameterFormat.Type3:
                         METAPHOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType3>( Version );
                         break;
-                    case 4:
+                    case METAPHOR_MaterialParameterFormat.Type4:
                         METAPHOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType4>( Version );
                         break;
-                    case 5:
+                    case METAPHOR_MaterialParameterFormat.Type5:
                         METAPHOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType5>( Version );
                         break;
-                    case 6:
+                    case METAPHOR_MaterialParameterFormat.Type6:
                         METAPHOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType6>( Version );
                         break;
-                    case 7:
+                    case METAPHOR_MaterialParameterFormat.Type7:
                         METAPHOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType7>( Version );
                         break;
-                    case 8:
+                    case METAPHOR_MaterialParameterFormat.Type8:
                         METAPHOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType8>( Version );
                         break;
-                    case 9:
+                    case METAPHOR_MaterialParameterFormat.Type9:
                         METAPHOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType9>( Version );
                         break;
-                    case 0xa:
+                    case METAPHOR_MaterialParameterFormat.Type10:
                         METAPHOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType10>( Version );
                         break;
-                    case 0xb:
+                    case METAPHOR_MaterialParameterFormat.Type11:
                         METAPHOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType11>( Version );
                         break;
-                    case 0xc:
+                    case METAPHOR_MaterialParameterFormat.Type12:
                         METAPHOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType12>( Version );
                         break;
-                    case 0xd:
+                    case METAPHOR_MaterialParameterFormat.Type13:
                         METAPHOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType13>( Version );
                         break;
-                    case 0xe:
+                    case METAPHOR_MaterialParameterFormat.Type14:
                         METAPHOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType14>( Version );
                         break;
-                    case 0xf:
+                    case METAPHOR_MaterialParameterFormat.Type15:
                         METAPHOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType15>( Version );
                         break;
-                    case 0x10:
+                    case METAPHOR_MaterialParameterFormat.Type16:
                         METAPHOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType16>( Version );
                         break;
                     default:
@@ -646,7 +642,7 @@ namespace GFDLibrary.Materials
         protected override void WriteCore( ResourceWriter writer )
         {
             if ( Version >= 0x2000000 )
-                writer.WriteUInt16( METAPHOR_MaterialParameterSet.GetExportTypeId() );
+                writer.WriteUInt16( (ushort)METAPHOR_MaterialParameterSet.Type );
             writer.WriteStringWithHash( Version, Name );
             writer.WriteUInt32( ( uint )Flags );
             if ( METAPHOR_UseMaterialParameterSet )
@@ -763,7 +759,7 @@ namespace GFDLibrary.Materials
             }
         }
 
-        public static Material ConvertToMaterialPreset(Material material, ModelPackConverterOptions options)
+        public static Material ConvertToMaterialPreset(Material material, ModelConverterOptions options)
         {
             Material newMaterial = null;
 
@@ -867,5 +863,25 @@ namespace GFDLibrary.Materials
         Add = 2,
         Subtract = 3,
         Modulate = 4
+    }
+    public enum METAPHOR_MaterialParameterFormat
+    {
+        Type0 = 0x0,
+        Type1 = 0x1,
+        Type2 = 0x2,
+        Type3 = 0x3,
+        Type4 = 0x4,
+        Type5 = 0x5,
+        Type6 = 0x6,
+        Type7 = 0x7,
+        Type8 = 0x8,
+        Type9 = 0x9,
+        Type10 = 0xa,
+        Type11 = 0xb,
+        Type12 = 0xc,
+        Type13 = 0xd,
+        Type14 = 0xe,
+        Type15 = 0xf,
+        Type16 = 0x10
     }
 }

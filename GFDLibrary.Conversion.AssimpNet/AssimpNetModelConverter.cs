@@ -3,16 +3,18 @@ using System.Collections.Generic;
 using System.Drawing.Text;
 using System.Linq;
 using System.Numerics;
+using System.Text.RegularExpressions;
 using GFDLibrary.Cameras;
 using GFDLibrary.Common;
+using GFDLibrary.Conversion.AssimpNet.Utilities;
 using GFDLibrary.Lights;
-using GFDLibrary.Models.Conversion.Utilities;
+using GFDLibrary.Models;
 using GFDLibrary.Utilities;
 using Ai = Assimp;
 
-namespace GFDLibrary.Models.Conversion
+namespace GFDLibrary.Conversion.AssimpNet
 {
-    public static class ModelConverter
+    public static class AssimpNetModelConverter
     {
         private static readonly Matrix4x4 YToZUpMatrix = new Matrix4x4( 1, 0, 0, 0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 1 );
 
@@ -24,7 +26,7 @@ namespace GFDLibrary.Models.Conversion
             return ConvertFromAssimpScene( aiScene, options );
         }
 
-        public static Model ConvertFromAssimpScene( Ai.Scene aiScene, ModelConverterOptions options )
+        internal static Model ConvertFromAssimpScene( Ai.Scene aiScene, ModelConverterOptions options )
         {
             var scene = new Model( options.Version );
 
@@ -37,7 +39,7 @@ namespace GFDLibrary.Models.Conversion
             var nodeToBoneIndices = new Dictionary<int, List<int>>();
             int nextBoneIndex = 0;
             var boneInverseBindMatrices = new List<Matrix4x4>();
-            var transformedVertices = new List< Vector3 >();
+            var transformedVertices = new List<Vector3>();
             ProcessAssimpNodeMeshesRecursively( aiScene.RootNode, aiScene, nodeLookup, ref nextBoneIndex, nodeToBoneIndices, boneInverseBindMatrices, transformedVertices, options );
 
             // Don't build a bone palette if there are no skinned meshes
@@ -74,7 +76,7 @@ namespace GFDLibrary.Models.Conversion
             double diff = Math.Abs( a - b );
 
             if ( a == b )
-            { 
+            {
                 // shortcut, handles infinities
                 return true;
             }
@@ -85,7 +87,7 @@ namespace GFDLibrary.Models.Conversion
                 return diff < epsilon;
             }
             else
-            { 
+            {
                 // use relative error
                 return diff / ( absA + absB ) < epsilon;
             }
@@ -133,7 +135,7 @@ namespace GFDLibrary.Models.Conversion
 
         private static HashSet<string> sFullBodyObjectNames = new HashSet<string>()
         {
-            "bell", "bar", "heart", "clock", "drink01", "drink02", "item_block02", 
+            "bell", "bar", "heart", "clock", "drink01", "drink02", "item_block02",
         };
 
         private static void AddUserProperties_P5R( Node node )
@@ -310,17 +312,18 @@ namespace GFDLibrary.Models.Conversion
                 var index = -1;
                 if ( ( index = aiScene.Cameras.FindIndex( x => x.Name == node.Name ) ) != -1 )
                 {
-                    var aiCamera = aiScene.Cameras[ index ];
+                    var aiCamera = aiScene.Cameras[index];
                     var camera = new Camera( -aiCamera.Direction.ToNumerics(), aiCamera.Up.ToNumerics(), aiCamera.Position.ToNumerics(),
                         aiCamera.ClipPlaneNear, aiCamera.ClipPlaneFar, MathHelper.RadiansToDegrees( aiCamera.FieldOfview ),
-                        aiCamera.AspectRatio, 0 
-                    ) { Version = options.Version };
+                        aiCamera.AspectRatio, 0
+                    )
+                    { Version = options.Version };
 
                     node.Attachments.Add( new NodeCameraAttachment( camera ) );
                 }
                 else if ( ( index = aiScene.Lights.FindIndex( x => x.Name == node.Name ) ) != -1 )
                 {
-                    var aiLight = aiScene.Lights[ index ];
+                    var aiLight = aiScene.Lights[index];
                     var lightType = LightType.Point;
                     switch ( aiLight.LightType )
                     {
@@ -339,13 +342,13 @@ namespace GFDLibrary.Models.Conversion
                     var light = new Light
                     {
                         Version = options.Version,
-                        AmbientColor   = aiLight.ColorAmbient.ToNumerics(),
-                        DiffuseColor   = aiLight.ColorDiffuse.ToNumerics(),
-                        SpecularColor  = aiLight.ColorSpecular.ToNumerics(),
+                        AmbientColor = aiLight.ColorAmbient.ToNumerics(),
+                        DiffuseColor = aiLight.ColorDiffuse.ToNumerics(),
+                        SpecularColor = aiLight.ColorSpecular.ToNumerics(),
                         AngleInnerCone = aiLight.AngleInnerCone,
                         AngleOuterCone = aiLight.AngleOuterCone,
-                        Type           = lightType,
-                        Flags          = LightFlags.Bit1 | LightFlags.Bit2
+                        Type = lightType,
+                        Flags = LightFlags.Bit1 | LightFlags.Bit2
                     };
                     node.Attachments.Add( new NodeLightAttachment( light ) );
                 }
@@ -397,7 +400,7 @@ namespace GFDLibrary.Models.Conversion
 
                 if ( metadataEntry.Key == "UDP3DSMAX" )
                 {
-                    var properties = ( ( string )metadataEntry.Value.Data )
+                    var properties = ( (string)metadataEntry.Value.Data )
                         .Split( new[] { "&cr;&lf;", "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries );
 
                     if ( properties.Length == 0 )
@@ -419,58 +422,7 @@ namespace GFDLibrary.Models.Conversion
                         }
 
                         // Parse value
-                        if ( kvp.Value == null )
-                        {
-                            // Assume flag bool
-                            property = new UserBoolProperty( kvp.Key, true );
-                        }
-                        else if ( kvp.Value.StartsWith( "[" ) && kvp.Value.EndsWith( "]" ) )
-                        {
-                            // Array/Vector
-                            var arrayContents = kvp.Value.Substring( 1, kvp.Value.Length - 2 );
-                            var arrayValues = arrayContents.Split( new[] { ',' }, StringSplitOptions.RemoveEmptyEntries );
-
-                            var arrayFloatValues = new List<float>();
-                            foreach ( var arrayValue in arrayValues )
-                            {
-                                if ( !float.TryParse( arrayValue, out var arrayFloatValue ) )
-                                {
-                                    throw new Exception( $"Failed to parse array user property value as float: {arrayValue}" );
-                                }
-
-                                arrayFloatValues.Add( arrayFloatValue );
-                            }
-
-                            if ( arrayFloatValues.Count == 3 )
-                            {
-                                property = new UserVector3Property( kvp.Key, new Vector3( arrayFloatValues[0], arrayFloatValues[1], arrayFloatValues[2] ) );
-                            }
-                            else if ( arrayFloatValues.Count == 4 )
-                            {
-                                property = new UserVector4Property( kvp.Key, new Vector4( arrayFloatValues[0], arrayFloatValues[1], arrayFloatValues[2], arrayFloatValues[3] ) );
-                            }
-                            else
-                            {
-                                var arrayByteValues = arrayFloatValues.Cast<byte>();
-                                property = new UserByteArrayProperty( kvp.Key, arrayByteValues.ToArray() );
-                            }
-                        }
-                        else if ( int.TryParse( kvp.Value, out int intValue ) )
-                        {
-                            property = new UserIntProperty( kvp.Key, intValue );
-                        }
-                        else if ( float.TryParse( kvp.Value, out float floatValue ) )
-                        {
-                            property = new UserFloatProperty( kvp.Key, floatValue );
-                        }
-                        else if ( bool.TryParse( kvp.Value, out bool boolValue ) )
-                        {
-                            property = new UserBoolProperty( kvp.Key, boolValue );
-                        }
-                        else
-                        {
-                            property = new UserStringProperty( kvp.Key, kvp.Value );
-                        }
+                        property = UserPropertyParser.ParseProperty( kvp.Key, kvp.Value );
                     }
                 }
                 else
@@ -490,7 +442,7 @@ namespace GFDLibrary.Models.Conversion
                             property = new UserFloatProperty( metadataEntry.Key, metadataEntry.Value.DataAs<float>().Value );
                             break;
                         case Ai.MetaDataType.String:
-                            property = new UserStringProperty( metadataEntry.Key, ( string )metadataEntry.Value.Data );
+                            property = new UserStringProperty( metadataEntry.Key, (string)metadataEntry.Value.Data );
                             break;
                         case Ai.MetaDataType.Vector3D:
                             var data = metadataEntry.Value.DataAs<Ai.Vector3D>().Value;
@@ -514,7 +466,7 @@ namespace GFDLibrary.Models.Conversion
         {
             if ( aiNode.HasMeshes )
             {
-                var nodeInfo = nodeLookup[ AssimpConverterCommon.UnescapeName( aiNode.Name ) ];
+                var nodeInfo = nodeLookup[AssimpConverterCommon.UnescapeName( aiNode.Name )];
                 var node = nodeInfo.Node;
                 var nodeWorldTransform = node.WorldTransform;
                 Matrix4x4.Invert( nodeWorldTransform, out var nodeInverseWorldTransform );
@@ -556,7 +508,7 @@ namespace GFDLibrary.Models.Conversion
                                       .ToArray();
 
             for ( int i = 0; i < geometry.Vertices.Length; i++ )
-                geometryTransformedVertices[ i ] = Vector3.Transform( geometry.Vertices[ i ], nodeWorldTransform );
+                geometryTransformedVertices[i] = Vector3.Transform( geometry.Vertices[i], nodeWorldTransform );
 
             transformedVertices.AddRange( geometryTransformedVertices );
 
@@ -571,7 +523,7 @@ namespace GFDLibrary.Models.Conversion
             if (aiMesh.HasTangentBasis)
             {
                 geometry.Tangents = aiMesh.Tangents
-                                         .Select(x => new Vector3(x.X, x.Y, x.Z))
+                                         .Select( x => new Vector3( x.X, x.Y, x.Z ) )
                                          .ToArray();
             }
             */
@@ -590,17 +542,17 @@ namespace GFDLibrary.Models.Conversion
                                                    .ToArray();
             }
 
-            if ( aiMesh.HasTextureCoords( 2) && !options.MinimalVertexAttributes )
+            if ( aiMesh.HasTextureCoords( 2 ) && !options.MinimalVertexAttributes )
             {
                 geometry.TexCoordsChannel2 = aiMesh.TextureCoordinateChannels[2]
                                                    .Select( x => new Vector2( x.X, x.Y ) )
                                                    .ToArray();
             }
 
-            if ( aiMesh.HasVertexColors( 0) && !options.MinimalVertexAttributes)
+            if ( aiMesh.HasVertexColors( 0 ) && !options.MinimalVertexAttributes )
             {
-                geometry.ColorChannel0 = aiMesh.VertexColorChannels[ 0 ]
-                                               .Select( x => ( uint ) ( ( byte ) ( x.B * 255f ) | ( byte ) ( x.G * 255f ) << 8 | ( byte ) ( x.R * 255f ) << 16 | ( byte ) ( x.A * 255f ) << 24 ) )
+                geometry.ColorChannel0 = aiMesh.VertexColorChannels[0]
+                                               .Select( x => (uint)( (byte)( x.B * 255f ) | (byte)( x.G * 255f ) << 8 | (byte)( x.R * 255f ) << 16 | (byte)( x.A * 255f ) << 24 ) )
                                                .ToArray();
             }
             else if ( options.GenerateVertexColors )
@@ -610,10 +562,10 @@ namespace GFDLibrary.Models.Conversion
                     geometry.ColorChannel0[i] = 0xFFFFFFFF;
             }
 
-            if ( aiMesh.HasVertexColors( 1) && !options.MinimalVertexAttributes)
+            if ( aiMesh.HasVertexColors( 1 ) && !options.MinimalVertexAttributes )
             {
                 geometry.ColorChannel1 = aiMesh.VertexColorChannels[1]
-                                               .Select( x => ( uint )( ( byte )( x.B * 255f ) | ( byte )( x.G * 255f ) << 8 | ( byte )( x.R * 255f ) << 16 | ( byte )( x.A * 255f ) << 24 ) )
+                                               .Select( x => (uint)( (byte)( x.B * 255f ) | (byte)( x.G * 255f ) << 8 | (byte)( x.R * 255f ) << 16 | (byte)( x.A * 255f ) << 24 ) )
                                                .ToArray();
             }
 
@@ -621,7 +573,7 @@ namespace GFDLibrary.Models.Conversion
             {
                 geometry.TriangleIndexFormat = aiMesh.VertexCount <= ushort.MaxValue ? TriangleIndexFormat.UInt16 : TriangleIndexFormat.UInt32;
                 geometry.Triangles = aiMesh.Faces
-                                           .Select( x => new Triangle( ( uint )x.Indices[0], ( uint )x.Indices[1], ( uint )x.Indices[2] ) )
+                                           .Select( x => new Triangle( (uint)x.Indices[0], (uint)x.Indices[1], (uint)x.Indices[2] ) )
                                            .ToArray();
             }
 
@@ -642,13 +594,13 @@ namespace GFDLibrary.Models.Conversion
                     var aiMeshBone = aiMesh.Bones[i];
 
                     // Find node index for the bone
-                    var boneLookupData = nodeLookup[ AssimpConverterCommon.UnescapeName( aiMeshBone.Name ) ];
+                    var boneLookupData = nodeLookup[AssimpConverterCommon.UnescapeName( aiMeshBone.Name )];
                     int nodeIndex = boneLookupData.Index;
 
                     // Calculate inverse bind matrix
                     var boneNode = boneLookupData.Node;
                     var bindMatrix = boneNode.WorldTransform * nodeInverseWorldTransform;
-                    
+
                     if ( options.ConvertSkinToZUp )
                         bindMatrix *= YToZUpMatrix;
 
@@ -709,12 +661,12 @@ namespace GFDLibrary.Models.Conversion
             for ( int i = 0; i < boneInverseBindMatrices.Count; i++ )
             {
                 // Reverse dictionary search
-                var boneToNodeIndex = ( ushort ) nodeToBoneIndices
+                var boneToNodeIndex = (ushort)nodeToBoneIndices
                                                  .Where( x => x.Value.Contains( i ) )
                                                  .Select( x => x.Key )
                                                  .Single();
 
-                var inverseBindMatrix = boneInverseBindMatrices[ i ];
+                var inverseBindMatrix = boneInverseBindMatrices[i];
                 usedBones.Add( new Bone( boneToNodeIndex, inverseBindMatrix ) );
             }
 
@@ -738,39 +690,168 @@ namespace GFDLibrary.Models.Conversion
         }
     }
 
-    public class ModelConverterOptions
+    public static class UserPropertyParser
     {
-        /// <summary>
-        /// Gets or sets the version to use for the converted resources.
-        /// </summary>
-        public uint Version { get; set; }
-
-        /// <summary>
-        /// Gets or sets whether to convert the up axis of the inverse bind pose matrices to Z-up. This is used by Persona 5's battle models for example.
-        /// </summary>
-        public bool ConvertSkinToZUp { get; set; }
-
-        /// <summary>
-        /// Gets or sets whether to generate dummy (white) vertex colors if they're not already present. Some material shaders rely on vertex colors being present, and the lack of them will cause graphics corruption.
-        /// </summary>
-        public bool GenerateVertexColors { get; set; }
-
-        /// <summary>
-        /// Gets or sets whether to generate dummy (white) vertex colors if they're not already present. Some material shaders rely on vertex colors being present, and the lack of them will cause graphics corruption.
-        /// </summary>
-        public bool MinimalVertexAttributes { get; set; }
-
-        public bool SetFullBodyNodeProperties { get; set; }
-
-        public bool AutoAddGFDHelperIDs { get; set; }
-
-        public ModelConverterOptions()
+        private static readonly Dictionary<string, Func<string, string, UserProperty>> PropertyParsers = new Dictionary<string, Func<string, string, UserProperty>>( StringComparer.OrdinalIgnoreCase )
         {
-            Version = ResourceVersion.Persona5;
-            ConvertSkinToZUp = false;
-            GenerateVertexColors = false;
-            MinimalVertexAttributes = true;
-            SetFullBodyNodeProperties = false;
+            {"int", ParseIntProperty},
+            {"float", ParseFloatProperty},
+            {"bool", ParseBoolProperty},
+            {"string", ParseStringProperty},
+            {"bytevector3", ParseByteVector3Property},
+            {"bytevector4", ParseByteVector4Property},
+            {"vector3", ParseVector3Property},
+            {"vector4", ParseVector4Property},
+            {"bytearray", ParseByteArrayProperty}
+        };
+
+        public static UserProperty ParseProperty( string key, string value )
+        {
+            if ( value == null )
+            {
+                return new UserBoolProperty( key, true ); // Assume flag bool
+            }
+
+            var match = Regex.Match( value, @"^(\w+)\((.*)\)$" );
+            if ( match.Success )
+            {
+                var type = match.Groups[1].Value;
+                var content = match.Groups[2].Value;
+
+                if ( PropertyParsers.TryGetValue( type, out var parser ) )
+                {
+                    return parser( key, content );
+                }
+            }
+
+            if ( value.StartsWith( "[" ) && value.EndsWith( "]" ) )
+            {
+                return ParseArrayProperty( key, value );
+            }
+
+            // Try parsing as simple types
+            if ( int.TryParse( value, out int intValue ) )
+            {
+                return new UserIntProperty( key, intValue );
+            }
+            if ( float.TryParse( value, out float floatValue ) )
+            {
+                return new UserFloatProperty( key, floatValue );
+            }
+            if ( bool.TryParse( value, out bool boolValue ) )
+            {
+                return new UserBoolProperty( key, boolValue );
+            }
+
+            // Default to string if no other type matches
+            return new UserStringProperty( key, value );
+        }
+
+        private static UserProperty ParseIntProperty( string key, string content )
+        {
+            if ( int.TryParse( content, out var intValue ) )
+            {
+                return new UserIntProperty( key, intValue );
+            }
+            throw new FormatException( $"Invalid int format: {content}" );
+        }
+
+        private static UserProperty ParseFloatProperty( string key, string content )
+        {
+            if ( float.TryParse( content, out var floatValue ) )
+            {
+                return new UserFloatProperty( key, floatValue );
+            }
+            throw new FormatException( $"Invalid float format: {content}" );
+        }
+
+        private static UserProperty ParseBoolProperty( string key, string content )
+        {
+            if ( bool.TryParse( content, out var boolValue ) )
+            {
+                return new UserBoolProperty( key, boolValue );
+            }
+            throw new FormatException( $"Invalid bool format: {content}" );
+        }
+
+        private static UserProperty ParseStringProperty( string key, string content )
+        {
+            return new UserStringProperty( key, content );
+        }
+
+        private static UserProperty ParseByteVector3Property( string key, string content )
+        {
+            var values = content.Split( ',' );
+            if ( values.Length == 3 && byte.TryParse( values[0], out byte x ) && byte.TryParse( values[1], out byte y ) && byte.TryParse( values[2], out byte z ) )
+            {
+                return new UserByteVector3Property( key, new ByteVector3( x, y, z ) );
+            }
+            throw new FormatException( $"Invalid ByteVector3 format: {content}" );
+        }
+
+        private static UserProperty ParseByteVector4Property( string key, string content )
+        {
+            var values = content.Split( ',' );
+            if ( values.Length == 4 && byte.TryParse( values[0], out byte x ) && byte.TryParse( values[1], out byte y ) && byte.TryParse( values[2], out byte z ) && byte.TryParse( values[3], out byte w ) )
+            {
+                return new UserByteVector4Property( key, new ByteVector4( x, y, z, w ) );
+            }
+            throw new FormatException( $"Invalid ByteVector4 format: {content}" );
+        }
+
+        private static UserProperty ParseVector3Property( string key, string content )
+        {
+            var values = content.Split( ',' );
+            if ( values.Length == 3 && float.TryParse( values[0], out float x ) && float.TryParse( values[1], out float y ) && float.TryParse( values[2], out float z ) )
+            {
+                return new UserVector3Property( key, new Vector3( x, y, z ) );
+            }
+            throw new FormatException( $"Invalid Vector3 format: {content}" );
+        }
+
+        private static UserProperty ParseVector4Property( string key, string content )
+        {
+            var values = content.Split( ',' );
+            if ( values.Length == 4 && float.TryParse( values[0], out float x ) && float.TryParse( values[1], out float y ) && float.TryParse( values[2], out float z ) && float.TryParse( values[3], out float w ) )
+            {
+                return new UserVector4Property( key, new Vector4( x, y, z, w ) );
+            }
+            throw new FormatException( $"Invalid Vector4 format: {content}" );
+        }
+
+        private static UserProperty ParseByteArrayProperty( string key, string content )
+        {
+            try
+            {
+                byte[] byteArray = Convert.FromBase64String( content );
+                return new UserByteArrayProperty( key, byteArray );
+            }
+            catch ( FormatException )
+            {
+                throw new FormatException( $"Invalid Base64 string: {content}" );
+            }
+        }
+
+        private static UserProperty ParseArrayProperty( string key, string value )
+        {
+            var arrayContents = value.Substring( 1, value.Length - 2 );
+            var arrayValues = arrayContents.Split( new[] { ',' }, StringSplitOptions.RemoveEmptyEntries );
+
+            var arrayFloatValues = arrayValues.Select( v => float.TryParse( v, out float f ) ? f : throw new FormatException( $"Failed to parse array value as float: {v}" ) ).ToList();
+
+            if ( arrayFloatValues.Count == 3 )
+            {
+                return new UserVector3Property( key, new Vector3( arrayFloatValues[0], arrayFloatValues[1], arrayFloatValues[2] ) );
+            }
+            else if ( arrayFloatValues.Count == 4 )
+            {
+                return new UserVector4Property( key, new Vector4( arrayFloatValues[0], arrayFloatValues[1], arrayFloatValues[2], arrayFloatValues[3] ) );
+            }
+            else
+            {
+                var arrayByteValues = arrayFloatValues.Select( f => (byte)f ).ToArray();
+                return new UserByteArrayProperty( key, arrayByteValues );
+            }
         }
     }
 }

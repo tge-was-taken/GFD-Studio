@@ -21,8 +21,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\GFDLibrary.Conversion.AssimpNet\GFDLibrary.Conversion.AssimpNet.csproj" />
+    <ProjectReference Include="..\GFDLibrary.Conversion.FbxSdk\GFDLibrary.Conversion.FbxSdk.vcxproj" />
     <ProjectReference Include="..\GFDLibrary.Rendering.OpenGL\GFDLibrary.Rendering.OpenGL.csproj" />
-    <ProjectReference Include="..\GFDLibrary\GFDLibrary.NET6.csproj" />
+    <ProjectReference Include="..\GFDLibrary\GFDLibrary.csproj" />
   </ItemGroup>
 
   <ItemGroup>

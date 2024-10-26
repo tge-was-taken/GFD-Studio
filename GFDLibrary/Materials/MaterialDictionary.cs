@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using GFDLibrary.Conversion;
 using GFDLibrary.IO;
-using GFDLibrary.Models.Conversion;
 
 namespace GFDLibrary.Materials
 {
@@ -30,7 +29,7 @@ namespace GFDLibrary.Materials
             set => mDictionary[name] = value;
         }
 
-        public static MaterialDictionary ConvertAllToMaterialPreset( MaterialDictionary materialDictionary, ModelPackConverterOptions options )
+        public static MaterialDictionary ConvertAllToMaterialPreset( MaterialDictionary materialDictionary, ModelConverterOptions options )
         {
             Material newMaterial = null;
             var newMaterialDictionary = new MaterialDictionary(options.Version);

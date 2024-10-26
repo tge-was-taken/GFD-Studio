@@ -1,14 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
-using System.Reflection.Metadata;
-using System.Xml.Linq;
-using Assimp.Configs;
 using GFDLibrary.Materials;
-using GFDLibrary.Textures;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
-using YamlDotNet.Core.Tokens;
 
 namespace GFDLibrary.Rendering.OpenGL
 {

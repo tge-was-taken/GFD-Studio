@@ -1,10 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Windows.Forms;
 using GFDLibrary;
 using GFDLibrary.Animations;
+using GFDLibrary.Conversion.AssimpNet;
+using GFDLibrary.Conversion.FbxSdk;
 using GFDLibrary.Misc;
-using GFDLibrary.Models.Conversion;
+using GFDStudio.FormatModules;
 using GFDStudio.IO;
 
 namespace GFDStudio.GUI.DataViewNodes
@@ -83,7 +86,10 @@ namespace GFDStudio.GUI.DataViewNodes
                 modelPack.Save( path );
             });
 
-            RegisterExportHandler< Assimp.Scene >( path => ModelPackExporter.ExportFile( Data, path ) );
+            RegisterExportHandler<AssimpScene>( path =>
+            {
+                ModelPackExportHelper.ExportFile( Data, path );
+            } );
 
             RegisterReplaceHandler<ModelPack>( path =>
             {
@@ -93,7 +99,7 @@ namespace GFDStudio.GUI.DataViewNodes
 
                 return Data;
             });
-            RegisterReplaceHandler< Assimp.Scene >( path =>
+            RegisterReplaceHandler< AssimpScene >( path =>
             {
                 var model = ModelConverterUtility.ConvertAssimpModel( path );
                 if ( model != null )

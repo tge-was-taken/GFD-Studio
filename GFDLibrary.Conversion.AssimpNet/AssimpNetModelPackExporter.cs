@@ -7,14 +7,15 @@ using GFDLibrary.Cameras;
 using GFDLibrary.Common;
 using GFDLibrary.Lights;
 using GFDLibrary.Materials;
-using GFDLibrary.Models.Conversion.Utilities;
+using GFDLibrary.Conversion.AssimpNet.Utilities;
 using GFDLibrary.Textures;
 using GFDLibrary.Utilities;
 using Ai = Assimp;
+using GFDLibrary.Models;
 
-namespace GFDLibrary.Models.Conversion
+namespace GFDLibrary.Conversion.AssimpNet
 {
-    public class ModelPackExporter
+    public class AssimpNetModelPackExporter
     {
         private Ai.Scene mAiScene;
         private string mPath;
@@ -25,7 +26,7 @@ namespace GFDLibrary.Models.Conversion
 
         public static void ExportFile( ModelPack modelPack, string path )
         {
-            var exporter = new ModelPackExporter();
+            var exporter = new AssimpNetModelPackExporter();
             var scene = exporter.ConvertModelPack( modelPack, path );
             ExportFile( scene, path );
         }
@@ -34,7 +35,11 @@ namespace GFDLibrary.Models.Conversion
         {
             var aiContext = new Ai.AssimpContext();
             aiContext.XAxisRotation = 90;
-            aiContext.ExportFile( scene, path, "collada", Ai.PostProcessSteps.FlipUVs );
+
+            var ext = Path.GetExtension( path ).ToLower().TrimStart( '.' );
+            var exportFormat = aiContext.GetSupportedExportFormats()
+                .FirstOrDefault( x => x.FileExtension == ext )?.FormatId ?? "collada";
+            aiContext.ExportFile( scene, path, exportFormat, Ai.PostProcessSteps.FlipUVs );
         }
 
         private void Init( string path )
@@ -69,7 +74,7 @@ namespace GFDLibrary.Models.Conversion
 
             foreach ( var texture in textureDictionary.Textures )
             {
-                var texturePath = Path.Combine( mTextureBaseDirectoryPath, AssimpConverterCommon.EscapeName(texture.Name) );
+                var texturePath = Path.Combine( mTextureBaseDirectoryPath, AssimpConverterCommon.EscapeName( texture.Name ) );
 
                 File.WriteAllBytes( texturePath, texture.Data );
             }
@@ -96,6 +101,74 @@ namespace GFDLibrary.Models.Conversion
             return aiMaterial;
         }
 
+        private void ConvertToAssimp( MaterialParameterSetType0 materialParameterSet, Ai.Material aiMaterial, Material material )
+        {
+            aiMaterial.ColorDiffuse = materialParameterSet.P0_0.ToAssimp();
+            if ( material.Flags.HasFlag( MaterialFlags.HasNormalMap ) )
+            {
+                aiMaterial.TextureNormal = new Ai.TextureSlot(
+                        Path.Combine( mTextureBaseRelativeDirectoryPath, AssimpConverterCommon.EscapeName( material.NormalMap.Name ) ),
+                        Ai.TextureType.Normals, 1, Ai.TextureMapping.FromUV, 0, 0, Ai.TextureOperation.Add, Ai.TextureWrapMode.Wrap, Ai.TextureWrapMode.Wrap, 0 );
+            }
+        }
+
+        private void ConvertToAssimp( MaterialParameterSetType1 materialParameterSet, Ai.Material aiMaterial, Material material )
+        {
+            aiMaterial.ColorAmbient = materialParameterSet.AmbientColor.ToAssimp();
+            aiMaterial.ColorDiffuse = materialParameterSet.DiffuseColor.ToAssimp();
+            aiMaterial.ColorSpecular = materialParameterSet.SpecularColor.ToAssimp();
+            aiMaterial.ColorEmissive = materialParameterSet.EmissiveColor.ToAssimp();
+            aiMaterial.Reflectivity = materialParameterSet.Reflectivity;
+            if ( material.Flags.HasFlag( MaterialFlags.HasNormalMap ) )
+            {
+                aiMaterial.TextureNormal = new Ai.TextureSlot(
+                        Path.Combine( mTextureBaseRelativeDirectoryPath, AssimpConverterCommon.EscapeName( material.NormalMap.Name ) ),
+                        Ai.TextureType.Normals, 1, Ai.TextureMapping.FromUV, 0, 0, Ai.TextureOperation.Add, Ai.TextureWrapMode.Wrap, Ai.TextureWrapMode.Wrap, 0 );
+            }
+            if ( material.Flags.HasFlag( MaterialFlags.HasGlowMap ) )
+            {
+                aiMaterial.TextureNormal = new Ai.TextureSlot(
+                    Path.Combine( mTextureBaseRelativeDirectoryPath, AssimpConverterCommon.EscapeName( material.GlowMap.Name ) ),
+                    Ai.TextureType.Emissive, 5, Ai.TextureMapping.FromUV, 0, 0, Ai.TextureOperation.Add, Ai.TextureWrapMode.Wrap, Ai.TextureWrapMode.Wrap, 0 );
+            }
+        }
+
+        private void ConvertToAssimp( MaterialParameterSetType2Base materialParameterSet, Ai.Material aiMaterial, Material material )
+        {
+            aiMaterial.ColorDiffuse = materialParameterSet.BaseColor.ToAssimp();
+            aiMaterial.ColorSpecular = new Vector4( materialParameterSet.SpecularColor, materialParameterSet.SpecularPower ).ToAssimp();
+            aiMaterial.ColorEmissive = materialParameterSet.EmissiveColor.ToAssimp();
+            if ( material.Flags.HasFlag( MaterialFlags.HasNormalMap ) )
+            {
+                aiMaterial.TextureNormal = new Ai.TextureSlot(
+                        Path.Combine( mTextureBaseRelativeDirectoryPath, AssimpConverterCommon.EscapeName( material.NormalMap.Name ) ),
+                        Ai.TextureType.Normals, 1, Ai.TextureMapping.FromUV, 0, 0, Ai.TextureOperation.Add, Ai.TextureWrapMode.Wrap, Ai.TextureWrapMode.Wrap, 0 );
+            }
+        }
+
+        private void ConvertToAssimp( MaterialParameterSetBase materialParameterSet, 
+            Ai.Material aiMaterial, Material material )
+        {
+            switch ( materialParameterSet )
+            {
+                case MaterialParameterSetType0 materialParameterSetType0:
+                    ConvertToAssimp( materialParameterSetType0, aiMaterial, material );
+                    break;
+
+                case MaterialParameterSetType1 materialParameterSetType1:
+                    ConvertToAssimp( materialParameterSetType1 , aiMaterial, material );
+                    break;
+
+                case MaterialParameterSetType2Base materialParameterSetType2Base:
+                    ConvertToAssimp( materialParameterSetType2Base, aiMaterial, material );
+                    break;
+
+                default:
+                    // Ignore
+                    break;
+            }
+        }
+
         private Ai.Material ConvertMaterial( Material material )
         {
             var aiMaterial = InitializeAssimpMaterial( material );
@@ -108,8 +181,9 @@ namespace GFDLibrary.Models.Conversion
             }
             if (material.METAPHOR_MaterialParameterSet != null)
             {
-                material.METAPHOR_MaterialParameterSet.ConvertToAssimp( ref aiMaterial, material, mTextureBaseRelativeDirectoryPath );
-            } else
+                ConvertToAssimp( material.METAPHOR_MaterialParameterSet, aiMaterial, material );
+            } 
+            else
             {
                 if ( material.Flags.HasFlag( MaterialFlags.HasNormalMap ) )
                 {
@@ -198,7 +272,7 @@ namespace GFDLibrary.Models.Conversion
                         {
                             var mesh = ConvertGeometry( model, node, attachment.GetValue<Mesh>() );
 
-                            mesh.Name = $"{AssimpConverterCommon.EscapeName(node.Name)}_Attachment{i}_Mesh";
+                            mesh.Name = $"{AssimpConverterCommon.EscapeName( node.Name )}_Attachment{i}_Mesh";
                             aiNode.MeshIndices.Add( mAiScene.Meshes.Count );
                             mAiScene.Meshes.Add( mesh );
                         }
@@ -209,15 +283,15 @@ namespace GFDLibrary.Models.Conversion
                             var camera = attachment.GetValue<Camera>();
                             mAiScene.Cameras.Add( new Ai.Camera
                             {
-                                Name          = node.Name,
-                                Position      = camera.Position.ToAssimp(),
-                                Up            = camera.Up.ToAssimp(),
-                                Direction     = -camera.Direction.ToAssimp(),
-                                FieldOfview   = MathHelper.DegreesToRadians( camera.FieldOfView ),
+                                Name = node.Name,
+                                Position = camera.Position.ToAssimp(),
+                                Up = camera.Up.ToAssimp(),
+                                Direction = -camera.Direction.ToAssimp(),
+                                FieldOfview = MathHelper.DegreesToRadians( camera.FieldOfView ),
                                 ClipPlaneNear = camera.ClipPlaneNear,
-                                ClipPlaneFar  = camera.ClipPlaneFar,
-                                AspectRatio   = camera.AspectRatio
-                            });
+                                ClipPlaneFar = camera.ClipPlaneFar,
+                                AspectRatio = camera.AspectRatio
+                            } );
                         }
                         break;
 
@@ -233,7 +307,7 @@ namespace GFDLibrary.Models.Conversion
                                 ColorDiffuse = light.DiffuseColor.ToAssimpAsColor3D(),
                                 ColorSpecular = light.SpecularColor.ToAssimpAsColor3D(),
                                 LightType = light.Type == LightType.Point ? Ai.LightSourceType.Point : light.Type == LightType.Spot ? Ai.LightSourceType.Spot : Ai.LightSourceType.Directional,
-                            });
+                            } );
                         }
                         break;
                     default:
@@ -248,25 +322,21 @@ namespace GFDLibrary.Models.Conversion
             var aiMesh = new Ai.Mesh( Ai.PrimitiveType.Triangle );
 
             if ( mesh.Flags.HasFlag( GeometryFlags.HasMaterial ) )
-                aiMesh.MaterialIndex = mAiScene.Materials.FindIndex( x => x.Name == AssimpConverterCommon.EscapeName(mesh.MaterialName) );
+                aiMesh.MaterialIndex = mAiScene.Materials.FindIndex( x => x.Name == AssimpConverterCommon.EscapeName( mesh.MaterialName ) );
 
             if ( mesh.Flags.HasFlag( GeometryFlags.HasTriangles ) )
             {
                 foreach ( var triangle in mesh.Triangles )
                 {
                     var aiFace = new Ai.Face();
-                    aiFace.Indices.Add( ( int )triangle.A );
-                    aiFace.Indices.Add( ( int )triangle.B );
-                    aiFace.Indices.Add( ( int )triangle.C );
+                    aiFace.Indices.Add( (int)triangle.A );
+                    aiFace.Indices.Add( (int)triangle.B );
+                    aiFace.Indices.Add( (int)triangle.C );
                     aiMesh.Faces.Add( aiFace );
                 }
             }
 
-            var vertices = mesh.Vertices;
-            var normals = mesh.Normals;
-
-            if ( mesh.VertexWeights != null )
-                ( vertices, normals ) = mesh.Transform( geometryNode, model.Nodes.ToList(), model.Bones );
+            (var vertices, var normals) = mesh.Transform( geometryNode, model.Nodes.ToList(), model.Bones, true, true, null );
 
             if ( mesh.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Position ) )
             {

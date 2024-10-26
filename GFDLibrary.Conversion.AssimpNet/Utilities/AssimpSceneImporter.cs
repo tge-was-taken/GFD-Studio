@@ -1,10 +1,10 @@
 ﻿using Ai = Assimp;
 
-namespace GFDLibrary.Models.Conversion
+namespace GFDLibrary.Conversion.AssimpNet.Utilities
 {
-    public static class AssimpSceneImporter
+    internal static class AssimpSceneImporter
     {
-        public static Ai.Scene ImportFile( string filePath)
+        public static Ai.Scene ImportFile( string filePath )
         {
             // Set up Assimp context
             var aiContext = new Ai.AssimpContext();
