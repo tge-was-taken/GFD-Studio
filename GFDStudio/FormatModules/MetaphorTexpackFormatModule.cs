@@ -18,9 +18,7 @@ namespace GFDStudio.FormatModules
         protected override bool CanImportCore( Stream stream, string filename = null ) => true;
 
         protected override void ExportCore( MetaphorTexpack obj, Stream stream, string filename = null )
-        {
-            throw new System.NotImplementedException();
-        }
+            => obj.Save( stream );
 
         protected override MetaphorTexpack ImportCore( Stream stream, string filename = null )
             => new MetaphorTexpack( stream );

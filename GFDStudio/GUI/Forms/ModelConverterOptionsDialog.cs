@@ -7,21 +7,25 @@ using System.Linq;
 using GFDLibrary;
 using GFDLibrary.Materials;
 using MetroSet_UI.Forms;
+using System.Reflection;
+using GFDLibrary.Effects;
 
 namespace GFDStudio.GUI.Forms
 {
     public partial class ModelConverterOptionsDialog : MetroSetForm
     {
 
-        private static string PresetLibraryPath = System.IO.Path.GetDirectoryName( Application.ExecutablePath ) + @"\Presets\";
-        private string[] Presets = Directory.GetFiles( PresetLibraryPath, "*.yml" ).Select( file => Path.GetFileName( file ) ).ToArray();
+        private static string BasePresetLibraryPath = System.IO.Path.GetDirectoryName( Application.ExecutablePath ) + @"\Presets\";
+        private string PresetPath => Version >= 0x02000000 ? BasePresetLibraryPath + @"Metaphor\" : BasePresetLibraryPath;
+        private string[] Presets;
 
         public object MaterialPreset
-            => YamlSerializer.LoadYamlFile<Material>( PresetLibraryPath + Presets[MaterialPresetComboBox.SelectedIndex] );
+            => YamlSerializer.LoadYamlFile<Material>( PresetPath + Presets[MaterialPresetComboBox.SelectedIndex] );
 
 
         string CurrentPath = System.IO.Path.GetDirectoryName( Application.ExecutablePath );
 
+        private string[] VersionPresets;
 
         public uint Version
         {
@@ -62,9 +66,19 @@ namespace GFDStudio.GUI.Forms
             get => AutoAddGFDHelperIDsCheckBox.Checked;
         }
 
+        private string[] CreateVersionPresets()
+        {
+            var PropVersions = typeof( ResourceVersion )
+                .GetFields( BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy )
+                .Where( x => !x.Name.EndsWith( "ShaderCache" ) )
+                .Select( x => x.Name );
+            PropVersions = PropVersions.Append( "Custom Version" );
+            return PropVersions.ToArray();
+        }
         private void RefreshPresetList()
         {
-            Presets = Directory.GetFiles( PresetLibraryPath, "*.yml" ).Select( file => Path.GetFileName( file ) ).ToArray();
+            Presets = Directory.GetFiles( PresetPath, "*.yml" ).Select( file => Path.GetFileName( file ) ).ToArray();
+            MaterialPresetComboBox.DataSource = Presets;
         }
 
         private void OpenEditPreset( string preset )
@@ -77,11 +91,38 @@ namespace GFDStudio.GUI.Forms
             PresetEdit.Start();
         }
 
+        private void VersionTextUserUpdated( object? sender, EventArgs e )
+        {
+            if ( VersionComboBox.SelectedIndex == VersionPresets.Length - 1 ) // Custom version only
+                RefreshPresetList();
+        }
+
+        private void RefreshVersionID( object sender, EventArgs e )
+        {
+            // Last index is Custom Version, so enable the option to enter a custom model version
+            if ( VersionComboBox.SelectedIndex == VersionPresets.Length - 1) VersionTextBox.Enabled = true;
+            else SetResourceVersion( VersionPresets[VersionComboBox.SelectedIndex], false );
+        }
+
+        private void SetResourceVersion(string ResourceFieldName, bool bEnableCustomVerNumber = false)
+        {
+            uint NewResourceVersion = (uint)typeof( ResourceVersion ).GetField( ResourceFieldName ).GetValue( null );
+            VersionTextBox.Text = $"0x{NewResourceVersion:X8}";
+            VersionTextBox.Enabled = bEnableCustomVerNumber;
+            RefreshPresetList();
+        }
+
         public ModelConverterOptionsDialog( bool showSceneOptionsOnly )
         {
             InitializeComponent();
+            Text = "Model Converter Options";
             Theme.Apply( this );
-            VersionTextBox.Text = $"0x{ResourceVersion.Persona5Dancing:X8}";
+            SetResourceVersion( "MetaphorRefantazio" );
+            //SetResourceVersion( "Persona5Royal" );
+            RefreshPresetList();
+            VersionPresets = CreateVersionPresets();
+            VersionComboBox.DataSource = VersionPresets;
+            VersionComboBox.SelectedIndexChanged += RefreshVersionID;
 
             if ( showSceneOptionsOnly )
             {
@@ -90,13 +131,14 @@ namespace GFDStudio.GUI.Forms
             else
             {
                 MaterialPresetComboBox.DataSource = Presets;
+                VersionTextBox.TextChanged += VersionTextUserUpdated;
             }
         }
 
         private void OpenPresetButton_Click( object sender, EventArgs e )
         {
             Process OpenPreset = new Process();
-            OpenPreset.StartInfo = new ProcessStartInfo( PresetLibraryPath )
+            OpenPreset.StartInfo = new ProcessStartInfo( PresetPath )
             {
                 UseShellExecute = true
             };

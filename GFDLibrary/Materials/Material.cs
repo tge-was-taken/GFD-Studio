@@ -4,6 +4,7 @@ using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.IO;
 using System.Numerics;
+using System.Security.Cryptography.X509Certificates;
 using GFDLibrary.IO;
 using GFDLibrary.Models;
 using GFDLibrary.Models.Conversion;
@@ -11,24 +12,9 @@ using YamlDotNet.Core;
 
 namespace GFDLibrary.Materials
 {
-    public sealed class Material : Resource
+    public sealed class MaterialLegacyParameters : Resource
     {
-        public override ResourceType ResourceType => ResourceType.Material;
-
-        public string Name { get; set; }
-
-        // 0x54
-        private MaterialFlags mFlags;
-        public MaterialFlags Flags
-        {
-            get => mFlags;
-            set
-            {
-                mFlags = value;
-                ValidateFlags();
-            }
-        }
-
+        public override ResourceType ResourceType => ResourceType.MaterialParameterSetLegacy;
         // 0x00
         public Vector4 AmbientColor { get; set; }
 
@@ -47,8 +33,54 @@ namespace GFDLibrary.Materials
         // 0x44
         public float Field44 { get; set; }
 
+        public MaterialLegacyParameters()
+        {
+            Field40 = 1.0f;
+            Field44 = 0;
+        }
+
+        protected override void ReadCore( ResourceReader reader )
+        {
+            AmbientColor = reader.ReadVector4();
+            DiffuseColor = reader.ReadVector4();
+            SpecularColor = reader.ReadVector4();
+            EmissiveColor = reader.ReadVector4();
+            Field40 = reader.ReadSingle();
+            Field44 = reader.ReadSingle();
+        }
+
+        protected override void WriteCore( ResourceWriter writer )
+        {
+            writer.WriteVector4( AmbientColor );
+            writer.WriteVector4( DiffuseColor );
+            writer.WriteVector4( SpecularColor );
+            writer.WriteVector4( EmissiveColor );
+            writer.WriteSingle( Field40 );
+            writer.WriteSingle( Field44 );
+        }
+    }
+    public sealed class Material : Resource
+    {
+        public override ResourceType ResourceType => ResourceType.Material;
+
+        public string Name { get; set; }
+
+        // 0x54
+        private MaterialFlags mFlags;
+        public MaterialFlags Flags
+        {
+            get => mFlags;
+            set
+            {
+                mFlags = value;
+                ValidateFlags();
+            }
+        }
+
         // 0x48
         public MaterialDrawMethod DrawMethod { get; set; }
+
+        public MaterialLegacyParameters LegacyParameters { get; set; }
 
         // 0x49
         public byte Field49 { get; set; }
@@ -201,6 +233,17 @@ namespace GFDLibrary.Materials
             }
         }
 
+        private TextureMap mTextureMap10;
+        public TextureMap TextureMap10
+        {
+            get => mTextureMap10;
+            set
+            {
+                mTextureMap10 = value;
+                ValidateFlags();
+            }
+        }
+
         public IEnumerable<TextureMap> TextureMaps
         {
             get
@@ -214,6 +257,7 @@ namespace GFDLibrary.Materials
                 yield return NightMap;
                 yield return DetailMap;
                 yield return ShadowMap;
+                yield return TextureMap10;
             }
         }
 
@@ -230,10 +274,13 @@ namespace GFDLibrary.Materials
 
         // METAPHOR REFANTAZIO
         // 0x2dc
-        public ushort METAPHOR_MaterialParameterFormat { get; set; }
+        //public ushort METAPHOR_MaterialParameterFormat { get; set; }
         public bool METAPHOR_UseMaterialParameterSet { get; set; }
-        public MaterialParameterSetBase METAHPOR_MaterialParameterSet { get; set; }
+        public MaterialParameterSetBase METAPHOR_MaterialParameterSet { get; set; }
         public float Field6C_2 { get; set; }
+        public METAPHOR_MaterialFlags0 MatFlags0 { get; set; }
+        public METAPHOR_MaterialFlags1 MatFlags1 { get; set; }
+        public METAPHOR_MaterialFlags2 MatFlags2 { get; set; }
 
         public bool IsPresetMaterial { get; internal set; }
 
@@ -262,8 +309,7 @@ namespace GFDLibrary.Materials
 
         private void Initialize()
         {
-            Field40 = 1.0f;
-            Field44 = 0;
+            LegacyParameters = new();
             Field49 = 1;
             Field4B = 1;
             Field4D = (HighlightMapMode)1;
@@ -289,6 +335,7 @@ namespace GFDLibrary.Materials
             ValidateMapFlags( NightMap,      MaterialFlags.HasNightMap );
             ValidateMapFlags( DetailMap,     MaterialFlags.HasDetailMap );
             ValidateMapFlags( ShadowMap,     MaterialFlags.HasShadowMap );
+            ValidateMapFlags( TextureMap10,  MaterialFlags.HasTextureMap10 );
 
             if ( Attributes == null )
             {
@@ -312,10 +359,120 @@ namespace GFDLibrary.Materials
             }
         }
 
+        private bool FUN_141070860()
+        {
+            if ( !METAPHOR_UseMaterialParameterSet )
+                return false;
+            if ( DrawMethod == MaterialDrawMethod.Opaque )
+                return true;
+            return METAPHOR_MaterialParameterSet.IsMaterialTransparent( );
+        }
+
+        // from gfdMaterialGetShaderFlags(gfdMaterial*, shaderId, vertexFlags, uint* flags)
+        public void GetShaderFlags()
+        {
+            if ( !METAPHOR_UseMaterialParameterSet )
+                return;
+
+            MatFlags1 = METAPHOR_MaterialFlags1.FLAG1_MATERIAL_AMBDIFF;
+            MatFlags2 = 0;
+            if ( Flags.HasFlag( MaterialFlags.EnableLight ) )
+            {
+                MatFlags0 |= METAPHOR_MaterialFlags0.FLAG0_LIGHT0_DIRECTION;
+                MatFlags1 |= METAPHOR_MaterialFlags1.FLAG1_MATERIAL_LIGHT;
+                if ( Flags2.HasFlag( MaterialFlags2.ShadowMapAdd ) )
+                    MatFlags2 |= METAPHOR_MaterialFlags2.FLAG2_LIGHTMAP_MODULATE;
+                else if ( Flags2.HasFlag( MaterialFlags2.ShadowMapMultiply ) )
+                    MatFlags1 |= METAPHOR_MaterialFlags1.FLAG1_LIGHTMAP_MODULATE2;
+            }
+            MatFlags0 |= (METAPHOR_MaterialFlags0)0x4000;
+            if (Flags.HasFlag(MaterialFlags.AlphaTest ) )
+            {
+                MatFlags2 |= Field92 switch
+                {
+                    AlphaClipMode.Never => METAPHOR_MaterialFlags2.FLAG2_ATEST_NEVER,
+                    AlphaClipMode.Less | AlphaClipMode.LEqual => METAPHOR_MaterialFlags2.FLAG2_ATEST_LESS_LEQUAL,
+                    AlphaClipMode.Equal => METAPHOR_MaterialFlags2.FLAG2_ATEST_EQUAL,
+                    AlphaClipMode.Greater | AlphaClipMode.GEqual => METAPHOR_MaterialFlags2.FLAG2_ATEST_GREATER_GEQUAL,
+                    AlphaClipMode.NotEqual => METAPHOR_MaterialFlags2.FLAG2_ATEST_NOTEQUAL,
+                    _ => 0
+                };
+            }
+
+
+
+            if ( Flags.HasFlag( MaterialFlags.Diffusitivity ) )
+                MatFlags0 |= (METAPHOR_MaterialFlags0.FLAG0_TEMPERARE | (METAPHOR_MaterialFlags0)0x4000);
+            if (Flags.HasFlag( MaterialFlags.HasVertexColors ) ) // and vertex flags & 0x40 (support vertex colors)
+                MatFlags1 |= METAPHOR_MaterialFlags1.FLAG1_MATERIAL_VERTEXCOLOR;
+
+            if (Flags.HasFlag( MaterialFlags.ApplyFog ) )
+            {
+                // This relies on the graphics flag set in gfdGlobal
+                // Add an option to toggle these in settings?
+                /*
+                if (HasFog)
+                {
+                    MatFlags1 |= METAPHOR_MaterialFlags1.FLAG1_MATERIAL_FOG;
+                }
+                if (HasHeightFog)
+                {
+                    MatFlags1 |= METAPHOR_MaterialFlags1.FLAG1_MATERIAL_HEIGHTFOG;
+                }
+                MatFlags2 |= METAPHOR_MaterialFlags1.FLAG2_MATERIAL_MODULATE_FOG;
+                */
+            }
+            if ( Flags.HasFlag( MaterialFlags.ExtraDistortion ) )
+                MatFlags1 |= METAPHOR_MaterialFlags1.FLAG1_MATERIAL_OCCLUSION;
+            if ( Flags.HasFlag( MaterialFlags.HasEmissiveColor ) )
+                MatFlags1 |= METAPHOR_MaterialFlags1.FLAG1_MATERIAL_EMISSIVE;
+            if ( Flags.HasFlag( MaterialFlags.ReceiveShadow ) ) // gfdGlobal graphics flag 1
+                MatFlags1 |= METAPHOR_MaterialFlags1.FLAG1_MATERIAL_SHADOW;
+            // multiply material mode
+            if ( Flags.HasFlag( MaterialFlags.HasHighlightMap ) )
+            {
+                switch ( Field4D )
+                {
+                    case HighlightMapMode.Lerp: MatFlags2 |= METAPHOR_MaterialFlags2.FLAG2_MATERIAL_MULTIPLE_SEMI; break; // Lerp
+                    case HighlightMapMode.Add: MatFlags2 |= METAPHOR_MaterialFlags2.FLAG2_MATERIAL_MULTIPLE_ADD; break; // Add
+                    case HighlightMapMode.Subtract: MatFlags1 |= METAPHOR_MaterialFlags1.FLAG1_MATERIAL_MULTIPLE_MOD; break; // Modulate
+                    case (HighlightMapMode)5: MatFlags2 |= METAPHOR_MaterialFlags2.FLAG2_MATERIAL_MULTIPLE_SUB; break; // Subtract
+                }
+            }
+            // texture flags
+            if ( Flags.HasFlag( MaterialFlags.HasDiffuseMap ) )
+                MatFlags1 |= METAPHOR_MaterialFlags1.FLAG1_TEXTURE1;
+            if ( Flags.HasFlag( MaterialFlags.HasNormalMap ) )
+                MatFlags1 |= METAPHOR_MaterialFlags1.FLAG1_TEXTURE2;
+            if ( Flags.HasFlag( MaterialFlags.HasSpecularMap ) )
+                MatFlags1 |= METAPHOR_MaterialFlags1.FLAG1_TEXTURE3;
+            if ( Flags.HasFlag( MaterialFlags.HasReflectionMap ) )
+                MatFlags1 |= METAPHOR_MaterialFlags1.FLAG1_TEXTURE4;
+            if ( Flags.HasFlag( MaterialFlags.HasHighlightMap ) )
+                MatFlags1 |= METAPHOR_MaterialFlags1.FLAG1_TEXTURE5;
+            if ( Flags.HasFlag( MaterialFlags.HasGlowMap ) )
+                MatFlags1 |= METAPHOR_MaterialFlags1.FLAG1_TEXTURE6;
+            if ( Flags.HasFlag( MaterialFlags.HasNightMap ) )
+                MatFlags1 |= METAPHOR_MaterialFlags1.FLAG1_TEXTURE7;
+            if ( Flags.HasFlag( MaterialFlags.HasDetailMap ) )
+                MatFlags1 |= METAPHOR_MaterialFlags1.FLAG1_TEXTURE8;
+            if ( Flags.HasFlag( MaterialFlags.HasShadowMap ) )
+                MatFlags1 |= METAPHOR_MaterialFlags1.FLAG1_TEXTURE9;
+            if ( Flags.HasFlag( MaterialFlags.HasTextureMap10 ) )
+                MatFlags1 |= METAPHOR_MaterialFlags1.FLAG1_TEXTURE10;
+            // material parameter flags
+            METAPHOR_MaterialParameterSet.SetShaderFlags( this );
+            // other
+            if ( Flags.HasFlag( MaterialFlags.ReflectionCaster ) )
+                MatFlags2 |= METAPHOR_MaterialFlags2.FLAG2_REFLECTION_CASTER;
+            if ( Flags2.HasFlag( MaterialFlags2.Grayscale ) )
+                MatFlags0 |= METAPHOR_MaterialFlags0.FLAG0_CONSTANTCOLOR | METAPHOR_MaterialFlags0.FLAG0_GRAYSCALE;
+        }
+
         protected override void ReadCore( ResourceReader reader )
         {
             // Read material header
-            METAPHOR_MaterialParameterFormat = 1;
+            ushort METAPHOR_MaterialParameterFormat = 1;
             METAPHOR_UseMaterialParameterSet = Version >= 0x2000000;
             if ( Version >= 0x2000000 )
             {
@@ -326,70 +483,66 @@ namespace GFDLibrary.Materials
 
             if ( Version < 0x1104000 )
             {
-                flags = ( MaterialFlags )( ( uint )Flags & 0x7FFFFFFF );
+                flags = ( MaterialFlags )( ( uint )flags & 0x7FFFFFFF );
             }
 
             if (Version < 0x2000000 )
             {
-                AmbientColor = reader.ReadVector4();
-                DiffuseColor = reader.ReadVector4();
-                SpecularColor = reader.ReadVector4();
-                EmissiveColor = reader.ReadVector4();
-                Field40 = reader.ReadSingle();
-                Field44 = reader.ReadSingle();
+                LegacyParameters = reader.ReadResource<MaterialLegacyParameters>( Version );
             } else
             {
                 switch ( METAPHOR_MaterialParameterFormat )
                 {
                     case 0:
-                        METAHPOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType0>( Version );
+                        METAPHOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType0>( Version );
                         break;
                     case 1:
-                        METAHPOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType1>( Version );
+                        METAPHOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType1>( Version );
                         break;
                     case 2:
+                        METAPHOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType2>( Version );
+                        break;
                     case 3:
-                    case 0xd:
-                        METAHPOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType2_3_13>( Version );
-                        // TEMPORARY: map metaphor material params to legacy params
-                        MaterialParameterSetType2_3_13 P2 = (MaterialParameterSetType2_3_13)METAHPOR_MaterialParameterSet;
-                        //AmbientColor = P2.P2_0;
-                        //DiffuseColor = new Vector4( 1, 1, 1, 1 );
-                        //SpecularColor = P2.P2_2;
-                        //EmissiveColor = P2.P2_2;
+                        METAPHOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType3>( Version );
                         break;
                     case 4:
-                        METAHPOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType4>( Version );
+                        METAPHOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType4>( Version );
                         break;
                     case 5:
-                        METAHPOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType5>( Version );
+                        METAPHOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType5>( Version );
                         break;
                     case 6:
-                        METAHPOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType6>( Version );
+                        METAPHOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType6>( Version );
                         break;
                     case 7:
-                        METAHPOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType7>( Version );
+                        METAPHOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType7>( Version );
                         break;
                     case 8:
-                        METAHPOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType8>( Version );
+                        METAPHOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType8>( Version );
                         break;
                     case 9:
-                        METAHPOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType9>( Version );
+                        METAPHOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType9>( Version );
                         break;
                     case 0xa:
-                        METAHPOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType10>( Version );
+                        METAPHOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType10>( Version );
                         break;
                     case 0xb:
-                        METAHPOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType11>( Version );
+                        METAPHOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType11>( Version );
                         break;
                     case 0xc:
-                        METAHPOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType12>( Version );
+                        METAPHOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType12>( Version );
+                        break;
+                    case 0xd:
+                        METAPHOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType13>( Version );
                         break;
                     case 0xe:
-                        METAHPOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType14>( Version );
+                        METAPHOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType14>( Version );
                         break;
                     case 0xf:
-                        METAHPOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType15>( Version );
+                        METAPHOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType15>( Version );
+                        break;
+                    case 0x10:
+                        METAPHOR_MaterialParameterSet = reader.ReadResource<MaterialParameterSetType16>( Version );
                         break;
                     default:
                         throw new InvalidDataException( $"Unknown/Invalid material parameter version {METAPHOR_MaterialParameterFormat}" );
@@ -438,7 +591,7 @@ namespace GFDLibrary.Materials
             Field70 = reader.ReadUInt32();
             DisableBackfaceCulling = reader.ReadInt16();
 
-            if ( Version <= 0x1105070 || Version >= 0x1105090 || Version == 0x1105080 )
+            if ( Version > 0x1103040 )
             {
                 Field98 = reader.ReadUInt32();
             }
@@ -446,49 +599,34 @@ namespace GFDLibrary.Materials
             if ( Version > 0x2110160 )
                 Field6C_2 = reader.ReadSingle();
 
+            TextureMap ReadTextureMapResource()
+            {
+                var texMap = reader.ReadResource<TextureMap>( Version );
+                if ( METAPHOR_UseMaterialParameterSet )
+                    texMap.METAPHOR_ParentMaterialParameterSet = METAPHOR_MaterialParameterSet;
+                return texMap;
+            }
+
             if ( flags.HasFlag( MaterialFlags.HasDiffuseMap ) )
-            {
-                DiffuseMap = reader.ReadResource<TextureMap>( Version );
-            }
+                DiffuseMap = ReadTextureMapResource();
             if ( flags.HasFlag( MaterialFlags.HasNormalMap ) )
-            {
-                NormalMap = reader.ReadResource<TextureMap>( Version );
-            }
-
+                NormalMap = ReadTextureMapResource();
             if ( flags.HasFlag( MaterialFlags.HasSpecularMap ) )
-            {
-                SpecularMap = reader.ReadResource<TextureMap>( Version );
-            }
-
+                SpecularMap = ReadTextureMapResource();
             if ( flags.HasFlag( MaterialFlags.HasReflectionMap ) )
-            {
-                ReflectionMap = reader.ReadResource<TextureMap>( Version );
-            }
-
+                ReflectionMap = ReadTextureMapResource();
             if ( flags.HasFlag( MaterialFlags.HasHighlightMap ) )
-            {
-                HighlightMap = reader.ReadResource<TextureMap>( Version );
-            }
-
+                HighlightMap = ReadTextureMapResource();
             if ( flags.HasFlag( MaterialFlags.HasGlowMap ) )
-            {
-                GlowMap = reader.ReadResource<TextureMap>( Version );
-            }
-
+                GlowMap = ReadTextureMapResource();
             if ( flags.HasFlag( MaterialFlags.HasNightMap ) )
-            {
-                NightMap = reader.ReadResource<TextureMap>( Version );
-            }
-
+                NightMap = ReadTextureMapResource();
             if ( flags.HasFlag( MaterialFlags.HasDetailMap ) )
-            {
-                DetailMap = reader.ReadResource<TextureMap>( Version );
-            }
-
+                DetailMap = ReadTextureMapResource();
             if ( flags.HasFlag( MaterialFlags.HasShadowMap ) )
-            {
-                ShadowMap = reader.ReadResource<TextureMap>( Version );
-            }
+                ShadowMap = ReadTextureMapResource();
+            if ( flags.HasFlag( MaterialFlags.HasTextureMap10 ) )
+                ShadowMap = ReadTextureMapResource();
 
             if ( flags.HasFlag( MaterialFlags.HasAttributes ) )
             {
@@ -508,19 +646,14 @@ namespace GFDLibrary.Materials
         protected override void WriteCore( ResourceWriter writer )
         {
             if ( Version >= 0x2000000 )
-                writer.WriteUInt16( METAPHOR_MaterialParameterFormat );
+                writer.WriteUInt16( METAPHOR_MaterialParameterSet.GetExportTypeId() );
             writer.WriteStringWithHash( Version, Name );
             writer.WriteUInt32( ( uint )Flags );
             if ( METAPHOR_UseMaterialParameterSet )
-                METAHPOR_MaterialParameterSet.Write( writer );
+                METAPHOR_MaterialParameterSet.Write( writer );
             else
             {
-                writer.WriteVector4( AmbientColor );
-                writer.WriteVector4( DiffuseColor );
-                writer.WriteVector4( SpecularColor );
-                writer.WriteVector4( EmissiveColor );
-                writer.WriteSingle( Field40 );
-                writer.WriteSingle( Field44 );
+                writer.WriteResource( LegacyParameters );
             }
 
             if ( Version <= 0x1103040 )
@@ -564,7 +697,7 @@ namespace GFDLibrary.Materials
             writer.WriteUInt32( Field70 );
             writer.WriteInt16(DisableBackfaceCulling);
 
-            if ( Version <= 0x1105070 || Version >= 0x1105090 )
+            if ( Version > 0x1103040 )
             {
                 writer.WriteUInt32( Field98 );
             }
@@ -614,6 +747,11 @@ namespace GFDLibrary.Materials
             if ( Flags.HasFlag( MaterialFlags.HasShadowMap ) )
             {
                 writer.WriteResource(  ShadowMap );
+            }
+
+            if ( Flags.HasFlag( MaterialFlags.HasTextureMap10 ) )
+            {
+                writer.WriteResource( TextureMap10 );
             }
 
             if ( Flags.HasFlag( MaterialFlags.HasAttributes ) )
@@ -675,7 +813,7 @@ namespace GFDLibrary.Materials
         HasNightMap = 1 << 26,
         HasDetailMap = 1 << 27,
         HasShadowMap = 1 << 28,
-        Bit29 = 1 << 29,
+        HasTextureMap10 = 1 << 29,
         ExtraDistortion = 1 << 30,
         Bit31 = 1u << 31
     }

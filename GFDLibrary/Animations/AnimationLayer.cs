@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Numerics;
+using GFDLibrary.Animations.Keys;
 using GFDLibrary.IO;
 
 namespace GFDLibrary.Animations
@@ -28,10 +29,13 @@ namespace GFDLibrary.Animations
 
         // 1C
         public Vector3 ScaleScale { get; set; }
-
-        public bool UsesScaleVectors => KeyType == KeyType.NodePRSHalf ||
-                                        KeyType == KeyType.NodePRHalf  || KeyType == KeyType.NodePRHalf_2  || KeyType == KeyType.NodeRSHalf || KeyType == KeyType.NodePSHalf ||
-                                        KeyType == KeyType.Type31      || KeyType == KeyType.NodeRHalf     || KeyType == KeyType.NodeSHalf;
+        
+        public bool UsesScaleVectors => Version >= 0x2000000 
+            // Metaphor
+            ? ( KeyType == KeyType.NodePRHalf_2 || KeyType == KeyType.NodePRSHalf || KeyType == KeyType.NodePRHalf )
+            // Previous GFD
+            : (KeyType == KeyType.NodePRSHalf || KeyType == KeyType.NodePRHalf || KeyType == KeyType.NodePRHalf_2 || KeyType == KeyType.NodeRSHalf || 
+            KeyType == KeyType.NodePSHalf || KeyType == KeyType.Type31 || KeyType == KeyType.NodeRHalf || KeyType == KeyType.NodeSHalf );
 
         public bool HasPRSKeyFrames
         {
@@ -44,12 +48,14 @@ namespace GFDLibrary.Animations
                     case KeyType.NodePRHalf:
                     case KeyType.NodePRSHalf:
                     case KeyType.NodePRHalf_2:
-                    case KeyType.NodeRHalf:
-                    case KeyType.NodeSHalf:
                         return true;
 
                     case KeyType.Type31:
                         return !IsCatherineFullBodyData;
+
+                    case KeyType.NodeRHalf:
+                    case KeyType.NodeSHalf:
+                        return Version < 0x2000000;
                 }
 
                 return false;
@@ -112,8 +118,6 @@ namespace GFDLibrary.Animations
                     case KeyType.NodePRHalf:
                     case KeyType.NodePRSHalf:
                     case KeyType.NodePRHalf_2:
-                    case KeyType.NodeRHalf:
-                    case KeyType.NodeSHalf:
                     case KeyType.NodeRSHalf:
                     case KeyType.NodePSHalf:
                         key = new PRSKey( KeyType );
@@ -145,13 +149,17 @@ namespace GFDLibrary.Animations
                     case KeyType.Single5:
                     case KeyType.Single5_2:
                     case KeyType.Single5Alt:
+                    case KeyType.Type36_P5R:
                         key = new Single5Key( KeyType );
                         break;
                     case KeyType.NodePRSByte:
                         key = new PRSByteKey();
                         break;
                     case KeyType.Single4Byte:
-                        key = new Single4ByteKey();
+                        //if (Version >= 0x2000000 )
+                            key = new Single3ByteKey();
+                        //else
+                            //key = new Single4ByteKey();
                         break;
                     case KeyType.SingleByte:
                         key = new SingleByteKey();
@@ -161,7 +169,7 @@ namespace GFDLibrary.Animations
                         break;
                     case KeyType.Type31:
                         {
-                            if (IsCatherineFullBodyData)
+                            if (IsCatherineFullBodyData || Version >= 0x2000000 )
                             {
                                 key = new KeyType31FullBody();
                             }
@@ -171,6 +179,18 @@ namespace GFDLibrary.Animations
                             }
                         }
                         break;
+                    case KeyType.NodeSHalf:
+                        if (Version >= 0x2000000 )
+                            key = new KeyType33Metaphor();
+                        else
+                            key = new PRSKey( KeyType );
+                        break;
+                    case KeyType.NodeRHalf:
+                        if ( Version >= 0x2000000 )
+                            key = new KeyType33Metaphor();
+                        else
+                            key = new PRSKey( KeyType );
+                        break;
                     default:
                         throw new InvalidDataException( $"Unknown/Invalid Key frame type: {KeyType}" );
                 }
@@ -179,13 +199,23 @@ namespace GFDLibrary.Animations
                 key.Read( reader );
                 Keys.Add( key );
             }
-
-            if ( UsesScaleVectors )
+            if ( Version >= 0x2000000 )
             {
-                PositionScale = reader.ReadVector3();
-
-                if ( !IsCatherineFullBodyData || KeyType != KeyType.Type31 )
+                if ( UsesScaleVectors )
+                {
+                    PositionScale = reader.ReadVector3();
+                }
+                if ( KeyType == KeyType.Type31 || KeyType == KeyType.NodePRHalf_2 || KeyType == KeyType.NodePRSHalf || KeyType == KeyType.NodePRHalf )
                     ScaleScale = reader.ReadVector3();
+            } else
+            {
+                if ( UsesScaleVectors )
+                {
+                    PositionScale = reader.ReadVector3();
+
+                    if ( !IsCatherineFullBodyData || KeyType != KeyType.Type31 )
+                        ScaleScale = reader.ReadVector3();
+                }
             }
         }
 
@@ -196,12 +226,24 @@ namespace GFDLibrary.Animations
             Keys.ForEach( x => writer.WriteSingle( x.Time ) );
             Keys.ForEach( x => x.Write( writer ) );
 
-            if ( UsesScaleVectors )
+            if ( Version >= 0x2000000 )
             {
-                writer.WriteVector3( PositionScale );
-
-                if ( !IsCatherineFullBodyData || KeyType != KeyType.Type31 )
+                if ( UsesScaleVectors )
+                {
+                    writer.WriteVector3( PositionScale );
+                }
+                if ( KeyType == KeyType.Type31 || KeyType == KeyType.NodePRHalf_2 || KeyType == KeyType.NodePRSHalf || KeyType == KeyType.NodePRHalf )
                     writer.WriteVector3( ScaleScale );
+            }
+            else
+            {
+                if ( UsesScaleVectors )
+                {
+                    writer.WriteVector3( PositionScale );
+
+                    if ( !IsCatherineFullBodyData || KeyType != KeyType.Type31 )
+                        writer.WriteVector3( ScaleScale );
+                }
             }
         }
     }

@@ -328,12 +328,12 @@ namespace GFDLibrary.Tests
 
             Assert.AreEqual( a.Name, b.Name );
             Assert.AreEqual( a.Flags, b.Flags );
-            Assert.AreEqual( a.AmbientColor, b.AmbientColor );
-            Assert.AreEqual( a.DiffuseColor, b.DiffuseColor );
-            Assert.AreEqual( a.SpecularColor, b.SpecularColor );
-            Assert.AreEqual( a.EmissiveColor, b.EmissiveColor );
-            Assert.AreEqual( a.Field40, b.Field40 );
-            Assert.AreEqual( a.Field44, b.Field44 );
+            Assert.AreEqual( a.LegacyParameters.AmbientColor, b.LegacyParameters.AmbientColor );
+            Assert.AreEqual( a.LegacyParameters.DiffuseColor, b.LegacyParameters.DiffuseColor );
+            Assert.AreEqual( a.LegacyParameters.SpecularColor, b.LegacyParameters.SpecularColor );
+            Assert.AreEqual( a.LegacyParameters.EmissiveColor, b.LegacyParameters.EmissiveColor );
+            Assert.AreEqual( a.LegacyParameters.Field40, b.LegacyParameters.Field40 );
+            Assert.AreEqual( a.LegacyParameters.Field44, b.LegacyParameters.Field44 );
             Assert.AreEqual( a.DrawMethod, b.DrawMethod );
             Assert.AreEqual( a.Field49, b.Field49 );
             Assert.AreEqual( a.Field4A, b.Field4A );

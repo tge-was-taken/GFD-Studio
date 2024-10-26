@@ -106,6 +106,12 @@ namespace GFDLibrary.IO
             WriteSingle( value.Y );
         }
 
+        public void WriteVector2Half( Vector2 value )
+        {
+            WriteHalf( value.X );
+            WriteHalf( value.Y );
+        }
+
         public void WriteVector3( Vector3 value )
         {
             WriteSingle( value.X );

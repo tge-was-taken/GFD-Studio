@@ -1,0 +1,157 @@
+!Material
+ResourceType: Material
+Name: mt_ramp_metal_d_1
+Flags: HasAmbientColor, HasDiffuseColor, ApplyFog, EnableLight, ReceiveShadow, CastShadow, HasDiffuseMap, HasSpecularMap
+DrawMethod: Opaque
+LegacyParameters: !MaterialLegacyParameters
+  ResourceType: MaterialParameterSetLegacy
+  AmbientColor: &o0
+    X: 0
+    Y: 0
+    Z: 0
+    W: 0
+  DiffuseColor: *o0
+  SpecularColor: *o0
+  EmissiveColor: *o0
+  Field40: 1
+  Field44: 0
+  Version: 17846384
+Field49: 1
+Field4A: 0
+Field4B: 1
+Field4C: 0
+Field4D: Lerp
+Field90: 0
+Field92: GEqual
+Flags2: Bit15
+Field96: 0
+Field5C: 187
+Field6C: 4294966840
+Field70: 4294966840
+DisableBackfaceCulling: 0
+Field98: 4294967295
+DiffuseMap: &o1 !TextureMap
+  ResourceType: TextureMap
+  Name: i_0054_002.png
+  Field44: 0
+  Field48: Linear
+  Field49: Linear
+  Field4A: Repeat
+  Field4B: Repeat
+  Field4C: 1
+  Field50: 0
+  Field54: 0
+  Field58: 0
+  Field5C: 0
+  Field60: 1
+  Field64: 0
+  Field68: 0
+  Field6C: 0
+  Field70: 0
+  Field74: 0
+  Field78: 0
+  Field7C: 0
+  Field80: 0
+  Field84: 0
+  Field88: 0
+  Version: 34669089
+NormalMap: 
+SpecularMap: &o2 !TextureMap
+  ResourceType: TextureMap
+  Name: i0054_ramp.png
+  Field44: 0
+  Field48: Linear
+  Field49: Linear
+  Field4A: Clamp
+  Field4B: Clamp
+  Field4C: 1
+  Field50: 0
+  Field54: 0
+  Field58: 0
+  Field5C: 0
+  Field60: 1
+  Field64: 0
+  Field68: 0
+  Field6C: 0
+  Field70: 0
+  Field74: 0
+  Field78: 0
+  Field7C: 0
+  Field80: 0
+  Field84: 0
+  Field88: 0
+  Version: 34669089
+ReflectionMap: 
+HighlightMap: 
+GlowMap: 
+NightMap: 
+DetailMap: 
+ShadowMap: 
+TextureMap10: 
+TextureMaps:
+- *o1
+- 
+- *o2
+- 
+- 
+- 
+- 
+- 
+- 
+- 
+Attributes: 
+METAPHOR_UseMaterialParameterSet: true
+METAPHOR_MaterialParameterSet: !MaterialParameterSetType12
+  P12_0:
+    X: 1
+    Y: 1
+    Z: 1
+    W: 1
+  P12_1:
+    X: 0.9558824
+    Y: 0.9558824
+    Z: 0.9558824
+    W: 0.7
+  P12_2:
+    X: 0
+    Y: 0
+    Z: 0
+    W: 1
+  P12_3: 0.1
+  P12_4: 0.8
+  P12_5: 50
+  Flags: FLAG3, FLAG4, FLAG8
+  P12_7: 1.5
+  P12_8:
+    X: 1
+    Y: 1
+    Z: 1
+  P12_9: 0.05
+  P12_10: 3
+  P12_11: 0.4
+  P12_12: -0.4
+  P12_13: 0
+  P12_14: 0.1
+  P12_15:
+    X: 0.5408922
+    Y: 0.5408922
+    Z: 0.5408922
+  P12_16: 0.15
+  P12_17: 388.69257
+  P12_18: 0.75
+  P12_19: 1
+  P12_20:
+    X: 0
+    Y: 0
+    Z: 0
+    W: 0.62222224
+  P12_21: 0.35
+  P12_22: 9.29293
+  ResourceType: MaterialParameterSetType12
+  Version: 34669089
+Field6C_2: 1
+MatFlags0: 0
+MatFlags1: 0
+MatFlags2: 0
+IsPresetMaterial: false
+Version: 34669089

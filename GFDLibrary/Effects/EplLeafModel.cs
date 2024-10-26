@@ -24,6 +24,16 @@ namespace GFDLibrary.Effects
         public float Field1C { get; set; }
         public uint Field20 { get; set; }
 
+        public float Field0C_P5R { get; set; }
+        public float Field10_P5R { get; set; }
+        public float Field14_P5R { get; set; }
+        public float Field18_P5R { get; set; }
+        public float Field1C_P5R { get; set; }
+        public float Field20_P5R { get; set; }
+        public int Field24_P5R { get; set; }
+        public float Field28_P5R { get; set; }
+        public float Field2C_P5R { get; set; }
+
 
         public EplModel() { }
         public EplModel( uint Version ) : base( Version ) { }
@@ -39,6 +49,18 @@ namespace GFDLibrary.Effects
             {
                 Field04 = reader.ReadSingle();
                 Field08 = reader.ReadSingle();
+                if ( (Field00 & 0x10000000) != 0 && Version > ResourceVersion.Persona5 && Version < 0x2000000 )
+                {
+                    Field0C_P5R = reader.ReadSingle();
+                    Field10_P5R = reader.ReadSingle();
+                    Field14_P5R = reader.ReadSingle();
+                    Field18_P5R = reader.ReadSingle();
+                    Field1C_P5R = reader.ReadSingle();
+                    Field20_P5R = reader.ReadSingle();
+                    Field24_P5R = reader.ReadInt32();
+                    Field28_P5R = reader.ReadSingle();
+                    Field2C_P5R = reader.ReadSingle();
+                }
                 if ( Version > 0x2110031 )
                 {
                     Field24 = reader.ReadSingle();
@@ -71,6 +93,18 @@ namespace GFDLibrary.Effects
             {
                 writer.WriteSingle( Field04 );
                 writer.WriteSingle( Field08 );
+                if ( (Field00 & 0x10000000) != 0 && Version > ResourceVersion.Persona5 && Version < 0x2000000 )
+                {
+                    writer.WriteSingle( Field0C_P5R );
+                    writer.WriteSingle( Field10_P5R );
+                    writer.WriteSingle( Field14_P5R );
+                    writer.WriteSingle( Field18_P5R );
+                    writer.WriteSingle( Field1C_P5R );
+                    writer.WriteSingle( Field20_P5R );
+                    writer.WriteInt32( Field24_P5R );
+                    writer.WriteSingle( Field28_P5R );
+                    writer.WriteSingle( Field2C_P5R );
+                }
                 if ( Version > 0x2110031 )
                 {
                     writer.WriteSingle( Field24 );

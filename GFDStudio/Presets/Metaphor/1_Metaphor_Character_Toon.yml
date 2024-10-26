@@ -1,0 +1,146 @@
+!Material
+ResourceType: Material
+Name: c0001_102_body1_b_
+Flags: HasAmbientColor, HasDiffuseColor, ApplyFog, EnableLight, ReceiveShadow, CastShadow, HasDiffuseMap, HasSpecularMap, HasDetailMap
+DrawMethod: Opaque
+LegacyParameters:
+Field49: 1
+Field4A: 0
+Field4B: 1
+Field4C: 0
+Field4D: Lerp
+Field90: 0
+Field92: GEqual
+Flags2: Bit15
+Field96: 0
+Field5C: 3
+Field6C: 4294966840
+Field70: 4294966840
+DisableBackfaceCulling: 0
+Field98: 4294967295
+DiffuseMap: &o1 !TextureMap
+  ResourceType: TextureMap
+  Name: c0001_102.png
+  Field44: 0
+  Field48: Linear
+  Field49: Linear
+  Field4A: Repeat
+  Field4B: Repeat
+  Field4C: 1
+  Field50: 0
+  Field54: 0
+  Field58: 0
+  Field5C: 0
+  Field60: 1
+  Field64: 0
+  Field68: 0
+  Field6C: 0
+  Field70: 0
+  Field74: 0
+  Field78: 0
+  Field7C: 0
+  Field80: 0
+  Field84: 0
+  Field88: 0
+  Version: 34669089
+NormalMap: 
+SpecularMap: &o2 !TextureMap
+  ResourceType: TextureMap
+  Name: c0001_102.png
+  Field44: 0
+  Field48: Linear
+  Field49: Linear
+  Field4A: Repeat
+  Field4B: Repeat
+  Field4C: 1
+  Field50: 0
+  Field54: 0
+  Field58: 0
+  Field5C: 0
+  Field60: 1
+  Field64: 0
+  Field68: 0
+  Field6C: 0
+  Field70: 0
+  Field74: 0
+  Field78: 0
+  Field7C: 0
+  Field80: 0
+  Field84: 0
+  Field88: 0
+  Version: 34669089
+ReflectionMap: 
+HighlightMap: 
+GlowMap: 
+NightMap: 
+DetailMap:
+ShadowMap: 
+TextureMap10: 
+TextureMaps:
+- *o1
+- 
+- *o2
+- 
+- 
+- 
+- 
+-
+- 
+- 
+Attributes:
+METAPHOR_UseMaterialParameterSet: true
+METAPHOR_MaterialParameterSet: !MaterialParameterSetType2
+  BaseColor:
+    X: 1
+    Y: 1
+    Z: 1
+    W: 1
+  ShadowColor:
+    X: 0
+    Y: 0
+    Z: 0
+    W: 1
+  EdgeColor:
+    X: 1
+    Y: 1
+    Z: 1
+    W: 0
+  EmissiveColor:
+    X: 0
+    Y: 0
+    Z: 0
+    W: 1
+  SpecularColor:
+    X: 0.5364
+    Y: 0.54
+    Z: 0.3494
+  SpecularPower: 18.08318
+  Metallic: 0
+  EdgeThreshold: 0.1247672
+  EdgeFactor: 22.90503
+  ShadowThreshold: 0
+  ShadowFactor: 50
+  Flags: FLAG10
+  P2_12: 1.5
+  P2_13:
+    X: 0
+    Y: 0
+    Z: 0
+  MatBloomIntensity: 0.2
+  SpecularThreshold: 0.08137432
+  EdgeRemoveYAxisFactor: 3
+  P2_17: 0.4
+  P2_18: -0.1
+  P2_19: 0.3
+  P2_20: 0.1
+  MatRoughness: 0
+  FittingTile: 1
+  MultiFittingTile: 1
+  ResourceType: MaterialParameterSetType2_3_13
+  Version: 34669089
+Field6C_2: 1
+MatFlags0: 0
+MatFlags1: 0
+MatFlags2: 0
+IsPresetMaterial: false
+Version: 34669089

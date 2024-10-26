@@ -15,11 +15,11 @@ namespace GFDLibrary.Rendering.OpenGL
 
         public GLVertexArray VertexArray { get; }
 
-        public GLMaterial Material { get; }
+        public GLBaseMaterial Material { get; }
 
         public bool IsVisible { get; }
 
-        public GLMesh( GLVertexArray vertexArray, GLMaterial material, bool isVisible )
+        public GLMesh( GLVertexArray vertexArray, GLBaseMaterial material, bool isVisible )
         {
             Mesh = null;
             VertexArray = vertexArray;
@@ -27,7 +27,7 @@ namespace GFDLibrary.Rendering.OpenGL
             IsVisible = isVisible;
         }
 
-        public GLMesh( Mesh mesh, Matrix4x4 modelMatrix, List<Bone> bones, List<GLNode> nodes, Dictionary<string, GLMaterial> materials )
+        public GLMesh( Mesh mesh, Matrix4x4 modelMatrix, List<Bone> bones, List<GLNode> nodes, Dictionary<string, GLBaseMaterial> materials )
         {
             Mesh = mesh;
 
@@ -92,12 +92,12 @@ namespace GFDLibrary.Rendering.OpenGL
                 else
                 {
                     Trace.TraceError( $"Mesh referenced material \"{mesh.MaterialName}\" which does not exist in the model" );
-                    Material = new GLMaterial();
+                    Material = new GLP5Material();
                 }
             }
             else
             {
-                Material = new GLMaterial();
+                Material = new GLP5Material();
             }
 
             IsVisible = true;
@@ -117,6 +117,8 @@ namespace GFDLibrary.Rendering.OpenGL
 
         public void Draw( Matrix4 modelMatrix, GLShaderProgram shaderProgram )
         {
+            //if ( Material.METAPHOR_DistortionMaterialTest )
+            //    return;
             shaderProgram.SetUniform( "uModel", modelMatrix);
             Material.Bind( shaderProgram );
             shaderProgram.Check();

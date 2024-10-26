@@ -106,7 +106,6 @@ namespace GFDLibrary.Lights
             }
             if ( Version > 0x2110191 )
                 Field98 = reader.ReadSingle();
-            Field9C = 1;
             if ( Version >= 0x2110203 )
                 Field9C = reader.ReadSingle();
         }

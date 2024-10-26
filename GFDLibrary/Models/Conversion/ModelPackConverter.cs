@@ -52,47 +52,48 @@ namespace GFDLibrary.Models.Conversion
             // Convert all textures
             TextureInfo diffuseTexture = null;
             if ( aiMaterial.HasTextureDiffuse )
-                diffuseTexture = ConvertTexture( aiMaterial.TextureDiffuse, baseDirectoryPath );
+                diffuseTexture = ConvertTexture( aiMaterial.TextureDiffuse, options, baseDirectoryPath );
 
             TextureInfo lightmapTexture = null;
             if ( aiMaterial.HasTextureLightMap )
-                lightmapTexture = ConvertTexture( aiMaterial.TextureLightMap, baseDirectoryPath );
+                lightmapTexture = ConvertTexture( aiMaterial.TextureLightMap, options, baseDirectoryPath );
 
             TextureInfo displacementTexture = null;
             if ( aiMaterial.HasTextureDisplacement )
-                displacementTexture = ConvertTexture( aiMaterial.TextureDisplacement, baseDirectoryPath );
+                displacementTexture = ConvertTexture( aiMaterial.TextureDisplacement, options, baseDirectoryPath );
 
             TextureInfo opacityTexture = null;
             if ( aiMaterial.HasTextureOpacity )
-                opacityTexture = ConvertTexture( aiMaterial.TextureOpacity, baseDirectoryPath );
+                opacityTexture = ConvertTexture( aiMaterial.TextureOpacity, options, baseDirectoryPath );
 
             TextureInfo normalTexture = null;
             if ( aiMaterial.HasTextureNormal )
-                normalTexture = ConvertTexture( aiMaterial.TextureNormal, baseDirectoryPath );
+                normalTexture = ConvertTexture( aiMaterial.TextureNormal, options, baseDirectoryPath );
 
             TextureInfo heightTexture = null;
             if ( aiMaterial.HasTextureHeight )
-                heightTexture = ConvertTexture( aiMaterial.TextureHeight, baseDirectoryPath );
+                heightTexture = ConvertTexture( aiMaterial.TextureHeight, options, baseDirectoryPath );
 
             TextureInfo emissiveTexture = null;
             if ( aiMaterial.HasTextureEmissive )
-                emissiveTexture = ConvertTexture( aiMaterial.TextureEmissive, baseDirectoryPath );
+                emissiveTexture = ConvertTexture( aiMaterial.TextureEmissive, options, baseDirectoryPath );
 
             TextureInfo ambientTexture = null;
             if ( aiMaterial.HasTextureAmbient )
-                ambientTexture = ConvertTexture( aiMaterial.TextureAmbient, baseDirectoryPath );
+                ambientTexture = ConvertTexture( aiMaterial.TextureAmbient, options, baseDirectoryPath );
 
             TextureInfo specularTexture = null;
             if ( aiMaterial.HasTextureSpecular )
-                specularTexture = ConvertTexture( aiMaterial.TextureSpecular, baseDirectoryPath );
+                specularTexture = ConvertTexture( aiMaterial.TextureSpecular, options, baseDirectoryPath );
 
             TextureInfo reflectionTexture = null;
             if ( aiMaterial.HasTextureReflection )
-                reflectionTexture = ConvertTexture( aiMaterial.TextureReflection, baseDirectoryPath );
+                reflectionTexture = ConvertTexture( aiMaterial.TextureReflection, options, baseDirectoryPath );
 
             // Convert material
             string materialName = AssimpConverterCommon.UnescapeName( aiMaterial.Name );
             Material material = new Material( materialName );
+            //if ( options.Version >= 0x02000000 )
 
             if ( diffuseTexture != null )
             {
@@ -103,7 +104,7 @@ namespace GFDLibrary.Models.Conversion
             return material;
         }
 
-        private static TextureInfo ConvertTexture( Ai.TextureSlot aiTextureSlot, string baseDirectoryPath )
+        private static TextureInfo ConvertTexture( Ai.TextureSlot aiTextureSlot, ModelPackConverterOptions options, string baseDirectoryPath )
         {
             var relativeFilePath = aiTextureSlot.FilePath;
             var fullFilePath = Path.GetFullPath( Path.Combine( baseDirectoryPath, relativeFilePath ) );
@@ -124,6 +125,8 @@ namespace GFDLibrary.Models.Conversion
                 var bitmap = new Bitmap( fullFilePath );
                 texture = TextureEncoder.Encode( textureName, TextureFormat.DDS, bitmap );
             }
+            if ( options.Version == ResourceVersion.MetaphorRefantazio)
+                texture.IsTexSourceExternal = true;
 
             return TextureInfo.GetTextureInfo( texture );
         }
@@ -169,7 +172,8 @@ namespace GFDLibrary.Models.Conversion
         public ModelPackConverterOptions()
         {
             // MaterialPreset = MaterialPreset.CharacterSkinP5;
-            Version = ResourceVersion.Persona5;
+            //Version = ResourceVersion.Persona5;
+            Version = ResourceVersion.MetaphorRefantazio;
             ConvertSkinToZUp = false;
             GenerateVertexColors = false;
             MinimalVertexAttributes = true;

@@ -133,7 +133,7 @@ namespace GFDLibrary.Animations
             Duration = reader.ReadSingle();
 
             var controllerCount = reader.ReadInt32();
-            if (Version > 0x01105100 || IsCatherineFullBodyData)
+            if (IsCatherineFullBodyData || Version >= 0x2000000 )
             {
                 mUnknown1 = reader.ReadInt32(); // TODO
                 mUnknown2 = reader.ReadInt32(); // TODO: no idea what this is
@@ -178,7 +178,7 @@ namespace GFDLibrary.Animations
                 Field1C = new AnimationBit31Data
                 {
                     Field00 = reader.ReadInt32(),
-                    Field04 = reader.ReadStringWithHash( Version, true ),
+                    Field04 = reader.ReadStringWithHash( Version, Version < 0x2000000 ),
                     Field20 = reader.ReadResource<AnimationLayer>( Version )
                 };
             }
@@ -201,9 +201,9 @@ namespace GFDLibrary.Animations
             writer.WriteSingle( Duration );
             writer.WriteInt32( Controllers.Count );
 
-            if (IsCatherineFullBodyData)
+            if ( IsCatherineFullBodyData || Version >= 0x2000000 )
             {
-                writer.WriteInt32( Controllers.Count );
+                writer.WriteInt32( mUnknown1 );
                 writer.WriteInt32( mUnknown2 ); 
             }
 
@@ -216,7 +216,7 @@ namespace GFDLibrary.Animations
                 foreach ( var entry in Field10 )
                 {
                     writer.WriteResource( entry.Field00 );
-                    writer.WriteStringWithHash( Version, entry.Field04, true );
+                    writer.WriteStringWithHash( Version, entry.Field04, Version < 0x2000000 );
                 }
             }
 
@@ -226,7 +226,7 @@ namespace GFDLibrary.Animations
             if ( Flags.HasFlag( AnimationFlags.Bit31 ) )
             {
                 writer.WriteInt32( Field1C.Field00 );
-                writer.WriteStringWithHash( Version, Field1C.Field04, true );
+                writer.WriteStringWithHash( Version, Field1C.Field04, Version < 0x2000000 );
                 writer.WriteResource( Field1C.Field20 );
             }
 

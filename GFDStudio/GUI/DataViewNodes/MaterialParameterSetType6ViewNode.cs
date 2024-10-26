@@ -1,7 +1,8 @@
 ﻿using GFDLibrary.Materials;
+using GFDStudio.GUI.TypeConverters;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Numerics;
-using static GFDLibrary.Materials.MaterialParameterSetType6;
 
 namespace GFDStudio.GUI.DataViewNodes
 {
@@ -9,6 +10,7 @@ namespace GFDStudio.GUI.DataViewNodes
     {
         public MaterialParameterSetType6ViewNode( string text, MaterialParameterSetType6 data ) : base( text, data )
         {
+            Layers = new();
         }
         public ListViewNode<MaterialParameterSetType6Field0ViewNode> P6_0 { get; set; }
 
@@ -28,37 +30,49 @@ namespace GFDStudio.GUI.DataViewNodes
             get => GetDataProperty<float>(); 
             set => SetDataProperty(value); 
         } // 0xdc
-        public uint P6_5 { 
-            get => GetDataProperty<uint>(); 
+        [TypeConverter( typeof( EnumTypeConverter<MaterialParameterSetType6.Type6Flags> ) )]
+        public MaterialParameterSetType6.Type6Flags Flags { 
+            get => GetDataProperty<MaterialParameterSetType6.Type6Flags>(); 
             set => SetDataProperty(value); 
         } // 0xe0
 
+        [Browsable( false )]
+        public List<DataViewNode> Layers { get; set; }
+
         public override DataViewNodeMenuFlags ContextMenuFlags => 0;
-        public override DataViewNodeFlags NodeFlags => DataViewNodeFlags.Leaf;
+        public override DataViewNodeFlags NodeFlags => DataViewNodeFlags.Branch;
 
         protected override void InitializeCore()
         {
 
         }
 
-        private List<MaterialParameterSetType6_Field0> GetType6Field0Nodes()
-             => new List<MaterialParameterSetType6_Field0>() { Data.P6_0[0], Data.P6_0[1] };
-
         protected override void InitializeViewCore()
         {
-            //(DataViewNode<List<MaterialParameterSetType6_Field0>>)DataViewNodeFactory.Create( "Field0", GetType6Field0Nodes() );
+            Layers.Clear();
+            for ( int i = 0; i < Data.P6_0.Length; i++)
+                Layers.Add( DataViewNodeFactory.Create( $"Layer {i}", Data.P6_0[i] ) );
+            foreach (var layer in Layers)
+                AddChildNode( layer );
         }
     }
 
-    public class MaterialParameterSetType6Field0ViewNode : DataViewNode<List<MaterialParameterSetType6_Field0>>
+    public class MaterialParameterSetType6Field0ViewNode : DataViewNode<MaterialParameterSetType6.MaterialParameterSetType6_Field0>
     {
-        public MaterialParameterSetType6Field0ViewNode( string text, List<MaterialParameterSetType6_Field0> data ) : base( text, data )
-        {
-        }
+        public MaterialParameterSetType6Field0ViewNode( string text, MaterialParameterSetType6.MaterialParameterSetType6_Field0 data ) : base( text, data ) {}
 
-        public Vector4 Field0 { 
-            get => GetDataProperty<Vector4>(); 
-            set => SetDataProperty(value); 
+        [TypeConverter( typeof( Vector4TypeConverter ) )]
+        [DisplayName( "Base Color (float)" )]
+        public Vector4 Field0
+        {
+            get => GetDataProperty<Vector4>();
+            set => SetDataProperty( value );
+        } // 0x90
+        [DisplayName( "Base Color (RGBA)" )]
+        public System.Drawing.Color Field0_RGBA
+        {
+            get => Field0.ToByte();
+            set => Field0 = value.ToFloat();
         }
         public float Field1 { 
             get => GetDataProperty<float>(); 

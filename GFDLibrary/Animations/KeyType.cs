@@ -37,6 +37,7 @@
         NodeRHalf,
         NodeSHalf,
         NodePSHalf,
-        NodeRSHalf
+        NodeRSHalf,
+        Type36_P5R
     }
 }

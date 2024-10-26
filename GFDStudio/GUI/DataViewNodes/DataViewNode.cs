@@ -289,10 +289,11 @@ namespace GFDStudio.GUI.DataViewNodes
 
                 if ( retainColorValues.Checked )
                 {
-                    ReplacementMat.AmbientColor = OriginalMat.AmbientColor;
-                    ReplacementMat.DiffuseColor = OriginalMat.DiffuseColor;
-                    ReplacementMat.SpecularColor = OriginalMat.SpecularColor;
-                    ReplacementMat.EmissiveColor = OriginalMat.EmissiveColor;
+                    // TODO: Fix for Metaphor!
+                    ReplacementMat.LegacyParameters.AmbientColor = OriginalMat.LegacyParameters.AmbientColor;
+                    ReplacementMat.LegacyParameters.DiffuseColor = OriginalMat.LegacyParameters.DiffuseColor;
+                    ReplacementMat.LegacyParameters.SpecularColor = OriginalMat.LegacyParameters.SpecularColor;
+                    ReplacementMat.LegacyParameters.EmissiveColor = OriginalMat.LegacyParameters.EmissiveColor;
                 }
 
                 replacement = ReplacementMat;

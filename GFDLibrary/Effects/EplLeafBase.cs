@@ -61,6 +61,11 @@ namespace GFDLibrary.Effects
         protected override void WriteCore( ResourceWriter writer )
         {
             //     SetRandomBackColor();
+            if ( Version > 0x2110060 )
+            {
+                writer.WriteVector2( Field34 );
+                writer.WriteVector2( Field3C );
+            }
             writer.WriteInt32( (int)Flags );
             writer.WriteStringWithHash( Version, Name );
             writer.WriteResource( Data );
@@ -73,6 +78,7 @@ namespace GFDLibrary.Effects
 
         public uint Type { get; set; }
         public uint Field04 { get; set; }
+        //public ushort Field06 { get; set; }
 
         public EplLeafDataHeader() { }
         public EplLeafDataHeader( uint Version ) : base( Version ) { }
@@ -81,19 +87,23 @@ namespace GFDLibrary.Effects
         protected override void ReadCore( ResourceReader reader )
         {
             Type = reader.ReadUInt32();
+            Field04 = reader.ReadUInt32();
+            /*
             if ( Version < 0x2000002 )
                 Field04 = reader.ReadUInt32();
             else
             {
                 Field04 = reader.ReadUInt16();
-                reader.ReadUInt16();
+                Field06 = reader.ReadUInt16();
             }
+            */
         }
 
         protected override void WriteCore( ResourceWriter writer )
         {
             writer.WriteUInt32( Type );
             writer.WriteUInt32( Field04 );
+            //writer.WriteUInt16( Field06 );
         }
     }
 
@@ -349,6 +359,8 @@ namespace GFDLibrary.Effects
             }
             writer.WriteVector4( Field14_ );
             writer.WriteBytes( Field24 );
+            if ( Version > 0x2110186 )
+                writer.WriteUInt16( Field62 );
         }
     }
 
