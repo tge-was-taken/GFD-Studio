@@ -781,6 +781,32 @@ namespace GFDLibrary.Models
                 writer.WriteSingle( FieldD8 );
             }
         }
+
+        public static VertexAttributeFlags GetColorFlagById( int i )
+        => i switch
+        {
+            0 => VertexAttributeFlags.Color0,
+            1 => VertexAttributeFlags.Color1,
+            2 => VertexAttributeFlags.Color2,
+            _ => 0
+        };
+
+        public void SetColorChannelById( ref int curr, uint[] color )
+        {
+            switch ( curr )
+            {
+                case 0:
+                    ColorChannel0 = color;
+                    break;
+                case 1:
+                    ColorChannel1 = color;
+                    break;
+                case 2:
+                    ColorChannel2 = color;
+                    break;
+            }
+            curr++;
+        }
     }
 
     public enum TriangleIndexFormat

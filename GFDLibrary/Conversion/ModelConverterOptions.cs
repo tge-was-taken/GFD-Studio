@@ -25,8 +25,18 @@ public class ModelConverterOptions
     public bool MinimalVertexAttributes { get; set; }
 
     public bool SetFullBodyNodeProperties { get; set; }
-
+    /// <summary>
+    /// Automatically add appropriate user properties for a given node by name (helper IDs in P5, named user properties in Metaphor)
+    /// </summary>
     public bool AutoAddGFDHelperIDs { get; set; }
+    /// <summary>
+    /// METAPHOR: Import all geometry as an attachment of a matching node. Used in character meshes.
+    /// </summary>
+    public string CombinedMeshNodeName { get; set; }
+    /// <summary>
+    /// Define the starting slot that vertex colors should be put in (always starts at 0 for Assimp and FBX SDK)
+    /// </summary>
+    public int VertexColorStartingSlot { get; set; }
 
     public ModelConverterOptions()
     {
@@ -35,5 +45,7 @@ public class ModelConverterOptions
         GenerateVertexColors = false;
         MinimalVertexAttributes = true;
         SetFullBodyNodeProperties = false;
+        CombinedMeshNodeName = null;
+        VertexColorStartingSlot = 0;
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
 using System.Drawing.Text;
 using System.Linq;
@@ -476,15 +477,21 @@ namespace GFDLibrary.Conversion.AssimpNet
                     var aiMesh = aiScene.Meshes[aiMeshIndex];
                     var aiMaterial = aiScene.Materials[aiMesh.MaterialIndex];
                     var geometry = ConvertAssimpMeshToGeometry( aiMesh, aiMaterial, nodeLookup, ref nextBoneIndex, nodeToBoneIndices, boneInverseBindMatrices, ref nodeWorldTransform, ref nodeInverseWorldTransform, transformedVertices, options );
-
-                    if ( !nodeInfo.IsMeshAttachment )
+                    if ( options.CombinedMeshNodeName != null)
                     {
-                        node.Attachments.Add( new NodeMeshAttachment( geometry ) );
-                    }
-                    else
-                    {
-                        node.Parent.Attachments.Add( new NodeMeshAttachment( geometry ) );
+                        nodeLookup[options.CombinedMeshNodeName].Node.Attachments.Add( new NodeMeshAttachment( geometry ) );
                         node.Parent.RemoveChildNode( node );
+                    } else
+                    {
+                        if ( !nodeInfo.IsMeshAttachment )
+                        {
+                            node.Attachments.Add( new NodeMeshAttachment( geometry ) );
+                        }
+                        else
+                        {
+                            node.Parent.Attachments.Add( new NodeMeshAttachment( geometry ) );
+                            node.Parent.RemoveChildNode( node );
+                        }
                     }
                 }
             }
@@ -549,24 +556,37 @@ namespace GFDLibrary.Conversion.AssimpNet
                                                    .ToArray();
             }
 
+            var currentColorChannel = options.VertexColorStartingSlot;
+
+            uint GetVertexColor(Ai.Color4D x)
+            {
+                var val = (uint)( (byte)( x.B * 255f ) | (byte)( x.G * 255f ) << 8 | (byte)( x.R * 255f ) << 16 | (byte)( x.A * 255f ) << 24 );
+                if (options.Version >= 0x2000000) { val = BinaryPrimitives.ReverseEndianness( val ); }
+                return val;
+            }
+
             if ( aiMesh.HasVertexColors( 0 ) && !options.MinimalVertexAttributes )
             {
-                geometry.ColorChannel0 = aiMesh.VertexColorChannels[0]
-                                               .Select( x => (uint)( (byte)( x.B * 255f ) | (byte)( x.G * 255f ) << 8 | (byte)( x.R * 255f ) << 16 | (byte)( x.A * 255f ) << 24 ) )
-                                               .ToArray();
+                //BinaryPrimitives.ReverseEndianness()
+                geometry.SetColorChannelById( ref currentColorChannel, 
+                    aiMesh.VertexColorChannels[0]
+                    .Select( x => GetVertexColor(x) )
+                    .ToArray() );
             }
             else if ( options.GenerateVertexColors )
             {
-                geometry.ColorChannel0 = new uint[geometry.VertexCount];
-                for ( int i = 0; i < geometry.ColorChannel0.Length; i++ )
-                    geometry.ColorChannel0[i] = 0xFFFFFFFF;
+                var dummyColors = new uint[geometry.VertexCount];
+                for ( int i = 0; i < geometry.ColorChannels[currentColorChannel].Length; i++ )
+                    dummyColors[i] = 0xFFFFFFFF;
+                geometry.SetColorChannelById( ref currentColorChannel, dummyColors );
             }
 
-            if ( aiMesh.HasVertexColors( 1 ) && !options.MinimalVertexAttributes )
+            if ( aiMesh.HasVertexColors( 1 ) && !options.MinimalVertexAttributes && currentColorChannel <= 2 )
             {
-                geometry.ColorChannel1 = aiMesh.VertexColorChannels[1]
-                                               .Select( x => (uint)( (byte)( x.B * 255f ) | (byte)( x.G * 255f ) << 8 | (byte)( x.R * 255f ) << 16 | (byte)( x.A * 255f ) << 24 ) )
-                                               .ToArray();
+                geometry.SetColorChannelById( ref currentColorChannel,
+                    aiMesh.VertexColorChannels[1]
+                   .Select( x => GetVertexColor( x ) )
+                   .ToArray());
             }
 
             if ( aiMesh.HasFaces )

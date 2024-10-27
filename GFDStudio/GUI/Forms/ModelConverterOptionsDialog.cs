@@ -66,6 +66,16 @@ namespace GFDStudio.GUI.Forms
             get => AutoAddGFDHelperIDsCheckBox.Checked;
         }
 
+        public string CombinedMeshNodeName
+        {
+            get => CombinedMeshNodeNameTextbox.Text;
+        }
+
+        public int VertexColorStartingSlot
+        {
+            get => VertexColorSlotNumber.Value;
+        }
+
         private string[] CreateVersionPresets()
         {
             var PropVersions = typeof( ResourceVersion )
@@ -100,11 +110,11 @@ namespace GFDStudio.GUI.Forms
         private void RefreshVersionID( object sender, EventArgs e )
         {
             // Last index is Custom Version, so enable the option to enter a custom model version
-            if ( VersionComboBox.SelectedIndex == VersionPresets.Length - 1) VersionTextBox.Enabled = true;
+            if ( VersionComboBox.SelectedIndex == VersionPresets.Length - 1 ) VersionTextBox.Enabled = true;
             else SetResourceVersion( VersionPresets[VersionComboBox.SelectedIndex], false );
         }
 
-        private void SetResourceVersion(string ResourceFieldName, bool bEnableCustomVerNumber = false)
+        private void SetResourceVersion( string ResourceFieldName, bool bEnableCustomVerNumber = false )
         {
             uint NewResourceVersion = (uint)typeof( ResourceVersion ).GetField( ResourceFieldName ).GetValue( null );
             VersionTextBox.Text = $"0x{NewResourceVersion:X8}";

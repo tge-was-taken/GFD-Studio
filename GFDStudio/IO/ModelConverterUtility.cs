@@ -45,7 +45,9 @@ namespace GFDStudio.IO
                     ConvertSkinToZUp = dialog.ConvertSkinToZUp,
                     GenerateVertexColors = dialog.GenerateVertexColors,
                     MinimalVertexAttributes = dialog.MinimalVertexAttributes,
-                    AutoAddGFDHelperIDs = dialog.AutoAddGFDHelperIDs
+                    AutoAddGFDHelperIDs = dialog.AutoAddGFDHelperIDs,
+                    CombinedMeshNodeName = dialog.CombinedMeshNodeName,
+                    VertexColorStartingSlot = dialog.VertexColorStartingSlot
                 };
 
                 return AssimpNetModelPackConverter.ConvertFromAssimpScene( path, options );
