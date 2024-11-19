@@ -5,7 +5,6 @@ namespace GFDLibrary.Models
     public struct VertexWeight : IEquatable<VertexWeight>
     {
         public float[] Weights;
-        //public byte[] Indices;
         public ushort[] Indices;
 
         public VertexWeight( float[] weight, byte[] indices )

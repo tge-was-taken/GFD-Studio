@@ -342,7 +342,7 @@ namespace GFDLibrary.Models
                         {
                             ref var weight = ref geometry.VertexWeights[i];
                             weight.Indices = new ushort[4];
-                            weight.Indices[0] = ( byte )boneIndex;
+                            weight.Indices[0] = (ushort)boneIndex;
                             weight.Weights = new float[4];
                             weight.Weights[0] = 1f;
                         }
@@ -425,13 +425,12 @@ namespace GFDLibrary.Models
                             if ( newBoneIndex == -1 )
                             {
                                 // Add if unique
-                                Trace.Assert( uniqueBones.Count < 255 );
                                 uniqueBones.Add( new Bone( (ushort)thisNodeIndex, inverseBindMatrix ) );
                                 newBoneIndex = uniqueBones.Count - 1;
                             }
 
                             // Update bone index
-                            weight.Indices[ i ] = ( byte ) newBoneIndex;
+                            weight.Indices[ i ] = (ushort)newBoneIndex;
                         }
                     }
                 }
