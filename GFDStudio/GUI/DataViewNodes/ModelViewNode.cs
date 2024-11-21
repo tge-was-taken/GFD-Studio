@@ -59,12 +59,10 @@ namespace GFDStudio.GUI.DataViewNodes
                     if ( dialog.ShowDialog() != System.Windows.Forms.DialogResult.OK )
                         return Data;
 
-                    ModelConverterOptions options = new ModelConverterOptions()
+                    var options = new ModelConverterOptions()
                     {
                         Version = dialog.Version,
                         ConvertSkinToZUp = dialog.ConvertSkinToZUp,
-                        GenerateVertexColors = dialog.GenerateVertexColors,
-                        MinimalVertexAttributes = dialog.MinimalVertexAttributes,
                         AutoAddGFDHelperIDs = dialog.AutoAddGFDHelperIDs
                     };
 

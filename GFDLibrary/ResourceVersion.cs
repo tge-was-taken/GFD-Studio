@@ -1,4 +1,6 @@
-﻿namespace GFDLibrary
+﻿using Scarlet.IO.ImageFormats;
+
+namespace GFDLibrary
 {
     public static class ResourceVersion
     {
@@ -16,5 +18,10 @@
         public const uint Persona3DancingShaderCache        = 0x01087159;
         public const uint Persona5DancingShaderCache        = 0x01087159;
         public const uint MetaphorRefantazioDX11ShaderCache = 0x02000577;
+
+        public static bool IsV2(uint version)
+        {
+            return version >= 0x02000000;
+        }
     }
 }

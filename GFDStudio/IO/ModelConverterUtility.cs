@@ -45,8 +45,6 @@ namespace GFDStudio.IO
                     MaterialPreset = dialog.MaterialPreset,
                     Version = dialog.Version,
                     ConvertSkinToZUp = dialog.ConvertSkinToZUp,
-                    GenerateVertexColors = dialog.GenerateVertexColors,
-                    MinimalVertexAttributes = dialog.MinimalVertexAttributes,
                     AutoAddGFDHelperIDs = dialog.AutoAddGFDHelperIDs
                 };
                 if (originalModel.Materials?.Count > 0)

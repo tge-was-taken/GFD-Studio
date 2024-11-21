@@ -8,7 +8,7 @@ public class ModelConverterOptions
     /// <summary>
     /// Gets or sets the version to use for the converted resources.
     /// </summary>
-    public uint Version { get; set; }
+    public uint Version { get; set; } = ResourceVersion.Persona5;
 
     public object MaterialPreset { get; set; }
 
@@ -17,31 +17,42 @@ public class ModelConverterOptions
     /// </summary>
     public bool ConvertSkinToZUp { get; set; }
 
-    /// <summary>
-    /// Gets or sets whether to generate dummy (white) vertex colors if they're not already present. Some material shaders rely on vertex colors being present, and the lack of them will cause graphics corruption.
-    /// </summary>
-    public bool GenerateVertexColors { get; set; }
-
-    /// <summary>
-    /// Gets or sets whether to generate dummy (white) vertex colors if they're not already present. Some material shaders rely on vertex colors being present, and the lack of them will cause graphics corruption.
-    /// </summary>
-    public bool MinimalVertexAttributes { get; set; }
-
     public bool SetFullBodyNodeProperties { get; set; }
 
-    public bool AutoAddGFDHelperIDs { get; set; }
+    public bool AutoAddGFDHelperIDs { get; set; } = true;
 
-    public Dictionary<string, ModelConverterGeometryOptions> GeometryOptionsByMaterial { get; set; }
-
-    public ModelConverterOptions()
+    public ModelConverterGeometryOptions GeometryOptions { get; } = new()
     {
-        Version = ResourceVersion.Persona5;
-        ConvertSkinToZUp = false;
-        GenerateVertexColors = false;
-        MinimalVertexAttributes = true;
-        SetFullBodyNodeProperties = false;
-        GeometryOptionsByMaterial = new();
-    }
+        GeometryFlags = GeometryFlags.Bit7,
+        VertexAttributeFlags = VertexAttributeFlags.Position | VertexAttributeFlags.Normal | VertexAttributeFlags.TexCoord0
+    };
+
+    public Dictionary<string, ModelConverterGeometryOptions> GeometryOptionsByMaterial { get; set; } = new();
+
+    public ModelConverterTexCoordChannelOptions[] TexCoordChannelMap { get; } = new ModelConverterTexCoordChannelOptions[]
+    {
+        new() { SourceChannel = 0 },
+        new() { SourceChannel = 1 },
+        new() { SourceChannel = 2 },
+    };
+    public ModelConverterColorChannelOptions[] ColorChannelMap { get; } = new ModelConverterColorChannelOptions[]
+    {
+        new() { SourceChannel = 0 },
+        new() { SourceChannel = 1 },
+        new() { SourceChannel = 2 },
+    };
+}
+
+public class ModelConverterTexCoordChannelOptions
+{
+    public int SourceChannel { get; set; }
+}
+
+public class ModelConverterColorChannelOptions
+{
+    public int SourceChannel { get; set; }
+    public bool UseDefaultColor { get; set; } = true;
+    public uint DefaultColor { get; set; } = uint.MaxValue;
 }
 
 public class ModelConverterGeometryOptions
