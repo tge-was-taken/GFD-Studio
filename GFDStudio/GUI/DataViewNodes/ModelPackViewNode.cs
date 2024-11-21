@@ -101,7 +101,7 @@ namespace GFDStudio.GUI.DataViewNodes
             });
             RegisterReplaceHandler< AssimpScene >( path =>
             {
-                var model = ModelConverterUtility.ConvertAssimpModel( path );
+                var model = ModelConverterUtility.ConvertAssimpModel( path, Data );
                 if ( model != null )
                     Data.ReplaceWith( model );
 

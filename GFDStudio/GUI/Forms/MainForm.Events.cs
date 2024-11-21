@@ -161,7 +161,7 @@ namespace GFDStudio.GUI.Forms
 
         private void HandleNewModelToolStripMenuItemClick( object sender, EventArgs e )
         {
-            var model = ModelConverterUtility.ConvertAssimpModel();
+            var model = ModelConverterUtility.ConvertAssimpModel(null);
             if ( model != null )
             {
                 var node = DataViewNodeFactory.Create( "Model", model );

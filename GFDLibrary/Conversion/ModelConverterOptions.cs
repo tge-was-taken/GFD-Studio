@@ -1,4 +1,7 @@
-﻿namespace GFDLibrary.Conversion;
+﻿using GFDLibrary.Models;
+using System.Collections.Generic;
+
+namespace GFDLibrary.Conversion;
 
 public class ModelConverterOptions
 {
@@ -28,6 +31,8 @@ public class ModelConverterOptions
 
     public bool AutoAddGFDHelperIDs { get; set; }
 
+    public Dictionary<string, ModelConverterGeometryOptions> GeometryOptionsByMaterial { get; set; }
+
     public ModelConverterOptions()
     {
         Version = ResourceVersion.Persona5;
@@ -35,5 +40,12 @@ public class ModelConverterOptions
         GenerateVertexColors = false;
         MinimalVertexAttributes = true;
         SetFullBodyNodeProperties = false;
+        GeometryOptionsByMaterial = new();
     }
+}
+
+public class ModelConverterGeometryOptions
+{
+    public GeometryFlags GeometryFlags { get; set; }
+    public VertexAttributeFlags VertexAttributeFlags { get; set; }
 }
