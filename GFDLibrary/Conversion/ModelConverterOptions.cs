@@ -1,4 +1,5 @@
-﻿using GFDLibrary.Models;
+﻿using GFDLibrary.Graphics;
+using GFDLibrary.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -99,6 +100,13 @@ public class ModelConverterColorChannelOptions
     public int SourceChannel { get; set; }
     public bool UseDefaultColor { get; set; } = true;
     public Graphics.Color DefaultColor { get; set; } = Graphics.Color.Black;
+    public ColorSwizzle Swizzle { get; set; } = new()
+    {
+        Red = ColorChannel.Red,
+        Green = ColorChannel.Green,
+        Blue = ColorChannel.Blue,
+        Alpha = ColorChannel.Alpha,
+    };
 }
 
 public class ModelConverterGeometryOptions

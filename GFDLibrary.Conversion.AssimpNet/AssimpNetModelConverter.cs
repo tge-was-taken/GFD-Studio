@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using GFDLibrary.Cameras;
 using GFDLibrary.Common;
 using GFDLibrary.Conversion.AssimpNet.Utilities;
+using GFDLibrary.Graphics;
 using GFDLibrary.Lights;
 using GFDLibrary.Models;
 using GFDLibrary.Utilities;
@@ -585,105 +586,96 @@ namespace GFDLibrary.Conversion.AssimpNet
                 }
             }
 
-            var useTexCoord0 = geometryOptions.VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord0 );
-            if ( useTexCoord0 )
+            var texCoordFlags = new[] { VertexAttributeFlags.TexCoord0, VertexAttributeFlags.TexCoord1, VertexAttributeFlags.TexCoord2 };
+            for ( int channel = 0; channel < 3; channel++ )
             {
-                var srcTexCoordChannel = options.TexCoordChannelMap[0].SourceChannel;
-                if ( aiMesh.HasTextureCoords( srcTexCoordChannel ) )
+                var useTexCoord = geometryOptions.VertexAttributeFlags.HasFlag( texCoordFlags[channel] );
+                if ( !useTexCoord ) continue;
+
+                var channelOptions = options.TexCoordChannelMap[channel];
+                Vector2[] texCoords;
+                if ( aiMesh.HasTextureCoords( channelOptions.SourceChannel ) )
                 {
-                    geometry.TexCoordsChannel0 = aiMesh.TextureCoordinateChannels[srcTexCoordChannel]
-                                                       .Select( x => new Vector2( x.X, x.Y ) )
-                                                       .ToArray();
+                    texCoords = aiMesh.TextureCoordinateChannels[channelOptions.SourceChannel]
+                                          .Select( x => new Vector2( x.X, x.Y ) )
+                                          .ToArray();
                 }
                 else
                 {
-                    // TODO
+                    texCoords = new Vector2[aiMesh.VertexCount];
+                }
+
+                switch ( channel )
+                {
+                    case 0:
+                        geometry.TexCoordsChannel0 = texCoords;
+                        break;
+                    case 1:
+                        geometry.TexCoordsChannel1 = texCoords;
+                        break;
+                    default:
+                        geometry.TexCoordsChannel2 = texCoords;
+                        break;
                 }
             }
 
-            var useTexCoord1 = geometryOptions.VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord1 );
-            if ( useTexCoord1 )
+            var colorFlags = new[]
             {
-                var srcTexCoordChannel = options.TexCoordChannelMap[1].SourceChannel;
-                if ( aiMesh.HasTextureCoords( srcTexCoordChannel ) )
-                {
-                    geometry.TexCoordsChannel1 = aiMesh.TextureCoordinateChannels[srcTexCoordChannel]
-                                                       .Select( x => new Vector2( x.X, x.Y ) )
-                                                       .ToArray();
-                }
-                else
-                {
-                    // TODO
-                }
-            }
+                VertexAttributeFlags.Color0,
+                VertexAttributeFlags.Color1,
+                VertexAttributeFlags.Color2
+            };
 
-            var useTexCoord2 = geometryOptions.VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord2 );
-            if ( useTexCoord2 )
-            {
-                var srcTexCoordChannel = options.TexCoordChannelMap[2].SourceChannel;
-                if ( aiMesh.HasTextureCoords( srcTexCoordChannel ) )
-                {
-                    geometry.TexCoordsChannel2 = aiMesh.TextureCoordinateChannels[srcTexCoordChannel]
-                                                       .Select( x => new Vector2( x.X, x.Y ) )
-                                                       .ToArray();
-                }
-                else
-                {
-                    // TODO
-                }
-            }
+            // If only one color channel is active, we might use the first available source channel if the required source channel is not present
+            var activeColorChannels = colorFlags.Where( flag => geometryOptions.VertexAttributeFlags.HasFlag( flag ) );
+            var useFirstAvailableSourceChannelAsFallback = activeColorChannels.Count() == 1;
 
-            var useColor0 = geometryOptions.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color0 );
-            if ( useColor0 )
+            for ( int i = 0; i < 3; i++ )
             {
-                var channelOptions = options.ColorChannelMap[0];
-                if ( aiMesh.HasVertexColors( channelOptions.SourceChannel ) )
+                if ( geometryOptions.VertexAttributeFlags.HasFlag( colorFlags[i] ) )
                 {
-                    geometry.ColorChannel0 = aiMesh.VertexColorChannels[channelOptions.SourceChannel]
-                                                   .Select( x => new GFDLibrary.Graphics.Color( x.R, x.G, x.B, x.A ) )
-                                                   .ToArray();
-                }
-                else if ( channelOptions.UseDefaultColor )
-                {
-                    geometry.ColorChannel0 = new Graphics.Color[geometry.VertexCount];
-                    for ( int i = 0; i < geometry.ColorChannel0.Length; i++ )
-                        geometry.ColorChannel0[i] = channelOptions.DefaultColor;
-                }
-            }
+                    var channelOptions = options.ColorChannelMap[i];
+                    Graphics.Color[] colorChannel = null;
 
-            var useColor1 = geometryOptions.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color1 );
-            if ( useColor1 )
-            {
-                var channelOptions = options.ColorChannelMap[1];
-                if ( aiMesh.HasVertexColors( channelOptions.SourceChannel ) )
-                {
-                    geometry.ColorChannel1 = aiMesh.VertexColorChannels[channelOptions.SourceChannel]
-                                                   .Select( x => new GFDLibrary.Graphics.Color( x.R, x.G, x.B, x.A ) )
-                                                   .ToArray();
-                }
-                else if ( channelOptions.UseDefaultColor )
-                {
-                    geometry.ColorChannel1 = new Graphics.Color[geometry.VertexCount];
-                    for ( int i = 0; i < geometry.ColorChannel1.Length; i++ )
-                        geometry.ColorChannel1[i] = channelOptions.DefaultColor;
-                }
-            }
+                    if ( aiMesh.HasVertexColors( channelOptions.SourceChannel ) )
+                    {
+                        colorChannel = aiMesh.VertexColorChannels[channelOptions.SourceChannel]
+                                             .Select( x => SwizzleColor( x, channelOptions.Swizzle ) )
+                                             .ToArray();
+                    }
+                    else if ( useFirstAvailableSourceChannelAsFallback )
+                    {
+                        // Try to find the first available source channel
+                        var firstAvailableChannel = Enumerable.Range( 0, aiMesh.VertexColorChannelCount )
+                                                              .FirstOrDefault( ch => aiMesh.HasVertexColors( ch ) );
+                        if ( firstAvailableChannel != -1 )
+                        {
+                            colorChannel = aiMesh.VertexColorChannels[firstAvailableChannel]
+                                                 .Select( x => SwizzleColor( x, channelOptions.Swizzle ) )
+                                                 .ToArray();
+                        }
+                    }
 
-            var useColor2 = geometryOptions.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color2 );
-            if ( useColor2 )
-            {
-                var channelOptions = options.ColorChannelMap[2];
-                if ( aiMesh.HasVertexColors( channelOptions.SourceChannel ) )
-                {
-                    geometry.ColorChannel2 = aiMesh.VertexColorChannels[channelOptions.SourceChannel]
-                                                   .Select( x => new GFDLibrary.Graphics.Color( x.R, x.G, x.B, x.A ) )
-                                                   .ToArray();
-                }
-                else if (channelOptions.UseDefaultColor)
-                {
-                    geometry.ColorChannel2 = new Graphics.Color[geometry.VertexCount];
-                    for ( int i = 0; i < geometry.ColorChannel2.Length; i++ )
-                        geometry.ColorChannel2[i] = channelOptions.DefaultColor;
+                    // If still no color channel, use default color if specified
+                    if ( colorChannel == null && channelOptions.UseDefaultColor )
+                    {
+                        colorChannel = new Graphics.Color[geometry.VertexCount];
+                        for ( int j = 0; j < colorChannel.Length; j++ )
+                            colorChannel[j] = channelOptions.DefaultColor;
+                    }
+
+                    switch ( i )
+                    {
+                        case 0:
+                            geometry.ColorChannel0 = colorChannel;
+                            break;
+                        case 1:
+                            geometry.ColorChannel1 = colorChannel;
+                            break;
+                        case 2:
+                            geometry.ColorChannel2 = colorChannel;
+                            break;
+                    }
                 }
             }
 
@@ -781,6 +773,17 @@ namespace GFDLibrary.Conversion.AssimpNet
             }
 
             return geometry;
+        }
+
+        private static GFDLibrary.Graphics.Color SwizzleColor( Ai.Color4D sourceColor, ColorSwizzle swizzle )
+        {
+            float[] channels = new float[4] { sourceColor.R, sourceColor.G, sourceColor.B, sourceColor.A };
+            return new GFDLibrary.Graphics.Color(
+                channels[(int)swizzle.Red],
+                channels[(int)swizzle.Green],
+                channels[(int)swizzle.Blue],
+                channels[(int)swizzle.Alpha]
+            );
         }
 
         private static List<Bone> BuildBonePalette( List<Matrix4x4> boneInverseBindMatrices, Dictionary<int, List<int>> nodeToBoneIndices )
