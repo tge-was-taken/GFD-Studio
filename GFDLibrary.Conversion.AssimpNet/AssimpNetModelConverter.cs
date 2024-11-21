@@ -101,13 +101,24 @@ namespace GFDLibrary.Conversion.AssimpNet
                    NearlyEquals( left.D1, right.D1 ) && NearlyEquals( left.D2, right.D2 ) && NearlyEquals( left.D3, right.D3 ) && NearlyEquals( left.D4, right.D4 );
         }
 
-        private static bool IsMeshAttachmentNode( Ai.Node node )
+        private static bool IsLegacyMeshAttachmentNode( Ai.Node node )
         {
             bool isMeshAttachmentNode = node.Parent != null &&                                                          // definitely not a mesh attachment if it doesnt have a parent -> RootNode
                                         node.Parent.Name != "RootNode" &&                                               // probably not a mesh attachment if its part of the scene root
+                                        AssimpConverterCommon.LegacyMeshAttachmentNameRegex.IsMatch( node.Name ) &&     // match name regex
+                                        NearlyEquals( node.Transform, Ai.Matrix4x4.Identity );                          // transform must be identity
+            return isMeshAttachmentNode;
+        }
+
+        private static bool IsMeshAttachmentNode( Ai.Node node )
+        {
+            if ( IsLegacyMeshAttachmentNode( node ) )
+                return true;
+
+            bool isMeshAttachmentNode = node.Parent != null &&                                                          // mesh attachments are parented to the root of the scene to prevent animation issues
+                                        node.Parent.Name == "RootNode" &&
                                         AssimpConverterCommon.MeshAttachmentNameRegex.IsMatch( node.Name ) &&           // match name regex
                                         NearlyEquals( node.Transform, Ai.Matrix4x4.Identity );                          // transform must be identity
-
             return isMeshAttachmentNode;
         }
 
@@ -483,7 +494,16 @@ namespace GFDLibrary.Conversion.AssimpNet
                     }
                     else
                     {
-                        node.Parent.Attachments.Add( new NodeMeshAttachment( geometry ) );
+                        var attachmentParentNode = node.Parent;
+                        if (node.Parent?.Name == "RootNode")
+                        {
+                            // Find original node it was split from
+                            var originalParentNodeName = node.Name[..node.Name.IndexOf( "_gfdMesh_" )];
+                            if ( nodeLookup.TryGetValue( originalParentNodeName, out var originalParentNodeInfo ) )
+                                attachmentParentNode = originalParentNodeInfo.Node;
+                        }
+
+                        attachmentParentNode.Attachments.Add( new NodeMeshAttachment( geometry ) );
                         node.Parent.RemoveChildNode( node );
                     }
                 }

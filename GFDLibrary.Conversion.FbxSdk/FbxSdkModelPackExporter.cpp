@@ -102,31 +102,31 @@ namespace GFDLibrary::Conversion::FbxSdk
 			case UserPropertyValueType::Int:
 			{
 				auto intProperty = safe_cast<UserIntProperty^>(prop.Value);
-				udpBuilder->AppendFormat("{0}=int({1})&cr;&lf;", prop.Key, intProperty->Value);
+				udpBuilder->AppendFormat("{0}=int({1})\r\n", prop.Key, intProperty->Value);
 				break;
 			}
 			case UserPropertyValueType::Float:
 			{
 				auto floatProperty = safe_cast<UserFloatProperty^>(prop.Value);
-				udpBuilder->AppendFormat("{0}=float({1})&cr;&lf;", prop.Key, floatProperty->Value);
+				udpBuilder->AppendFormat("{0}=float({1})\r\n", prop.Key, floatProperty->Value);
 				break;
 			}
 			case UserPropertyValueType::Bool:
 			{
 				auto boolProperty = safe_cast<UserBoolProperty^>(prop.Value);
-				udpBuilder->AppendFormat("{0}=bool({1})&cr;&lf;", prop.Key, boolProperty->Value ? "true" : "false");
+				udpBuilder->AppendFormat("{0}=bool({1})\r\n", prop.Key, boolProperty->Value ? "true" : "false");
 				break;
 			}
 			case UserPropertyValueType::String:
 			{
 				auto stringProperty = safe_cast<UserStringProperty^>(prop.Value);
-				udpBuilder->AppendFormat("{0}=string({1})&cr;&lf;", prop.Key, stringProperty->Value);
+				udpBuilder->AppendFormat("{0}=string({1})\r\n", prop.Key, stringProperty->Value);
 				break;
 			}
 			case UserPropertyValueType::ByteVector3:
 			{
 				auto byteVector3Property = safe_cast<UserByteVector3Property^>(prop.Value);
-				udpBuilder->AppendFormat("{0}=bytevector3({1},{2},{3})&cr;&lf;",
+				udpBuilder->AppendFormat("{0}=bytevector3({1},{2},{3})\r\n",
 					prop.Key,
 					byteVector3Property->Value.X,
 					byteVector3Property->Value.Y,
@@ -136,7 +136,7 @@ namespace GFDLibrary::Conversion::FbxSdk
 			case UserPropertyValueType::ByteVector4:
 			{
 				auto byteVector4Property = safe_cast<UserByteVector4Property^>(prop.Value);
-				udpBuilder->AppendFormat("{0}=bytevector4({1},{2},{3},{4})&cr;&lf;",
+				udpBuilder->AppendFormat("{0}=bytevector4({1},{2},{3},{4})\r\n",
 					prop.Key,
 					byteVector4Property->Value.X,
 					byteVector4Property->Value.Y,
@@ -147,7 +147,7 @@ namespace GFDLibrary::Conversion::FbxSdk
 			case UserPropertyValueType::Vector3:
 			{
 				auto vector3Property = safe_cast<UserVector3Property^>(prop.Value);
-				udpBuilder->AppendFormat("{0}=vector3({1},{2},{3})&cr;&lf;",
+				udpBuilder->AppendFormat("{0}=vector3({1},{2},{3})\r\n",
 					prop.Key,
 					vector3Property->Value.X,
 					vector3Property->Value.Y,
@@ -157,7 +157,7 @@ namespace GFDLibrary::Conversion::FbxSdk
 			case UserPropertyValueType::Vector4:
 			{
 				auto vector4Property = safe_cast<UserVector4Property^>(prop.Value);
-				udpBuilder->AppendFormat("{0}=vector4({1},{2},{3},{4})&cr;&lf;",
+				udpBuilder->AppendFormat("{0}=vector4({1},{2},{3},{4})\r\n",
 					prop.Key,
 					vector4Property->Value.X,
 					vector4Property->Value.Y,
@@ -169,7 +169,7 @@ namespace GFDLibrary::Conversion::FbxSdk
 			{
 				auto byteArrayProperty = safe_cast<UserByteArrayProperty^>(prop.Value);
 				System::String^ base64String = System::Convert::ToBase64String(byteArrayProperty->Value);
-				udpBuilder->AppendFormat("{0}=bytearray({1})&cr;&lf;", prop.Key, base64String);
+				udpBuilder->AppendFormat("{0}=bytearray({1})\r\n", prop.Key, base64String);
 				break;
 			}
 			default:
@@ -338,7 +338,7 @@ namespace GFDLibrary::Conversion::FbxSdk
 	//static void ConvertVertexColorChannelASUVLayer(FbxMesh* fbxMesh, array<unsigned int>^ colors, const char* name, int layer)
 	//{
 	//	// 3ds Max requires every extra color channel to be a UV channel on its own layer (as these map to Map Channels)
-	//	// TODO UDP3DSMAX = "MapChannel:3 = ColorChannel_3&cr;&lf;MapChannel:4 = ColorChannel_4&cr;&lf;"
+	//	// TODO UDP3DSMAX = "MapChannel:3 = ColorChannel_3\r\nMapChannel:4 = ColorChannel_4\r\n"
 	//	auto fLayer = GetFbxMeshLayer(fbxMesh, layer);
 	//	auto fElementUV = (FbxGeometryElementUV*)fLayer->CreateLayerElementOfType(FbxLayerElement::EType::eUV);
 	//	fElementUV->SetName(name);
@@ -425,7 +425,7 @@ namespace GFDLibrary::Conversion::FbxSdk
 
 		mNodeIndexToFbxClusterLookup->Clear();
 
-		auto fbxMeshNode = FbxNode::Create(mFbxScene, Utf8String(String::Format("{0}_mesh_{1}", parentNode->Name, typeIndex.ToString())).ToCStr());
+		auto fbxMeshNode = FbxNode::Create(mFbxScene, Utf8String(String::Format("{0}_gfdMesh_{1}", parentNode->Name, typeIndex.ToString())).ToCStr());
 		if (mModel->Bones != nullptr && mModel->Bones->Count > 0)
 		{
 			// Parenting meshes to nodes on animated models leads to weird results
