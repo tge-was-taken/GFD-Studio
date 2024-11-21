@@ -315,7 +315,7 @@ namespace GFDLibrary::Conversion::FbxSdk
 		return fElementUV;
 	}
 
-	static void ConvertVertexColorChannel(FbxMesh* fbxMesh, array<unsigned int>^ colors)
+	static void ConvertVertexColorChannel(FbxMesh* fbxMesh, array<Graphics::Color>^ colors)
 	{
 		auto fbxElementColors = fbxMesh->CreateElementVertexColor();
 		fbxElementColors->SetMappingMode(FbxLayerElement::EMappingMode::eByControlPoint);
@@ -326,38 +326,40 @@ namespace GFDLibrary::Conversion::FbxSdk
 
 		for (int i = 0; i < colors->Length; i++)
 		{
-			auto r = (colors[i] & 0xFF000000)>>24;
-			auto g = (colors[i] & 0x00FF0000)>>16;
-			auto b = (colors[i] & 0x0000FF00)>>8;
-			auto a = (colors[i] & 0x000000FF);
+			auto r = (colors[i].R);
+			auto g = (colors[i].G);
+			auto b = (colors[i].B);
+			auto a = (colors[i].A);
 			fbxElementColors->GetDirectArray().SetAt(i,
 				FbxColor((double)r / 255.0, (double)g / 255.0,
 					(double)b / 255.0, (double)a / 255.0));
 		}
 	}
 
-	//static void ConvertVertexColorChannelASUVLayer(FbxMesh* fbxMesh, array<unsigned int>^ colors, const char* name, int layer)
-	//{
-	//	// 3ds Max requires every extra color channel to be a UV channel on its own layer (as these map to Map Channels)
-	//	// TODO UDP3DSMAX = "MapChannel:3 = ColorChannel_3\r\nMapChannel:4 = ColorChannel_4\r\n"
-	//	auto fLayer = GetFbxMeshLayer(fbxMesh, layer);
-	//	auto fElementUV = (FbxGeometryElementUV*)fLayer->CreateLayerElementOfType(FbxLayerElement::EType::eUV);
-	//	fElementUV->SetName(name);
-	//	fElementUV->SetMappingMode(FbxLayerElement::EMappingMode::eByControlPoint);
-	//	fElementUV->SetReferenceMode(FbxLayerElement::EReferenceMode::eDirect);
-	//	fElementUV->GetDirectArray().SetCount(fbxMesh->GetControlPointsCount());
+	static void ConvertVertexColorChannelAsLayerElement(FbxMesh* fbxMesh, array<Graphics::Color>^ colors, const char* name, int layer)
+	{
+		// 3ds Max requires every UV channel to be on its own layer (as these map to Map Channels)
+		auto fbxElementVertexColor = layer >= 0 ?
+			(FbxGeometryElementVertexColor*)GetFbxMeshLayer(fbxMesh, layer)->CreateLayerElementOfType(FbxLayerElement::EType::eVertexColor) :
+			fbxMesh->CreateElementVertexColor();
+		if (name)
+			fbxElementVertexColor->SetName(name);
+		fbxElementVertexColor->SetName(name);
+		fbxElementVertexColor->SetMappingMode(FbxLayerElement::EMappingMode::eByControlPoint);
+		fbxElementVertexColor->SetReferenceMode(FbxLayerElement::EReferenceMode::eDirect);
+		fbxElementVertexColor->GetDirectArray().SetCount(fbxMesh->GetControlPointsCount());
 
-	//	for (int i = 0; i < colors->Length; i++)
-	//	{
-	//		auto r = (colors[i] & 0xFF000000) >> 24;
-	//		auto g = (colors[i] & 0x00FF0000) >> 16;
-	//		auto b = (colors[i] & 0x0000FF00) >> 8;
-	//		auto a = (colors[i] & 0x000000FF);
-	//		fElementUV->GetDirectArray().SetAt(i,
-	//			FbxColor((double)r / 255.0, (double)g / 255.0,
-	//				(double)b / 255.0, (double)a / 255.0));
-	//	}
-	//}
+		for (int i = 0; i < colors->Length; i++)
+		{
+			auto r = (colors[i].R);
+			auto g = (colors[i].G);
+			auto b = (colors[i].B);
+			auto a = (colors[i].A);
+			fbxElementVertexColor->GetDirectArray().SetAt(i,
+				FbxColor((double)r / 255.0, (double)g / 255.0,
+					(double)b / 255.0, (double)a / 255.0));
+		}
+	}
 
 	static void ConvertTexCoordChannel(FbxMesh* fbxMesh, array<Vector2>^ texCoords, const char* name, int layer)
 	{

@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Numerics;
 using GFDLibrary.Common;
+using GFDLibrary.Graphics;
 using GFDLibrary.IO;
 
 namespace GFDLibrary.Models
@@ -85,8 +86,8 @@ namespace GFDLibrary.Models
             }
         }
 
-        private uint[] mColorChannel0;
-        public uint[] ColorChannel0
+        private Color[] mColorChannel0;
+        public Color[] ColorChannel0
         {
             get => mColorChannel0;
             set
@@ -100,8 +101,8 @@ namespace GFDLibrary.Models
             }
         }
 
-        private uint[] mColorChannel1;
-        public uint[] ColorChannel1
+        private Color[] mColorChannel1;
+        public Color[] ColorChannel1
         {
             get => mColorChannel1;
             set
@@ -115,8 +116,8 @@ namespace GFDLibrary.Models
             }
         }
 
-        private uint[] mColorChannel2;
-        public uint[] ColorChannel2
+        private Color[] mColorChannel2;
+        public Color[] ColorChannel2
         {
             get => mColorChannel2;
             set
@@ -273,7 +274,7 @@ namespace GFDLibrary.Models
         public byte Unk_VertexWeight { get; set; }
 
         public Vector2[][] TexCoordChannels => new[] { mTexCoordsChannel0, mTexCoordsChannel1, mTexCoordsChannel2 };
-        public uint[][] ColorChannels => new[] { mColorChannel0, mColorChannel1, mColorChannel2 };
+        public Color[][] ColorChannels => new[] { mColorChannel0, mColorChannel1, mColorChannel2 };
 
         public Mesh()
         {
@@ -436,7 +437,7 @@ namespace GFDLibrary.Models
                         Binormals[i] = reader.ReadVector3();
 
                     if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color0 ) )
-                        ColorChannel0[i] = reader.ReadUInt32();
+                        ColorChannel0[i] = new Color() { ABGR = reader.ReadUInt32() };
 
                     if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord0 ) )
                         TexCoordsChannel0[i] = reader.ReadVector2();
@@ -446,7 +447,7 @@ namespace GFDLibrary.Models
                         TexCoordsChannel2[i] = reader.ReadVector2();
 
                     if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color2 ) )
-                        ColorChannel1[i] = reader.ReadUInt32();
+                        ColorChannel1[i] = new Color() { ABGR = reader.ReadUInt32() };
 
                     if ( Flags.HasFlag( GeometryFlags.HasVertexWeights ) )
                         ReadLegacyVertexWeights();
@@ -484,10 +485,10 @@ namespace GFDLibrary.Models
                         TexCoordsChannel2[i] = reader.ReadVector2Half();
 
                     if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color0 ) ) // field object?
-                        ColorChannel0[i] = reader.ReadUInt32();
+                        ColorChannel0[i] = new Color() { RGBA = reader.ReadUInt32() };
 
                     if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color1 ) ) // character model?
-                        ColorChannel1[i] = reader.ReadUInt32();
+                        ColorChannel1[i] = new Color() { RGBA = reader.ReadUInt32() };
 
                     if ( Flags.HasFlag( GeometryFlags.HasVertexWeights ) )
                     {
@@ -594,17 +595,17 @@ namespace GFDLibrary.Models
 
             if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color0 ) )
             {
-                ColorChannel0 = new uint[vertexCount];
+                ColorChannel0 = new Color[vertexCount];
             }
 
             if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color1 ) )
             {
-                ColorChannel1 = new uint[vertexCount];
+                ColorChannel1 = new Color[vertexCount];
             }
 
             if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color2 ) )
             {
-                ColorChannel2 = new uint[vertexCount];
+                ColorChannel2 = new Color[vertexCount];
             }
 
             if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord0 ) )
@@ -667,7 +668,7 @@ namespace GFDLibrary.Models
                         writer.WriteVector3( Binormals[i] );
 
                     if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color0 ) )
-                        writer.WriteUInt32( ColorChannel0[i] );
+                        writer.WriteUInt32( ColorChannel0[i].ABGR );
 
                     if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord0 ) )
                         writer.WriteVector2( TexCoordsChannel0[i] );
@@ -679,7 +680,7 @@ namespace GFDLibrary.Models
                         writer.WriteVector2( TexCoordsChannel2[i] );
 
                     if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color2 ) )
-                        writer.WriteUInt32( ColorChannel1[i] );
+                        writer.WriteUInt32( ColorChannel1[i].ABGR );
                 } else
                 {
                     if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Position ) )
@@ -701,10 +702,10 @@ namespace GFDLibrary.Models
                         writer.WriteVector2Half( TexCoordsChannel2[i] );
 
                     if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color0 ) )
-                        writer.WriteUInt32( ColorChannel0[i] );
+                        writer.WriteUInt32( ColorChannel0[i].RGBA );
 
                     if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color1 ) )
-                        writer.WriteUInt32( ColorChannel1[i] );
+                        writer.WriteUInt32( ColorChannel1[i].RGBA );
                 }
 
                 if ( Flags.HasFlag( GeometryFlags.HasVertexWeights ) )

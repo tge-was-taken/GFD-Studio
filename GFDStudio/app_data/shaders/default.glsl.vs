@@ -34,6 +34,6 @@ void main() {
     fTex0 = vTex0;
     fTex1 = vTex1;
     fTex2 = vTex2;
-    fColor0 = vColor0.bgra;
+    fColor0 = vColor0;
     gl_Position = uProjection * uModelView * vec4(vPosition, 1.0);
 }

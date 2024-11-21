@@ -143,7 +143,7 @@ namespace GFDLibrary.Api
             if ( !mesh.VertexAttributeFlags.HasFlag( flag ) )
                 return null;
 
-            return mesh.ColorChannels[ index ];
+            return mesh.ColorChannels[index].Select( c => c.ABGR ).ToArray();
         }
 
         public static float[][] GetMeshVertexWeights( Mesh mesh )

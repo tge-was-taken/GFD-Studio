@@ -23,7 +23,7 @@ namespace GFDLibrary.Rendering.OpenGL
 
         public GLVertexArray( Vector3[] positions, Vector3[] normals, 
             Vector2[][] texCoordChannels,
-            uint[][] vertColorChannels, 
+            Graphics.Color[][] vertColorChannels, 
             uint[] indices, PrimitiveType primitiveType )
         {
             // vertex array
@@ -56,8 +56,8 @@ namespace GFDLibrary.Rendering.OpenGL
                         Vector4[] vertColorVector4 = new Vector4[vertColorChannels[channelIndex].Length];
                         for ( int vertexIndex = 0; vertexIndex < vertColorChannels[channelIndex].Length; vertexIndex++ )
                         {
-                            byte[] bytes = BitConverter.GetBytes( vertColorChannels[channelIndex][vertexIndex] );
-                            vertColorVector4[vertexIndex] = new Vector4( bytes[0], bytes[1], bytes[2], bytes[3] ) / 255f;
+                            var color = vertColorChannels[channelIndex][vertexIndex];
+                            vertColorVector4[vertexIndex] = new Vector4( color.R, color.G, color.B, color.A ) / 255f;
                         }
                         ColorChannelBuffers[channelIndex] = new GLVertexAttributeBuffer<Vector4>( vertColorVector4, 7 + channelIndex, 4, VertexAttribPointerType.Float );
                     }

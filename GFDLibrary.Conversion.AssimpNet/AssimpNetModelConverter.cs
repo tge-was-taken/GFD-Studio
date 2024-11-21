@@ -640,12 +640,12 @@ namespace GFDLibrary.Conversion.AssimpNet
                 if ( aiMesh.HasVertexColors( channelOptions.SourceChannel ) )
                 {
                     geometry.ColorChannel0 = aiMesh.VertexColorChannels[channelOptions.SourceChannel]
-                                                   .Select( x => (uint)( (byte)( x.B * 255f ) | (byte)( x.G * 255f ) << 8 | (byte)( x.R * 255f ) << 16 | (byte)( x.A * 255f ) << 24 ) )
+                                                   .Select( x => new GFDLibrary.Graphics.Color( x.R, x.G, x.B, x.A ) )
                                                    .ToArray();
                 }
                 else if ( channelOptions.UseDefaultColor )
                 {
-                    geometry.ColorChannel0 = new uint[geometry.VertexCount];
+                    geometry.ColorChannel0 = new Graphics.Color[geometry.VertexCount];
                     for ( int i = 0; i < geometry.ColorChannel0.Length; i++ )
                         geometry.ColorChannel0[i] = channelOptions.DefaultColor;
                 }
@@ -658,12 +658,12 @@ namespace GFDLibrary.Conversion.AssimpNet
                 if ( aiMesh.HasVertexColors( channelOptions.SourceChannel ) )
                 {
                     geometry.ColorChannel1 = aiMesh.VertexColorChannels[channelOptions.SourceChannel]
-                                                   .Select( x => (uint)( (byte)( x.B * 255f ) | (byte)( x.G * 255f ) << 8 | (byte)( x.R * 255f ) << 16 | (byte)( x.A * 255f ) << 24 ) )
+                                                   .Select( x => new GFDLibrary.Graphics.Color( x.R, x.G, x.B, x.A ) )
                                                    .ToArray();
                 }
                 else if ( channelOptions.UseDefaultColor )
                 {
-                    geometry.ColorChannel1 = new uint[geometry.VertexCount];
+                    geometry.ColorChannel1 = new Graphics.Color[geometry.VertexCount];
                     for ( int i = 0; i < geometry.ColorChannel1.Length; i++ )
                         geometry.ColorChannel1[i] = channelOptions.DefaultColor;
                 }
@@ -676,12 +676,12 @@ namespace GFDLibrary.Conversion.AssimpNet
                 if ( aiMesh.HasVertexColors( channelOptions.SourceChannel ) )
                 {
                     geometry.ColorChannel2 = aiMesh.VertexColorChannels[channelOptions.SourceChannel]
-                                                   .Select( x => (uint)( (byte)( x.B * 255f ) | (byte)( x.G * 255f ) << 8 | (byte)( x.R * 255f ) << 16 | (byte)( x.A * 255f ) << 24 ) )
+                                                   .Select( x => new GFDLibrary.Graphics.Color( x.R, x.G, x.B, x.A ) )
                                                    .ToArray();
                 }
                 else if (channelOptions.UseDefaultColor)
                 {
-                    geometry.ColorChannel2 = new uint[geometry.VertexCount];
+                    geometry.ColorChannel2 = new Graphics.Color[geometry.VertexCount];
                     for ( int i = 0; i < geometry.ColorChannel2.Length; i++ )
                         geometry.ColorChannel2[i] = channelOptions.DefaultColor;
                 }

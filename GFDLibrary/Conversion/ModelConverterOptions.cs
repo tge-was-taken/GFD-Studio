@@ -98,7 +98,7 @@ public class ModelConverterColorChannelOptions
 {
     public int SourceChannel { get; set; }
     public bool UseDefaultColor { get; set; } = true;
-    public uint DefaultColor { get; set; } = uint.MaxValue;
+    public Graphics.Color DefaultColor { get; set; } = Graphics.Color.Black;
 }
 
 public class ModelConverterGeometryOptions
