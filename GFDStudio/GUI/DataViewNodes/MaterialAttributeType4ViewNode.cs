@@ -1,10 +1,9 @@
-using System.ComponentModel;
-using System.IO;
-using System.Numerics;
 using GFDLibrary;
 using GFDLibrary.Materials;
 using GFDStudio.GUI.TypeConverters;
-using static GFDLibrary.Materials.MaterialAttributeType2;
+using System.ComponentModel;
+using System.IO;
+using System.Numerics;
 
 namespace GFDStudio.GUI.DataViewNodes
 {
@@ -20,34 +19,34 @@ namespace GFDStudio.GUI.DataViewNodes
         [Browsable( true )]
         [TypeConverter( typeof( Vector4TypeConverter ) )]
         [DisplayName( "Light Color (float)" )]
-        public Vector4 Field0C
+        public Vector4 LightColor
         {
-            get => GetDataProperty<Vector4>();
+            get => Data.LightColor;
             set => SetDataProperty( value );
         }
 
         [DisplayName( "Light Color (RGBA)" )]
         public System.Drawing.Color LightColorRGBA
         {
-            get => Data.Field0C.ToByte();
-            set => Data.Field0C = value.ToFloat();
+            get => Data.LightColor.ToByte();
+            set => Data.LightColor = value.ToFloat();
         }
 
         // 1C
         [Browsable( true )]
         [DisplayName( "Light threshold" )]
-        public float Field1C
+        public float LightThreshold
         {
-            get => GetDataProperty<float>();
+            get => Data.LightThreshold;
             set => SetDataProperty( value );
         }
 
         // 20
         [Browsable( true )]
         [DisplayName( "Light Factor" )]
-        public float Field20
+        public float LightFactor
         {
-            get => GetDataProperty<float>();
+            get => Data.LightFactor;
             set => SetDataProperty( value );
         }
 
@@ -55,116 +54,116 @@ namespace GFDStudio.GUI.DataViewNodes
         [Browsable( true )]
         [TypeConverter( typeof( Vector4TypeConverter ) )]
         [DisplayName( "Shadow Color (float)" )]
-        public Vector4 Field24
+        public Vector4 ShadowColor
         {
-            get => GetDataProperty<Vector4>();
+            get => Data.ShadowColor;
             set => SetDataProperty( value );
         }
 
         [DisplayName( "Shadow Color (RGBA)" )]
         public System.Drawing.Color ShadowRGBA
         {
-            get => Data.Field24.ToByte();
-            set => Data.Field24 = value.ToFloat();
+            get => Data.ShadowColor.ToByte();
+            set => Data.ShadowColor = value.ToFloat();
         }
 
         // 34
         [Browsable( true )]
         [DisplayName( "Shadow threshold" )]
-        public float Field34
+        public float ShadowThreshold
         {
-            get => GetDataProperty<float>();
+            get => Data.ShadowThreshold;
             set => SetDataProperty( value );
         }
 
         // 38
         [Browsable( true )]
         [DisplayName( "Shadow factor" )]
-        public float Field38
+        public float ShadowFactor
         {
-            get => GetDataProperty<float>();
+            get => Data.ShadowFactor;
             set => SetDataProperty( value );
         }
 
         // 3C
         [Browsable( true )]
         [DisplayName( "Night Map Speed" )]
-        public float Field3C
+        public float NightMapSpeed
         {
-            get => GetDataProperty<float>();
+            get => Data.NightMapSpeed;
             set => SetDataProperty( value );
         }
 
         // 40
         [Browsable( true )]
         [DisplayName( "Night Map Power" )]
-        public float Field40
+        public float NightMapPower
         {
-            get => GetDataProperty<float>();
+            get => Data.NightMapPower;
             set => SetDataProperty( value );
         }
 
         // 44
         [Browsable( true )]
         [DisplayName( "Night Map Scale" )]
-        public float Field44
+        public float NightMapScale
         {
-            get => GetDataProperty<float>();
+            get => Data.NightMapScale;
             set => SetDataProperty( value );
         }
 
         // 48
         [Browsable( true )]
         [DisplayName( "Night Map Height" )]
-        public float Field48
+        public float NightMapHeight
         {
-            get => GetDataProperty<float>();
+            get => Data.NightMapHeight;
             set => SetDataProperty( value );
         }
 
         // 4C
         [Browsable( true )]
         [DisplayName( "Night Map Alpha" )]
-        public float Field4C
+        public float NightMapAlpha
         {
-            get => GetDataProperty<float>();
+            get => Data.NightMapAlpha;
             set => SetDataProperty( value );
         }
 
         // 50
         [Browsable( true )]
         [DisplayName( "Night Map Direction" )]
-        public byte Field50
+        public byte NightMapDirection
         {
-            get => GetDataProperty<byte>();
+            get => Data.NightMapDirection;
             set => SetDataProperty( value );
         }
 
         // 54
         [Browsable( true )]
         [DisplayName( "Dark Gradient Height" )]
-        public float Field54
+        public float DarkGradientHeight
         {
-            get => GetDataProperty<float>();
+            get => Data.DarkGradientHeight;
             set => SetDataProperty( value );
         }
 
         // 58
         [Browsable( true )]
         [DisplayName( "Dark Gradient Alpha" )]
-        public float Field58
+        public float DarkGradientAlpha
         {
-            get => GetDataProperty<float>();
+            get => Data.DarkGradientAlpha;
             set => SetDataProperty( value );
         }
 
         // 5C
         [Browsable( true )]
         [TypeConverter( typeof( EnumTypeConverter<MaterialAttributeType1Flags> ) )]
-        [DisplayName( "Flags" )]
+        [DisplayName( "Flags (2)" )]
         public MaterialAttributeType1Flags Field5C
         {
-            get => GetDataProperty<MaterialAttributeType1Flags>();
+            get => Data.Flags2;
             set => SetDataProperty( value );
         }
 

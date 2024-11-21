@@ -15,33 +15,33 @@ namespace GFDStudio.GUI.DataViewNodes
 
         [Browsable( true )]
         [DisplayName( "Capsule height" )]
-        public float Field88
+        public float CapsuleHeight
         {
-            get => GetDataProperty<float>();
+            get => Data.CapsuleHeight;
             set => SetDataProperty( value );
         }
 
         [Browsable( true )]
         [DisplayName( "Capsule radius" )]
-        public float Field84
+        public float CapsuleRadius
         {
-            get => GetDataProperty<float>();
+            get => Data.CapsuleRadius;
             set => SetDataProperty( value );
         }
 
         [Browsable( true )]
         [DisplayName( "Matrix" )]
-        public Matrix4x4 Field8C
+        public Matrix4x4 Matrix
         {
-            get => GetDataProperty<Matrix4x4>();
+            get => Data.Matrix;
             set => SetDataProperty( value );
         }
 
         [Browsable( true )]
         [DisplayName( "Capsule Type" )]
-        public short Field94
+        public short CapsuleType
         {
-            get => GetDataProperty<short>();
+            get => Data.CapsuleType;
             set => SetDataProperty( value );
         }
 

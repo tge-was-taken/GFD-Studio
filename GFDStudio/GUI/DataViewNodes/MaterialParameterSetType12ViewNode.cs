@@ -13,140 +13,140 @@ namespace GFDStudio.GUI.DataViewNodes
 
         [TypeConverter( typeof( Vector4TypeConverter ) )]
         [DisplayName( "Base Color (float)" )]
-        public Vector4 P12_0 { 
-            get => GetDataProperty<Vector4>(); 
+        public Vector4 P12_0 {
+            get => Data.BaseColor;
             set => SetDataProperty(value); 
         } // 0x90
         [DisplayName( "Base Color (RGBA)" )]
-        public System.Drawing.Color P12_0_RGBA
+        public System.Drawing.Color BaseColorRGBA
         {
-            get => Data.P12_0.ToByte();
-            set => Data.P12_0 = value.ToFloat();
+            get => Data.BaseColor.ToByte();
+            set => Data.BaseColor = value.ToFloat();
         }
         [TypeConverter( typeof( Vector4TypeConverter ) )]
         [DisplayName( "Edge Color (float)" )]
-        public Vector4 P12_1 { 
-            get => GetDataProperty<Vector4>(); 
+        public Vector4 EdgeColor {
+            get => Data.EdgeColor;
             set => SetDataProperty(value); 
         } // 0xb0
         [DisplayName( "Edge Color (RGBA)" )]
-        public System.Drawing.Color P12_1_RGBA
+        public System.Drawing.Color EdgeColorRGBA
         {
-            get => Data.P12_1.ToByte();
-            set => Data.P12_1 = value.ToFloat();
+            get => Data.EdgeColor.ToByte();
+            set => Data.EdgeColor = value.ToFloat();
         }
         [TypeConverter( typeof( Vector4TypeConverter ) )]
         [DisplayName( "Emissive Color (float)" )]
-        public Vector4 P12_2 { 
-            get => GetDataProperty<Vector4>(); 
+        public Vector4 EmissiveColor {
+            get => Data.EmissiveColor;
             set => SetDataProperty(value); 
         } // 0xc0
         [DisplayName( "Emissive Color (RGBA)" )]
-        public System.Drawing.Color P12_2_RGBA
+        public System.Drawing.Color EmissiveColorRGBA
         {
-            get => Data.P12_2.ToByte();
-            set => Data.P12_2 = value.ToFloat();
+            get => Data.EmissiveColor.ToByte();
+            set => Data.EmissiveColor = value.ToFloat();
         }
         [DisplayName( "Metallic" )]
-        public float P12_3 { 
-            get => GetDataProperty<float>(); 
+        public float Metallic {
+            get => Data.Metallic;
             set => SetDataProperty(value); 
         } // 0xe8
         [DisplayName( "Edge Threshold" )]
-        public float P12_4 { 
-            get => GetDataProperty<float>(); 
+        public float EdgeThreshold {
+            get => Data.EdgeThreshold;
             set => SetDataProperty(value); 
         } // 0xf4
         [DisplayName( "Edge Factor" )]
-        public float P12_5 { 
-            get => GetDataProperty<float>(); 
+        public float EdgeFactor {
+            get => Data.EdgeFactor;
             set => SetDataProperty(value); 
         } // 0xf8
         [TypeConverter( typeof( EnumTypeConverter<MaterialParameterSetType12.Type12Flags> ) )]
-        public MaterialParameterSetType12.Type12Flags Flags { 
-            get => GetDataProperty<MaterialParameterSetType12.Type12Flags>(); 
+        public MaterialParameterSetType12.Type12Flags Flags {
+            get => Data.Flags;
             set => SetDataProperty(value); 
         } // 0x12c
-        public float P12_7 { 
-            get => GetDataProperty<float>(); 
+        public float P12_7 {
+            get => Data.P12_7;
             set => SetDataProperty(value); 
         } // 0x108
-        public Vector3 P12_8 { 
-            get => GetDataProperty<Vector3>(); 
+        public Vector3 P12_8 {
+            get => Data.P12_8;
             set => SetDataProperty(value); 
         } // 0x110
         [DisplayName( "Mat Bloom Intensity" )]
-        public float P12_9 { 
-            get => GetDataProperty<float>(); 
+        public float P12_9 {
+            get => Data.MatBloomIntensity;
             set => SetDataProperty(value); 
         } // 0xf0
         [DisplayName( "Edge Remove Y Axis Factor" )]
-        public float P12_10 { 
-            get => GetDataProperty<float>(); 
+        public float EdgeRemoveYAxisFactor {
+            get => Data.EdgeRemoveYAxisFactor;
             set => SetDataProperty(value); 
         } // 0xfc
-        public float P12_11 { 
-            get => GetDataProperty<float>(); 
+        public float P12_11 {
+            get => Data.P12_11;
             set => SetDataProperty(value); 
         } // 0x11c
-        public float P12_12 { 
-            get => GetDataProperty<float>(); 
+        public float P12_12 {
+            get => Data.P12_12; 
             set => SetDataProperty(value); 
         } // 0x120
-        public float P12_13 { 
-            get => GetDataProperty<float>(); 
+        public float P12_13 {
+            get => Data.P12_13;
             set => SetDataProperty(value); 
         } // 0x124
         [DisplayName( "Mat Bloom Intensity" )]
-        public float P12_14 { 
-            get => GetDataProperty<float>(); 
+        public float MatBloomIntensity2 {
+            get => Data.MatBloomIntensity2;
             set => SetDataProperty(value); 
         } // 0x10c
         [DisplayName( "Specular Color" )]
-        public Vector3 P12_15 { 
-            get => GetDataProperty<Vector3>(); 
+        public Vector3 SpecularColor {
+            get => Data.SpecularColor;
             set => SetDataProperty(value); 
         } // 0xd0
         [DisplayName( "Specular Threshold" )]
-        public float P12_16 { 
-            get => GetDataProperty<float>(); 
+        public float SpecularThreshold {
+            get => Data.SpecularThreshold;
             set => SetDataProperty(value); 
         } // 0xdc
         [DisplayName( "Specular Power" )]
-        public float P12_17 { 
-            get => GetDataProperty<float>(); 
+        public float SpecularPower {
+            get => Data.SpecularPower;
             set => SetDataProperty(value); 
         } // 0xe0
         [DisplayName( "Mat Roughness" )]
-        public float P12_18 { 
-            get => GetDataProperty<float>(); 
+        public float MatRoughness {
+            get => Data.MatRoughness;
             set => SetDataProperty(value); 
         } // 0xec
         [DisplayName( "Mat Ramp Alpha" )]
-        public float P12_19 { 
-            get => GetDataProperty<float>(); 
+        public float MatRampAlpha {
+            get => Data.P12_19;
             set => SetDataProperty(value); 
         } // 0xe4
         [TypeConverter( typeof( Vector4TypeConverter ) )]
         [DisplayName( "Shadow Color (float)" )]
-        public Vector4 P12_20 { 
-            get => GetDataProperty<Vector4>(); 
+        public Vector4 ShadowColor {
+            get => Data.ShadowColor;
             set => SetDataProperty(value); 
         } // 0xa0
         [DisplayName( "Shadow Color (RGBA)" )]
-        public System.Drawing.Color P12_20_RGBA
+        public System.Drawing.Color ShadowColorRGBA
         {
-            get => Data.P12_20.ToByte();
-            set => Data.P12_20 = value.ToFloat();
+            get => Data.ShadowColor.ToByte();
+            set => Data.ShadowColor = value.ToFloat();
         }
         [DisplayName( "Shadow Theshold" )]
-        public float P12_21 { 
-            get => GetDataProperty<float>(); 
+        public float ShadowThreshold {
+            get => Data.ShadowThreshold; 
             set => SetDataProperty(value); 
         } // 0x100
         [DisplayName( "Shadow Factor" )]
-        public float P12_22 { 
-            get => GetDataProperty<float>(); 
+        public float ShadowFactor {
+            get => Data.ShadowFactor; 
             set => SetDataProperty(value); 
         } // 0x104
 

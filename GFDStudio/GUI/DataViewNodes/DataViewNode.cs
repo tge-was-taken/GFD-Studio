@@ -292,8 +292,8 @@ namespace GFDStudio.GUI.DataViewNodes
                     // TODO: Fix for Metaphor!
                     ReplacementMat.LegacyParameters.AmbientColor = OriginalMat.LegacyParameters.AmbientColor;
                     ReplacementMat.LegacyParameters.DiffuseColor = OriginalMat.LegacyParameters.DiffuseColor;
-                    ReplacementMat.LegacyParameters.SpecularColor = OriginalMat.LegacyParameters.SpecularColor;
                     ReplacementMat.LegacyParameters.EmissiveColor = OriginalMat.LegacyParameters.EmissiveColor;
+                    ReplacementMat.LegacyParameters.SpecularColor = OriginalMat.LegacyParameters.SpecularColor;
                 }
 
                 replacement = ReplacementMat;

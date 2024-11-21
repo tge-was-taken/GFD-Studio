@@ -18,41 +18,41 @@ namespace GFDLibrary.Materials
         public Vector4 DiffuseColor { get; set; }
 
         // 0x20
-        public Vector4 SpecularColor { get; set; }
-
-        // 0x30
         public Vector4 EmissiveColor { get; set; }
 
+        // 0x30
+        public Vector4 SpecularColor { get; set; }
+
         // 0x40
-        public float Field40 { get; set; }
+        public float Reflectivity { get; set; }
 
         // 0x44
-        public float Field44 { get; set; }
+        public float Diffusivity { get; set; }
 
         public MaterialLegacyParameters()
         {
-            Field40 = 1.0f;
-            Field44 = 0;
+            Reflectivity = 1.0f;
+            Diffusivity = 0;
         }
 
         protected override void ReadCore( ResourceReader reader )
         {
             AmbientColor = reader.ReadVector4();
             DiffuseColor = reader.ReadVector4();
-            SpecularColor = reader.ReadVector4();
             EmissiveColor = reader.ReadVector4();
-            Field40 = reader.ReadSingle();
-            Field44 = reader.ReadSingle();
+            SpecularColor = reader.ReadVector4();
+            Reflectivity = reader.ReadSingle();
+            Diffusivity = reader.ReadSingle();
         }
 
         protected override void WriteCore( ResourceWriter writer )
         {
             writer.WriteVector4( AmbientColor );
             writer.WriteVector4( DiffuseColor );
-            writer.WriteVector4( SpecularColor );
             writer.WriteVector4( EmissiveColor );
-            writer.WriteSingle( Field40 );
-            writer.WriteSingle( Field44 );
+            writer.WriteVector4( SpecularColor );
+            writer.WriteSingle( Reflectivity );
+            writer.WriteSingle( Diffusivity );
         }
     }
     public sealed class Material : Resource
@@ -79,25 +79,25 @@ namespace GFDLibrary.Materials
         public MaterialLegacyParameters LegacyParameters { get; set; }
 
         // 0x49
-        public byte Field49 { get; set; }
+        public byte BlendSourceColor { get; set; }
 
         // 0x4A
-        public byte Field4A { get; set; }
+        public byte BlendDestinationColor { get; set; }
 
         // 0x4B
-        public byte Field4B { get; set; }
+        public byte SourceAlpha { get; set; }
 
         // 0x4C
-        public byte Field4C { get; set; }
+        public byte DestinationAlpha { get; set; }
 
         // 0x4D
-        public HighlightMapMode Field4D { get; set; }
+        public HighlightMapMode HighlightMapBlendMode { get; set; }
 
         // 0x90
-        public short Field90 { get; set; }
+        public short AlphaClip { get; set; }
 
         // 0x92
-        public AlphaClipMode Field92 { get; set; }
+        public AlphaClipMode AlphaClipMode { get; set; }
 
         // 0x94
         //public short Field94 { get; set; }
@@ -113,16 +113,16 @@ namespace GFDLibrary.Materials
         }
 
         // 0x96
-        public short Field96 { get; set; }
+        public short SortPriority { get; set; }
 
         // 0x5C
-        public short Field5C { get; set; }
+        public short ShaderId { get; set; }
 
         // 0x6C
-        public uint Field6C { get; set; }
+        public uint TexCoordFlags0 { get; set; }
 
         // 0x70
-        public uint Field70 { get; set; }
+        public uint TexCoordFlags1 { get; set; }
 
         // 0x50
         public short DisableBackfaceCulling { get; set; }
@@ -306,18 +306,18 @@ namespace GFDLibrary.Materials
         private void Initialize()
         {
             LegacyParameters = new();
-            Field49 = 1;
-            Field4B = 1;
-            Field4D = (HighlightMapMode)1;
+            BlendSourceColor = 1;
+            SourceAlpha = 1;
+            HighlightMapBlendMode = (HighlightMapMode)1;
             DrawMethod = 0;
-            Field4A = 0;
-            Field4C = 0;
-            Field5C = 0;
+            BlendDestinationColor = 0;
+            DestinationAlpha = 0;
+            ShaderId = 0;
             Flags = MaterialFlags.HasAmbientColor | MaterialFlags.HasDiffuseColor;
-            Field92 = ( AlphaClipMode)4;
-            Field70 = 0xFFFFFFFF;
+            AlphaClipMode = ( AlphaClipMode)4;
+            TexCoordFlags1 = 0xFFFFFFFF;
             Field98 = 0xFFFFFFFF;
-            Field6C = 0xFFFFFFFF;
+            TexCoordFlags0 = 0xFFFFFFFF;
         }
 
         private void ValidateFlags()
@@ -384,7 +384,7 @@ namespace GFDLibrary.Materials
             MatFlags0 |= (METAPHOR_MaterialFlags0)0x4000;
             if (Flags.HasFlag(MaterialFlags.AlphaTest ) )
             {
-                MatFlags2 |= Field92 switch
+                MatFlags2 |= AlphaClipMode switch
                 {
                     AlphaClipMode.Never => METAPHOR_MaterialFlags2.FLAG2_ATEST_NEVER,
                     AlphaClipMode.Less | AlphaClipMode.LEqual => METAPHOR_MaterialFlags2.FLAG2_ATEST_LESS_LEQUAL,
@@ -427,7 +427,7 @@ namespace GFDLibrary.Materials
             // multiply material mode
             if ( Flags.HasFlag( MaterialFlags.HasHighlightMap ) )
             {
-                switch ( Field4D )
+                switch ( HighlightMapBlendMode )
                 {
                     case HighlightMapMode.Lerp: MatFlags2 |= METAPHOR_MaterialFlags2.FLAG2_MATERIAL_MULTIPLE_SEMI; break; // Lerp
                     case HighlightMapMode.Add: MatFlags2 |= METAPHOR_MaterialFlags2.FLAG2_MATERIAL_MULTIPLE_ADD; break; // Add
@@ -548,43 +548,43 @@ namespace GFDLibrary.Materials
             if ( Version <= 0x1103040 )
             {
                 DrawMethod = ( MaterialDrawMethod )reader.ReadInt16();
-                Field49 = ( byte )reader.ReadInt16();
-                Field4A = ( byte )reader.ReadInt16();
-                Field4B = ( byte )reader.ReadInt16();
-                Field4C = ( byte )reader.ReadInt16();
+                BlendSourceColor = ( byte )reader.ReadInt16();
+                BlendDestinationColor = ( byte )reader.ReadInt16();
+                SourceAlpha = ( byte )reader.ReadInt16();
+                DestinationAlpha = ( byte )reader.ReadInt16();
 
                 if ( Version > 0x108011b )
                 {
-                    Field4D = (HighlightMapMode)reader.ReadInt16();
+                    HighlightMapBlendMode = (HighlightMapMode)reader.ReadInt16();
                 }
             }
             else
             {
                 DrawMethod = ( MaterialDrawMethod )reader.ReadByte();
-                Field49 = reader.ReadByte();
-                Field4A = reader.ReadByte();
-                Field4B = reader.ReadByte();
-                Field4C = reader.ReadByte();
-                Field4D = (HighlightMapMode)reader.ReadByte();
+                BlendSourceColor = reader.ReadByte();
+                BlendDestinationColor = reader.ReadByte();
+                SourceAlpha = reader.ReadByte();
+                DestinationAlpha = reader.ReadByte();
+                HighlightMapBlendMode = (HighlightMapMode)reader.ReadByte();
             }
 
-            Field90 = reader.ReadInt16();
-            Field92 = ( AlphaClipMode)reader.ReadInt16();
+            AlphaClip = reader.ReadInt16();
+            AlphaClipMode = ( AlphaClipMode)reader.ReadInt16();
 
             if ( Version <= 0x1104800 )
             {
                 Field94 = (MaterialFlags2)1;
-                Field96 = ( short )reader.ReadInt32();
+                SortPriority = ( short )reader.ReadInt32();
             }
             else
             {
                 Field94 = (MaterialFlags2)reader.ReadInt16();
-                Field96 = reader.ReadInt16();
+                SortPriority = reader.ReadInt16();
             }
 
-            Field5C = reader.ReadInt16();
-            Field6C = reader.ReadUInt32();
-            Field70 = reader.ReadUInt32();
+            ShaderId = reader.ReadInt16();
+            TexCoordFlags0 = reader.ReadUInt32();
+            TexCoordFlags1 = reader.ReadUInt32();
             DisableBackfaceCulling = reader.ReadInt16();
 
             if ( Version > 0x1103040 )
@@ -655,42 +655,42 @@ namespace GFDLibrary.Materials
             if ( Version <= 0x1103040 )
             {
                 writer.WriteInt16( ( short )DrawMethod );
-                writer.WriteInt16( Field49 );
-                writer.WriteInt16( Field4A );
-                writer.WriteInt16( Field4B );
-                writer.WriteInt16( Field4C );
+                writer.WriteInt16( BlendSourceColor );
+                writer.WriteInt16( BlendDestinationColor );
+                writer.WriteInt16( SourceAlpha );
+                writer.WriteInt16( DestinationAlpha );
 
                 if ( Version > 0x108011b )
                 {
-                    writer.WriteInt16( (byte)Field4D );
+                    writer.WriteInt16( (byte)HighlightMapBlendMode );
                 }
             }
             else
             {
                 writer.WriteByte( ( byte )DrawMethod );
-                writer.WriteByte( Field49 );
-                writer.WriteByte( Field4A );
-                writer.WriteByte( Field4B );
-                writer.WriteByte( Field4C );
-                writer.WriteByte( (byte)Field4D );
+                writer.WriteByte( BlendSourceColor );
+                writer.WriteByte( BlendDestinationColor );
+                writer.WriteByte( SourceAlpha );
+                writer.WriteByte( DestinationAlpha );
+                writer.WriteByte( (byte)HighlightMapBlendMode );
             }
 
-            writer.WriteInt16( Field90 );
-            writer.WriteInt16( ( short ) Field92 );
+            writer.WriteInt16( AlphaClip );
+            writer.WriteInt16( ( short ) AlphaClipMode );
 
             if ( Version <= 0x1104800 )
             {
-                writer.WriteInt32( Field96 );
+                writer.WriteInt32( SortPriority );
             }
             else
             {
                 writer.WriteInt16( (short)Field94 );
-                writer.WriteInt16( Field96 );
+                writer.WriteInt16( SortPriority );
             }
 
-            writer.WriteInt16( Field5C );
-            writer.WriteUInt32( Field6C );
-            writer.WriteUInt32( Field70 );
+            writer.WriteInt16( ShaderId );
+            writer.WriteUInt32( TexCoordFlags0 );
+            writer.WriteUInt32( TexCoordFlags1 );
             writer.WriteInt16(DisableBackfaceCulling);
 
             if ( Version > 0x1103040 )

@@ -47,29 +47,13 @@ namespace GFDStudio.GUI.DataViewNodes
 
         [TypeConverter( typeof( Vector4TypeConverter ) )]
         [DisplayName( "Emissive color (float)" )]
-        public Vector4 SpecularColor
+        public Vector4 EmissiveColor
         {
-            get => Data.SpecularColor;
+            get => Data.EmissiveColor;
             set => SetDataProperty( value );
         }
 
         [DisplayName( "Emissive color (RGBA)" )]
-        public System.Drawing.Color SpecularColorRGBA
-        {
-            get => Data.SpecularColor.ToByte();
-            set => Data.SpecularColor = value.ToFloat();
-        }
-
-        [Browsable( true )]
-        [TypeConverter( typeof( Vector4ColorTypeConverter ) )]
-        [DisplayName( "Specular color (float)" )]
-        public Vector4 EmissiveColor
-        {
-            get => GetDataProperty<Vector4>();
-            set => SetDataProperty( value );
-        }
-
-        [DisplayName( "Specular color (RGBA)" )]
         public System.Drawing.Color EmissiveColorRGBA
         {
             get => Data.EmissiveColor.ToByte();
@@ -77,18 +61,34 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         [Browsable( true )]
-        [DisplayName( "Reflectivity" )]
-        public float Field40
+        [TypeConverter( typeof( Vector4ColorTypeConverter ) )]
+        [DisplayName( "Specular color (float)" )]
+        public Vector4 SpecularColor
         {
-            get => GetDataProperty<float>();
+            get => Data.SpecularColor;
+            set => SetDataProperty( value );
+        }
+
+        [DisplayName( "Specular color (RGBA)" )]
+        public System.Drawing.Color SpecularColorRGBA
+        {
+            get => Data.SpecularColor.ToByte();
+            set => Data.SpecularColor = value.ToFloat();
+        }
+
+        [Browsable( true )]
+        [DisplayName( "Reflectivity" )]
+        public float Reflectivity
+        {
+            get => Data.Reflectivity;
             set => SetDataProperty( value );
         }
 
         [Browsable( true )]
         [DisplayName( "Diffusivity" )]
-        public float Field44
+        public float Diffusivity
         {
-            get => GetDataProperty<float>();
+            get => Data.Diffusivity;
             set => SetDataProperty( value );
         }
 
@@ -139,59 +139,59 @@ namespace GFDStudio.GUI.DataViewNodes
 
         [Browsable( true )]
         [DisplayName( "Blend Source Color" )]
-        public byte Field49
+        public byte BlendSourceColor
         {
-            get => GetDataProperty<byte>();
+            get => Data.BlendSourceColor;
             set => SetDataProperty( value );
         }
 
         [Browsable( true )]
         [DisplayName( "Blend Destination Color" )]
-        public byte Field4A
+        public byte BlendDestinationColor
         {
-            get => GetDataProperty<byte>();
+            get => Data.BlendDestinationColor;
             set => SetDataProperty( value );
         }
 
         [Browsable( true )]
         [DisplayName( "Source Alpha" )]
-        public byte Field4B
+        public byte SourceAlpha
         {
-            get => GetDataProperty<byte>();
+            get => Data.SourceAlpha;
             set => SetDataProperty( value );
         }
 
         [Browsable( true )]
         [DisplayName( "Destination Alpha" )]
-        public byte Field4C
+        public byte DestinationAlpha
         {
-            get => GetDataProperty<byte>();
+            get => Data.DestinationAlpha;
             set => SetDataProperty( value );
         }
 
         [Browsable( true )]
         [TypeConverter( typeof( EnumTypeConverter<HighlightMapMode> ) )]
         [DisplayName( "Highlight Map Blend Mode" )]
-        public HighlightMapMode Field4D
+        public HighlightMapMode HighlightMapBlendMode
         {
-            get => GetDataProperty<HighlightMapMode>();
+            get => Data.HighlightMapBlendMode;
             set => SetDataProperty( value );
         }
 
         [Browsable( true )]
         [DisplayName( "Alpha Clip" )]
-        public short Field90
+        public short AlphaClip
         {
-            get => GetDataProperty<short>();
+            get => Data.AlphaClip;
             set => SetDataProperty( value );
         }
 
         [Browsable( true )]
         [TypeConverter( typeof( EnumTypeConverter<AlphaClipMode> ) )]
         [DisplayName( "Alpha Clip Mode" )]
-        public AlphaClipMode Field92
+        public AlphaClipMode AlphaClipMode
         {
-            get => GetDataProperty<AlphaClipMode>();
+            get => Data.AlphaClipMode;
             set => SetDataProperty( value );
         }
 
@@ -200,41 +200,41 @@ namespace GFDStudio.GUI.DataViewNodes
         [TypeConverter( typeof( EnumTypeConverter<MaterialFlags2> ) )]
         public MaterialFlags2 Flags2
         {
-            get => GetDataProperty<MaterialFlags2>();
+            get => Data.Flags2;
             set => SetDataProperty( value );
         }
 
         [Browsable( true )]
         [DisplayName( "Sort Priority" )]
-        public short Field96
+        public short SortPriority
         {
-            get => GetDataProperty<short>();
+            get => Data.SortPriority;
             set => SetDataProperty( value );
         }
 
         [Browsable( true )]
         [DisplayName( "Shader ID" )]
-        public short Field5C
+        public short ShaderId
         {
-            get => GetDataProperty<short>();
+            get => Data.ShaderId;
             set => SetDataProperty( value );
         }
 
         [Browsable( true )]
         [TypeConverter( typeof( UInt32HexTypeConverter ) )]
         [DisplayName( "Texcoord flags [0]" )]
-        public uint Field6C
+        public uint TexCoordFlags0
         {
-            get => GetDataProperty<uint>();
+            get => Data.TexCoordFlags0;
             set => SetDataProperty( value );
         }
 
         [Browsable( true )]
         [TypeConverter( typeof( UInt32HexTypeConverter ) )]
         [DisplayName( "Texcoord flags [1]" )]
-        public uint Field70
+        public uint TexCoordFlags1
         {
-            get => GetDataProperty<uint>();
+            get => Data.TexCoordFlags1;
             set => SetDataProperty( value );
         }
 
@@ -242,7 +242,7 @@ namespace GFDStudio.GUI.DataViewNodes
         [DisplayName("Disable Backface Culling")]
         public short DisableBackfaceCulling
         {
-            get => GetDataProperty<short>();
+            get => Data.DisableBackfaceCulling;
             set => SetDataProperty( value );
         }
 
@@ -250,12 +250,12 @@ namespace GFDStudio.GUI.DataViewNodes
         [TypeConverter( typeof( UInt32HexTypeConverter ) )]
         public uint Field98
         {
-            get => GetDataProperty<uint>();
+            get => Data.Field98;
             set => SetDataProperty( value );
         }
         public float Field6C_2
         {
-            get => GetDataProperty<float>();
+            get => Data.Field6C_2;
             set => SetDataProperty( value );
         }
 

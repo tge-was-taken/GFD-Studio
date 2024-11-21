@@ -55,11 +55,11 @@ namespace GFDLibrary.Rendering.OpenGL
         {
             MatFlags = Convert.ToInt32( material.Flags );
             DrawMethod = (int)material.DrawMethod;
-            HighlightMapBlendMode = (int)material.Field4D;
-            AlphaClip = (int)material.Field90;
-            AlphaClipMode = (int)material.Field92;
+            HighlightMapBlendMode = (int)material.HighlightMapBlendMode;
+            AlphaClip = (int)material.AlphaClip;
+            AlphaClipMode = (int)material.AlphaClipMode;
             MatFlags2 = Convert.ToInt32( material.Flags2 );
-            TexcoordsFlags = (int)( material.Field6C );
+            TexcoordsFlags = (int)( material.TexCoordFlags0 );
             EnableBackfaceCulling = !( Convert.ToBoolean( material.DisableBackfaceCulling ) );
 
             if ( material.DiffuseMap != null )
@@ -263,9 +263,9 @@ namespace GFDLibrary.Rendering.OpenGL
         {
             Ambient = material.LegacyParameters.AmbientColor.ToOpenTK();
             Diffuse = material.LegacyParameters.DiffuseColor.ToOpenTK();
-            Specular = material.LegacyParameters.EmissiveColor.ToOpenTK();
-            Emissive = material.LegacyParameters.SpecularColor.ToOpenTK();
-            Reflectivity = material.LegacyParameters.Field40;
+            Specular = material.LegacyParameters.SpecularColor.ToOpenTK();
+            Emissive = material.LegacyParameters.EmissiveColor.ToOpenTK();
+            Reflectivity = material.LegacyParameters.Reflectivity;
 
 
             if ( material.Attributes != null && material.Flags.HasFlag( MaterialFlags.HasAttributes ) )
@@ -280,28 +280,28 @@ namespace GFDLibrary.Rendering.OpenGL
                 MaterialAttributeType0 type0 = (MaterialAttributeType0)material.Attributes.Single(
                     x => x.AttributeType == MaterialAttributeType.Type0 );
                 ToonLightColor = type0.Color.ToOpenTK();
-                ToonLightThreshold = type0.Field1C;
-                ToonLightFactor = type0.Field20;
-                ToonShadowBrightness = type0.Field24;
-                ToonShadowThreshold = type0.Field28;
-                ToonShadowFactor = type0.Field2C;
+                ToonLightThreshold = type0.LightTreshold;
+                ToonLightFactor = type0.LightFactor;
+                ToonShadowBrightness = type0.LightBrightness;
+                ToonShadowThreshold = type0.ShadowTreshold;
+                ToonShadowFactor = type0.ShadowFactor;
                 Type0Flags = ( (int)type0.Type0Flags );
             }
             if ( HasType1 )
             {
                 MaterialAttributeType1 type1 = (MaterialAttributeType1)material.Attributes.Single(
                     x => x.AttributeType == MaterialAttributeType.Type1 );
-                ToonLightColor = type1.InnerGlow.ToOpenTK();
-                ToonLightThreshold = type1.Field1C;
-                ToonLightFactor = type1.Field20;
+                ToonLightColor = type1.LightColor.ToOpenTK();
+                ToonLightThreshold = type1.LightTreshold;
+                ToonLightFactor = type1.LightFactor;
             }
             if ( HasType4 )
             {
                 MaterialAttributeType4 type4 = (MaterialAttributeType4)material.Attributes.Single(
                     x => x.AttributeType == MaterialAttributeType.Type4 );
-                ToonLightColor = type4.Field0C.ToOpenTK();
-                ToonLightThreshold = type4.Field1C;
-                ToonLightFactor = type4.Field20;
+                ToonLightColor = type4.LightColor.ToOpenTK();
+                ToonLightThreshold = type4.LightThreshold;
+                ToonLightFactor = type4.LightFactor;
             }
         }
 

@@ -12,12 +12,12 @@ namespace GFDStudio.GUI.DataViewNodes
 
         [TypeConverter( typeof( Vector4TypeConverter ) )]
         [DisplayName( "Base Color (float)" )]
-        public Vector4 BaseColor { 
-            get => GetDataProperty<Vector4>(); 
+        public Vector4 BaseColor {
+            get => Data.BaseColor;
             set => SetDataProperty(value); 
         } // 0x90
         [DisplayName( "Base Color (RGBA)" )]
-        public System.Drawing.Color P4_0_RGBA
+        public System.Drawing.Color BaseColorRGBA
         {
             get => Data.BaseColor.ToByte();
 
@@ -30,43 +30,43 @@ namespace GFDStudio.GUI.DataViewNodes
             set => SetDataProperty(value); 
         } // 0xa0
         [DisplayName( "Emissive Color (RGBA)" )]
-        public System.Drawing.Color P4_1_RGBA
+        public System.Drawing.Color EmissiveColorRGBA
         {
             get => Data.EmissiveColor.ToByte();
             set => Data.EmissiveColor = value.ToFloat();
         }
         [DisplayName( "Distortion Power" )]
-        public float DistortionPower { 
-            get => GetDataProperty<float>(); 
+        public float DistortionPower {
+            get => Data.DistortionPower;
             set => SetDataProperty(value); 
         } // 0xb0
         [DisplayName( "Distortion Threshold" )]
-        public float DistortionThreshold { 
-            get => GetDataProperty<float>(); 
+        public float DistortionThreshold {
+            get => Data.DistortionThreshold;
             set => SetDataProperty(value); 
         } // 0xb4
-        public float P4_4 { 
-            get => GetDataProperty<float>(); 
+        public float P4_4 {
+            get => Data.P4_4; 
             set => SetDataProperty(value); 
         } // 0xb8
         [TypeConverter( typeof( EnumTypeConverter<MaterialParameterSetType4.Type4Flags> ) )]
-        public MaterialParameterSetType4.Type4Flags Flags { 
-            get => GetDataProperty<MaterialParameterSetType4.Type4Flags>(); 
+        public MaterialParameterSetType4.Type4Flags Flags {
+            get => Data.Flags;
             set => SetDataProperty(value); 
         } // 0xcc
         [DisplayName( "Mat Bloom Intensity" )]
-        public float MatBloomIntensity { 
-            get => GetDataProperty<float>(); 
+        public float MatBloomIntensity {
+            get => Data.MatBloomIntensity;
             set => SetDataProperty(value); 
         } // 0xbc
         [DisplayName( "Fitting Tile" )]
-        public float P4_7 { 
-            get => GetDataProperty<float>(); 
+        public float FittingTile {
+            get => Data.FittingTile; 
             set => SetDataProperty(value); 
         } // 0xc0
         [DisplayName( "Multi Fitting Tile" )]
-        public float P4_8 { 
-            get => GetDataProperty<float>(); 
+        public float MultiFittingTile {
+            get => Data.MultiFittingTile;
             set => SetDataProperty(value); 
         } // 0xc4
 

@@ -95,15 +95,15 @@ namespace GFDLibrary.Conversion.AssimpNet
             {
                 aiMaterial.ColorAmbient = material.LegacyParameters.AmbientColor.ToAssimp();
                 aiMaterial.ColorDiffuse = material.LegacyParameters.DiffuseColor.ToAssimp();
-                aiMaterial.ColorSpecular = material.LegacyParameters.SpecularColor.ToAssimp();
-                aiMaterial.ColorEmissive = material.LegacyParameters.EmissiveColor.ToAssimp();
+                aiMaterial.ColorSpecular = material.LegacyParameters.EmissiveColor.ToAssimp();
+                aiMaterial.ColorEmissive = material.LegacyParameters.SpecularColor.ToAssimp();
             }
             return aiMaterial;
         }
 
         private void ConvertToAssimp( MaterialParameterSetType0 materialParameterSet, Ai.Material aiMaterial, Material material )
         {
-            aiMaterial.ColorDiffuse = materialParameterSet.P0_0.ToAssimp();
+            aiMaterial.ColorDiffuse = materialParameterSet.BaseColor.ToAssimp();
             if ( material.Flags.HasFlag( MaterialFlags.HasNormalMap ) )
             {
                 aiMaterial.TextureNormal = new Ai.TextureSlot(

@@ -11,11 +11,11 @@ namespace GFDStudio.GUI.DataViewNodes
         [DisplayName( "Base Color (float)" )]
         public Vector4 BaseColor
         {
-            get => GetDataProperty<Vector4>();
+            get => Data.BaseColor;
             set => SetDataProperty( value );
         } // 0x90
         [DisplayName( "Base Color (RGBA)" )]
-        public System.Drawing.Color P2_0_RGBA
+        public System.Drawing.Color BaseColorRGBA
         {
             get => Data.BaseColor.ToByte();
             set => Data.BaseColor = value.ToFloat();
@@ -25,11 +25,11 @@ namespace GFDStudio.GUI.DataViewNodes
         [DisplayName( "Shadow Color (float)" )]
         public Vector4 ShadowColor
         {
-            get => GetDataProperty<Vector4>();
+            get => Data.ShadowColor;
             set => SetDataProperty( value );
         } // 0xa0
         [DisplayName( "Shadow Color (RGBA)" )]
-        public System.Drawing.Color P2_1_RGBA
+        public System.Drawing.Color ShadowColorRGBA
         {
             get => Data.ShadowColor.ToByte();
             set => Data.ShadowColor = value.ToFloat();
@@ -39,11 +39,11 @@ namespace GFDStudio.GUI.DataViewNodes
         [DisplayName( "Edge Color (float)" )]
         public Vector4 EdgeColor
         {
-            get => GetDataProperty<Vector4>();
+            get => Data.EdgeColor;
             set => SetDataProperty( value );
         } // 0xb0
         [DisplayName( "Edge Color (RGBA)" )]
-        public System.Drawing.Color P2_2_RGBA
+        public System.Drawing.Color EdgeColorRGBA
         {
             get => Data.EdgeColor.ToByte();
             set => Data.EdgeColor = value.ToFloat();
@@ -53,11 +53,11 @@ namespace GFDStudio.GUI.DataViewNodes
         [DisplayName( "Emissive Color (float)" )]
         public Vector4 EmissiveColor
         {
-            get => GetDataProperty<Vector4>();
+            get => Data.EmissiveColor;
             set => SetDataProperty( value );
         } // 0xc0
         [DisplayName( "Emissive Color (RGBA)" )]
-        public System.Drawing.Color P2_3_RGBA
+        public System.Drawing.Color EmissiveColorRGBA
         {
             get => Data.EmissiveColor.ToByte();
             set => Data.EmissiveColor = value.ToFloat();
@@ -67,119 +67,119 @@ namespace GFDStudio.GUI.DataViewNodes
         [DisplayName( "Specular Color" )]
         public Vector3 SpecularColor
         {
-            get => GetDataProperty<Vector3>();
+            get => Data.SpecularColor;
             set => SetDataProperty( value );
         } // 0xd0
         [DisplayName( "Specular Power" )]
         public float SpecularPower
         {
-            get => GetDataProperty<float>();
+            get => Data.SpecularPower;
             set => SetDataProperty( value );
         } // 0xe0
         [DisplayName( "Metallic" )]
         public float Metallic
         {
-            get => GetDataProperty<float>();
+            get => Data.Metallic;
             set => SetDataProperty( value );
         } // 0xe4
         
         [DisplayName( "Edge Threshold" )]
         public float EdgeThreshold
         {
-            get => GetDataProperty<float>();
+            get => Data.EdgeThreshold;
             set => SetDataProperty( value );
         } // 0xf0
         
         [DisplayName( "Edge Factor" )]
         public float EdgeFactor
         {
-            get => GetDataProperty<float>();
+            get => Data.EdgeFactor;
             set => SetDataProperty( value );
         } // 0xf4
         
         [DisplayName( "Shadow Threshold" )]
         public float ShadowThreshold
         {
-            get => GetDataProperty<float>();
+            get => Data.ShadowThreshold;
             set => SetDataProperty( value );
         } // 0xfc
         
         [DisplayName( "Shadow Factor" )]
         public float ShadowFactor
         {
-            get => GetDataProperty<float>();
+            get => Data.ShadowFactor;
             set => SetDataProperty( value );
         } // 0x100
         public MaterialParameterSetType2Base.Type2Flags Flags
         {
-            get => GetDataProperty<MaterialParameterSetType2Base.Type2Flags>();
+            get => Data.Flags;
             set => SetDataProperty( value );
         } // 0x130
         public float P2_12
         {
-            get => GetDataProperty<float>();
+            get => Data.P2_12;
             set => SetDataProperty( value );
         } // 0x104
         public Vector3 P2_13
         {
-            get => GetDataProperty<Vector3>();
+            get => Data.P2_13;
             set => SetDataProperty( value );
         } // 0x10c
         
         [DisplayName( "Mat Bloom Intensity" )]
         public float MatBloomIntensity
         {
-            get => GetDataProperty<float>();
+            get => Data.MatBloomIntensity;
             set => SetDataProperty( value );
         } // 0xec
         [DisplayName( "Specular Threshold" )]
         public float SpecularThreshold
         {
-            get => GetDataProperty<float>();
+            get => Data.SpecularThreshold;
             set => SetDataProperty( value );
         } // 0xdc
         [DisplayName( "Edge Remove Y Axis Factor" )]
         public float EdgeRemoveYAxisFactor
         {
-            get => GetDataProperty<float>();
+            get => Data.EdgeRemoveYAxisFactor;
             set => SetDataProperty( value );
         } // 0xf8
         public float P2_17
         {
-            get => GetDataProperty<float>();
+            get => Data.P2_17;
             set => SetDataProperty( value );
         } // 0x118
         public float P2_18
         {
-            get => GetDataProperty<float>();
+            get => Data.P2_18;
             set => SetDataProperty( value );
         } // 0x11c
         public float P2_19
         {
-            get => GetDataProperty<float>();
+            get => Data.P2_19;
             set => SetDataProperty( value );
         } // 0x120
         public float P2_20
         {
-            get => GetDataProperty<float>();
+            get => Data.P2_20;
             set => SetDataProperty( value );
         } // 0x108
         [DisplayName( "Mat Roughness" )]
         public float MatRoughness
         {
-            get => GetDataProperty<float>();
+            get => Data.MatRoughness;
             set => SetDataProperty( value );
         } // 0xe8
         [DisplayName( "Fitting Tile" )]
         public float FittingTile
         {
-            get => GetDataProperty<float>();
+            get => Data.FittingTile;
             set => SetDataProperty( value );
         } // 0x128
         [DisplayName( "Multi Fitting Tile" )]
         public float MultiFittingTile
         {
-            get => GetDataProperty<float>();
+            get => Data.MultiFittingTile;
             set => SetDataProperty( value );
         } // 0x12c
         public MaterialParameterSetType2ViewNodeBase( string text, T data ) : base( text, data ) {}

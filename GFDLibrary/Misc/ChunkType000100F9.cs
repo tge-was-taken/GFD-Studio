@@ -21,15 +21,15 @@ namespace GFDLibrary.Misc
             Entry3List = new List< ChunkType000100F9Entry3 >();
         }
 
-        public int Field140 { get; set; }
+        public int Iterations { get; set; }
 
-        public float Field13C { get; set; }
+        public float Deceleration { get; set; }
 
-        public float Field138 { get; set; }
+        public float MaxSteps { get; set; }
 
-        public float Field134 { get; set; }
+        public float TransferTolerance { get; set; }
 
-        public float Field130 { get; set; }
+        public float VelocityTolerance { get; set; }
 
         public List<ChunkType000100F9Entry1> Entry1List { get; set; }
 
@@ -39,11 +39,11 @@ namespace GFDLibrary.Misc
 
         protected override void ReadCore( ResourceReader reader )
         {
-            Field140 = reader.ReadInt32();
-            Field13C = reader.ReadSingle();
-            Field138 = reader.ReadSingle();
-            Field134 = reader.ReadSingle();
-            Field130 = reader.ReadSingle();
+            Iterations = reader.ReadInt32();
+            Deceleration = reader.ReadSingle();
+            MaxSteps = reader.ReadSingle();
+            TransferTolerance = reader.ReadSingle();
+            VelocityTolerance = reader.ReadSingle();
 
             int entry1Count = reader.ReadInt32(); // r28
             int entry2Count = reader.ReadInt32(); // r21
@@ -52,19 +52,19 @@ namespace GFDLibrary.Misc
             for ( int i = 0; i < entry1Count; i++ )
             {
                 var entry = new ChunkType000100F9Entry1();
-                entry.Field34 = reader.ReadSingle();
-                entry.Field38 = reader.ReadSingle();
+                entry.SphereRadius = reader.ReadSingle();
+                entry.Mass = reader.ReadSingle();
 
                 if ( Version > 0x1104120 )
                 {
-                    entry.Field3C = reader.ReadSingle();
-                    entry.Field40 = reader.ReadSingle();
+                    entry.RestoringForce = reader.ReadSingle();
+                    entry.WindRate = reader.ReadSingle();
                 }
                 else
                 {
-                    entry.Field38 += 20.0f;
-                    entry.Field3C = 0;
-                    entry.Field40 = 1.0f;
+                    entry.Mass += 20.0f;
+                    entry.RestoringForce = 0;
+                    entry.WindRate = 1.0f;
                 }
 
                 if ( reader.ReadBoolean() )
@@ -85,19 +85,19 @@ namespace GFDLibrary.Misc
             {
                 var entry = new ChunkType000100F9Entry2();
 
-                entry.Field94 = reader.ReadInt16();
+                entry.CapsuleType = reader.ReadInt16();
 
-                if ( entry.Field94 == 0 )
+                if ( entry.CapsuleType == 0 )
                 {
-                    entry.Field84 = reader.ReadSingle();
+                    entry.CapsuleRadius = reader.ReadSingle();
                 }
-                else if ( entry.Field94 == 1 )
+                else if ( entry.CapsuleType == 1 )
                 {
-                    entry.Field84 = reader.ReadSingle();
-                    entry.Field88 = reader.ReadSingle();
+                    entry.CapsuleRadius = reader.ReadSingle();
+                    entry.CapsuleHeight = reader.ReadSingle();
                 }
 
-                entry.Field8C = reader.ReadMatrix4x4();
+                entry.Matrix = reader.ReadMatrix4x4();
                 if ( reader.ReadBoolean() )
                 {
                     entry.NodeName = reader.ReadStringWithHash( Version );
@@ -111,19 +111,19 @@ namespace GFDLibrary.Misc
             for ( int i = 0; i < entry3Count; i++ )
             {
                 var entry = new ChunkType000100F9Entry3();
-                entry.Field00 = reader.ReadSingle();
-                entry.Field04 = reader.ReadSingle();
+                entry.LengthSq = reader.ReadSingle();
+                entry.AngularLimit = reader.ReadSingle();
 
                 if ( Version <= 0x1104120 )
                 {
-                    entry.Field0C = reader.ReadInt16();
-                    entry.Field0E = reader.ReadInt16();
+                    entry.ParentBoneIndex = reader.ReadInt16();
+                    entry.ChildBoneIndex = reader.ReadInt16();
                 }
                 else
                 {
-                    entry.Field08 = reader.ReadSingle();
-                    entry.Field0C = reader.ReadInt16();
-                    entry.Field0E = reader.ReadInt16();
+                    entry.ChainThickness = reader.ReadSingle();
+                    entry.ParentBoneIndex = reader.ReadInt16();
+                    entry.ChildBoneIndex = reader.ReadInt16();
                 }
 
                 Entry3List.Add( entry );
@@ -132,11 +132,11 @@ namespace GFDLibrary.Misc
 
         protected override void WriteCore( ResourceWriter writer )
         {
-            writer.WriteInt32( Field140 );
-            writer.WriteSingle( Field13C );
-            writer.WriteSingle( Field138 );
-            writer.WriteSingle( Field134 );
-            writer.WriteSingle( Field130 );
+            writer.WriteInt32( Iterations );
+            writer.WriteSingle( Deceleration );
+            writer.WriteSingle( MaxSteps );
+            writer.WriteSingle( TransferTolerance );
+            writer.WriteSingle( VelocityTolerance );
 
             writer.WriteInt32( Entry1List.Count );
             writer.WriteInt32( Entry2List.Count );
@@ -144,13 +144,13 @@ namespace GFDLibrary.Misc
 
             foreach ( var entry in Entry1List )
             {
-                writer.WriteSingle( entry.Field34 );
-                writer.WriteSingle( entry.Field38 );
+                writer.WriteSingle( entry.SphereRadius );
+                writer.WriteSingle( entry.Mass );
 
                 if ( Version > 0x1104120 )
                 {
-                    writer.WriteSingle( entry.Field3C );
-                    writer.WriteSingle( entry.Field40 );
+                    writer.WriteSingle( entry.RestoringForce );
+                    writer.WriteSingle( entry.WindRate );
                 }
 
                 if ( entry.NodeName != null )
@@ -169,19 +169,19 @@ namespace GFDLibrary.Misc
 
             foreach ( var entry in Entry2List )
             {
-                writer.WriteInt16( entry.Field94 );
+                writer.WriteInt16( entry.CapsuleType );
 
-                if ( entry.Field94 == 0 )
+                if ( entry.CapsuleType == 0 )
                 {
-                    writer.WriteSingle( entry.Field84 );
+                    writer.WriteSingle( entry.CapsuleRadius );
                 }
-                else if ( entry.Field94 == 1 )
+                else if ( entry.CapsuleType == 1 )
                 {
-                    writer.WriteSingle( entry.Field84 );
-                    writer.WriteSingle( entry.Field88 );
+                    writer.WriteSingle( entry.CapsuleRadius );
+                    writer.WriteSingle( entry.CapsuleHeight );
                 }
 
-                writer.WriteMatrix4x4( entry.Field8C );
+                writer.WriteMatrix4x4( entry.Matrix );
 
                 if ( entry.NodeName != null )
                 {
@@ -196,19 +196,19 @@ namespace GFDLibrary.Misc
 
             foreach ( var entry in Entry3List )
             {
-                writer.WriteSingle( entry.Field00 );
-                writer.WriteSingle( entry.Field04 );
+                writer.WriteSingle( entry.LengthSq );
+                writer.WriteSingle( entry.AngularLimit );
 
                 if ( Version <= 0x1104120 )
                 {
-                    writer.WriteInt16( entry.Field0C );
-                    writer.WriteInt16( entry.Field0E );
+                    writer.WriteInt16( entry.ParentBoneIndex );
+                    writer.WriteInt16( entry.ChildBoneIndex );
                 }
                 else
                 {
-                    writer.WriteSingle( entry.Field08 );
-                    writer.WriteInt16( entry.Field0C );
-                    writer.WriteInt16( entry.Field0E );
+                    writer.WriteSingle( entry.ChainThickness );
+                    writer.WriteInt16( entry.ParentBoneIndex );
+                    writer.WriteInt16( entry.ChildBoneIndex );
                 }
             }
         }

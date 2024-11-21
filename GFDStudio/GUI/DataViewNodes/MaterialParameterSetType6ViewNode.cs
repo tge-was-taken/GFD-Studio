@@ -63,31 +63,31 @@ namespace GFDStudio.GUI.DataViewNodes
 
         [TypeConverter( typeof( Vector4TypeConverter ) )]
         [DisplayName( "Base Color (float)" )]
-        public Vector4 Field0
+        public Vector4 BaseColor
         {
-            get => GetDataProperty<Vector4>();
+            get => Data.BaseColor;
             set => SetDataProperty( value );
         } // 0x90
         [DisplayName( "Base Color (RGBA)" )]
-        public System.Drawing.Color Field0_RGBA
+        public System.Drawing.Color BaseColorRGBA
         {
-            get => Field0.ToByte();
-            set => Field0 = value.ToFloat();
+            get => BaseColor.ToByte();
+            set => BaseColor = value.ToFloat();
         }
-        public float Field1 { 
-            get => GetDataProperty<float>(); 
+        public float Field1 {
+            get => Data.Field1;
             set => SetDataProperty(value); 
         }
-        public float Field2 { 
-            get => GetDataProperty<float>(); 
+        public float Field2 {
+            get => Data.Field2;
             set => SetDataProperty(value); 
         }
-        public float Field3 { 
-            get => GetDataProperty<float>(); 
+        public float Field3 {
+            get => Data.Field3;
             set => SetDataProperty(value); 
         }
-        public float Field4 { 
-            get => GetDataProperty<float>(); 
+        public float Field4 {
+            get => Data.Field4;
             set => SetDataProperty(value); 
         }
 

@@ -326,8 +326,6 @@ namespace GFDLibrary.Models
 
                     if ( boneIndex == -1 )
                     {
-                        Trace.Assert( Bones.Count < 255 );
-
                         // Node wasn't used as a bone, so we add it
                         // TODO: This is a lazy hack. This should be done during the Bones fixup
                         boneIndex = Bones.Count;

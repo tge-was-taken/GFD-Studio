@@ -39,17 +39,17 @@ namespace GFDLibrary.Materials
     public sealed class MaterialParameterSetType0 : MaterialParameterSetBase
     {
         [ShaderUniform( "baseColor" )]
-        public Vector4 P0_0 { get; set; } // 0x90
+        public Vector4 BaseColor { get; set; } // 0x90
         [ShaderUniform( "emissiveStrength" )]
-        public float P0_1 { get; set; } // 0xa0
+        public float EmissiveStrength { get; set; } // 0xa0
         [ShaderUniform( "roughness" )]
-        public float P0_2 { get; set; } // 0xa4
+        public float Roughness { get; set; } // 0xa4
         [ShaderUniform( "metallic" )]
-        public float P0_3 { get; set; } // 0xa8
+        public float Metallic { get; set; } // 0xa8
         [ShaderUniform( "multiAlpha" )]
-        public float P0_4 { get; set; } // 0xac
+        public float MultiAlpha { get; set; } // 0xac
         [ShaderUniform( "bloomIntensity" )]
-        public float P0_5 { get; set; } // 0xb0
+        public float BloomIntensity { get; set; } // 0xb0
         public Type0Flags Flags { get; set; } // 0xb4
 
         [Flags]
@@ -83,16 +83,16 @@ namespace GFDLibrary.Materials
 
         protected override void ReadCore( ResourceReader reader )
         {
-            P0_0 = reader.ReadVector4();
-            P0_1 = reader.ReadSingle();
-            P0_2 = reader.ReadSingle();
-            P0_3 = reader.ReadSingle();
-            P0_4 = 1;
+            BaseColor = reader.ReadVector4();
+            EmissiveStrength = reader.ReadSingle();
+            Roughness = reader.ReadSingle();
+            Metallic = reader.ReadSingle();
+            MultiAlpha = 1;
             if ( Version >= 0x2000004 )
-                P0_4 = reader.ReadSingle();
-            P0_5 = 1;
+                MultiAlpha = reader.ReadSingle();
+            BloomIntensity = 1;
             if ( Version >= 0x2030001 )
-                P0_5 = reader.ReadSingle();
+                BloomIntensity = reader.ReadSingle();
             if ( Version > 0x2110040 )
                 Flags = (Type0Flags)reader.ReadUInt32();
             // Unused parameter - value gets discarded in stream reader
@@ -102,14 +102,14 @@ namespace GFDLibrary.Materials
 
         protected override void WriteCore( ResourceWriter writer )
         {
-            writer.WriteVector4( P0_0 );
-            writer.WriteSingle( P0_1 );
-            writer.WriteSingle( P0_2 );
-            writer.WriteSingle( P0_3 );
+            writer.WriteVector4( BaseColor );
+            writer.WriteSingle( EmissiveStrength );
+            writer.WriteSingle( Roughness );
+            writer.WriteSingle( Metallic );
             if ( Version >= 0x2000004 ) 
-                writer.WriteSingle( P0_4 );
+                writer.WriteSingle( MultiAlpha );
             if ( Version >= 0x2030001 )
-                writer.WriteSingle( P0_5 );
+                writer.WriteSingle( BloomIntensity );
             if ( Version > 0x2110040 )
                  writer.WriteUInt32( (uint)Flags );
             if ( Version == 0x2110140 )
@@ -423,8 +423,8 @@ namespace GFDLibrary.Materials
         public Type4Flags Flags { get; set; } // 0xcc
         [ShaderUniform( "matBloomIntensity" )]
         public float MatBloomIntensity { get; set; } // 0xbc
-        public float P4_7 { get; set; } // 0xc0
-        public float P4_8 { get; set; } // 0xc4
+        public float FittingTile { get; set; } // 0xc0
+        public float MultiFittingTile { get; set; } // 0xc4
 
         [Flags]
         public enum Type4Flags : uint
@@ -469,11 +469,11 @@ namespace GFDLibrary.Materials
             MatBloomIntensity = 0.5f;
             if ( Version >= 0x2110184 )
                 MatBloomIntensity = reader.ReadSingle();
-            P4_7 = 1;
+            FittingTile = 1;
             if ( Version > 0x2110203 )
-                P4_7 = reader.ReadSingle();
+                FittingTile = reader.ReadSingle();
             if ( Version > 0x2110217 )
-                P4_8 = reader.ReadSingle();
+                MultiFittingTile = reader.ReadSingle();
         }
 
         protected override void WriteCore( ResourceWriter writer )
@@ -487,9 +487,9 @@ namespace GFDLibrary.Materials
             if ( Version >= 0x2110184 )
                 writer.WriteSingle( MatBloomIntensity );
             if ( Version > 0x2110203 )
-                writer.WriteSingle( P4_7 );
+                writer.WriteSingle( FittingTile );
             if ( Version > 0x2110217 )
-                writer.WriteSingle( P4_8 );
+                writer.WriteSingle( MultiFittingTile );
         }
         public override void SetShaderFlags( Material mat )
         {
@@ -541,25 +541,25 @@ namespace GFDLibrary.Materials
         public float P5_0 { get; set; } // 0x90
         public float P5_1 { get; set; } // 0x94
         [ShaderUniform( "tcScale" )]
-        public float P5_2 { get; set; } // 0x98
+        public float TCScale { get; set; } // 0x98
         public float P5_3 { get; set; } // 0x9c
         [ShaderUniform( "oceanDepthScale" )]
-        public float P5_4 { get; set; } // 0xa0
+        public float OceanDepthScale { get; set; } // 0xa0
         [ShaderUniform( "disturbanceCameraScale" )]
-        public float P5_5 { get; set; } // 0xa4
+        public float DisturbanceCameraScale { get; set; } // 0xa4
         [ShaderUniform( "disturbanceDepthScale" )]
-        public float P5_6 { get; set; } // 0xa8
+        public float DisturbanceDepthScale { get; set; } // 0xa8
         [ShaderUniform( "scatteringCameraScale" )]
-        public float P5_7 { get; set; } // 0xac
+        public float ScatteringCameraScale { get; set; } // 0xac
         [ShaderUniform( "disturbanceTolerance" )]
-        public float P5_8 { get; set; } // 0xb0
+        public float DisturbanceTolerance { get; set; } // 0xb0
         [ShaderUniform( "foamDistance" )]
-        public float P5_9 { get; set; } // 0xb4
+        public float FoamDistance { get; set; } // 0xb4
         [ShaderUniform( "causticsTolerance" )]
-        public float P5_10 { get; set; } // 0xb8
+        public float CausticsTolerance { get; set; } // 0xb8
         public float P5_11 { get; set; } // 0xbc
         [ShaderUniform( "textureAnimationSpeed" )]
-        public float P5_12 { get; set; } // 0xc0
+        public float TextureAnimationSpeed { get; set; } // 0xc0
         public float P5_13 { get; set; } // 0xc4
         public Type5Flags Flags { get; set; } // 0xc8
 
@@ -580,19 +580,19 @@ namespace GFDLibrary.Materials
         {
             P5_0 = reader.ReadSingle();
             P5_1 = reader.ReadSingle();
-            P5_2 = reader.ReadSingle();
+            TCScale = reader.ReadSingle();
             P5_3 = reader.ReadSingle();
-            P5_4 = reader.ReadSingle();
-            P5_5 = reader.ReadSingle();
-            P5_6 = reader.ReadSingle();
-            P5_7 = reader.ReadSingle();
-            P5_8 = reader.ReadSingle();
-            P5_9 = reader.ReadSingle();
-            P5_10 = reader.ReadSingle();
+            OceanDepthScale = reader.ReadSingle();
+            DisturbanceCameraScale = reader.ReadSingle();
+            DisturbanceDepthScale = reader.ReadSingle();
+            ScatteringCameraScale = reader.ReadSingle();
+            DisturbanceTolerance = reader.ReadSingle();
+            FoamDistance = reader.ReadSingle();
+            CausticsTolerance = reader.ReadSingle();
             if ( Version >= 0x2110182 )
             {
                 P5_11 = reader.ReadSingle();
-                P5_12 = reader.ReadSingle();
+                TextureAnimationSpeed = reader.ReadSingle();
             }
             if ( Version >= 0x2110205 )
                 P5_13 = reader.ReadSingle();
@@ -604,19 +604,19 @@ namespace GFDLibrary.Materials
         {
             writer.WriteSingle( P5_0 );
             writer.WriteSingle( P5_1 );
-            writer.WriteSingle( P5_2 );
+            writer.WriteSingle( TCScale );
             writer.WriteSingle( P5_3 );
-            writer.WriteSingle( P5_4 );
-            writer.WriteSingle( P5_5 );
-            writer.WriteSingle( P5_6 );
-            writer.WriteSingle( P5_7 );
-            writer.WriteSingle( P5_8 );
-            writer.WriteSingle( P5_9 );
-            writer.WriteSingle( P5_10 );
+            writer.WriteSingle( OceanDepthScale );
+            writer.WriteSingle( DisturbanceCameraScale );
+            writer.WriteSingle( DisturbanceDepthScale );
+            writer.WriteSingle( ScatteringCameraScale );
+            writer.WriteSingle( DisturbanceTolerance );
+            writer.WriteSingle( FoamDistance );
+            writer.WriteSingle( CausticsTolerance );
             if ( Version >= 0x2110182 )
             {
                 writer.WriteSingle(P5_11);
-                writer.WriteSingle( P5_12 );
+                writer.WriteSingle( TextureAnimationSpeed );
             }
             if ( Version >= 0x2110205 )
                 writer.WriteSingle( P5_13 );
@@ -643,7 +643,7 @@ namespace GFDLibrary.Materials
     {
         public struct MaterialParameterSetType6_Field0
         {
-            public Vector4 Field0 { get; set; } // Base Color
+            public Vector4 BaseColor { get; set; } // Base Color
             public float Field1 { get; set; } // Emissive 
             public float Field2 { get; set; } // Roughness
             public float Field3 { get; set; } // Bloom Intensity
@@ -703,7 +703,7 @@ namespace GFDLibrary.Materials
             P6_0 = new MaterialParameterSetType6_Field0[2];
             for ( int i = 0; i < 2; i++ )
             {
-                P6_0[i].Field0 = reader.ReadVector4();
+                P6_0[i].BaseColor = reader.ReadVector4();
                 P6_0[i].Field1 = reader.ReadSingle();
                 P6_0[i].Field2 = reader.ReadSingle();
                 P6_0[i].Field3 = reader.ReadSingle();
@@ -722,7 +722,7 @@ namespace GFDLibrary.Materials
         {
             for (int i = 0; i < 2; i++ )
             {
-                writer.WriteVector4(P6_0[i].Field0);
+                writer.WriteVector4(P6_0[i].BaseColor);
                 writer.WriteSingle(P6_0[i].Field1);
                 writer.WriteSingle(P6_0[i].Field2);
                 writer.WriteSingle(P6_0[i].Field3);
@@ -1089,45 +1089,45 @@ namespace GFDLibrary.Materials
     public sealed class MaterialParameterSetType12 : MaterialParameterSetBase
     {
         [ShaderUniform( "baseColor" )]
-        public Vector4 P12_0 { get; set; } // 0x90
+        public Vector4 BaseColor { get; set; } // 0x90
         [ShaderUniform( "edgeColor" )]
-        public Vector4 P12_1 {get; set;} // 0xb0
+        public Vector4 EdgeColor {get; set;} // 0xb0
         [ShaderUniform( "emissiveColor" )]
-        public Vector4 P12_2 {get; set;} // 0xc0
+        public Vector4 EmissiveColor {get; set;} // 0xc0
         [ShaderUniform( "metallic" )]
-        public float P12_3 {get; set;} // 0xe8
+        public float Metallic {get; set;} // 0xe8
         [ShaderUniform( "edgeThreshold" )]
-        public float P12_4 {get; set;} // 0xf4
+        public float EdgeThreshold {get; set;} // 0xf4
         [ShaderUniform( "edgeFactor" )]
-        public float P12_5 {get; set;} // 0xf8
+        public float EdgeFactor {get; set;} // 0xf8
         public Type12Flags Flags {get; set;} // 0x12c
         public float P12_7 {get; set;} // 0x108
         public Vector3 P12_8 {get; set;} // 0x110
         [ShaderUniform( "matBloomIntensity" )]
-        public float P12_9 {get; set;} // 0xf0
+        public float MatBloomIntensity {get; set;} // 0xf0
         [ShaderUniform( "edgeRemoveYAxisFactor" )]
-        public float P12_10 {get; set;} // 0xfc
+        public float EdgeRemoveYAxisFactor {get; set;} // 0xfc
         public float P12_11 { get; set; } // 0x11c
         public float P12_12 { get; set; } // 0x120
         public float P12_13 { get; set; } // 0x124
         [ShaderUniform( "matBloomIntensity" )]
-        public float P12_14 { get; set; } // 0x10c
+        public float MatBloomIntensity2 { get; set; } // 0x10c
         [ShaderUniform( "specularColor" )]
-        public Vector3 P12_15 { get; set; } // 0xd0
+        public Vector3 SpecularColor { get; set; } // 0xd0
         [ShaderUniform( "specularThreshold" )]
-        public float P12_16 { get; set; } // 0xdc
+        public float SpecularThreshold { get; set; } // 0xdc
         [ShaderUniform( "specularPower" )]
-        public float P12_17 { get; set; } // 0xe0
+        public float SpecularPower { get; set; } // 0xe0
         [ShaderUniform( "matRoughness" )]
-        public float P12_18 { get; set; } // 0xec
+        public float MatRoughness { get; set; } // 0xec
         [ShaderUniform( "matRampAlpha" )]
         public float P12_19 { get; set; } // 0xe4
         [ShaderUniform( "shadowColor" )]
-        public Vector4 P12_20 { get; set; } // 0xa0
+        public Vector4 ShadowColor { get; set; } // 0xa0
         [ShaderUniform( "shadowThreshold" )]
-        public float P12_21 { get; set; } // 0x100
+        public float ShadowThreshold { get; set; } // 0x100
         [ShaderUniform( "shadowFactor" )]
-        public float P12_22 { get; set; } // 0x104
+        public float ShadowFactor { get; set; } // 0x104
 
         [Flags]
         public enum Type12Flags : uint
@@ -1166,17 +1166,17 @@ namespace GFDLibrary.Materials
 
         protected override void ReadCore( ResourceReader reader )
         {
-            P12_0 = reader.ReadVector4();
-            P12_1 = reader.ReadVector4();
-            P12_2 = reader.ReadVector4();
-            P12_3 = reader.ReadSingle();
-            P12_4 = reader.ReadSingle();
-            P12_5 = reader.ReadSingle();
+            BaseColor = reader.ReadVector4();
+            EdgeColor = reader.ReadVector4();
+            EmissiveColor = reader.ReadVector4();
+            Metallic = reader.ReadSingle();
+            EdgeThreshold = reader.ReadSingle();
+            EdgeFactor = reader.ReadSingle();
             Flags = (Type12Flags)reader.ReadUInt32();
             P12_7 = reader.ReadSingle();
             P12_8 = reader.ReadVector3();
-            P12_9 = reader.ReadSingle();
-            P12_10 = reader.ReadSingle();
+            MatBloomIntensity = reader.ReadSingle();
+            EdgeRemoveYAxisFactor = reader.ReadSingle();
             if ( Version >= 0x2109501 )
             {
                 P12_11 = reader.ReadSingle();
@@ -1184,36 +1184,36 @@ namespace GFDLibrary.Materials
                 P12_13 = reader.ReadSingle();
             }
             if ( Version >= 0x2109601 )
-                P12_14 = reader.ReadSingle();
+                MatBloomIntensity2 = reader.ReadSingle();
             if ( Version >= 0x2109701 )
             {
-                P12_15 = reader.ReadVector3();
-                P12_16 = reader.ReadSingle();
-                P12_17 = reader.ReadSingle();
-                P12_18 = reader.ReadSingle();
+                SpecularColor = reader.ReadVector3();
+                SpecularThreshold = reader.ReadSingle();
+                SpecularPower = reader.ReadSingle();
+                MatRoughness = reader.ReadSingle();
                 P12_19 = reader.ReadSingle(); 
             }
             if ( Version > 0x2110070 )
             {
-                P12_20 = reader.ReadVector4();
-                P12_21 = reader.ReadSingle();
-                P12_22 = reader.ReadSingle();
+                ShadowColor = reader.ReadVector4();
+                ShadowThreshold = reader.ReadSingle();
+                ShadowFactor = reader.ReadSingle();
             }
         }
 
         protected override void WriteCore( ResourceWriter writer )
         {
-            writer.WriteVector4(P12_0);
-            writer.WriteVector4(P12_1);
-            writer.WriteVector4(P12_2);
-            writer.WriteSingle(P12_3);
-            writer.WriteSingle(P12_4);
-            writer.WriteSingle(P12_5);
+            writer.WriteVector4(BaseColor);
+            writer.WriteVector4(EdgeColor);
+            writer.WriteVector4(EmissiveColor);
+            writer.WriteSingle(Metallic);
+            writer.WriteSingle(EdgeThreshold);
+            writer.WriteSingle(EdgeFactor);
             writer.WriteUInt32((uint)Flags);
             writer.WriteSingle(P12_7);
             writer.WriteVector3(P12_8);
-            writer.WriteSingle(P12_9);
-            writer.WriteSingle( P12_10 );
+            writer.WriteSingle(MatBloomIntensity);
+            writer.WriteSingle( EdgeRemoveYAxisFactor );
             if ( Version >= 0x2109501 )
             {
                 writer.WriteSingle(P12_11 );
@@ -1221,20 +1221,20 @@ namespace GFDLibrary.Materials
                 writer.WriteSingle( P12_13 );
             }
             if ( Version >= 0x2109601 )
-                writer.WriteSingle( P12_14 );
+                writer.WriteSingle( MatBloomIntensity2 );
             if ( Version >= 0x2109701 )
             {
-                writer.WriteVector3(P12_15 );
-                writer.WriteSingle(P12_16 );
-                writer.WriteSingle(P12_17 );
-                writer.WriteSingle(P12_18 );
+                writer.WriteVector3(SpecularColor );
+                writer.WriteSingle(SpecularThreshold );
+                writer.WriteSingle(SpecularPower );
+                writer.WriteSingle(MatRoughness );
                 writer.WriteSingle( P12_19 );
             }
             if ( Version > 0x2110070 )
             {
-                writer.WriteVector4(P12_20 );
-                writer.WriteSingle(P12_21 );
-                writer.WriteSingle( P12_22 );
+                writer.WriteVector4(ShadowColor );
+                writer.WriteSingle(ShadowThreshold );
+                writer.WriteSingle( ShadowFactor );
             }
         }
         public override void SetShaderFlags( Material mat )
