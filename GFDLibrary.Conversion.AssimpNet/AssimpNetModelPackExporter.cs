@@ -272,7 +272,7 @@ namespace GFDLibrary.Conversion.AssimpNet
                         {
                             var mesh = ConvertGeometry( model, node, attachment.GetValue<Mesh>() );
 
-                            mesh.Name = $"{AssimpConverterCommon.EscapeName( node.Name )}_gfdMesh_{i}";
+                            mesh.Name = ModelConversionHelpers.GetMeshAttachmentName( AssimpConverterCommon.EscapeName( node.Name ), i );
                             aiNode.MeshIndices.Add( mAiScene.Meshes.Count );
                             mAiScene.Meshes.Add( mesh );
                         }

@@ -40,35 +40,13 @@ namespace GFDStudio.IO
                 if ( dialog.ShowDialog() != DialogResult.OK )
                     return null;
 
-                var options = new ModelConverterOptions()
+                var options = new ModelConverterOptions(originalModel)
                 {
                     MaterialPreset = dialog.MaterialPreset,
                     Version = dialog.Version,
                     ConvertSkinToZUp = dialog.ConvertSkinToZUp,
                     AutoAddGFDHelperIDs = dialog.AutoAddGFDHelperIDs
                 };
-                if (originalModel.Materials?.Count > 0)
-                {
-                    foreach ( var material in originalModel.Materials )
-                    {
-                        var meshesWithMaterial = originalModel.Model.Nodes
-                            .Where( n => n.HasAttachments )
-                            .SelectMany( n => n.Attachments )
-                            .Where( a => a.Type == GFDLibrary.Models.NodeAttachmentType.Mesh )
-                            .Select( a => a.GetValue<Mesh>() )
-                            .Where( m => m.MaterialName == material.Key );    
-                        var firstMesh = meshesWithMaterial.FirstOrDefault();
-                        if (firstMesh is not null)
-                        {
-                            options.GeometryOptionsByMaterial[material.Key] = new()
-                            {
-                                GeometryFlags = firstMesh.Flags,
-                                VertexAttributeFlags = firstMesh.VertexAttributeFlags,
-                            };
-                        }
-                    }
-                }
-
                 return AssimpNetModelPackConverter.ConvertFromAssimpScene( path, options );
             }
         }

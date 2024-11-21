@@ -78,6 +78,9 @@ namespace GFDLibrary.Models
             }
         }
 
+        public IEnumerable<Mesh> Meshes
+            => Nodes.SelectMany( n => n.Meshes );
+
         public Model()
         {         
         }

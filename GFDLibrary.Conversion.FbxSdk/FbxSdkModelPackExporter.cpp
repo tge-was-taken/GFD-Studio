@@ -42,6 +42,7 @@ namespace GFDLibrary::Conversion::FbxSdk
 	using namespace Cameras;
 	using namespace Lights;
 	using namespace Effects;
+	using namespace Conversion;
 
 	const double RAD_TO_DEG = 180.0 / Math::PI;
 
@@ -425,7 +426,7 @@ namespace GFDLibrary::Conversion::FbxSdk
 
 		mNodeIndexToFbxClusterLookup->Clear();
 
-		auto fbxMeshNode = FbxNode::Create(mFbxScene, Utf8String(String::Format("{0}_gfdMesh_{1}", parentNode->Name, typeIndex.ToString())).ToCStr());
+		auto fbxMeshNode = FbxNode::Create(mFbxScene, Utf8String(ModelConversionHelpers::GetMeshAttachmentName(parentNode->Name, typeIndex)).ToCStr());
 		if (mModel->Bones != nullptr && mModel->Bones->Count > 0)
 		{
 			// Parenting meshes to nodes on animated models leads to weird results
@@ -815,34 +816,6 @@ namespace GFDLibrary::Conversion::FbxSdk
 		auto textureNameToExportTextureNameLookup = gcnew Dictionary<String^, String^>();
 		for each (auto texture in modelPack->Textures)
 		{
-			// TODO: move this to model pack loader
-			if (texture.Value->Version >= 0x02000000)
-			{
-				// try loading a TEX from an external file, bundled in the same folder as the model.
-				String^ texPath = System::IO::Path::Combine(mBaseDirectoryPath, mFileName + ".TEX");
-				if (System::IO::File::Exists(texPath))
-				{
-					auto texpackStream = System::IO::File::OpenRead(texPath);
-					try
-					{
-						auto texPack = gcnew MetaphorTexpack(texpackStream);
-						for each (auto tex in texPack->TextureList)
-						{
-							Texture^ modelTexPlaceholder;
-							if (modelPack->Textures->TryGetValue(tex.Key, modelTexPlaceholder))
-							{
-								modelTexPlaceholder->Data = tex.Value;
-								modelTexPlaceholder->IsTexSourceExternal = true;
-							}
-						}
-					}
-					finally
-					{
-						texpackStream->Close();
-					}
-				}
-			}
-
 			// TODO: handle other texture types (TGA, GTF, etc.)
 			auto texturePath = System::IO::Path::Combine(mTextureBaseDirectoryPath, texture.Key);
 			if (!System::IO::Path::GetExtension(texturePath)->Equals(".dds", System::StringComparison::OrdinalIgnoreCase))

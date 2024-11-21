@@ -498,7 +498,7 @@ namespace GFDLibrary.Conversion.AssimpNet
                         if (node.Parent?.Name == "RootNode")
                         {
                             // Find original node it was split from
-                            var originalParentNodeName = node.Name[..node.Name.IndexOf( "_gfdMesh_" )];
+                            var originalParentNodeName = node.Name[..node.Name.IndexOf( ModelConversionHelpers.MeshAttachmentNameSuffix )];
                             if ( nodeLookup.TryGetValue( originalParentNodeName, out var originalParentNodeInfo ) )
                                 attachmentParentNode = originalParentNodeInfo.Node;
                         }
@@ -520,9 +520,12 @@ namespace GFDLibrary.Conversion.AssimpNet
             if ( !aiMesh.HasVertices )
                 throw new Exception( "Assimp mesh has no vertices" );
             
+            var meshName = AssimpConverterCommon.UnescapeName( aiMesh.Name );
             var materialName = AssimpConverterCommon.UnescapeName( material.Name );
-            var geometryOptions = options.GeometryOptions;
-            if ( options.GeometryOptionsByMaterial.TryGetValue( materialName, out var geometryOptionsOverride ) )
+            var geometryOptions = options.DefaultGeometryOptions;
+            if ( options.GeometryOptionsOverrideByMeshName.TryGetValue( meshName, out var geometryOptionsOverride ) )
+                geometryOptions = geometryOptionsOverride;
+            else if ( options.GeometryOptionsOverrideByMaterialName.TryGetValue( materialName, out geometryOptionsOverride ) )
                 geometryOptions = geometryOptionsOverride;
 
             var geometry = new Mesh( options.Version );

@@ -1,5 +1,7 @@
 ﻿using GFDLibrary.Models;
 using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace GFDLibrary.Conversion;
 
@@ -21,13 +23,15 @@ public class ModelConverterOptions
 
     public bool AutoAddGFDHelperIDs { get; set; } = true;
 
-    public ModelConverterGeometryOptions GeometryOptions { get; } = new()
+    public ModelConverterGeometryOptions DefaultGeometryOptions { get; } = new()
     {
         GeometryFlags = GeometryFlags.Bit7,
         VertexAttributeFlags = VertexAttributeFlags.Position | VertexAttributeFlags.Normal | VertexAttributeFlags.TexCoord0
     };
 
-    public Dictionary<string, ModelConverterGeometryOptions> GeometryOptionsByMaterial { get; set; } = new();
+    public Dictionary<string, ModelConverterGeometryOptions> GeometryOptionsOverrideByMeshName { get; set; } = new();
+
+    public Dictionary<string, ModelConverterGeometryOptions> GeometryOptionsOverrideByMaterialName { get; set; } = new();
 
     public ModelConverterTexCoordChannelOptions[] TexCoordChannelMap { get; } = new ModelConverterTexCoordChannelOptions[]
     {
@@ -41,6 +45,48 @@ public class ModelConverterOptions
         new() { SourceChannel = 1 },
         new() { SourceChannel = 2 },
     };
+
+    public ModelConverterOptions() { }
+
+    public ModelConverterOptions(ModelPack originalModel)
+    {
+        if ( originalModel?.Model is not null )
+        {
+            foreach ( var node in originalModel.Model.Nodes )
+            {
+                for ( int i = 0; i < node.Attachments.Count; i++ )
+                {
+                    if ( node.Attachments[i].Type == NodeAttachmentType.Mesh )
+                    {
+                        var meshName = ModelConversionHelpers.GetMeshAttachmentName( node.Name, i );
+                        var mesh = node.Attachments[i].GetValue<Mesh>();
+                        GeometryOptionsOverrideByMeshName[meshName] = new()
+                        {
+                            GeometryFlags = mesh.Flags,
+                            VertexAttributeFlags = mesh.VertexAttributeFlags,
+                        };
+                    }
+                }
+            }
+
+            if ( originalModel.Materials?.Count > 0 )
+            {
+                foreach ( var material in originalModel.Materials )
+                {
+                    var meshesWithMaterial = originalModel.Model.Meshes.Where( m => m.MaterialName == material.Key );
+                    var firstMesh = meshesWithMaterial.FirstOrDefault();
+                    if ( firstMesh is not null )
+                    {
+                        GeometryOptionsOverrideByMaterialName[material.Key] = new()
+                        {
+                            GeometryFlags = firstMesh.Flags,
+                            VertexAttributeFlags = firstMesh.VertexAttributeFlags,
+                        };
+                    }
+                }
+            }
+        }
+    }
 }
 
 public class ModelConverterTexCoordChannelOptions

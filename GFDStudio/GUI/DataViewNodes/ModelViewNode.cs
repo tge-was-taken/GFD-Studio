@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using GFDLibrary;
 using GFDLibrary.Common;
 using GFDLibrary.Conversion;
 using GFDLibrary.Conversion.AssimpNet;
@@ -59,7 +60,8 @@ namespace GFDStudio.GUI.DataViewNodes
                     if ( dialog.ShowDialog() != System.Windows.Forms.DialogResult.OK )
                         return Data;
 
-                    var options = new ModelConverterOptions()
+                    var originalModel = Parent?.Data as ModelPack;
+                    var options = new ModelConverterOptions( originalModel )
                     {
                         Version = dialog.Version,
                         ConvertSkinToZUp = dialog.ConvertSkinToZUp,
