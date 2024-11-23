@@ -19,6 +19,6 @@ public class ColorSwizzle
 
     public override string ToString()
     {
-        return $"ColorSwizzle(Red: {Red}, Green: {Green}, Blue: {Blue}, Alpha: {Alpha})";
+        return $"Red: {Red}, Green: {Green}, Blue: {Blue}, Alpha: {Alpha}";
     }
 }

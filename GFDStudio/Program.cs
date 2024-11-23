@@ -2,10 +2,12 @@
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using GFDLibrary;
+using GFDLibrary.Conversion.AssimpNet.Utilities;
 using GFDStudio.GUI.Forms;
 
 namespace GFDStudio
@@ -47,16 +49,21 @@ namespace GFDStudio
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault( false );
 
-            using (var form = new ModelConversionOptionsDialog())
-                Application.Run( form );
-
-            //using ( var mainForm = new MainForm() )
+            //var scene = AssimpHelper.ImportScene( @"C:\Users\cweer\Downloads\c_0006_001_F.FBX" );
+            ////var originalModel = Resource.Load<ModelPack>( @"C:\Users\cweer\Downloads\c_0006_001_F.GFS" );
+            //ModelPack originalModel = null;
+            //using ( var form = new ModelConversionOptionsDialog(scene, originalModel ) )
             //{
-            //    if ( args.Length > 0 && File.Exists( args[0] ) )
-            //        mainForm.OpenFile( args[0] );
-
-            //    Application.Run( mainForm );
+            //    Application.Run( form );
             //}
+
+            using ( var mainForm = new MainForm() )
+            {
+                if ( args.Length > 0 && File.Exists( args[0] ) )
+                    mainForm.OpenFile( args[0] );
+
+                Application.Run( mainForm );
+            }
         }
 
 #if WINDOWS

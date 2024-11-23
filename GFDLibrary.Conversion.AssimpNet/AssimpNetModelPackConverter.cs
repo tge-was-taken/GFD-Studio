@@ -17,7 +17,7 @@ namespace GFDLibrary.Conversion.AssimpNet
             string baseDirectoryPath = Path.GetDirectoryName( filePath );
 
             // Import scene
-            var aiScene = AssimpSceneImporter.ImportFile( filePath );
+            var aiScene = AssimpHelper.ImportScene( filePath );
 
             // Build textures & Materials
             var model = new ModelPack( options.Version );
@@ -90,7 +90,11 @@ namespace GFDLibrary.Conversion.AssimpNet
             if ( diffuseTexture != null )
             {
                 textureDictionary.Add( diffuseTexture.Texture );
-                material = MaterialFactory.CreateMaterial( materialName, diffuseTexture.Name, options );
+                var materialOptions = options.DefaultMaterial;
+                if ( options.Materials.TryGetValue( materialName, out var materialOptionsOverride ) )
+                    materialOptions = materialOptionsOverride;
+
+                material = MaterialFactory.CreateMaterial( materialName, diffuseTexture.Name, materialOptions.Preset );
             }
 
             return material;

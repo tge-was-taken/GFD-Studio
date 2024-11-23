@@ -3,6 +3,8 @@ using System.Windows.Forms;
 using GFDLibrary;
 using GFDLibrary.Conversion;
 using GFDLibrary.Conversion.AssimpNet;
+using GFDLibrary.Conversion.AssimpNet.Utilities;
+using GFDLibrary.Materials;
 using GFDLibrary.Models;
 using GFDStudio.FormatModules;
 using GFDStudio.GUI.Forms;
@@ -35,18 +37,13 @@ namespace GFDStudio.IO
 
         public static ModelPack ConvertAssimpModel( string path, ModelPack originalModel)
         {
-            using ( var dialog = new ModelConverterOptionsDialog( false ) )
+            var scene = AssimpHelper.ImportScene( path );
+            using ( var dialog = new ModelConversionOptionsDialog( scene, originalModel ) )
             {
                 if ( dialog.ShowDialog() != DialogResult.OK )
                     return null;
 
-                var options = new ModelConverterOptions(originalModel)
-                {
-                    MaterialPreset = dialog.MaterialPreset,
-                    Version = dialog.Version,
-                    ConvertSkinToZUp = dialog.ConvertSkinToZUp,
-                    AutoAddGFDHelperIDs = dialog.AutoAddGFDHelperIDs
-                };
+                var options = dialog.GetModelConversionOptions();
                 return AssimpNetModelPackConverter.ConvertFromAssimpScene( path, options );
             }
         }

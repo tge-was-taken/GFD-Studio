@@ -320,6 +320,7 @@ namespace GFDLibrary.Materials
             TexCoordFlags1 = 0xFFFFFFFF;
             Field98 = 0xFFFFFFFF;
             TexCoordFlags0 = 0xFFFFFFFF;
+            RuntimeMetadata = new();
         }
 
         private void ValidateFlags()
@@ -775,7 +776,7 @@ namespace GFDLibrary.Materials
             if (specularTexture == null)
                 specularTexture = material.DiffuseMap;
             if ( diffuseTexture == null ) newMaterial = material;
-            else newMaterial = MaterialFactory.CreateMaterial( materialName, diffuseTexture.Name, options );
+            else newMaterial = MaterialFactory.CreateMaterial( materialName, diffuseTexture.Name, options.DefaultMaterial.Preset );
             return newMaterial;
         }
     }

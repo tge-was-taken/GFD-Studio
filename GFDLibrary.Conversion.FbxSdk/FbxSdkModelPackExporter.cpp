@@ -425,10 +425,10 @@ namespace GFDLibrary::Conversion::FbxSdk
 			LAYER 2: (Maps to Map Channel 3)
 				- FbxGeometryElementUV (second COLOR (!!!!) channel, if used)
 		*/
-
+		
 		mNodeIndexToFbxClusterLookup->Clear();
 
-		auto fbxMeshNode = FbxNode::Create(mFbxScene, Utf8String(ModelConversionHelpers::GetMeshAttachmentName(parentNode->Name, typeIndex)).ToCStr());
+		auto fbxMeshNode = FbxNode::Create(mFbxScene, Utf8String(ModelConversionHelpers::GetMeshExportName(parentNode->Name, typeIndex)).ToCStr());
 		if (mModel->Bones != nullptr && mModel->Bones->Count > 0)
 		{
 			// Parenting meshes to nodes on animated models leads to weird results

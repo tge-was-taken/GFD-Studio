@@ -3,6 +3,7 @@ using GFDLibrary;
 using GFDLibrary.Common;
 using GFDLibrary.Conversion;
 using GFDLibrary.Conversion.AssimpNet;
+using GFDLibrary.Conversion.AssimpNet.Utilities;
 using GFDLibrary.Models;
 using GFDStudio.FormatModules;
 using GFDStudio.GUI.Forms;
@@ -55,22 +56,18 @@ namespace GFDStudio.GUI.DataViewNodes
             base.InitializeCore();
             RegisterReplaceHandler<AssimpScene>( path =>
             {
-                using ( var dialog = new ModelConverterOptionsDialog( true ) )
+                var scene = AssimpHelper.ImportScene( path );
+                var originalModel = Parent?.Data as ModelPack;
+
+                using ( var dialog = new ModelConversionOptionsDialog( scene, originalModel ) )
                 {
                     if ( dialog.ShowDialog() != System.Windows.Forms.DialogResult.OK )
                         return Data;
 
-                    var originalModel = Parent?.Data as ModelPack;
-                    var options = new ModelConverterOptions( originalModel )
-                    {
-                        Version = dialog.Version,
-                        ConvertSkinToZUp = dialog.ConvertSkinToZUp,
-                        AutoAddGFDHelperIDs = dialog.AutoAddGFDHelperIDs
-                    };
-
-                    var scene = AssimpNetModelConverter.ConvertFromAssimpScene( path, options );
-                    if ( scene != null )
-                        Data.ReplaceWith( scene );
+                    var options = dialog.GetModelConversionOptions();
+                    var model = AssimpNetModelConverter.ConvertFromAssimpScene( scene, options );
+                    if ( model != null )
+                        Data.ReplaceWith( model );
 
                     return Data;
                 }

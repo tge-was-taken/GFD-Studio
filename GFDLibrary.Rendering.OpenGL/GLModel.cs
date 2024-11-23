@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using GFDLibrary.Animations;
+using GFDLibrary.Materials;
 using GFDLibrary.Models;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
@@ -93,14 +94,7 @@ namespace GFDLibrary.Rendering.OpenGL
             }
         }
 
-        public void Draw( ShaderRegistry shaderRegistry, GLCamera camera, double animationTime )
-        {
-            var view = camera.View;
-            var proj = camera.Projection;
-            Draw( shaderRegistry, ref view, ref proj, animationTime, camera );
-        }
-
-        private GLShaderProgram GetTargetShader(ShaderRegistry shaderRegistry, GLMesh glMesh, ref Matrix4 view, ref Matrix4 projection, ref HashSet<ResourceType> shaderPrograms )
+        private GLShaderProgram GetTargetShader(ShaderRegistry shaderRegistry, GLMesh glMesh, Matrix4 view, Matrix4 projection, HashSet<ResourceType> shaderPrograms )
         {
             if ( typeof( GLMetaphorMaterial ).IsInstanceOfType( glMesh.Material )
                 && shaderRegistry.mMetaphorShaders.TryGetValue( ( (GLMetaphorMaterial)glMesh.Material ).ParameterSet.ResourceType, out var metaphorShader ) )
@@ -116,15 +110,20 @@ namespace GFDLibrary.Rendering.OpenGL
             return shaderRegistry.mDefaultShader;
         }
 
-        public void Draw( ShaderRegistry shaderRegistry, ref Matrix4 view, ref Matrix4 projection, double animationTime, GLCamera camera )
+        private bool ShouldMeshShowAsSelected( DrawContext context, GLMesh glMesh )
+        {
+            return context.SelectedMesh == glMesh.Mesh || context.SelectedMaterial?.Name == glMesh.Mesh.MaterialName;
+        }
+
+        public void Draw( DrawContext context )
         {
             if ( Animation != null )
-                AnimateNodes( animationTime );
-            shaderRegistry.mDefaultShader.Use();
-            shaderRegistry.mDefaultShader.SetUniform( "uView", view );
-            shaderRegistry.mDefaultShader.SetUniform( "uProjection", projection );
+                AnimateNodes( context.AnimationTime );
+            context.ShaderRegistry.mDefaultShader.Use();
+            context.ShaderRegistry.mDefaultShader.SetUniform( "uView", context.Camera.View );
+            context.ShaderRegistry.mDefaultShader.SetUniform( "uProjection", context.Camera.Projection );
 
-            HashSet<ResourceType> ShaderProgramsInUse = new();
+            HashSet<ResourceType> shaderProgramsInUse = new();
 
             // List to hold transparent meshes and their world transforms
             List<Tuple<GLMesh, Matrix4, GLShaderProgram>> transparentMeshes = new();
@@ -145,9 +144,11 @@ namespace GFDLibrary.Rendering.OpenGL
                         glMesh = glNode.Meshes[i] = new GLMesh( oldGlMesh.Mesh, glNode.WorldTransform, ModelPack.Model.Bones, Nodes, Materials );
                         oldGlMesh.Dispose();
                     }
-                    GLShaderProgram targetShader = GetTargetShader( shaderRegistry, glMesh, ref view, ref projection, ref ShaderProgramsInUse );
+                    GLShaderProgram targetShader = GetTargetShader( context.ShaderRegistry, glMesh, context.Camera.View, context.Camera.Projection, shaderProgramsInUse );
                     if ( !glMesh.Material.IsMaterialTransparent() ) // If opaque
                     {
+                        if ( glMesh.Mesh != null )
+                            targetShader.SetUniform( "uIsSelected", ShouldMeshShowAsSelected(context, glMesh ) );
                         glMesh.Draw( glNode.WorldTransform.ToOpenTK(), targetShader );
                     }
                     else // If transparent
@@ -161,17 +162,14 @@ namespace GFDLibrary.Rendering.OpenGL
             GL.Enable( EnableCap.Blend );
 
             // Sort transparent objects based on their distance from the camera
-            transparentMeshes.Sort( ( a, b ) => OpenTK.Vector3.Distance( camera.Translation, b.Item2.ExtractTranslation() ).CompareTo( OpenTK.Vector3.Distance( camera.Translation, a.Item2.ExtractTranslation() ) ) );
+            transparentMeshes.Sort( ( a, b ) => OpenTK.Vector3.Distance( context.Camera.Translation, b.Item2.ExtractTranslation() ).CompareTo( OpenTK.Vector3.Distance( context.Camera.Translation, a.Item2.ExtractTranslation() ) ) );
 
             // Disable depth mask
             GL.DepthMask( false );
 
             // Then draw transparent objects
-            foreach ( var tuple in transparentMeshes )
+            foreach ( (var glMesh, var worldTransform, var shaderProgram) in transparentMeshes )
             {
-                var glMesh = tuple.Item1;
-                var worldTransform = tuple.Item2;
-
                 switch ( glMesh.Material.DrawMethod )
                 {
                     case 1:
@@ -186,7 +184,9 @@ namespace GFDLibrary.Rendering.OpenGL
                         break;
                 }
 
-                glMesh.Draw( worldTransform, tuple.Item3 );
+                if ( glMesh.Mesh != null )
+                    shaderProgram.SetUniform( "uIsSelected", ShouldMeshShowAsSelected( context, glMesh ) );
+                glMesh.Draw( worldTransform, shaderProgram );
             }
 
             // Re-enable depth mask
@@ -352,5 +352,14 @@ namespace GFDLibrary.Rendering.OpenGL
             Dispose( true );
         }
         #endregion
+    }
+
+    public class DrawContext
+    {
+        public ShaderRegistry ShaderRegistry { get; init; }
+        public GLCamera Camera { get; init; }
+        public double AnimationTime { get; init; }
+        public Mesh SelectedMesh { get; init; }
+        public Material SelectedMaterial { get; init; }
     }
 }

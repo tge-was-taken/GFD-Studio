@@ -23,11 +23,11 @@ namespace GFDLibrary.Conversion.AssimpNet
 
         public static Model ConvertFromAssimpScene( string filePath, ModelConverterOptions options )
         {
-            var aiScene = AssimpSceneImporter.ImportFile( filePath );
+            var aiScene = AssimpHelper.ImportScene( filePath );
             return ConvertFromAssimpScene( aiScene, options );
         }
 
-        internal static Model ConvertFromAssimpScene( Ai.Scene aiScene, ModelConverterOptions options )
+        public static Model ConvertFromAssimpScene( Ai.Scene aiScene, ModelConverterOptions options )
         {
             var scene = new Model( options.Version );
 
@@ -523,10 +523,8 @@ namespace GFDLibrary.Conversion.AssimpNet
             
             var meshName = AssimpConverterCommon.UnescapeName( aiMesh.Name );
             var materialName = AssimpConverterCommon.UnescapeName( material.Name );
-            var geometryOptions = options.DefaultGeometryOptions;
-            if ( options.GeometryOptionsOverrideByMeshName.TryGetValue( meshName, out var geometryOptionsOverride ) )
-                geometryOptions = geometryOptionsOverride;
-            else if ( options.GeometryOptionsOverrideByMaterialName.TryGetValue( materialName, out geometryOptionsOverride ) )
+            var geometryOptions = options.DefaultMesh;
+            if ( options.Meshes.TryGetValue( meshName, out var geometryOptionsOverride ) )
                 geometryOptions = geometryOptionsOverride;
 
             var geometry = new Mesh( options.Version );
@@ -592,7 +590,7 @@ namespace GFDLibrary.Conversion.AssimpNet
                 var useTexCoord = geometryOptions.VertexAttributeFlags.HasFlag( texCoordFlags[channel] );
                 if ( !useTexCoord ) continue;
 
-                var channelOptions = options.TexCoordChannelMap[channel];
+                var channelOptions = geometryOptions.TexCoordChannelMap[channel];
                 Vector2[] texCoords;
                 if ( aiMesh.HasTextureCoords( channelOptions.SourceChannel ) )
                 {
@@ -634,7 +632,7 @@ namespace GFDLibrary.Conversion.AssimpNet
             {
                 if ( geometryOptions.VertexAttributeFlags.HasFlag( colorFlags[i] ) )
                 {
-                    var channelOptions = options.ColorChannelMap[i];
+                    var channelOptions = geometryOptions.ColorChannelMap[i];
                     Graphics.Color[] colorChannel = null;
 
                     if ( aiMesh.HasVertexColors( channelOptions.SourceChannel ) )

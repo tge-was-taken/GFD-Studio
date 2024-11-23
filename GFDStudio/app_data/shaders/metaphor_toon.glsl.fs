@@ -46,6 +46,9 @@ in vec4 fColor0;
 in vec4 fColor1;
 //in vec4 fColor2;
 
+// renderer state
+uniform bool uIsSelected;
+
 // out
 out vec4 oColor;
 
@@ -373,5 +376,7 @@ void main() {
 	#else
 		oColor.rgb = baseColor.rgb;
 	#endif
-
+    if (uIsSelected) {
+        oColor = mix(oColor, vec4(1.0, 0.0, 0.0, 1.0), 0.5);
+    }
 }
