@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing.Text;
 using System.Linq;
 using System.Numerics;
 using System.Text.RegularExpressions;
 using GFDLibrary.Cameras;
 using GFDLibrary.Common;
 using GFDLibrary.Conversion.AssimpNet.Utilities;
+using GFDLibrary.Graphics;
 using GFDLibrary.Lights;
 using GFDLibrary.Models;
 using GFDLibrary.Utilities;
@@ -21,11 +23,11 @@ namespace GFDLibrary.Conversion.AssimpNet
 
         public static Model ConvertFromAssimpScene( string filePath, ModelConverterOptions options )
         {
-            var aiScene = AssimpSceneImporter.ImportFile( filePath );
+            var aiScene = AssimpHelper.ImportScene( filePath );
             return ConvertFromAssimpScene( aiScene, options );
         }
 
-        internal static Model ConvertFromAssimpScene( Ai.Scene aiScene, ModelConverterOptions options )
+        public static Model ConvertFromAssimpScene( Ai.Scene aiScene, ModelConverterOptions options )
         {
             var scene = new Model( options.Version );
 
@@ -100,13 +102,24 @@ namespace GFDLibrary.Conversion.AssimpNet
                    NearlyEquals( left.D1, right.D1 ) && NearlyEquals( left.D2, right.D2 ) && NearlyEquals( left.D3, right.D3 ) && NearlyEquals( left.D4, right.D4 );
         }
 
-        private static bool IsMeshAttachmentNode( Ai.Node node )
+        private static bool IsLegacyMeshAttachmentNode( Ai.Node node )
         {
             bool isMeshAttachmentNode = node.Parent != null &&                                                          // definitely not a mesh attachment if it doesnt have a parent -> RootNode
                                         node.Parent.Name != "RootNode" &&                                               // probably not a mesh attachment if its part of the scene root
+                                        AssimpConverterCommon.LegacyMeshAttachmentNameRegex.IsMatch( node.Name ) &&     // match name regex
+                                        NearlyEquals( node.Transform, Ai.Matrix4x4.Identity );                          // transform must be identity
+            return isMeshAttachmentNode;
+        }
+
+        private static bool IsMeshAttachmentNode( Ai.Node node )
+        {
+            if ( IsLegacyMeshAttachmentNode( node ) )
+                return true;
+
+            bool isMeshAttachmentNode = node.Parent != null &&                                                          // mesh attachments are parented to the root of the scene to prevent animation issues
+                                        node.Parent.Name == "RootNode" &&
                                         AssimpConverterCommon.MeshAttachmentNameRegex.IsMatch( node.Name ) &&           // match name regex
                                         NearlyEquals( node.Transform, Ai.Matrix4x4.Identity );                          // transform must be identity
-
             return isMeshAttachmentNode;
         }
 
@@ -137,7 +150,126 @@ namespace GFDLibrary.Conversion.AssimpNet
             "bell", "bar", "heart", "clock", "drink01", "drink02", "item_block02",
         };
 
-        private static Node ConvertAssimpNodeRecursively( Ai.Scene aiScene, Ai.Node aiNode, Dictionary<string, NodeInfo> nodeLookup, ref int nextIndex, ModelConverterOptions options )
+        private static void AddUserProperties_P5R( Node node )
+        {
+            switch ( node.Name )
+            {
+                case "h_B_BD1":
+                    TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 501 ) );
+                    break;
+
+                case "h_C_US3":
+                    TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 3 ) );
+                    break;
+
+                case "h_C_FS1":
+                    TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 21 ) );
+                    break;
+
+                case "h_M_HR3":
+                    TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 103 ) );
+                    break;
+
+                case "h_B_KA1":
+                    TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 502 ) );
+                    break;
+
+                case "h_B_CT1":
+                    TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 521 ) );
+                    break;
+
+                case "h_C_US2":
+                    TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 2 ) );
+                    break;
+
+                case "h_C_BS1":
+                    TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 11 ) );
+                    break;
+
+                case "h_M_HL2":
+                    TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 152 ) );
+                    break;
+
+                case "h_B_MZ1":
+                    TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 511 ) );
+                    break;
+
+                case "h_M_HR2":
+                    TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 102 ) );
+                    break;
+
+                case "h_M_HL1":
+                    TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 151 ) );
+                    break;
+
+                case "h_M_BC1":
+                    TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 301 ) );
+                    break;
+
+                case "h_C_US1":
+                    TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 1 ) );
+                    break;
+
+                case "h_M_HL3":
+                    TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 153 ) );
+                    break;
+
+                case "h_M_HR1":
+                    TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 101 ) );
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        private static void AddUserProperties_Metaphor(Node node)
+        {
+
+            void AddEyeAngleLimitProperties(string side, Node node)
+            {
+                TryAddProperty( node.Properties, new UserFloatProperty( $"{side}eyeAngleUpLimit", 2f ) );
+                TryAddProperty( node.Properties, new UserFloatProperty( $"{side}eyeAngleDownLimit", 3f ) );
+                TryAddProperty( node.Properties, new UserFloatProperty( $"{side}eyeAngleInLimit", 5f ) );
+                TryAddProperty( node.Properties, new UserFloatProperty( $"{side}eyeAngleOutLimit", 7f ) );
+            }
+
+            switch (node.Name)
+            {
+                case "root":
+                    TryAddProperty( node.Properties, new UserBoolProperty( "no_anim_export", false ) );
+                    AddEyeAngleLimitProperties( "L", node );
+                    AddEyeAngleLimitProperties( "R", node );
+                    TryAddProperty( node.Properties, new UserFloatProperty( "HeadAngleUpLimit", 20f ) );
+                    TryAddProperty( node.Properties, new UserFloatProperty( "HeadAngleDownLimit", 4f ) );
+                    TryAddProperty( node.Properties, new UserFloatProperty( "HeadAngleLeftLimit", 50f ) );
+                    TryAddProperty( node.Properties, new UserFloatProperty( "HeadAngleRightLimit", 50f ) );
+                    TryAddProperty( node.Properties, new UserFloatProperty( "UbodyAngleUpLimit", 20f ) );
+                    TryAddProperty( node.Properties, new UserFloatProperty( "UbodyAngleDownLimit", 20f ) );
+                    TryAddProperty( node.Properties, new UserFloatProperty( "UbodyAngleLeftLimit", 10f ) );
+                    TryAddProperty( node.Properties, new UserFloatProperty( "UbodyAngleRightLimit", 10f ) );
+                    break;
+                case "mesh_cha":
+                    TryAddProperty( node.Properties, new UserVector3Property( "gfdGradationColor", new Vector3(0, 0, 0) ) );
+                    TryAddProperty( node.Properties, new UserFloatProperty( "gfdGradationScale", 2f ));
+                    TryAddProperty( node.Properties, new UserFloatProperty( "gfdGradationFade", 0.2f ));
+                    TryAddProperty( node.Properties, new UserFloatProperty( "gfdGradiationAlpha", 0.5f ));
+                    TryAddProperty( node.Properties, new UserStringProperty( "gfdGradationHipNode", "c_pelvis" ));
+                    TryAddProperty( node.Properties, new UserStringProperty( "gfdGradationRightHeelNode", "r_foot" ));
+                    TryAddProperty( node.Properties, new UserStringProperty( "gfdGradationLeftHeelNode", "l_foot" ));
+                    TryAddProperty( node.Properties, new UserBoolProperty( "gfdShadowCaster", false ));
+                    TryAddProperty( node.Properties, new UserBoolProperty( "gfdShadowReceiver", false ));
+                    TryAddProperty( node.Properties, new UserBoolProperty( "gfdWaterCaster", true ));
+                    TryAddProperty( node.Properties, new UserBoolProperty( "gfdHide", false ));
+                    TryAddProperty( node.Properties, new UserBoolProperty( "gfdSplitPerVertexNormals", false ));
+                    TryAddProperty( node.Properties, new UserBoolProperty( "gfdGeomType", true ));
+                    TryAddProperty( node.Properties, new UserBoolProperty( "gfdBillboard", true ));
+                    TryAddProperty( node.Properties, new UserBoolProperty( "gfdSortByName", false ));
+                    break;
+            }
+        }
+
+        private static Node ConvertAssimpNodeRecursively( Assimp.Scene aiScene, Ai.Node aiNode, Dictionary<string, NodeInfo> nodeLookup, ref int nextIndex, ModelConverterOptions options )
         {
             aiNode.Transform.Decompose( out var scale, out var rotation, out var translation );
 
@@ -147,7 +279,7 @@ namespace GFDLibrary.Conversion.AssimpNet
                                  new Quaternion( rotation.X, rotation.Y, rotation.Z, rotation.W ),
                                  new Vector3( scale.X, scale.Y, scale.Z ) );
 
-
+            
 
             if ( !IsMeshAttachmentNode( aiNode ) )
             {
@@ -156,7 +288,7 @@ namespace GFDLibrary.Conversion.AssimpNet
 
                 if ( options.SetFullBodyNodeProperties )
                 {
-                    if ( node.Name == "See User Defined Properties" )
+                    if (node.Name == "See User Defined Properties" )
                     {
                         TryAddProperty( node.Properties, new UserIntProperty( "NiSortAdjustNode", 0 ) );
                     }
@@ -170,77 +302,12 @@ namespace GFDLibrary.Conversion.AssimpNet
                     }
                 }
 
-                if ( options.AutoAddGFDHelperIDs ) // for P5/R
+                if ( options.AutoAddGFDHelperIDs )
                 {
-                    switch ( node.Name )
-                    {
-                        case "h_B_BD1":
-                            TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 501 ) );
-                            break;
-
-                        case "h_C_US3":
-                            TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 3 ) );
-                            break;
-
-                        case "h_C_FS1":
-                            TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 21 ) );
-                            break;
-
-                        case "h_M_HR3":
-                            TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 103 ) );
-                            break;
-
-                        case "h_B_KA1":
-                            TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 502 ) );
-                            break;
-
-                        case "h_B_CT1":
-                            TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 521 ) );
-                            break;
-
-                        case "h_C_US2":
-                            TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 2 ) );
-                            break;
-
-                        case "h_C_BS1":
-                            TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 11 ) );
-                            break;
-
-                        case "h_M_HL2":
-                            TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 152 ) );
-                            break;
-
-                        case "h_B_MZ1":
-                            TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 511 ) );
-                            break;
-
-                        case "h_M_HR2":
-                            TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 102 ) );
-                            break;
-
-                        case "h_M_HL1":
-                            TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 151 ) );
-                            break;
-
-                        case "h_M_BC1":
-                            TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 301 ) );
-                            break;
-
-                        case "h_C_US1":
-                            TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 1 ) );
-                            break;
-
-                        case "h_M_HL3":
-                            TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 153 ) );
-                            break;
-
-                        case "h_M_HR1":
-                            TryAddProperty( node.Properties, new UserIntProperty( "gfdHelperID", 101 ) );
-                            break;
-
-                        default:
-                            break;
-                    }
+                    if (options.Version >= 0x2000000)
+                        AddUserProperties_Metaphor( node );
+                    else 
+                        AddUserProperties_P5R( node );
                 }
 
                 if ( !nodeLookup.ContainsKey( node.Name ) )
@@ -412,24 +479,37 @@ namespace GFDLibrary.Conversion.AssimpNet
             if ( aiNode.HasMeshes )
             {
                 var nodeInfo = nodeLookup[AssimpConverterCommon.UnescapeName( aiNode.Name )];
-                var node = nodeInfo.Node;
-                var nodeWorldTransform = node.WorldTransform;
-                Matrix4x4.Invert( nodeWorldTransform, out var nodeInverseWorldTransform );
+                Node targetNode = nodeInfo.Node;
+                var sourceToTargetModelMatrix = Matrix4x4.Identity;
+                if ( nodeInfo.IsMeshAttachment && nodeInfo.Node.Parent?.Name == "RootNode")
+                {
+                    var originalParentNodeName = nodeInfo.Node.Name[..nodeInfo.Node.Name.IndexOf( ModelConversionHelpers.MeshAttachmentNameSuffix )];
+                    if ( nodeLookup.TryGetValue( originalParentNodeName, out var originalParentNodeInfo ) )
+                    {
+                        targetNode = originalParentNodeInfo.Node;
+                        // Need to transform the vertices from the local space of the original node to the local space of the new node
+                        sourceToTargetModelMatrix = targetNode.WorldTransform.Inverted() * nodeInfo.Node.WorldTransform;
+                    }
+                }
+
+                var sourceNode = nodeInfo.Node;
+                var targetNodeWorldTransform = targetNode.WorldTransform;
+                Matrix4x4.Invert( targetNodeWorldTransform, out var targetNodeInverseWorldTransform );
 
                 foreach ( var aiMeshIndex in aiNode.MeshIndices )
                 {
                     var aiMesh = aiScene.Meshes[aiMeshIndex];
                     var aiMaterial = aiScene.Materials[aiMesh.MaterialIndex];
-                    var geometry = ConvertAssimpMeshToGeometry( aiMesh, aiMaterial, nodeLookup, ref nextBoneIndex, nodeToBoneIndices, boneInverseBindMatrices, ref nodeWorldTransform, ref nodeInverseWorldTransform, transformedVertices, options );
+                    var geometry = ConvertAssimpMeshToGeometry( aiMesh, aiMaterial, nodeLookup, ref nextBoneIndex, nodeToBoneIndices, boneInverseBindMatrices, sourceToTargetModelMatrix, ref targetNodeWorldTransform, ref targetNodeInverseWorldTransform, transformedVertices, options );
 
                     if ( !nodeInfo.IsMeshAttachment )
                     {
-                        node.Attachments.Add( new NodeMeshAttachment( geometry ) );
+                        targetNode.Attachments.Add( new NodeMeshAttachment( geometry ) );
                     }
                     else
                     {
-                        node.Parent.Attachments.Add( new NodeMeshAttachment( geometry ) );
-                        node.Parent.RemoveChildNode( node );
+                        targetNode.Attachments.Add( new NodeMeshAttachment( geometry ) );
+                        sourceNode.Parent.RemoveChildNode( sourceNode );
                     }
                 }
             }
@@ -440,16 +520,22 @@ namespace GFDLibrary.Conversion.AssimpNet
             }
         }
 
-        private static Mesh ConvertAssimpMeshToGeometry( Ai.Mesh aiMesh, Ai.Material material, Dictionary<string, NodeInfo> nodeLookup, ref int nextBoneIndex, Dictionary<int, List<int>> nodeToBoneIndices, List<Matrix4x4> boneInverseBindMatrices, ref Matrix4x4 nodeWorldTransform, ref Matrix4x4 nodeInverseWorldTransform, List<Vector3> transformedVertices, ModelConverterOptions options )
+        private static Mesh ConvertAssimpMeshToGeometry( Ai.Mesh aiMesh, Ai.Material material, Dictionary<string, NodeInfo> nodeLookup, ref int nextBoneIndex, Dictionary<int, List<int>> nodeToBoneIndices, List<Matrix4x4> boneInverseBindMatrices, Matrix4x4 modelMatrix, ref Matrix4x4 nodeWorldTransform, ref Matrix4x4 nodeInverseWorldTransform, List<Vector3> transformedVertices, ModelConverterOptions options )
         {
             if ( !aiMesh.HasVertices )
                 throw new Exception( "Assimp mesh has no vertices" );
+            
+            var meshName = AssimpConverterCommon.UnescapeName( aiMesh.Name );
+            var materialName = AssimpConverterCommon.UnescapeName( material.Name );
+            var geometryOptions = options.DefaultMesh;
+            if ( options.Meshes.TryGetValue( meshName, out var geometryOptionsOverride ) )
+                geometryOptions = geometryOptionsOverride;
 
-            var geometry = new Mesh();
-            var geometryTransformedVertices = new Vector3[aiMesh.VertexCount];
+            var geometry = new Mesh( options.Version );
+            var geometryTransformedVertices = new Vector3[ aiMesh.VertexCount ];
 
             geometry.Vertices = aiMesh.Vertices
-                                      .Select( x => new Vector3( x.X, x.Y, x.Z ) )
+                                      .Select( x => Vector3.Transform( new Vector3( x.X, x.Y, x.Z ), modelMatrix ) )
                                       .ToArray();
 
             for ( int i = 0; i < geometry.Vertices.Length; i++ )
@@ -457,60 +543,142 @@ namespace GFDLibrary.Conversion.AssimpNet
 
             transformedVertices.AddRange( geometryTransformedVertices );
 
-            if ( aiMesh.HasNormals )
+            var useNormals = geometryOptions.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Normal );
+            if ( useNormals )
             {
-                geometry.Normals = aiMesh.Normals
-                                         .Select( x => new Vector3( x.X, x.Y, x.Z ) )
-                                         .ToArray();
+                if ( aiMesh.HasNormals )
+                {
+                    geometry.Normals = aiMesh.Normals
+                           .Select( x => Vector3.TransformNormal( new Vector3( x.X, x.Y, x.Z ), modelMatrix ) )
+                           .ToArray();
+                }
+            }
+            else
+            {
+                // TODO 
             }
 
-
-            if ( aiMesh.HasTangentBasis )
+            var useTangent = geometryOptions.VertexAttributeFlags.HasFlag(VertexAttributeFlags.Tangent);
+            if ( useTangent )
             {
-                geometry.Tangents = aiMesh.Tangents
-                                         .Select( x => new Vector3( x.X, x.Y, x.Z ) )
-                                         .ToArray();
+                if ( aiMesh.HasTangentBasis )
+                {
+                    geometry.Tangents = aiMesh.Tangents
+                       .Select( x => new Vector3( x.X, x.Y, x.Z ) )
+                       .ToArray();
+                }
+                else
+                {
+                    // TODO
+                }
             }
 
-            if ( aiMesh.HasTextureCoords( 0 ) )
+            var useBinormal = geometryOptions.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Binormal );
+            if ( useBinormal )
             {
-                geometry.TexCoordsChannel0 = aiMesh.TextureCoordinateChannels[0]
-                                                   .Select( x => new Vector2( x.X, x.Y ) )
-                                                   .ToArray();
+                if ( aiMesh.HasTangentBasis )
+                {
+                    geometry.Binormals = aiMesh.BiTangents
+                        .Select( x => new Vector3( x.X, x.Y, x.Z ) )
+                        .ToArray();
+                }
+                else
+                {
+                    // TODO
+                }
             }
 
-            if ( aiMesh.HasTextureCoords( 1 ) && !options.MinimalVertexAttributes )
+            var texCoordFlags = new[] { VertexAttributeFlags.TexCoord0, VertexAttributeFlags.TexCoord1, VertexAttributeFlags.TexCoord2 };
+            for ( int channel = 0; channel < 3; channel++ )
             {
-                geometry.TexCoordsChannel1 = aiMesh.TextureCoordinateChannels[1]
-                                                   .Select( x => new Vector2( x.X, x.Y ) )
-                                                   .ToArray();
+                var useTexCoord = geometryOptions.VertexAttributeFlags.HasFlag( texCoordFlags[channel] );
+                if ( !useTexCoord ) continue;
+
+                var channelOptions = geometryOptions.TexCoordChannelMap[channel];
+                Vector2[] texCoords;
+                if ( aiMesh.HasTextureCoords( channelOptions.SourceChannel ) )
+                {
+                    texCoords = aiMesh.TextureCoordinateChannels[channelOptions.SourceChannel]
+                                          .Select( x => new Vector2( x.X, x.Y ) )
+                                          .ToArray();
+                }
+                else
+                {
+                    texCoords = new Vector2[aiMesh.VertexCount];
+                }
+
+                switch ( channel )
+                {
+                    case 0:
+                        geometry.TexCoordsChannel0 = texCoords;
+                        break;
+                    case 1:
+                        geometry.TexCoordsChannel1 = texCoords;
+                        break;
+                    default:
+                        geometry.TexCoordsChannel2 = texCoords;
+                        break;
+                }
             }
 
-            if ( aiMesh.HasTextureCoords( 2 ) && !options.MinimalVertexAttributes )
+            var colorFlags = new[]
             {
-                geometry.TexCoordsChannel2 = aiMesh.TextureCoordinateChannels[2]
-                                                   .Select( x => new Vector2( x.X, x.Y ) )
-                                                   .ToArray();
-            }
+                VertexAttributeFlags.Color0,
+                VertexAttributeFlags.Color1,
+                VertexAttributeFlags.Color2
+            };
 
-            if ( aiMesh.HasVertexColors( 0 ) && !options.MinimalVertexAttributes )
-            {
-                geometry.ColorChannel0 = aiMesh.VertexColorChannels[0]
-                                               .Select( x => (uint)( (byte)( x.B * 255f ) | (byte)( x.G * 255f ) << 8 | (byte)( x.R * 255f ) << 16 | (byte)( x.A * 255f ) << 24 ) )
-                                               .ToArray();
-            }
-            else if ( options.GenerateVertexColors )
-            {
-                geometry.ColorChannel0 = new uint[geometry.VertexCount];
-                for ( int i = 0; i < geometry.ColorChannel0.Length; i++ )
-                    geometry.ColorChannel0[i] = 0xFFFFFFFF;
-            }
+            // If only one color channel is active, we might use the first available source channel if the required source channel is not present
+            var activeColorChannels = colorFlags.Where( flag => geometryOptions.VertexAttributeFlags.HasFlag( flag ) );
+            var useFirstAvailableSourceChannelAsFallback = activeColorChannels.Count() == 1;
 
-            if ( aiMesh.HasVertexColors( 1 ) && !options.MinimalVertexAttributes )
+            for ( int i = 0; i < 3; i++ )
             {
-                geometry.ColorChannel1 = aiMesh.VertexColorChannels[1]
-                                               .Select( x => (uint)( (byte)( x.B * 255f ) | (byte)( x.G * 255f ) << 8 | (byte)( x.R * 255f ) << 16 | (byte)( x.A * 255f ) << 24 ) )
-                                               .ToArray();
+                if ( geometryOptions.VertexAttributeFlags.HasFlag( colorFlags[i] ) )
+                {
+                    var channelOptions = geometryOptions.ColorChannelMap[i];
+                    Graphics.Color[] colorChannel = null;
+
+                    if ( aiMesh.HasVertexColors( channelOptions.SourceChannel ) )
+                    {
+                        colorChannel = aiMesh.VertexColorChannels[channelOptions.SourceChannel]
+                                             .Select( x => SwizzleColor( x, channelOptions.Swizzle ) )
+                                             .ToArray();
+                    }
+                    else if ( useFirstAvailableSourceChannelAsFallback )
+                    {
+                        // Try to find the first available source channel
+                        var firstAvailableChannel = Enumerable.Range( 0, aiMesh.VertexColorChannelCount )
+                                                              .FirstOrDefault( ch => aiMesh.HasVertexColors( ch ) );
+                        if ( firstAvailableChannel != -1 )
+                        {
+                            colorChannel = aiMesh.VertexColorChannels[firstAvailableChannel]
+                                                 .Select( x => SwizzleColor( x, channelOptions.Swizzle ) )
+                                                 .ToArray();
+                        }
+                    }
+
+                    // If still no color channel, use default color if specified
+                    if ( colorChannel == null && channelOptions.UseDefaultColor )
+                    {
+                        colorChannel = new Graphics.Color[geometry.VertexCount];
+                        for ( int j = 0; j < colorChannel.Length; j++ )
+                            colorChannel[j] = channelOptions.DefaultColor;
+                    }
+
+                    switch ( i )
+                    {
+                        case 0:
+                            geometry.ColorChannel0 = colorChannel;
+                            break;
+                        case 1:
+                            geometry.ColorChannel1 = colorChannel;
+                            break;
+                        case 2:
+                            geometry.ColorChannel2 = colorChannel;
+                            break;
+                    }
+                }
             }
 
             if ( aiMesh.HasFaces )
@@ -524,10 +692,11 @@ namespace GFDLibrary.Conversion.AssimpNet
             if ( aiMesh.HasBones )
             {
                 geometry.VertexWeights = new VertexWeight[geometry.VertexCount];
+                var weightCount = ResourceVersion.IsV2(options.Version) ? 8 : 4;
                 for ( int i = 0; i < geometry.VertexWeights.Length; i++ )
                 {
-                    geometry.VertexWeights[i].Indices = new byte[4];
-                    geometry.VertexWeights[i].Weights = new float[4];
+                    geometry.VertexWeights[i].Indices = new ushort[weightCount];
+                    geometry.VertexWeights[i].Weights = new float[weightCount];
                 }
 
                 var vertexWeightCounts = new int[geometry.VertexCount];
@@ -582,7 +751,7 @@ namespace GFDLibrary.Conversion.AssimpNet
                     {
                         int vertexWeightCount = vertexWeightCounts[aiVertexWeight.VertexID]++;
 
-                        geometry.VertexWeights[aiVertexWeight.VertexID].Indices[vertexWeightCount] = (byte)boneIndex;
+                        geometry.VertexWeights[aiVertexWeight.VertexID].Indices[vertexWeightCount] = ( ushort )boneIndex;
                         geometry.VertexWeights[aiVertexWeight.VertexID].Weights[vertexWeightCount] = aiVertexWeight.Weight;
                     }
                 }
@@ -591,9 +760,32 @@ namespace GFDLibrary.Conversion.AssimpNet
             geometry.MaterialName = AssimpConverterCommon.UnescapeName( material.Name );
             geometry.BoundingBox = BoundingBox.Calculate( geometry.Vertices );
             geometry.BoundingSphere = BoundingSphere.Calculate( geometry.BoundingBox.Value, geometry.Vertices );
-            geometry.Flags |= GeometryFlags.Bit31;
+
+            const GeometryFlags nonOverridableGeometryFlags =
+                GeometryFlags.HasBoundingBox | GeometryFlags.HasBoundingSphere |
+                GeometryFlags.HasMaterial | GeometryFlags.HasMorphTargets |
+                GeometryFlags.HasTriangles | GeometryFlags.HasVertexWeights;
+            if ( geometryOptionsOverride is not null )
+            {
+                geometry.Flags |= geometryOptionsOverride.GeometryFlags & ~nonOverridableGeometryFlags;
+            }
+            else
+            {
+                geometry.Flags |= GeometryFlags.Bit7;
+            }
 
             return geometry;
+        }
+
+        private static GFDLibrary.Graphics.Color SwizzleColor( Ai.Color4D sourceColor, ColorSwizzle swizzle )
+        {
+            float[] channels = new float[4] { sourceColor.R, sourceColor.G, sourceColor.B, sourceColor.A };
+            return new GFDLibrary.Graphics.Color(
+                channels[(int)swizzle.Red],
+                channels[(int)swizzle.Green],
+                channels[(int)swizzle.Blue],
+                channels[(int)swizzle.Alpha]
+            );
         }
 
         private static List<Bone> BuildBonePalette( List<Matrix4x4> boneInverseBindMatrices, Dictionary<int, List<int>> nodeToBoneIndices )

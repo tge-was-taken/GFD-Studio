@@ -137,11 +137,13 @@ namespace GFDLibrary.Api
             var flag = VertexAttributeFlags.Color0;
             if ( index == 1 )
                 flag = VertexAttributeFlags.Color1;
+            if ( index == 2 )
+                flag = VertexAttributeFlags.Color2;
 
             if ( !mesh.VertexAttributeFlags.HasFlag( flag ) )
                 return null;
 
-            return mesh.ColorChannels[ index ];
+            return mesh.ColorChannels[index].Select( c => c.ABGR ).ToArray();
         }
 
         public static float[][] GetMeshVertexWeights( Mesh mesh )

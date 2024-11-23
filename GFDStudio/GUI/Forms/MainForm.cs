@@ -8,11 +8,16 @@ using System.Windows.Controls;
 using System.Windows.Forms;
 using GFDLibrary;
 using GFDLibrary.Animations;
+using GFDLibrary.Materials;
+using GFDLibrary.Models;
+using GFDLibrary.Textures.Texpack;
 using GFDStudio.FormatModules;
 using GFDStudio.GUI.Controls;
 using GFDStudio.GUI.DataViewNodes;
+using GFDStudio.IO;
 using MetroSet_UI.Controls;
 using MetroSet_UI.Forms;
+using SixLabors.ImageSharp;
 using Control = System.Windows.Forms.Control;
 
 namespace GFDStudio.GUI.Forms
@@ -147,16 +152,17 @@ namespace GFDStudio.GUI.Forms
             }
 
             RecordOpenedFile( filePath );
-            
             if (node.DataType == typeof(Animation) || node.DataType == typeof(AnimationPack))
             {
                 mAnimationListTreeView.SetTopNode( node );
             }
             else
             {
+                // METAPHOR - Several parts of model pack are stored in separate files, check these.
+                if ( node.DataType == typeof( ModelPack ) && ( (ModelPack)node.Data ).Version >= 0x02000000 )
+                    CollectModelParts.CollectDisconnectedModelPartsForModelPack( (ModelPack)node.Data, filePath );
                 ModelEditorTreeView.SetTopNode( node );
             }
-
             UpdateSelection( node );
         }
 
@@ -221,6 +227,8 @@ namespace GFDStudio.GUI.Forms
 
             System.Windows.Forms.Control control = null;
 
+            ModelViewControl.Instance.ClearSelection();
+
             if ( FormatModuleRegistry.ModuleByType.TryGetValue( node.DataType, out var module ) )
             {
                 if ( module.UsageFlags.HasFlag( FormatModuleUsageFlags.Bitmap ) )
@@ -234,6 +242,14 @@ namespace GFDStudio.GUI.Forms
                     ModelViewControl.Instance.LoadModel( (ModelPack)node.Data );
                     ModelViewControl.Instance.Visible = false;
                     control = ModelViewControl.Instance;
+                }
+                else if ( module.ModelType == typeof( Mesh ))
+                {
+                    ModelViewControl.Instance.SetSelection( (Mesh)node.Data );
+                }
+                else if ( module.ModelType == typeof( Material ) )
+                {
+                    ModelViewControl.Instance.SetSelection( (Material)node.Data );
                 }
                 else if ( node.DataType == typeof( Animation ) )
                 {

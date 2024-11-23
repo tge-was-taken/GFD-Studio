@@ -37,10 +37,12 @@ namespace GFDLibrary::Conversion::FbxSdk
 	using namespace Common;
 	using namespace Models;
 	using namespace Textures;
+	using namespace Textures::Texpack;
 	using namespace Materials;
 	using namespace Cameras;
 	using namespace Lights;
 	using namespace Effects;
+	using namespace Conversion;
 
 	const double RAD_TO_DEG = 180.0 / Math::PI;
 
@@ -101,31 +103,31 @@ namespace GFDLibrary::Conversion::FbxSdk
 			case UserPropertyValueType::Int:
 			{
 				auto intProperty = safe_cast<UserIntProperty^>(prop.Value);
-				udpBuilder->AppendFormat("{0}=int({1})&cr;&lf;", prop.Key, intProperty->Value);
+				udpBuilder->AppendFormat("{0}=int({1})\r\n", prop.Key, intProperty->Value);
 				break;
 			}
 			case UserPropertyValueType::Float:
 			{
 				auto floatProperty = safe_cast<UserFloatProperty^>(prop.Value);
-				udpBuilder->AppendFormat("{0}=float({1})&cr;&lf;", prop.Key, floatProperty->Value);
+				udpBuilder->AppendFormat("{0}=float({1})\r\n", prop.Key, floatProperty->Value);
 				break;
 			}
 			case UserPropertyValueType::Bool:
 			{
 				auto boolProperty = safe_cast<UserBoolProperty^>(prop.Value);
-				udpBuilder->AppendFormat("{0}=bool({1})&cr;&lf;", prop.Key, boolProperty->Value ? "true" : "false");
+				udpBuilder->AppendFormat("{0}=bool({1})\r\n", prop.Key, boolProperty->Value ? "true" : "false");
 				break;
 			}
 			case UserPropertyValueType::String:
 			{
 				auto stringProperty = safe_cast<UserStringProperty^>(prop.Value);
-				udpBuilder->AppendFormat("{0}=string({1})&cr;&lf;", prop.Key, stringProperty->Value);
+				udpBuilder->AppendFormat("{0}=string({1})\r\n", prop.Key, stringProperty->Value);
 				break;
 			}
 			case UserPropertyValueType::ByteVector3:
 			{
 				auto byteVector3Property = safe_cast<UserByteVector3Property^>(prop.Value);
-				udpBuilder->AppendFormat("{0}=bytevector3({1},{2},{3})&cr;&lf;",
+				udpBuilder->AppendFormat("{0}=bytevector3({1},{2},{3})\r\n",
 					prop.Key,
 					byteVector3Property->Value.X,
 					byteVector3Property->Value.Y,
@@ -135,7 +137,7 @@ namespace GFDLibrary::Conversion::FbxSdk
 			case UserPropertyValueType::ByteVector4:
 			{
 				auto byteVector4Property = safe_cast<UserByteVector4Property^>(prop.Value);
-				udpBuilder->AppendFormat("{0}=bytevector4({1},{2},{3},{4})&cr;&lf;",
+				udpBuilder->AppendFormat("{0}=bytevector4({1},{2},{3},{4})\r\n",
 					prop.Key,
 					byteVector4Property->Value.X,
 					byteVector4Property->Value.Y,
@@ -146,7 +148,7 @@ namespace GFDLibrary::Conversion::FbxSdk
 			case UserPropertyValueType::Vector3:
 			{
 				auto vector3Property = safe_cast<UserVector3Property^>(prop.Value);
-				udpBuilder->AppendFormat("{0}=vector3({1},{2},{3})&cr;&lf;",
+				udpBuilder->AppendFormat("{0}=vector3({1},{2},{3})\r\n",
 					prop.Key,
 					vector3Property->Value.X,
 					vector3Property->Value.Y,
@@ -156,7 +158,7 @@ namespace GFDLibrary::Conversion::FbxSdk
 			case UserPropertyValueType::Vector4:
 			{
 				auto vector4Property = safe_cast<UserVector4Property^>(prop.Value);
-				udpBuilder->AppendFormat("{0}=vector4({1},{2},{3},{4})&cr;&lf;",
+				udpBuilder->AppendFormat("{0}=vector4({1},{2},{3},{4})\r\n",
 					prop.Key,
 					vector4Property->Value.X,
 					vector4Property->Value.Y,
@@ -168,7 +170,7 @@ namespace GFDLibrary::Conversion::FbxSdk
 			{
 				auto byteArrayProperty = safe_cast<UserByteArrayProperty^>(prop.Value);
 				System::String^ base64String = System::Convert::ToBase64String(byteArrayProperty->Value);
-				udpBuilder->AppendFormat("{0}=bytearray({1})&cr;&lf;", prop.Key, base64String);
+				udpBuilder->AppendFormat("{0}=bytearray({1})\r\n", prop.Key, base64String);
 				break;
 			}
 			default:
@@ -313,7 +315,7 @@ namespace GFDLibrary::Conversion::FbxSdk
 		return fElementUV;
 	}
 
-	static void ConvertVertexColorChannel(FbxMesh* fbxMesh, array<unsigned int>^ colors)
+	static void ConvertVertexColorChannel(FbxMesh* fbxMesh, array<Graphics::Color>^ colors)
 	{
 		auto fbxElementColors = fbxMesh->CreateElementVertexColor();
 		fbxElementColors->SetMappingMode(FbxLayerElement::EMappingMode::eByControlPoint);
@@ -324,38 +326,40 @@ namespace GFDLibrary::Conversion::FbxSdk
 
 		for (int i = 0; i < colors->Length; i++)
 		{
-			auto r = (colors[i] & 0xFF000000)>>24;
-			auto g = (colors[i] & 0x00FF0000)>>16;
-			auto b = (colors[i] & 0x0000FF00)>>8;
-			auto a = (colors[i] & 0x000000FF);
+			auto r = (colors[i].R);
+			auto g = (colors[i].G);
+			auto b = (colors[i].B);
+			auto a = (colors[i].A);
 			fbxElementColors->GetDirectArray().SetAt(i,
 				FbxColor((double)r / 255.0, (double)g / 255.0,
 					(double)b / 255.0, (double)a / 255.0));
 		}
 	}
 
-	//static void ConvertVertexColorChannelASUVLayer(FbxMesh* fbxMesh, array<unsigned int>^ colors, const char* name, int layer)
-	//{
-	//	// 3ds Max requires every extra color channel to be a UV channel on its own layer (as these map to Map Channels)
-	//	// TODO UDP3DSMAX = "MapChannel:3 = ColorChannel_3&cr;&lf;MapChannel:4 = ColorChannel_4&cr;&lf;"
-	//	auto fLayer = GetFbxMeshLayer(fbxMesh, layer);
-	//	auto fElementUV = (FbxGeometryElementUV*)fLayer->CreateLayerElementOfType(FbxLayerElement::EType::eUV);
-	//	fElementUV->SetName(name);
-	//	fElementUV->SetMappingMode(FbxLayerElement::EMappingMode::eByControlPoint);
-	//	fElementUV->SetReferenceMode(FbxLayerElement::EReferenceMode::eDirect);
-	//	fElementUV->GetDirectArray().SetCount(fbxMesh->GetControlPointsCount());
+	static void ConvertVertexColorChannelAsLayerElement(FbxMesh* fbxMesh, array<Graphics::Color>^ colors, const char* name, int layer)
+	{
+		// 3ds Max requires every UV channel to be on its own layer (as these map to Map Channels)
+		auto fbxElementVertexColor = layer >= 0 ?
+			(FbxGeometryElementVertexColor*)GetFbxMeshLayer(fbxMesh, layer)->CreateLayerElementOfType(FbxLayerElement::EType::eVertexColor) :
+			fbxMesh->CreateElementVertexColor();
+		if (name)
+			fbxElementVertexColor->SetName(name);
+		fbxElementVertexColor->SetName(name);
+		fbxElementVertexColor->SetMappingMode(FbxLayerElement::EMappingMode::eByControlPoint);
+		fbxElementVertexColor->SetReferenceMode(FbxLayerElement::EReferenceMode::eDirect);
+		fbxElementVertexColor->GetDirectArray().SetCount(fbxMesh->GetControlPointsCount());
 
-	//	for (int i = 0; i < colors->Length; i++)
-	//	{
-	//		auto r = (colors[i] & 0xFF000000) >> 24;
-	//		auto g = (colors[i] & 0x00FF0000) >> 16;
-	//		auto b = (colors[i] & 0x0000FF00) >> 8;
-	//		auto a = (colors[i] & 0x000000FF);
-	//		fElementUV->GetDirectArray().SetAt(i,
-	//			FbxColor((double)r / 255.0, (double)g / 255.0,
-	//				(double)b / 255.0, (double)a / 255.0));
-	//	}
-	//}
+		for (int i = 0; i < colors->Length; i++)
+		{
+			auto r = (colors[i].R);
+			auto g = (colors[i].G);
+			auto b = (colors[i].B);
+			auto a = (colors[i].A);
+			fbxElementVertexColor->GetDirectArray().SetAt(i,
+				FbxColor((double)r / 255.0, (double)g / 255.0,
+					(double)b / 255.0, (double)a / 255.0));
+		}
+	}
 
 	static void ConvertTexCoordChannel(FbxMesh* fbxMesh, array<Vector2>^ texCoords, const char* name, int layer)
 	{
@@ -421,10 +425,10 @@ namespace GFDLibrary::Conversion::FbxSdk
 			LAYER 2: (Maps to Map Channel 3)
 				- FbxGeometryElementUV (second COLOR (!!!!) channel, if used)
 		*/
-
+		
 		mNodeIndexToFbxClusterLookup->Clear();
 
-		auto fbxMeshNode = FbxNode::Create(mFbxScene, Utf8String(String::Format("{0}_mesh_{1}", parentNode->Name, typeIndex.ToString())).ToCStr());
+		auto fbxMeshNode = FbxNode::Create(mFbxScene, Utf8String(ModelConversionHelpers::GetMeshExportName(parentNode->Name, typeIndex)).ToCStr());
 		if (mModel->Bones != nullptr && mModel->Bones->Count > 0)
 		{
 			// Parenting meshes to nodes on animated models leads to weird results
@@ -811,10 +815,15 @@ namespace GFDLibrary::Conversion::FbxSdk
 
 		// Export textures
 		System::IO::Directory::CreateDirectory(mTextureBaseDirectoryPath);
+		auto textureNameToExportTextureNameLookup = gcnew Dictionary<String^, String^>();
 		for each (auto texture in modelPack->Textures)
 		{
+			// TODO: handle other texture types (TGA, GTF, etc.)
 			auto texturePath = System::IO::Path::Combine(mTextureBaseDirectoryPath, texture.Key);
+			if (!System::IO::Path::GetExtension(texturePath)->Equals(".dds", System::StringComparison::OrdinalIgnoreCase))
+				texturePath += ".dds";
 			System::IO::File::WriteAllBytes(texturePath, texture.Value->Data);
+			textureNameToExportTextureNameLookup->Add(texture.Key, texturePath);
 		}
 
 		// Create materials
@@ -825,8 +834,8 @@ namespace GFDLibrary::Conversion::FbxSdk
 
 			if (material->DiffuseMap)
 			{
-				auto texturePath = System::IO::Path::Combine(mTextureBaseRelativeDirectoryPath, material->DiffuseMap->Name);
-
+				auto texturePath = textureNameToExportTextureNameLookup[material->DiffuseMap->Name];
+				
 				// Create & connect file texture to material diffuse
 				IntPtr fbxTexturePtr;
 				FbxFileTexture* fbxTexture;

@@ -1,7 +1,11 @@
-﻿using System.Windows.Forms;
+﻿using System.Linq;
+using System.Windows.Forms;
 using GFDLibrary;
 using GFDLibrary.Conversion;
 using GFDLibrary.Conversion.AssimpNet;
+using GFDLibrary.Conversion.AssimpNet.Utilities;
+using GFDLibrary.Materials;
+using GFDLibrary.Models;
 using GFDStudio.FormatModules;
 using GFDStudio.GUI.Forms;
 
@@ -9,7 +13,7 @@ namespace GFDStudio.IO
 {
     public static class ModelConverterUtility
     {
-        public static ModelPack ConvertAssimpModel()
+        public static ModelPack ConvertAssimpModel(ModelPack originalModel)
         {
             using ( var dialog = new OpenFileDialog() )
             {
@@ -27,27 +31,19 @@ namespace GFDStudio.IO
                     return null;
                 }
 
-                return ConvertAssimpModel( dialog.FileName );
+                return ConvertAssimpModel( dialog.FileName, originalModel );
             }
         }
 
-        public static ModelPack ConvertAssimpModel( string path )
+        public static ModelPack ConvertAssimpModel( string path, ModelPack originalModel)
         {
-            using ( var dialog = new ModelConverterOptionsDialog( false ) )
+            var scene = AssimpHelper.ImportScene( path );
+            using ( var dialog = new ModelConversionOptionsDialog( scene, originalModel ) )
             {
                 if ( dialog.ShowDialog() != DialogResult.OK )
                     return null;
 
-                ModelConverterOptions options = new ModelConverterOptions()
-                {
-                    MaterialPreset = dialog.MaterialPreset,
-                    Version = dialog.Version,
-                    ConvertSkinToZUp = dialog.ConvertSkinToZUp,
-                    GenerateVertexColors = dialog.GenerateVertexColors,
-                    MinimalVertexAttributes = dialog.MinimalVertexAttributes,
-                    AutoAddGFDHelperIDs = dialog.AutoAddGFDHelperIDs
-                };
-
+                var options = dialog.GetModelConversionOptions();
                 return AssimpNetModelPackConverter.ConvertFromAssimpScene( path, options );
             }
         }

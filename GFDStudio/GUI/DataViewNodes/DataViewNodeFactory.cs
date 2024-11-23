@@ -51,6 +51,26 @@ namespace GFDStudio.GUI.DataViewNodes
             Register<MaterialAttributeType6ViewNode>();
             Register<MaterialAttributeType7ViewNode>();
             Register<MaterialAttributeType8ViewNode>();
+            // metaphor refantazio material parameter sets
+            Register<MaterialLegacyParametersViewNode>();
+            Register<MaterialParameterSetType0ViewNode>();
+            Register<MaterialParameterSetType1ViewNode>();
+            //Register<MaterialParameterSetType2ViewNode>();
+            Register<MaterialParameterSetType2ViewNode>();
+            Register<MaterialParameterSetType3ViewNode>();
+            Register<MaterialParameterSetType4ViewNode>();
+            Register<MaterialParameterSetType5ViewNode>();
+            Register<MaterialParameterSetType6ViewNode>();
+            Register<MaterialParameterSetType6Field0ViewNode>();
+            Register<MaterialParameterSetType7ViewNode>();
+            Register<MaterialParameterSetType8ViewNode>();
+            Register<MaterialParameterSetType9ViewNode>();
+            Register<MaterialParameterSetType10ViewNode>();
+            Register<MaterialParameterSetType11ViewNode>();
+            Register<MaterialParameterSetType12ViewNode>();
+            Register<MaterialParameterSetType13ViewNode>();
+            Register<MaterialParameterSetType14ViewNode>();
+            Register<MaterialParameterSetType15ViewNode>();
 
             // gfd model view models
             Register<ModelViewNode>();

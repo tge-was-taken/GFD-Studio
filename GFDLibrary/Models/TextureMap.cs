@@ -1,4 +1,6 @@
 ﻿using GFDLibrary.IO;
+using GFDLibrary.Materials;
+using YamlDotNet.Serialization;
 
 namespace GFDLibrary.Models
 {
@@ -9,19 +11,19 @@ namespace GFDLibrary.Models
         public string Name { get; set; }
 
         // 0x44
-        public int Field44 { get; set; }
+        public int Flags { get; set; }
 
         // 0x48
-        public TextureFilteringMethod Field48 { get; set; }
+        public TextureFilteringMethod MinificationFilter { get; set; }
 
         // 0x49
-        public TextureFilteringMethod Field49 { get; set; }
+        public TextureFilteringMethod MagnificationFilter { get; set; }
 
         // 0x4A
-        public TextureWrapMethod Field4A { get; set; }
+        public TextureWrapMethod WrapModeU { get; set; }
 
         // 0x4B
-        public TextureWrapMethod Field4B { get; set; }
+        public TextureWrapMethod WrapModeV { get; set; }
         
         // 0x4C
         public float Field4C { get; set; }
@@ -71,6 +73,9 @@ namespace GFDLibrary.Models
         // 0x88
         public float Field88 { get; set; }
 
+        [YamlIgnore]
+        public MaterialParameterSetBase METAPHOR_ParentMaterialParameterSet { get; set; }
+
         public TextureMap()
         {
             Initialize();
@@ -88,11 +93,11 @@ namespace GFDLibrary.Models
 
         private void Initialize()
         {
-            Field44 = 0;
-            Field48 = (TextureFilteringMethod)1;
-            Field49 = (TextureFilteringMethod)1;
-            Field4A = (TextureWrapMethod)0;
-            Field4B = (TextureWrapMethod)0;
+            Flags = 0;
+            MinificationFilter = (TextureFilteringMethod)1;
+            MagnificationFilter = (TextureFilteringMethod)1;
+            WrapModeU = (TextureWrapMethod)0;
+            WrapModeV = (TextureWrapMethod)0;
             Field4C = 1;
             Field50 = 0;
             Field54 = 0;
@@ -114,11 +119,11 @@ namespace GFDLibrary.Models
         protected override void ReadCore( ResourceReader reader )
         {
             Name = reader.ReadStringWithHash( Version );
-            Field44 = reader.ReadInt32();
-            Field48 = (TextureFilteringMethod)reader.ReadByte();
-            Field49 = (TextureFilteringMethod)reader.ReadByte();
-            Field4A = (TextureWrapMethod)reader.ReadByte();
-            Field4B = (TextureWrapMethod)reader.ReadByte();
+            Flags = reader.ReadInt32();
+            MinificationFilter = (TextureFilteringMethod)reader.ReadByte();
+            MagnificationFilter = (TextureFilteringMethod)reader.ReadByte();
+            WrapModeU = (TextureWrapMethod)reader.ReadByte();
+            WrapModeV = (TextureWrapMethod)reader.ReadByte();
             Field4C = reader.ReadSingle();
             Field50 = reader.ReadSingle();
             Field54 = reader.ReadSingle();
@@ -140,11 +145,11 @@ namespace GFDLibrary.Models
         protected override void WriteCore( ResourceWriter writer )
         {
             writer.WriteStringWithHash( Version, Name );
-            writer.WriteInt32( Field44 );
-            writer.WriteByte( (byte)Field48 );
-            writer.WriteByte( (byte)Field49 );
-            writer.WriteByte( (byte)Field4A );
-            writer.WriteByte( (byte)Field4B );
+            writer.WriteInt32( Flags );
+            writer.WriteByte( (byte)MinificationFilter );
+            writer.WriteByte( (byte)MagnificationFilter );
+            writer.WriteByte( (byte)WrapModeU );
+            writer.WriteByte( (byte)WrapModeV );
             writer.WriteSingle( Field4C );
             writer.WriteSingle( Field50 );
             writer.WriteSingle( Field54 );

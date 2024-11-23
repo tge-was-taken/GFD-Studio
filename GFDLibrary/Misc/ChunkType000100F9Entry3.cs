@@ -2,14 +2,14 @@
 {
     public class ChunkType000100F9Entry3
     {
-        public float Field00 { get; set; }
+        public float LengthSq { get; set; }
 
-        public float Field04 { get; set; }
+        public float AngularLimit { get; set; }
 
-        public float Field08 { get; set; }
+        public float ChainThickness { get; set; }
 
-        public short Field0C { get; set; }
+        public short ParentBoneIndex { get; set; }
 
-        public short Field0E { get; set; }
+        public short ChildBoneIndex { get; set; }
     }
 }

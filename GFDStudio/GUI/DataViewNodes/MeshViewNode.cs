@@ -50,15 +50,16 @@ namespace GFDStudio.GUI.DataViewNodes
             get => Data.MaterialName;
             set => SetDataProperty( value );
         }
-        public float FieldD4
+        [DisplayName( "LOD Start" )]
+        public float LodStart
         {
-            get => Data.FieldD4;
+            get => Data.LodStart;
             set => SetDataProperty( value );
         }
-
-        public float FieldD8
+        [DisplayName( "LOD End" )]
+        public float LodEnd
         {
-            get => Data.FieldD8;
+            get => Data.LodEnd;
             set => SetDataProperty( value );
         }
 

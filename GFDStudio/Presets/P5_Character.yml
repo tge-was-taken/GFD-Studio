@@ -2,29 +2,30 @@
 ResourceType: Material
 Name: P5_Character
 Flags: HasAmbientColor, HasDiffuseColor, ApplyFog, HasEmissiveColor, EnableLight, ReceiveShadow, CastShadow, HasAttributes, HasDiffuseMap
-AmbientColor:
-  X: 0.6
-  Y: 0.6
-  Z: 0.6
-  W: 0
-DiffuseColor:
-  X: 0.078431375
-  Y: 0.078431375
-  Z: 0.078431375
-  W: 1
-SpecularColor:
-  X: 0.11764707
-  Y: 0.11764707
-  Z: 0.11764707
-  W: 1
-EmissiveColor:
-  X: 0
-  Y: 0
-  Z: 0
-  W: 0
-Field40: 0.5
-Field44: 0
 DrawMethod: Opaque
+LegacyParameters: !MaterialLegacyParameters
+    AmbientColor:
+      X: 0.6
+      Y: 0.6
+      Z: 0.6
+      W: 0
+    DiffuseColor:
+      X: 0.078431375
+      Y: 0.078431375
+      Z: 0.078431375
+      W: 1
+    SpecularColor:
+      X: 0.11764707
+      Y: 0.11764707
+      Z: 0.11764707
+      W: 1
+    EmissiveColor:
+      X: 0
+      Y: 0
+      Z: 0
+      W: 0
+    Field40: 0.5
+    Field44: 0
 Field49: 1
 Field4A: 0
 Field4B: 1

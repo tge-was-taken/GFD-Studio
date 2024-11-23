@@ -14,6 +14,9 @@ in vec4 fColor0;
 // out
 out vec4 oColor;
 
+// renderer state
+uniform bool uIsSelected;
+
 // samplers
 uniform sampler2D uDiffuse;
 uniform sampler2D uNormal;
@@ -458,5 +461,9 @@ void main() {
 	    else if (alphaClipMode == 5)
 	    	if(oColor.a == alphaClipFloat) discard;
         */
+    }
+
+    if (uIsSelected) {
+        oColor = mix(oColor, vec4(1.0, 0.0, 0.0, 1.0), 0.5);
     }
 }

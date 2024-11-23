@@ -2,7 +2,7 @@
 
 namespace GFDLibrary.Animations
 {
-    public class KeyType31FullBody : Key, IKeyType31
+    public class KeyType31FullBody : PRSKey, IKeyType31
     {
         public KeyType31Type SubType => KeyType31Type.FullBody;
 
@@ -11,7 +11,7 @@ namespace GFDLibrary.Animations
         public KeyType31FullBody() : base( KeyType.Type31 )
         {
         }
-
+        /*
         internal override void Read( ResourceReader reader )
         {
             Data = reader.ReadBytes( 0x1C );
@@ -21,5 +21,6 @@ namespace GFDLibrary.Animations
         {
             writer.WriteBytes( Data );
         }
+        */
     }
 }

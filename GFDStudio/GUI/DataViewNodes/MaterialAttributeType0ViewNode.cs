@@ -35,45 +35,45 @@ namespace GFDStudio.GUI.DataViewNodes
         // 1C
         [ Browsable( true ) ]
         [DisplayName( "Light threshold" )]
-        public float Field1C
+        public float LightTreshold
         {
-            get => GetDataProperty< float >();
+            get => Data.LightTreshold;
             set => SetDataProperty( value );
         }
 
         // 20
         [Browsable( true )]
         [DisplayName( "Light factor" )]
-        public float Field20
+        public float LightFactor
         {
-            get => GetDataProperty<float>();
+            get => Data.LightFactor;
             set => SetDataProperty( value );
         }
 
         // 24
         [Browsable( true )]
         [DisplayName( "Light brightness" )]
-        public float Field24
+        public float LightBrightness
         {
-            get => GetDataProperty<float>();
+            get => Data.LightBrightness;
             set => SetDataProperty( value );
         }
 
         // 28
         [Browsable( true )]
         [DisplayName( "Shadow threshold" )]
-        public float Field28
+        public float ShadowTreshold
         {
-            get => GetDataProperty<float>();
+            get => Data.ShadowTreshold;
             set => SetDataProperty( value );
         }
 
         // 2C
         [Browsable( true )]
         [DisplayName( "Shadow factor" )]
-        public float Field2C
+        public float ShadowFactor
         {
-            get => GetDataProperty<float>();
+            get => Data.ShadowFactor;
             set => SetDataProperty( value );
         }
 
@@ -82,7 +82,7 @@ namespace GFDStudio.GUI.DataViewNodes
         [TypeConverter(typeof(EnumTypeConverter<MaterialAttributeType0Flags> ))]
         public MaterialAttributeType0Flags Type0Flags
         {
-            get => GetDataProperty<MaterialAttributeType0Flags>();
+            get => Data.Type0Flags;
             set => SetDataProperty( value );
         }
 

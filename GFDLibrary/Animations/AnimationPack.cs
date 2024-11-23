@@ -24,6 +24,8 @@ namespace GFDLibrary.Animations
 
         public AnimationBit29Data Bit29Data { get; set; }
 
+        public List<Animation> METAPHOR_AnimArray3 { get; set; }
+
         public AnimationPack( uint version )
             : base( version )
         {
@@ -81,6 +83,8 @@ namespace GFDLibrary.Animations
             //    Flags &= ~AnimationPackFlags.Bit2;
             //    ErrorsOccuredDuringLoad = true;
             //}
+            if ( Version >= 0x2109900 )
+                METAPHOR_AnimArray3 = ReadAnimations( reader );
         }
 
         private List<Animation> ReadAnimations( ResourceReader reader )
@@ -127,6 +131,8 @@ namespace GFDLibrary.Animations
 
             if ( Flags.HasFlag( AnimationPackFlags.Bit2 ) )
                 writer.WriteResource( Bit29Data );
+            if ( Version >= 0x2109900 )
+                writer.WriteResourceList( METAPHOR_AnimArray3 );
         }
 
         public void FixTargetIds( Model model )

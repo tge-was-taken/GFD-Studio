@@ -30,15 +30,17 @@ namespace GFDLibrary.Conversion.AssimpNet.Utilities
         {
             using ( var aiContext = new AssimpContext() )
             {
-                aiContext.SetConfig( new Assimp.Configs.VertexBoneWeightLimitConfig( 4 ) );
+                aiContext.SetConfig( new Assimp.Configs.MeshVertexLimitConfig( 1500 ) ); // estimate
+                aiContext.SetConfig( new Assimp.Configs.MeshTriangleLimitConfig( 3000 ) ); // estimate
+                aiContext.SetConfig( new Assimp.Configs.VertexCacheSizeConfig( 63 ) ); // PS3/RSX vertex cache size
                 aiContext.SetConfig( new Assimp.Configs.FBXPreservePivotsConfig( false ) );
-                return aiContext.ImportFile( path,
-                                             PostProcessSteps.FindDegenerates | PostProcessSteps.FindInvalidData |
-                                             PostProcessSteps.FlipUVs | PostProcessSteps.ImproveCacheLocality |
-                                             PostProcessSteps.JoinIdenticalVertices | PostProcessSteps.LimitBoneWeights |
-                                             PostProcessSteps.SplitByBoneCount | PostProcessSteps.Triangulate |
-                                             PostProcessSteps.ValidateDataStructure | PostProcessSteps.GenerateUVCoords |
-                                             PostProcessSteps.GenerateSmoothNormals );
+
+                // Apply ALL the optimizations
+                var postProcessSteps = Assimp.PostProcessSteps.ImproveCacheLocality | Assimp.PostProcessSteps.FindInvalidData | Assimp.PostProcessSteps.FlipUVs | Assimp.PostProcessSteps.JoinIdenticalVertices |
+                                       Assimp.PostProcessSteps.LimitBoneWeights | Assimp.PostProcessSteps.Triangulate | Assimp.PostProcessSteps.GenerateSmoothNormals | Assimp.PostProcessSteps.OptimizeMeshes | Assimp.PostProcessSteps.CalculateTangentSpace;
+
+                var aiScene = aiContext.ImportFile( path, postProcessSteps );
+                return aiScene;
             }
         }
 

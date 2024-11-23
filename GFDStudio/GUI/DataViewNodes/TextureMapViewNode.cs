@@ -23,157 +23,157 @@ namespace GFDStudio.GUI.DataViewNodes
 
         [Browsable( true )]
         [DisplayName( "Flags" )]
-        public int Field44
+        public int Flags
         {
-            get => GetDataProperty<int>();
+            get => Data.Flags;
             set => SetDataProperty( value );
         }
 
         [Browsable( true )]
         [TypeConverter( typeof( EnumTypeConverter<TextureFilteringMethod> ) )]
         [DisplayName( "Texture Filtering - Minification" )]
-        public TextureFilteringMethod Field48
+        public TextureFilteringMethod MinificationFilter
         {
-            get => GetDataProperty<TextureFilteringMethod>();
+            get => Data.MinificationFilter;
             set => SetDataProperty( value );
         }
 
         [Browsable( true )]
         [TypeConverter( typeof( EnumTypeConverter<TextureFilteringMethod> ) )]
         [DisplayName( "Texture Filtering - Magnification" )]
-        public TextureFilteringMethod Field49
+        public TextureFilteringMethod MagnificationFilter
         {
-            get => GetDataProperty<TextureFilteringMethod>();
+            get => Data.MagnificationFilter;
             set => SetDataProperty( value );
         }
 
         [Browsable( true )]
         [TypeConverter( typeof( EnumTypeConverter<TextureWrapMethod> ) )]
         [DisplayName( "Wrap Mode U" )]
-        public TextureWrapMethod Field4A
+        public TextureWrapMethod WrapModeU
         {
-            get => GetDataProperty<TextureWrapMethod>();
+            get => Data.WrapModeU;
             set => SetDataProperty( value );
         }
 
         [Browsable( true )]
         [TypeConverter( typeof( EnumTypeConverter<TextureWrapMethod> ) )]
         [DisplayName( "Wrap Mode V" )]
-        public TextureWrapMethod Field4B
+        public TextureWrapMethod WrapModeV
         {
-            get => GetDataProperty<TextureWrapMethod>();
+            get => Data.WrapModeV;
             set => SetDataProperty( value );
         }
 
         [Browsable( true )]
         public float Field4C
         {
-            get => GetDataProperty<float>();
+            get => Data.Field4C;
             set => SetDataProperty( value );
         }
 
         [Browsable( true )]
         public float Field50
         {
-            get => GetDataProperty<float>();
+            get => Data.Field50;
             set => SetDataProperty( value );
         }
 
         [Browsable( true )]
         public float Field54
         {
-            get => GetDataProperty<float>();
+            get => Data.Field54;
             set => SetDataProperty( value );
         }
 
         [Browsable( true )]
         public float Field58
         {
-            get => GetDataProperty<float>();
+            get => Data.Field58;
             set => SetDataProperty( value );
         }
 
         [Browsable( true )]
         public float Field5C
         {
-            get => GetDataProperty<float>();
+            get => Data.Field5C;
             set => SetDataProperty( value );
         }
 
         [Browsable( true )]
         public float Field60
         {
-            get => GetDataProperty<float>();
+            get => Data.Field60;
             set => SetDataProperty( value );
         }
 
         [Browsable( true )]
         public float Field64
         {
-            get => GetDataProperty<float>();
+            get => Data.Field64;
             set => SetDataProperty( value );
         }
 
         [Browsable( true )]
         public float Field68
         {
-            get => GetDataProperty<float>();
+            get => Data.Field68;
             set => SetDataProperty( value );
         }
 
         [Browsable( true )]
         public float Field6C
         {
-            get => GetDataProperty<float>();
+            get => Data.Field6C;
             set => SetDataProperty( value );
         }
 
         [Browsable( true )]
         public float Field70
         {
-            get => GetDataProperty<float>();
+            get => Data.Field70;
             set => SetDataProperty( value );
         }
 
         [Browsable( true )]
         public float Field74
         {
-            get => GetDataProperty<float>();
+            get => Data.Field74;
             set => SetDataProperty( value );
         }
 
         [Browsable( true )]
         public float Field78
         {
-            get => GetDataProperty<float>();
+            get => Data.Field78;
             set => SetDataProperty( value );
         }
 
         [Browsable( true )]
         public float Field7C
         {
-            get => GetDataProperty<float>();
+            get => Data.Field7C;
             set => SetDataProperty( value );
         }
 
         [Browsable( true )]
         public float Field80
         {
-            get => GetDataProperty<float>();
+            get => Data.Field80;
             set => SetDataProperty( value );
         }
 
         [Browsable( true )]
         public float Field84
         {
-            get => GetDataProperty<float>();
+            get => Data.Field84;
             set => SetDataProperty( value );
         }
 
         [Browsable( true )]
         public float Field88
         {
-            get => GetDataProperty<float>();
+            get => Data.Field88;
             set => SetDataProperty( value );
         }
 

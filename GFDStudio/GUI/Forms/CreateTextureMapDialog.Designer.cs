@@ -43,7 +43,7 @@ namespace GFDStudio.GUI.Forms
             // 
             // tableLayoutPanel1
             // 
-            tableLayoutPanel1.Anchor =    System.Windows.Forms.AnchorStyles.Top  |  System.Windows.Forms.AnchorStyles.Left   |  System.Windows.Forms.AnchorStyles.Right  ;
+            tableLayoutPanel1.Anchor =   System.Windows.Forms.AnchorStyles.Top  |  System.Windows.Forms.AnchorStyles.Left   |  System.Windows.Forms.AnchorStyles.Right ;
             tableLayoutPanel1.ColumnCount = 2;
             tableLayoutPanel1.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle( System.Windows.Forms.SizeType.Percent, 18.88412F ) );
             tableLayoutPanel1.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle( System.Windows.Forms.SizeType.Percent, 81.11588F ) );
@@ -63,11 +63,11 @@ namespace GFDStudio.GUI.Forms
             // 
             label2.Anchor = System.Windows.Forms.AnchorStyles.Right;
             label2.AutoSize = true;
-            label2.Font = new System.Drawing.Font( "Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point );
+            label2.Font = new System.Drawing.Font( "Microsoft Sans Serif", 10F );
             label2.IsDerivedStyle = true;
-            label2.Location = new System.Drawing.Point( 14, 43 );
+            label2.Location = new System.Drawing.Point( 22, 44 );
             label2.Name = "label2";
-            label2.Size = new System.Drawing.Size( 53, 20 );
+            label2.Size = new System.Drawing.Size( 45, 17 );
             label2.Style = MetroSet_UI.Enums.Style.Dark;
             label2.StyleManager = null;
             label2.TabIndex = 3;
@@ -79,11 +79,11 @@ namespace GFDStudio.GUI.Forms
             // 
             label1.Anchor = System.Windows.Forms.AnchorStyles.Right;
             label1.AutoSize = true;
-            label1.Font = new System.Drawing.Font( "Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point );
+            label1.Font = new System.Drawing.Font( "Microsoft Sans Serif", 10F );
             label1.IsDerivedStyle = true;
-            label1.Location = new System.Drawing.Point( 22, 7 );
+            label1.Location = new System.Drawing.Point( 27, 9 );
             label1.Name = "label1";
-            label1.Size = new System.Drawing.Size( 45, 20 );
+            label1.Size = new System.Drawing.Size( 40, 17 );
             label1.Style = MetroSet_UI.Enums.Style.Dark;
             label1.StyleManager = null;
             label1.TabIndex = 3;
@@ -94,28 +94,28 @@ namespace GFDStudio.GUI.Forms
             // comboBox1
             // 
             comboBox1.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            comboBox1.BackColor = System.Drawing.Color.FromArgb(   20  ,   20  ,   20   );
+            comboBox1.BackColor = System.Drawing.Color.FromArgb( 20, 20, 20 );
             comboBox1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             comboBox1.ForeColor = System.Drawing.Color.Silver;
             comboBox1.FormattingEnabled = true;
             comboBox1.Items.AddRange( new object[] { "Diffuse Map", "Normal Map", "Specular Map", "Reflection Map", "Highlight Map", "Glow Map", "Night Map", "Detail Map", "Shadow Map" } );
-            comboBox1.Location = new System.Drawing.Point( 73, 3 );
+            comboBox1.Location = new System.Drawing.Point( 73, 6 );
             comboBox1.Name = "comboBox1";
-            comboBox1.Size = new System.Drawing.Size( 295, 34 );
+            comboBox1.Size = new System.Drawing.Size( 295, 28 );
             comboBox1.TabIndex = 4;
             // 
             // textBox1
             // 
-            textBox1.Anchor =   System.Windows.Forms.AnchorStyles.Left  |  System.Windows.Forms.AnchorStyles.Right  ;
+            textBox1.Anchor =  System.Windows.Forms.AnchorStyles.Left  |  System.Windows.Forms.AnchorStyles.Right ;
             textBox1.AutoCompleteCustomSource = null;
             textBox1.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.None;
             textBox1.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.None;
-            textBox1.BorderColor = System.Drawing.Color.FromArgb(   110  ,   110  ,   110   );
-            textBox1.DisabledBackColor = System.Drawing.Color.FromArgb(   80  ,   80  ,   80   );
-            textBox1.DisabledBorderColor = System.Drawing.Color.FromArgb(   109  ,   109  ,   109   );
-            textBox1.DisabledForeColor = System.Drawing.Color.FromArgb(   109  ,   109  ,   109   );
-            textBox1.Font = new System.Drawing.Font( "Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point );
-            textBox1.HoverColor = System.Drawing.Color.FromArgb(   65  ,   177  ,   225   );
+            textBox1.BorderColor = System.Drawing.Color.FromArgb( 110, 110, 110 );
+            textBox1.DisabledBackColor = System.Drawing.Color.FromArgb( 80, 80, 80 );
+            textBox1.DisabledBorderColor = System.Drawing.Color.FromArgb( 109, 109, 109 );
+            textBox1.DisabledForeColor = System.Drawing.Color.FromArgb( 109, 109, 109 );
+            textBox1.Font = new System.Drawing.Font( "Microsoft Sans Serif", 10F );
+            textBox1.HoverColor = System.Drawing.Color.FromArgb( 65, 177, 225 );
             textBox1.Image = null;
             textBox1.IsDerivedStyle = true;
             textBox1.Lines = null;
@@ -138,7 +138,7 @@ namespace GFDStudio.GUI.Forms
             // 
             CancelButton.Anchor = System.Windows.Forms.AnchorStyles.None;
             CancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            CancelButton.ForeColor = System.Drawing.Color.FromArgb(   30  ,   30  ,   30   );
+            CancelButton.ForeColor = System.Drawing.Color.FromArgb( 30, 30, 30 );
             CancelButton.Location = new System.Drawing.Point( 153, 104 );
             CancelButton.Margin = new System.Windows.Forms.Padding( 10 );
             CancelButton.Name = "CancelButton";
@@ -151,7 +151,7 @@ namespace GFDStudio.GUI.Forms
             // 
             OKButton.Anchor = System.Windows.Forms.AnchorStyles.None;
             OKButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-            OKButton.ForeColor = System.Drawing.Color.FromArgb(   30  ,   30  ,   30   );
+            OKButton.ForeColor = System.Drawing.Color.FromArgb( 30, 30, 30 );
             OKButton.Location = new System.Drawing.Point( 270, 104 );
             OKButton.Margin = new System.Windows.Forms.Padding( 10 );
             OKButton.Name = "OKButton";
@@ -159,15 +159,13 @@ namespace GFDStudio.GUI.Forms
             OKButton.TabIndex = 2;
             OKButton.Text = "OK";
             OKButton.UseVisualStyleBackColor = true;
-            OKButton.Click += OKButton_Click;
+            OKButton.Click +=  OKButton_Click ;
             // 
             // CreateTextureMapDialog
             // 
             AcceptButton = OKButton;
-            AutoScaleDimensions = new System.Drawing.SizeF( 120F, 120F );
-            
-            BackColor = System.Drawing.Color.FromArgb(   30  ,   30  ,   30   );
-            BackgroundColor = System.Drawing.Color.FromArgb(   30  ,   30  ,   30   );
+            BackColor = System.Drawing.Color.FromArgb( 30, 30, 30 );
+            BackgroundColor = System.Drawing.Color.FromArgb( 30, 30, 30 );
             ClientSize = new System.Drawing.Size( 395, 151 );
             Controls.Add( OKButton );
             Controls.Add( CancelButton );

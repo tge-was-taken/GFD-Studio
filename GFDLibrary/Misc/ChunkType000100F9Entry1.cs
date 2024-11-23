@@ -2,13 +2,13 @@
 {
     public class ChunkType000100F9Entry1
     {
-        public float Field3C { get; set; }
+        public float RestoringForce { get; set; }
 
-        public float Field40 { get; set; }
+        public float WindRate { get; set; }
 
-        public float Field38 { get; set; }
+        public float Mass { get; set; }
 
-        public float Field34 { get; set; }
+        public float SphereRadius { get; set; }
 
         public string NodeName { get; set; }
 

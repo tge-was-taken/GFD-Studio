@@ -51,7 +51,7 @@ namespace GFDStudio.GUI.DataViewNodes
                 var modelPack = Data;
 
                 // Check if a material's texture is missing
-                if ( modelPack.Materials != null )
+                if ( modelPack.Materials != null && modelPack.Textures != null )
                 {
                     foreach ( var material in modelPack.Materials.Values )
                     {
@@ -62,7 +62,7 @@ namespace GFDStudio.GUI.DataViewNodes
                             if ( textureMap == null )
                                 continue;
 
-                            if ( !modelPack.Textures.ContainsTexture( textureMap.Name ) )
+                            if ( !modelPack.Textures?.ContainsTexture( textureMap.Name ) ?? true )
                                 missingTextures.Add( textureMap.Name );
                         }
 
@@ -74,12 +74,15 @@ namespace GFDStudio.GUI.DataViewNodes
                 }
 
                 // Check if a mesh's material is missing
-                foreach ( var node in modelPack.Model.Nodes )
+                if ( modelPack.Model != null )
                 {
-                    foreach ( var mesh in node.Meshes )
+                    foreach ( var node in modelPack.Model.Nodes )
                     {
-                        if ( modelPack.Materials == null || !modelPack.Materials.ContainsKey( mesh.MaterialName ) )
-                            MessageBox.Show( $"Scene Geometry under \"{node.Name}\" references a Material that cannot be found:\n{mesh.MaterialName}", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Exclamation );
+                        foreach ( var mesh in node.Meshes )
+                        {
+                            if ( modelPack.Materials == null || !modelPack.Materials.ContainsKey( mesh.MaterialName ) )
+                                MessageBox.Show( $"Scene Geometry under \"{node.Name}\" references a Material that cannot be found:\n{mesh.MaterialName}", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Exclamation );
+                        }
                     }
                 }
 
@@ -101,7 +104,7 @@ namespace GFDStudio.GUI.DataViewNodes
             });
             RegisterReplaceHandler< AssimpScene >( path =>
             {
-                var model = ModelConverterUtility.ConvertAssimpModel( path );
+                var model = ModelConverterUtility.ConvertAssimpModel( path, Data );
                 if ( model != null )
                     Data.ReplaceWith( model );
 

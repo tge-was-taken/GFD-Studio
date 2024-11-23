@@ -139,19 +139,19 @@ namespace GFDLibrary.Materials
         public Vector4 Color { get; set; }
 
         // 1C
-        public float Field1C { get; set; }
+        public float LightTreshold { get; set; }
 
         // 20
-        public float Field20 { get; set; }
+        public float LightFactor { get; set; }
 
         // 24
-        public float Field24 { get; set; }
+        public float LightBrightness { get; set; }
 
         // 28
-        public float Field28 { get; set; }
+        public float ShadowTreshold { get; set; }
 
         // 2C
-        public float Field2C { get; set; }
+        public float ShadowFactor { get; set; }
 
         // 30
         public MaterialAttributeType0Flags Type0Flags { get; set; }
@@ -169,21 +169,21 @@ namespace GFDLibrary.Materials
             if ( Version > 0x1104500 )
             {
                 Color = reader.ReadVector4();
-                Field1C = reader.ReadSingle();
-                Field20 = reader.ReadSingle();
-                Field24 = reader.ReadSingle();
-                Field28 = reader.ReadSingle();
-                Field2C = reader.ReadSingle();
+                LightTreshold = reader.ReadSingle();
+                LightFactor = reader.ReadSingle();
+                LightBrightness = reader.ReadSingle();
+                ShadowTreshold = reader.ReadSingle();
+                ShadowFactor = reader.ReadSingle();
                 Type0Flags = ( MaterialAttributeType0Flags )reader.ReadInt32();
             }
             else if ( Version > 0x1104220 )
             {
                 Color = reader.ReadVector4();
-                Field1C = reader.ReadSingle();
-                Field20 = reader.ReadSingle();
-                Field24 = reader.ReadSingle();
-                Field28 = reader.ReadSingle();
-                Field2C = reader.ReadSingle();
+                LightTreshold = reader.ReadSingle();
+                LightFactor = reader.ReadSingle();
+                LightBrightness = reader.ReadSingle();
+                ShadowTreshold = reader.ReadSingle();
+                ShadowFactor = reader.ReadSingle();
 
                 if ( reader.ReadBoolean() )
                     Type0Flags |= MaterialAttributeType0Flags.LightNormalMap;
@@ -203,11 +203,11 @@ namespace GFDLibrary.Materials
             else
             {
                 Color = reader.ReadVector4();
-                Field1C = reader.ReadSingle();
-                Field20 = reader.ReadSingle();
-                Field24 = 1.0f;
-                Field28 = reader.ReadSingle();
-                Field2C = reader.ReadSingle();
+                LightTreshold = reader.ReadSingle();
+                LightFactor = reader.ReadSingle();
+                LightBrightness = 1.0f;
+                ShadowTreshold = reader.ReadSingle();
+                ShadowFactor = reader.ReadSingle();
             }
         }
 
@@ -216,21 +216,21 @@ namespace GFDLibrary.Materials
             if ( Version > 0x1104500 )
             {
                 writer.WriteVector4( Color );
-                writer.WriteSingle( Field1C );
-                writer.WriteSingle( Field20 );
-                writer.WriteSingle( Field24 );
-                writer.WriteSingle( Field28 );
-                writer.WriteSingle( Field2C );
+                writer.WriteSingle( LightTreshold );
+                writer.WriteSingle( LightFactor );
+                writer.WriteSingle( LightBrightness );
+                writer.WriteSingle( ShadowTreshold );
+                writer.WriteSingle( ShadowFactor );
                 writer.WriteInt32( ( int )Type0Flags );
             }
             else if ( Version > 0x1104220 )
             {
                 writer.WriteVector4( Color );
-                writer.WriteSingle( Field1C );
-                writer.WriteSingle( Field20 );
-                writer.WriteSingle( Field24 );
-                writer.WriteSingle( Field28 );
-                writer.WriteSingle( Field2C );
+                writer.WriteSingle( LightTreshold );
+                writer.WriteSingle( LightFactor );
+                writer.WriteSingle( LightBrightness );
+                writer.WriteSingle( ShadowTreshold );
+                writer.WriteSingle( ShadowFactor );
 
                 writer.WriteBoolean( Type0Flags.HasFlag( MaterialAttributeType0Flags.LightNormalMap ) );
                 writer.WriteBoolean( Type0Flags.HasFlag( MaterialAttributeType0Flags.LightAdd ) );
@@ -244,10 +244,10 @@ namespace GFDLibrary.Materials
             else
             {
                 writer.WriteVector4( Color );
-                writer.WriteSingle( Field1C );
-                writer.WriteSingle( Field20 );
-                writer.WriteSingle( Field28 );
-                writer.WriteSingle( Field2C );
+                writer.WriteSingle( LightTreshold );
+                writer.WriteSingle( LightFactor );
+                writer.WriteSingle( ShadowTreshold );
+                writer.WriteSingle( ShadowFactor );
             }
         }
     }
@@ -270,22 +270,22 @@ namespace GFDLibrary.Materials
         public float Field0C { get; set; }
         
         // 10
-        public Vector4 InnerGlow { get; set; }
+        public Vector4 LightColor { get; set; }
 
         // 1C
-        public float Field1C { get; set; }
+        public float LightTreshold { get; set; }
 
         // 20
-        public float Field20 { get; set; }
+        public float LightFactor { get; set; }
 
         // 24
-        public Vector4 Field24 { get; set; }
+        public Vector4 ShadowColor { get; set; }
 
         // 34
-        public float Field34 { get; set; }
+        public float ShadowThreshold { get; set; }
 
         // 38
-        public float Field38 { get; set; }
+        public float ShadowFactor { get; set; }
 
         // 3C
         public MaterialAttributeType1Flags Type1Flags { get; set; }
@@ -300,12 +300,12 @@ namespace GFDLibrary.Materials
 
         protected override void ReadCore( ResourceReader reader )
         {
-            InnerGlow = reader.ReadVector4();
-            Field1C = reader.ReadSingle();
-            Field20 = reader.ReadSingle();
-            Field24 = reader.ReadVector4();
-            Field34 = reader.ReadSingle();
-            Field38 = reader.ReadSingle();
+            LightColor = reader.ReadVector4();
+            LightTreshold = reader.ReadSingle();
+            LightFactor = reader.ReadSingle();
+            ShadowColor = reader.ReadVector4();
+            ShadowThreshold = reader.ReadSingle();
+            ShadowFactor = reader.ReadSingle();
 
             if ( Version <= 0x1104500 )
             {
@@ -338,12 +338,12 @@ namespace GFDLibrary.Materials
 
         protected override void WriteCore( ResourceWriter writer )
         {
-            writer.WriteVector4( InnerGlow );
-            writer.WriteSingle( Field1C );
-            writer.WriteSingle( Field20 );
-            writer.WriteVector4( Field24 );
-            writer.WriteSingle( Field34 );
-            writer.WriteSingle( Field38 );
+            writer.WriteVector4( LightColor );
+            writer.WriteSingle( LightTreshold );
+            writer.WriteSingle( LightFactor );
+            writer.WriteVector4( ShadowColor );
+            writer.WriteSingle( ShadowThreshold );
+            writer.WriteSingle( ShadowFactor );
 
             if ( Version <= 0x1104500 )
             {
@@ -387,10 +387,10 @@ namespace GFDLibrary.Materials
     public sealed class MaterialAttributeType2 : MaterialAttribute
     {
         // 0C
-        public MaterialAttributeType2Flags Field0C { get; set; }
+        public MaterialAttributeType2Flags Flags { get; set; }
 
         // 10
-        public int Field10 { get; set; }
+        public int Color { get; set; }
 
         public MaterialAttributeType2() : base( MaterialAttributeFlags.Bit0, MaterialAttributeType.Type2 ) { }
 
@@ -402,8 +402,8 @@ namespace GFDLibrary.Materials
 
         protected override void ReadCore( ResourceReader reader )
         {
-            Field0C = (MaterialAttributeType2Flags)reader.ReadInt32();
-            Field10 = reader.ReadInt32();
+            Flags = (MaterialAttributeType2Flags)reader.ReadInt32();
+            Color = reader.ReadInt32();
         }
 
         [Flags]
@@ -415,8 +415,8 @@ namespace GFDLibrary.Materials
 
         protected override void WriteCore( ResourceWriter writer )
         {
-            writer.WriteInt32( (int)Field0C );
-            writer.WriteInt32( Field10 );
+            writer.WriteInt32( (int)Flags );
+            writer.WriteInt32( Color );
         }
     }
 
@@ -507,49 +507,49 @@ namespace GFDLibrary.Materials
     public sealed class MaterialAttributeType4 : MaterialAttribute
     {
         // 0C
-        public Vector4 Field0C { get; set; }
+        public Vector4 LightColor { get; set; }
 
         // 1C
-        public float Field1C { get; set; }
+        public float LightThreshold { get; set; }
 
         // 20
-        public float Field20 { get; set; }
+        public float LightFactor { get; set; }
 
         // 24
-        public Vector4 Field24 { get; set; }
+        public Vector4 ShadowColor { get; set; }
 
         // 34
-        public float Field34 { get; set; }
+        public float ShadowThreshold { get; set; }
 
         // 38
-        public float Field38 { get; set; }
+        public float ShadowFactor { get; set; }
 
         // 3C
-        public float Field3C { get; set; }
+        public float NightMapSpeed { get; set; }
 
         // 40
-        public float Field40 { get; set; }
+        public float NightMapPower { get; set; }
 
         // 44
-        public float Field44 { get; set; }
+        public float NightMapScale { get; set; }
 
         // 48
-        public float Field48 { get; set; }
+        public float NightMapHeight { get; set; }
 
         // 4C
-        public float Field4C { get; set; }
+        public float NightMapAlpha { get; set; }
 
         // 50
-        public byte Field50 { get; set; }
+        public byte NightMapDirection { get; set; }
 
         // 54
-        public float Field54 { get; set; }
+        public float DarkGradientHeight { get; set; }
 
         // 58
-        public float Field58 { get; set; }
+        public float DarkGradientAlpha { get; set; }
 
         // 5C
-        public MaterialAttributeType1Flags Field5C { get; set; }
+        public MaterialAttributeType1Flags Flags2 { get; set; }
 
         public MaterialAttributeType4() : base( MaterialAttributeFlags.Bit0, MaterialAttributeType.Type4 ) { }
 
@@ -561,40 +561,40 @@ namespace GFDLibrary.Materials
 
         protected override void ReadCore( ResourceReader reader )
         {
-            Field0C = reader.ReadVector4();
-            Field1C = reader.ReadSingle();
-            Field20 = reader.ReadSingle();
-            Field24 = reader.ReadVector4();
-            Field34 = reader.ReadSingle();
-            Field38 = reader.ReadSingle();
-            Field3C = reader.ReadSingle();
-            Field40 = reader.ReadSingle();
-            Field44 = reader.ReadSingle();
-            Field48 = reader.ReadSingle();
-            Field4C = reader.ReadSingle();
-            Field50 = reader.ReadByte();
-            Field54 = reader.ReadSingle();
-            Field58 = reader.ReadSingle();
-            Field5C = ( MaterialAttributeType1Flags )reader.ReadInt32();
+            LightColor = reader.ReadVector4();
+            LightThreshold = reader.ReadSingle();
+            LightFactor = reader.ReadSingle();
+            ShadowColor = reader.ReadVector4();
+            ShadowThreshold = reader.ReadSingle();
+            ShadowFactor = reader.ReadSingle();
+            NightMapSpeed = reader.ReadSingle();
+            NightMapPower = reader.ReadSingle();
+            NightMapScale = reader.ReadSingle();
+            NightMapHeight = reader.ReadSingle();
+            NightMapAlpha = reader.ReadSingle();
+            NightMapDirection = reader.ReadByte();
+            DarkGradientHeight = reader.ReadSingle();
+            DarkGradientAlpha = reader.ReadSingle();
+            Flags2 = ( MaterialAttributeType1Flags )reader.ReadInt32();
         }
 
         protected override void WriteCore( ResourceWriter writer )
         {
-            writer.WriteVector4( Field0C );
-            writer.WriteSingle( Field1C );
-            writer.WriteSingle( Field20 );
-            writer.WriteVector4( Field24 );
-            writer.WriteSingle( Field34 );
-            writer.WriteSingle( Field38 );
-            writer.WriteSingle( Field3C );
-            writer.WriteSingle( Field40 );
-            writer.WriteSingle( Field44 );
-            writer.WriteSingle( Field48 );
-            writer.WriteSingle( Field4C );
-            writer.WriteByte( Field50 );
-            writer.WriteSingle( Field54 );
-            writer.WriteSingle( Field58 );
-            writer.WriteInt32( (int)Field5C );
+            writer.WriteVector4( LightColor );
+            writer.WriteSingle( LightThreshold );
+            writer.WriteSingle( LightFactor );
+            writer.WriteVector4( ShadowColor );
+            writer.WriteSingle( ShadowThreshold );
+            writer.WriteSingle( ShadowFactor );
+            writer.WriteSingle( NightMapSpeed );
+            writer.WriteSingle( NightMapPower );
+            writer.WriteSingle( NightMapScale );
+            writer.WriteSingle( NightMapHeight );
+            writer.WriteSingle( NightMapAlpha );
+            writer.WriteByte( NightMapDirection );
+            writer.WriteSingle( DarkGradientHeight );
+            writer.WriteSingle( DarkGradientAlpha );
+            writer.WriteInt32( (int)Flags2 );
         }
     }
 

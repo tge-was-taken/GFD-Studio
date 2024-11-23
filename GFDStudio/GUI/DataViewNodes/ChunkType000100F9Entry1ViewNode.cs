@@ -13,34 +13,34 @@ namespace GFDStudio.GUI.DataViewNodes
 
         [Browsable( true )]
         [DisplayName( "Sphere Radius" )]
-        public float Field34
+        public float SphereRadius
         {
-            get => GetDataProperty<float>();
+            get => Data.SphereRadius;
             set => SetDataProperty( value );
         }
 
 
         [Browsable( true )]
         [DisplayName( "Mass" )]
-        public float Field38
+        public float Mass
         {
-            get => GetDataProperty<float>();
+            get => Data.Mass;
             set => SetDataProperty( value );
         }
 
         [ Browsable( true ) ]
         [DisplayName( "Restoring force" )]
-        public float Field3C
+        public float RestoringForce
         {
-            get => GetDataProperty<float>();
+            get => Data.RestoringForce;
             set => SetDataProperty( value );
         }
 
         [Browsable( true )]
         [DisplayName( "Wind rate" )]
-        public float Field40
+        public float WindRate
         {
-            get => GetDataProperty<float>();
+            get => Data.WindRate;
             set => SetDataProperty( value );
         }
 

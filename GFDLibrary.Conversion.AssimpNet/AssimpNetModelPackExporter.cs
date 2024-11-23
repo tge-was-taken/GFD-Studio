@@ -88,45 +88,124 @@ namespace GFDLibrary.Conversion.AssimpNet
             }
         }
 
-        private Ai.Material ConvertMaterial( Material material )
+        private Ai.Material InitializeAssimpMaterial( Material material )
         {
-            var aiMaterial = new Ai.Material
+            var aiMaterial = new Ai.Material { Name = AssimpConverterCommon.EscapeName( material.Name ) };
+            if ( material.METAPHOR_MaterialParameterSet == null )
             {
-                Name = AssimpConverterCommon.EscapeName( material.Name ),
-                ColorAmbient = new Ai.Color4D( material.AmbientColor.X, material.AmbientColor.Y, material.AmbientColor.Z, material.AmbientColor.W ),
-                ColorDiffuse = new Ai.Color4D( material.DiffuseColor.X, material.DiffuseColor.Y, material.DiffuseColor.Z, material.DiffuseColor.W ),
-                ColorSpecular = new Ai.Color4D( material.SpecularColor.X, material.SpecularColor.Y, material.SpecularColor.Z, material.SpecularColor.W ),
-                ColorEmissive = new Ai.Color4D( material.EmissiveColor.X, material.EmissiveColor.Y, material.EmissiveColor.Z, material.EmissiveColor.W )
-            };
-
-            if ( material.Flags.HasFlag( MaterialFlags.HasDiffuseMap ) )
-            {
-                aiMaterial.TextureDiffuse = new Ai.TextureSlot(
-                    Path.Combine( mTextureBaseRelativeDirectoryPath, AssimpConverterCommon.EscapeName( material.DiffuseMap.Name ) ),
-                    Ai.TextureType.Diffuse, 0, Ai.TextureMapping.FromUV, 0, 0, Ai.TextureOperation.Add, Ai.TextureWrapMode.Wrap, Ai.TextureWrapMode.Wrap, 0 );
+                aiMaterial.ColorAmbient = material.LegacyParameters.AmbientColor.ToAssimp();
+                aiMaterial.ColorDiffuse = material.LegacyParameters.DiffuseColor.ToAssimp();
+                aiMaterial.ColorSpecular = material.LegacyParameters.EmissiveColor.ToAssimp();
+                aiMaterial.ColorEmissive = material.LegacyParameters.SpecularColor.ToAssimp();
             }
+            return aiMaterial;
+        }
 
+        private void ConvertToAssimp( MaterialParameterSetType0 materialParameterSet, Ai.Material aiMaterial, Material material )
+        {
+            aiMaterial.ColorDiffuse = materialParameterSet.BaseColor.ToAssimp();
             if ( material.Flags.HasFlag( MaterialFlags.HasNormalMap ) )
             {
                 aiMaterial.TextureNormal = new Ai.TextureSlot(
-                    Path.Combine( mTextureBaseRelativeDirectoryPath, AssimpConverterCommon.EscapeName( material.NormalMap.Name ) ),
-                    Ai.TextureType.Normals, 1, Ai.TextureMapping.FromUV, 0, 0, Ai.TextureOperation.Add, Ai.TextureWrapMode.Wrap, Ai.TextureWrapMode.Wrap, 0 );
+                        Path.Combine( mTextureBaseRelativeDirectoryPath, AssimpConverterCommon.EscapeName( material.NormalMap.Name ) ),
+                        Ai.TextureType.Normals, 1, Ai.TextureMapping.FromUV, 0, 0, Ai.TextureOperation.Add, Ai.TextureWrapMode.Wrap, Ai.TextureWrapMode.Wrap, 0 );
             }
+        }
 
-            if ( material.Flags.HasFlag( MaterialFlags.HasSpecularMap ) )
+        private void ConvertToAssimp( MaterialParameterSetType1 materialParameterSet, Ai.Material aiMaterial, Material material )
+        {
+            aiMaterial.ColorAmbient = materialParameterSet.AmbientColor.ToAssimp();
+            aiMaterial.ColorDiffuse = materialParameterSet.DiffuseColor.ToAssimp();
+            aiMaterial.ColorSpecular = materialParameterSet.SpecularColor.ToAssimp();
+            aiMaterial.ColorEmissive = materialParameterSet.EmissiveColor.ToAssimp();
+            aiMaterial.Reflectivity = materialParameterSet.Reflectivity;
+            if ( material.Flags.HasFlag( MaterialFlags.HasNormalMap ) )
             {
-                aiMaterial.TextureSpecular = new Ai.TextureSlot(
-                    Path.Combine( mTextureBaseRelativeDirectoryPath, AssimpConverterCommon.EscapeName( material.SpecularMap.Name ) ),
-                    Ai.TextureType.Specular, 2, Ai.TextureMapping.FromUV, 0, 0, Ai.TextureOperation.Add, Ai.TextureWrapMode.Wrap, Ai.TextureWrapMode.Wrap, 0 );
+                aiMaterial.TextureNormal = new Ai.TextureSlot(
+                        Path.Combine( mTextureBaseRelativeDirectoryPath, AssimpConverterCommon.EscapeName( material.NormalMap.Name ) ),
+                        Ai.TextureType.Normals, 1, Ai.TextureMapping.FromUV, 0, 0, Ai.TextureOperation.Add, Ai.TextureWrapMode.Wrap, Ai.TextureWrapMode.Wrap, 0 );
             }
-
-            if ( material.Flags.HasFlag( MaterialFlags.HasReflectionMap ) )
+            if ( material.Flags.HasFlag( MaterialFlags.HasGlowMap ) )
             {
-                aiMaterial.TextureReflection = new Ai.TextureSlot(
-                    Path.Combine( mTextureBaseRelativeDirectoryPath, AssimpConverterCommon.EscapeName( material.ReflectionMap.Name ) ),
-                    Ai.TextureType.Reflection, 3, Ai.TextureMapping.FromUV, 0, 0, Ai.TextureOperation.Add, Ai.TextureWrapMode.Wrap, Ai.TextureWrapMode.Wrap, 0 );
+                aiMaterial.TextureNormal = new Ai.TextureSlot(
+                    Path.Combine( mTextureBaseRelativeDirectoryPath, AssimpConverterCommon.EscapeName( material.GlowMap.Name ) ),
+                    Ai.TextureType.Emissive, 5, Ai.TextureMapping.FromUV, 0, 0, Ai.TextureOperation.Add, Ai.TextureWrapMode.Wrap, Ai.TextureWrapMode.Wrap, 0 );
             }
+        }
 
+        private void ConvertToAssimp( MaterialParameterSetType2Base materialParameterSet, Ai.Material aiMaterial, Material material )
+        {
+            aiMaterial.ColorDiffuse = materialParameterSet.BaseColor.ToAssimp();
+            aiMaterial.ColorSpecular = new Vector4( materialParameterSet.SpecularColor, materialParameterSet.SpecularPower ).ToAssimp();
+            aiMaterial.ColorEmissive = materialParameterSet.EmissiveColor.ToAssimp();
+            if ( material.Flags.HasFlag( MaterialFlags.HasNormalMap ) )
+            {
+                aiMaterial.TextureNormal = new Ai.TextureSlot(
+                        Path.Combine( mTextureBaseRelativeDirectoryPath, AssimpConverterCommon.EscapeName( material.NormalMap.Name ) ),
+                        Ai.TextureType.Normals, 1, Ai.TextureMapping.FromUV, 0, 0, Ai.TextureOperation.Add, Ai.TextureWrapMode.Wrap, Ai.TextureWrapMode.Wrap, 0 );
+            }
+        }
+
+        private void ConvertToAssimp( MaterialParameterSetBase materialParameterSet, 
+            Ai.Material aiMaterial, Material material )
+        {
+            switch ( materialParameterSet )
+            {
+                case MaterialParameterSetType0 materialParameterSetType0:
+                    ConvertToAssimp( materialParameterSetType0, aiMaterial, material );
+                    break;
+
+                case MaterialParameterSetType1 materialParameterSetType1:
+                    ConvertToAssimp( materialParameterSetType1 , aiMaterial, material );
+                    break;
+
+                case MaterialParameterSetType2Base materialParameterSetType2Base:
+                    ConvertToAssimp( materialParameterSetType2Base, aiMaterial, material );
+                    break;
+
+                default:
+                    // Ignore
+                    break;
+            }
+        }
+
+        private Ai.Material ConvertMaterial( Material material )
+        {
+            var aiMaterial = InitializeAssimpMaterial( material );
+            if ( material.Flags.HasFlag( MaterialFlags.HasDiffuseMap ) )
+            {
+                // Metaphor: Ai.TextureType.BaseColor
+                aiMaterial.TextureDiffuse = new Ai.TextureSlot( 
+                    Path.Combine( mTextureBaseRelativeDirectoryPath, AssimpConverterCommon.EscapeName(material.DiffuseMap.Name) ),
+                    Ai.TextureType.Diffuse, 0, Ai.TextureMapping.FromUV, 0, 0, Ai.TextureOperation.Add, Ai.TextureWrapMode.Wrap, Ai.TextureWrapMode.Wrap, 0 );
+            }
+            if (material.METAPHOR_MaterialParameterSet != null)
+            {
+                ConvertToAssimp( material.METAPHOR_MaterialParameterSet, aiMaterial, material );
+            } 
+            else
+            {
+                if ( material.Flags.HasFlag( MaterialFlags.HasNormalMap ) )
+                {
+                    aiMaterial.TextureNormal = new Ai.TextureSlot( 
+                        Path.Combine( mTextureBaseRelativeDirectoryPath, AssimpConverterCommon.EscapeName(material.NormalMap.Name) ), 
+                        Ai.TextureType.Normals, 1, Ai.TextureMapping.FromUV, 0, 0, Ai.TextureOperation.Add, Ai.TextureWrapMode.Wrap, Ai.TextureWrapMode.Wrap, 0 );
+                }
+
+                if ( material.Flags.HasFlag( MaterialFlags.HasSpecularMap ) )
+                {
+                    aiMaterial.TextureSpecular = new Ai.TextureSlot( 
+                        Path.Combine( mTextureBaseRelativeDirectoryPath, AssimpConverterCommon.EscapeName(material.SpecularMap.Name) ), 
+                        Ai.TextureType.Specular, 2, Ai.TextureMapping.FromUV, 0, 0, Ai.TextureOperation.Add, Ai.TextureWrapMode.Wrap, Ai.TextureWrapMode.Wrap, 0 );
+                }
+
+                if ( material.Flags.HasFlag( MaterialFlags.HasReflectionMap ) )
+                {
+                    aiMaterial.TextureReflection = new Ai.TextureSlot( 
+                        Path.Combine( mTextureBaseRelativeDirectoryPath, AssimpConverterCommon.EscapeName(material.ReflectionMap.Name) ), 
+                        Ai.TextureType.Reflection, 3, Ai.TextureMapping.FromUV, 0, 0, Ai.TextureOperation.Add, Ai.TextureWrapMode.Wrap, Ai.TextureWrapMode.Wrap, 0 );
+                }
+            }
             // todo: add more textures
 
             return aiMaterial;
@@ -193,7 +272,7 @@ namespace GFDLibrary.Conversion.AssimpNet
                         {
                             var mesh = ConvertGeometry( model, node, attachment.GetValue<Mesh>() );
 
-                            mesh.Name = $"{AssimpConverterCommon.EscapeName( node.Name )}_Attachment{i}_Mesh";
+                            mesh.Name = ModelConversionHelpers.GetMeshExportName( AssimpConverterCommon.EscapeName( node.Name ), i );
                             aiNode.MeshIndices.Add( mAiScene.Meshes.Count );
                             mAiScene.Meshes.Add( mesh );
                         }

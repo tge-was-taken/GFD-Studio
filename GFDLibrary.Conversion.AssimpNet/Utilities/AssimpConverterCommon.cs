@@ -4,7 +4,10 @@ namespace GFDLibrary.Conversion.AssimpNet.Utilities
 {
     internal static class AssimpConverterCommon
     {
-        public static readonly Regex MeshAttachmentNameRegex = new Regex( "_Mesh([0-9]+)", RegexOptions.Compiled );
+        // Based on Maxscript importer
+        public static readonly Regex LegacyMeshAttachmentNameRegex = new( "_Mesh([0-9]+)", RegexOptions.Compiled );
+        public static readonly Regex MeshAttachmentNameRegex = new
+            ( $"{ModelConversionHelpers.MeshAttachmentNameSuffix}([0-9]+)", RegexOptions.Compiled );
 
         public static string UnescapeName( string name )
         {

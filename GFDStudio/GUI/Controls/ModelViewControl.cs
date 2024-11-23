@@ -21,6 +21,8 @@ using Vector4 = OpenTK.Vector4;
 using OpenTK.Graphics;
 using OpenTK.Input;
 using Key = OpenTK.Input.Key;
+using GFDLibrary.Materials;
+using GFDLibrary.Shaders;
 
 namespace GFDStudio.GUI.Controls
 {
@@ -30,13 +32,15 @@ namespace GFDStudio.GUI.Controls
 
         public static ModelViewControl Instance => sInstance ?? ( sInstance = new ModelViewControl() );
 
-        private GLShaderProgram mDefaultShader;
+        
+        private ShaderRegistry mShaderRegistry;
         private GLPerspectiveCamera mCamera;
         private readonly bool mCanRender = true;
         private Point mLastMouseLocation;
+        private Vector3 mRaypickStart;
+        private Vector3 mRaypickEnd;
 
         // Grid
-        private GLShaderProgram mLineShader;
         private int mGridVertexArrayID;
         private GLBuffer<Vector3> mGridVertexBuffer;
         private int mGridSize = 96;
@@ -55,6 +59,8 @@ namespace GFDStudio.GUI.Controls
         private bool mIsModelLoaded;
         private bool mIsFieldModel;
         private Archive mFieldTextures;
+        private Mesh mSelectedMesh;
+        private Material mSelectedMaterial;
 
         // Animation
         private Stopwatch mTimeCounter;
@@ -173,6 +179,216 @@ namespace GFDStudio.GUI.Controls
             mEplPrimitive = new PrimitiveMesh( "primitives/epl.obj" );
         }
 
+        private void DrawLine( Vector3 start, Vector3 end, Vector4 color )
+        {
+            var lineShaderProgram = mShaderRegistry.mLineShader.Id;
+
+            // Line vertices
+            float[] vertices = {
+                start.X, start.Y, start.Z,
+                end.X, end.Y, end.Z
+            };
+
+            // Create and bind VAO
+            int vao = GL.GenVertexArray();
+            GL.BindVertexArray( vao );
+
+            // Create, bind, and fill VBO with vertices
+            int vbo = GL.GenBuffer();
+            GL.BindBuffer( BufferTarget.ArrayBuffer, vbo );
+            GL.BufferData( BufferTarget.ArrayBuffer, vertices.Length * sizeof( float ), vertices, BufferUsageHint.StaticDraw );
+
+            // Enable the shader program and set uniforms
+            GL.UseProgram( lineShaderProgram );
+
+            // Set line color uniform
+            int lineColorLocation = GL.GetUniformLocation( lineShaderProgram, "uColor" );
+            GL.Uniform4( lineColorLocation, color );
+
+            var view = mCamera.View;
+            int viewLoc = GL.GetUniformLocation( lineShaderProgram, "uView" );
+            GL.UniformMatrix4( viewLoc, false, ref view );
+
+            var projection = mCamera.Projection;
+            int projLoc = GL.GetUniformLocation( lineShaderProgram, "uProjection" );
+            GL.UniformMatrix4( projLoc, false, ref projection );
+
+            // Define vertex layout
+            GL.EnableVertexAttribArray( 0 );
+            GL.VertexAttribPointer( 0, 3, VertexAttribPointerType.Float, false, 3 * sizeof( float ), 0 );
+
+            // Draw the line
+            GL.DrawArrays( PrimitiveType.Lines, 0, 2 );
+
+            // Clean up
+            GL.DisableVertexAttribArray( 0 );
+            GL.BindBuffer( BufferTarget.ArrayBuffer, 0 );
+            GL.DeleteBuffer( vbo );
+            GL.BindVertexArray( 0 );
+            GL.DeleteVertexArray( vao );
+            GL.UseProgram( 0 );
+        }
+
+        //public readonly struct GLVertexArrayHelper : IDisposable
+        //{
+        //    struct BindHelper : IDisposable
+        //    {
+        //        public readonly void Dispose()
+        //        {
+        //            GL.BindVertexArray( 0 );
+        //        }
+        //    }
+
+        //    public readonly int Id;
+
+        //    public GLVertexArrayHelper()
+        //    {
+        //        Id = GL.GenVertexArray();
+        //    }
+
+        //    public readonly IDisposable Bind()
+        //    {
+        //        GL.BindVertexArray( Id );
+        //        return new BindHelper();
+        //    }
+
+        //    public readonly void Dispose()
+        //    {
+        //        GL.DeleteVertexArray( Id );
+        //    }
+        //}
+
+        //public readonly struct GLBufferHelper : IDisposable
+        //{
+        //    readonly struct BindHelper : IDisposable
+        //    {
+        //        private readonly BufferTarget _target;
+
+        //        public BindHelper(BufferTarget target)
+        //        {
+        //            _target = target;
+        //        }
+
+        //        public readonly void Dispose()
+        //        {
+        //            GL.BindBuffer( _target, 0 );
+        //        }
+        //    }
+
+        //    public readonly int Id;
+
+        //    public GLBufferHelper()
+        //    {
+        //        Id = GL.GenBuffer();
+        //    }
+
+        //    public readonly IDisposable BindBuffer(BufferTarget target)
+        //    {
+        //        GL.BindBuffer( target, Id );
+        //        return new BindHelper();
+        //    }
+
+        //    public readonly void Dispose()
+        //    {
+        //        GL.DeleteVertexArray( Id );
+        //    }
+        //}
+
+        private void DrawSphere( Vector3 center, float radius, int latitudeSegments = 20, int longitudeSegments = 20 )
+        {
+            List<float> vertices = new List<float>();
+            List<int> indices = new List<int>();
+
+            // Generate vertices
+            for ( int lat = 0; lat <= latitudeSegments; lat++ )
+            {
+                float theta = lat * MathF.PI / latitudeSegments;
+                float sinTheta = MathF.Sin( theta );
+                float cosTheta = MathF.Cos( theta );
+
+                for ( int lon = 0; lon <= longitudeSegments; lon++ )
+                {
+                    float phi = lon * 2 * MathF.PI / longitudeSegments;
+                    float sinPhi = MathF.Sin( phi );
+                    float cosPhi = MathF.Cos( phi );
+
+                    Vector3 position = new Vector3(
+                        center.X + radius * cosPhi * sinTheta,
+                        center.Y + radius * cosTheta,
+                        center.Z + radius * sinPhi * sinTheta
+                    );
+
+                    Vector3 normal = Vector3.Normalize( position - center );
+
+                    // Add vertex position and normal
+                    vertices.Add( position.X );
+                    vertices.Add( position.Y );
+                    vertices.Add( position.Z );
+                    vertices.Add( normal.X );
+                    vertices.Add( normal.Y );
+                    vertices.Add( normal.Z );
+                }
+            }
+
+            // Generate indices
+            for ( int lat = 0; lat < latitudeSegments; lat++ )
+            {
+                for ( int lon = 0; lon < longitudeSegments; lon++ )
+                {
+                    int first = lat * ( longitudeSegments + 1 ) + lon;
+                    int second = first + longitudeSegments + 1;
+
+                    indices.Add( first );
+                    indices.Add( second );
+                    indices.Add( first + 1 );
+
+                    indices.Add( second );
+                    indices.Add( second + 1 );
+                    indices.Add( first + 1 );
+                }
+            }
+
+            // VAO
+            var vao = GL.GenVertexArray();
+            GL.BindVertexArray( vao );
+
+            // VBO
+            var vbo = GL.GenBuffer();
+            GL.BindBuffer( BufferTarget.ArrayBuffer, vbo );
+            GL.BufferData( BufferTarget.ArrayBuffer, vertices.Count * sizeof( float ), vertices.ToArray(), BufferUsageHint.StaticDraw );
+
+            // EBO
+            var ebo = GL.GenBuffer();
+            GL.BindBuffer( BufferTarget.ElementArrayBuffer, ebo );
+            GL.BufferData( BufferTarget.ElementArrayBuffer, indices.Count * sizeof( int ), indices.ToArray(), BufferUsageHint.StaticDraw );
+
+            // Specify vertex attributes
+            int stride = 6 * sizeof( float ); // 3 for position, 3 for normal
+            GL.EnableVertexAttribArray( 0 );
+            GL.VertexAttribPointer( 0, 3, VertexAttribPointerType.Float, false, stride, 0 );
+            GL.EnableVertexAttribArray( 1 );
+            GL.VertexAttribPointer( 1, 3, VertexAttribPointerType.Float, false, stride, 3 * sizeof( float ) );
+
+            mShaderRegistry.mLineShader.Use();
+            mShaderRegistry.mLineShader.SetUniform( "uView", mCamera.View );
+            mShaderRegistry.mLineShader.SetUniform( "uProjection", mCamera.Projection );
+
+            //GL.DrawArrays( PrimitiveType.Lines, 0, vertices.Count / 12 );
+            GL.DrawElements( PrimitiveType.Triangles, indices.Count, DrawElementsType.UnsignedInt, 0 );
+
+            // Clean up
+            GL.UseProgram( 0 );
+            GL.BindVertexArray( 0 );
+            GL.DisableVertexAttribArray( 1 );
+            GL.DisableVertexAttribArray( 0 );
+            GL.BindBuffer( BufferTarget.ElementArrayBuffer, ebo );
+            GL.BindBuffer( BufferTarget.ArrayBuffer, 0 );
+            GL.BindVertexArray( 0 );
+            GL.DeleteBuffer( ebo );
+            GL.DeleteBuffer( vbo );
+            GL.DeleteVertexArray( 0 );
+        }
+
         /// <summary>
         /// Load a model for displaying in the control.
         /// </summary>
@@ -191,6 +407,8 @@ namespace GFDStudio.GUI.Controls
             // Load model into optimized format
             mModel = new GLModel( modelPack, ( material, textureName ) =>
             {
+                if (string.IsNullOrWhiteSpace(textureName))
+                    return null;
                 if ( mIsFieldModel && mFieldTextures.TryOpenFile( textureName, out var textureStream ) )
                 {
                     using ( textureStream )
@@ -272,7 +490,7 @@ namespace GFDStudio.GUI.Controls
             {
                 components?.Dispose();
 
-                mDefaultShader?.Dispose();
+                mShaderRegistry.mDefaultShader?.Dispose();
 
                 if ( mIsModelLoaded )
                     UnloadModel();
@@ -343,21 +561,42 @@ namespace GFDStudio.GUI.Controls
                 if ( mIsModelLoaded )
                 {
                     // Draw model
-                    mModel.Draw( mDefaultShader, mCamera, AnimationTime );
+                    mModel.Draw( new DrawContext()
+                    {
+                        ShaderRegistry = mShaderRegistry,
+                        Camera = mCamera,
+                        AnimationTime = AnimationTime,
+                        SelectedMaterial = mSelectedMaterial,
+                        SelectedMesh = mSelectedMesh
+                    } );
                 }
+
+                //foreach ( var node in mModel.Nodes )
+                //{
+                //    DrawSphere( node.WorldTransform.Translation.ToOpenTK(), 1, 8, 8 );
+                //    foreach ( var mesh in node.Meshes )
+                //    {
+                //        if (mesh.Mesh.BoundingSphere.HasValue)
+                //        {
+                //            var worldCenter = System.Numerics.Vector3.Transform( mesh.Mesh.BoundingSphere.Value.Center, node.WorldTransform );
+                //            DrawSphere( worldCenter.ToOpenTK(), mesh.Mesh.BoundingSphere.Value.Radius, 8, 8 );
+                //        }
+                //    }
+                //}
+
+                //DrawLine( mRaypickStart, mRaypickEnd, new Vector4( 1, 0, 0, 1 ) );
 
                 SwapBuffers();
             } );
         }
 
-
         private void DrawGrid( Matrix4 view, Matrix4 projection )
         {
-            mLineShader.Use();
-            mLineShader.SetUniform( "uView", view );
-            mLineShader.SetUniform( "uProjection", projection );
-            mLineShader.SetUniform( "uColor", GridLineColor );
-            mLineShader.SetUniform( "uMinZ", mGridMinZ );
+            mShaderRegistry.mLineShader.Use();
+            mShaderRegistry.mLineShader.SetUniform( "uView", view );
+            mShaderRegistry.mLineShader.SetUniform( "uProjection", projection );
+            mShaderRegistry.mLineShader.SetUniform( "uColor", GridLineColor );
+            mShaderRegistry.mLineShader.SetUniform( "uMinZ", mGridMinZ );
 
             GL.BindVertexArray( mGridVertexArrayID );
             GL.DrawArrays( PrimitiveType.Lines, 0, mGridVertexBuffer.Count );
@@ -426,22 +665,8 @@ namespace GFDStudio.GUI.Controls
         /// </summary>
         private bool InitializeShaders()
         {
-            if ( !GLShaderProgram.TryCreate( DataStore.GetPath( "shaders/default.glsl.vs" ),
-                                             DataStore.GetPath( "shaders/default.glsl.fs" ),
-                                             out mDefaultShader ) )
-            {
-                if ( !GLShaderProgram.TryCreate( DataStore.GetPath( "shaders/basic.glsl.vs" ),
-                                                 DataStore.GetPath( "shaders/basic.glsl.fs" ),
-                                                 out mDefaultShader ) )
-                {
-                    return false;
-                }
-            }
-
-            if ( !GLShaderProgram.TryCreate( DataStore.GetPath( "shaders/line.glsl.vs" ), DataStore.GetPath( "shaders/line.glsl.fs" ), out mLineShader ) )
-                return false;
-
-            return true;
+            mShaderRegistry = new ShaderRegistry();
+            return mShaderRegistry.InitializeShaders(x => DataStore.GetPath(x));
         }
 
         private void UnloadModel()
@@ -505,6 +730,172 @@ namespace GFDStudio.GUI.Controls
             }
             return multiplier;
         }
+
+        private bool RayIntersectsSphere( Vector3 rayOrigin, Vector3 rayDirection, Vector3 sphereCenter, float sphereRadius, out float distance )
+        {
+            // Vector from the ray's origin to the center of the sphere
+            Vector3 m = rayOrigin - sphereCenter;
+
+            float b = Vector3.Dot( m, rayDirection );
+            float c = Vector3.Dot( m, m ) - sphereRadius * sphereRadius;
+
+            // If ray starts outside sphere (c > 0) and points away from sphere (b > 0), no intersection
+            if ( c > 0.0f && b > 0.0f )
+            {
+                distance = 0.0f;
+                return false;
+            }
+
+            // Calculate discriminant
+            float discriminant = b * b - c;
+
+            // If discriminant is negative, no intersection
+            if ( discriminant < 0.0f )
+            {
+                distance = 0.0f;
+                return false;
+            }
+
+            // Calculate distance to the closest intersection point
+            distance = -b - MathF.Sqrt( discriminant );
+
+            // If distance is negative, the ray started inside the sphere so clamp to zero
+            if ( distance < 0.0f )
+                distance = 0.0f;
+
+            return true;
+        }
+
+        public bool RayIntersectsBox( Vector3 rayOrigin, Vector3 rayDir, Vector3 boxMin, Vector3 boxMax, out float distance )
+        {
+            float tMin = ( boxMin.X - rayOrigin.X ) / rayDir.X;
+            float tMax = ( boxMax.X - rayOrigin.X ) / rayDir.X;
+
+            if ( tMin > tMax ) (tMin, tMax) = (tMax, tMin);
+
+            float tyMin = ( boxMin.Y - rayOrigin.Y ) / rayDir.Y;
+            float tyMax = ( boxMax.Y - rayOrigin.Y ) / rayDir.Y;
+
+            if ( tyMin > tyMax ) (tyMin, tyMax) = (tyMax, tyMin);
+
+            if ( ( tMin > tyMax ) || ( tyMin > tMax ) )
+            {
+                distance = 0;
+                return false;
+            }
+
+            if ( tyMin > tMin ) tMin = tyMin;
+            if ( tyMax < tMax ) tMax = tyMax;
+
+            float tzMin = ( boxMin.Z - rayOrigin.Z ) / rayDir.Z;
+            float tzMax = ( boxMax.Z - rayOrigin.Z ) / rayDir.Z;
+
+            if ( tzMin > tzMax ) (tzMin, tzMax) = (tzMax, tzMin);
+
+            if ( ( tMin > tzMax ) || ( tzMin > tMax ) )
+            {
+                distance = 0;
+                return false;
+            }
+
+            if ( tzMin > tMin ) tMin = tzMin;
+            if ( tzMax < tMax ) tMax = tzMax;
+
+            distance = tMin;
+            return tMin >= 0;
+        }
+
+        private bool Raypick(int mouseX, int mouseY)
+        {
+            // Step 1: Convert mouse position to NDC
+            var x = ( 2.0f * mouseX ) / ClientRectangle.Width - 1.0f;
+            var y = 1.0f - ( 2.0f * mouseY ) / ClientRectangle.Height;
+            var rayNDC = new Vector4( x, y, -1.0f, 1.0f ); // near plane
+
+            // Step 2: Convert NDC to world coordinates
+            var invProjectionMatrix = Matrix4.Invert( mCamera.Projection );
+            var invViewMatrix = Matrix4.Invert( mCamera.View );
+
+            var rayCamera = invProjectionMatrix * rayNDC;
+            rayCamera.Z = -1.0f;
+            rayCamera.W = 0.0f;
+
+            var rayWorld4 = invViewMatrix * rayCamera;
+            var rayWorld = new Vector3( rayWorld4.X, rayWorld4.Y, rayWorld4.Z );
+            rayWorld.Normalize();
+
+            var rayOrigin = new Vector3( invViewMatrix.M41, invViewMatrix.M42, invViewMatrix.M43 );
+            mRaypickStart = rayOrigin;
+            mRaypickEnd = rayOrigin + rayWorld * 10000f;
+
+            var anySelected = false;
+
+            Debug.WriteLine( rayOrigin );
+
+            // TODO sorting
+
+            float closestDistance = float.MaxValue;
+            GLNode closestNode = null;
+            GLMesh closestMesh = null;
+
+            foreach ( var glNode in mModel.Nodes )
+            {
+                foreach ( var glMesh in glNode.Meshes )
+                {
+                    if ( glMesh.IsVisible && (glMesh.Mesh?.BoundingSphere.HasValue ?? false) )
+                    {
+                        //var sphere = glMesh.Mesh.BoundingSphere.Value;
+                        //// Transform the sphere center to world space
+                        //var sphereCenterWorld = System.Numerics.Vector3.Transform( sphere.Center, glNode.WorldTransform ).ToOpenTK();
+
+                        //// Check for intersection
+                        //if ( RayIntersectsSphere( rayOrigin, rayWorld, sphereCenterWorld, sphere.Radius, out float distance ) )
+                        //{
+                        //    // Check if this sphere is the closest
+                        //    if ( distance < closestDistance )
+                        //    {
+                        //        closestDistance = distance;
+                        //        closestMesh = glMesh;
+                        //        closestNode = glNode;
+                        //    }
+                        //}
+                        var boundingBox = glMesh.Mesh.BoundingBox.Value;
+
+                        // Transform the bounding box to world space
+                        var boxMinWorld = System.Numerics.Vector3.Transform( boundingBox.Min, glNode.WorldTransform ).ToOpenTK();
+                        var boxMaxWorld = System.Numerics.Vector3.Transform( boundingBox.Max, glNode.WorldTransform ).ToOpenTK();
+
+                        // Check for intersection with the bounding box
+                        if ( RayIntersectsBox( rayOrigin, rayWorld, boxMinWorld, boxMaxWorld, out float distance ) )
+                        {
+                            // Check if this bounding box is the closest intersection
+                            if ( distance < closestDistance )
+                            {
+                                closestDistance = distance;
+                                closestMesh = glMesh;
+                                closestNode = glNode;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Select the closest mesh if found
+            //if ( closestMesh != null )
+            //{
+            //    SetSelection( closestMesh.Mesh );
+            //    Debug.WriteLine( $"Selected {closestNode.Node.Name} mesh" );
+            //    return true;
+            //}
+
+            return false;
+        }
+
+        protected override void OnMouseUp( System.Windows.Forms.MouseEventArgs e )
+        {
+            if ( e.Button == MouseButtons.Left )
+                Raypick( e.X, e.Y );
+        }
         protected override void OnMouseMove( System.Windows.Forms.MouseEventArgs e )
         {
             if ( !mIsModelLoaded )
@@ -559,6 +950,25 @@ namespace GFDStudio.GUI.Controls
                 mCamera.ModelRotation = Vector3.Zero;
             }
             Invalidate();
+        }
+
+        public void ClearSelection()
+        {
+            mSelectedMesh = null;
+            mSelectedMaterial = null;
+            Invalidate();
+        }
+
+        public void SetSelection( Mesh data )
+        {
+            ClearSelection();
+            mSelectedMesh = data;
+        }
+
+        public void SetSelection( Material data )
+        {
+            ClearSelection();
+            mSelectedMaterial = data;
         }
     }
 }

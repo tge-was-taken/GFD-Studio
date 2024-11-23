@@ -14,41 +14,41 @@ namespace GFDStudio.GUI.DataViewNodes
 
         [Browsable( true )]
         [DisplayName( "Iterations" )]
-        public int Field140
+        public int Iterations
         {
-            get => GetDataProperty<int>();
+            get => Data.Iterations;
             set => SetDataProperty( value );
         }
 
         [Browsable( true )]
         [DisplayName( "Deceleration" )]
-        public float Field13C
+        public float Deceleration
         {
-            get => GetDataProperty<float>();
+            get => Data.Deceleration;
             set => SetDataProperty( value );
         }
 
         [Browsable( true )]
         [DisplayName( "Max Steps" )]
-        public float Field138
+        public float MaxSteps
         {
-            get => GetDataProperty<float>();
+            get => Data.MaxSteps;
             set => SetDataProperty( value );
         }
 
         [Browsable( true )]
         [DisplayName( "Transfers tolerance" )]
-        public float Field134
+        public float TransferTolerance
         {
-            get => GetDataProperty<float>();
+            get => Data.TransferTolerance;
             set => SetDataProperty( value );
         }
 
         [Browsable( true )]
         [DisplayName( "Velocity tolerance" )]
-        public float Field130
+        public float VelocityTolerance
         {
-            get => GetDataProperty<float>();
+            get => Data.VelocityTolerance;
             set => SetDataProperty( value );
         }
 
@@ -72,11 +72,11 @@ namespace GFDStudio.GUI.DataViewNodes
             {
                 var resource = new ChunkType000100F9( Version )
                 {
-                    Field140 = Field140,
-                    Field13C = Field13C,
-                    Field138 = Field138,
-                    Field134 = Field134,
-                    Field130 = Field130,
+                    Iterations = Iterations,
+                    Deceleration = Deceleration,
+                    MaxSteps = MaxSteps,
+                    TransferTolerance = TransferTolerance,
+                    VelocityTolerance = VelocityTolerance,
                     Entry1List = Entry1ListViewNode.Data,
                     Entry2List = Entry2ListViewNode.Data,
                     Entry3List = Entry3ListViewNode.Data

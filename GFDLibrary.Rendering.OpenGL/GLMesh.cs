@@ -15,11 +15,11 @@ namespace GFDLibrary.Rendering.OpenGL
 
         public GLVertexArray VertexArray { get; }
 
-        public GLMaterial Material { get; }
+        public GLBaseMaterial Material { get; }
 
         public bool IsVisible { get; }
 
-        public GLMesh( GLVertexArray vertexArray, GLMaterial material, bool isVisible )
+        public GLMesh( GLVertexArray vertexArray, GLBaseMaterial material, bool isVisible )
         {
             Mesh = null;
             VertexArray = vertexArray;
@@ -27,7 +27,7 @@ namespace GFDLibrary.Rendering.OpenGL
             IsVisible = isVisible;
         }
 
-        public GLMesh( Mesh mesh, Matrix4x4 modelMatrix, List<Bone> bones, List<GLNode> nodes, Dictionary<string, GLMaterial> materials )
+        public GLMesh( Mesh mesh, Matrix4x4 modelMatrix, List<Bone> bones, List<GLNode> nodes, Dictionary<string, GLBaseMaterial> materials )
         {
             Mesh = mesh;
 
@@ -51,8 +51,7 @@ namespace GFDLibrary.Rendering.OpenGL
 
                     var newPosition = Vector3.Zero;
                     var newNormal = Vector3.Zero;
-
-                    for ( int j = 0; j < 4; j++ )
+                    for ( int j = 0; j < mesh.VertexWeights[i].Weights.Length; j++ )
                     {
                         var weight = mesh.VertexWeights[i].Weights[j];
                         if ( weight == 0 )
@@ -78,7 +77,10 @@ namespace GFDLibrary.Rendering.OpenGL
                 indices[( i * 3 ) + 2] = mesh.Triangles[i].C;
             }
 
-            VertexArray = new GLVertexArray( vertices, normals, mesh.TexCoordsChannel0, mesh.TexCoordsChannel1, mesh.TexCoordsChannel2, mesh.ColorChannel0, indices, PrimitiveType.Triangles );
+            VertexArray = new GLVertexArray( vertices, normals, 
+                new[] { mesh.TexCoordsChannel0, mesh.TexCoordsChannel1, mesh.TexCoordsChannel2 }, 
+                new[] { mesh.ColorChannel0, mesh.ColorChannel1, mesh.ColorChannel2 },
+                indices, PrimitiveType.Triangles );
 
             // material
             if ( mesh.MaterialName != null && materials != null )
@@ -90,18 +92,18 @@ namespace GFDLibrary.Rendering.OpenGL
                 else
                 {
                     Trace.TraceError( $"Mesh referenced material \"{mesh.MaterialName}\" which does not exist in the model" );
-                    Material = new GLMaterial();
+                    Material = new GLP5Material();
                 }
             }
             else
             {
-                Material = new GLMaterial();
+                Material = new GLP5Material();
             }
 
             IsVisible = true;
         }
 
-        private static void TransformVertex( List<Bone> bones, List<GLNode> nodes, Vector3 position, Vector3 normal, ref Vector3 newPosition, ref Vector3 newNormal, float weight, byte boneIndex )
+        private static void TransformVertex( List<Bone> bones, List<GLNode> nodes, Vector3 position, Vector3 normal, ref Vector3 newPosition, ref Vector3 newNormal, float weight, ushort boneIndex )
         {
             var bone = bones[boneIndex];
             var boneNode = nodes[bone.NodeIndex];
@@ -115,6 +117,8 @@ namespace GFDLibrary.Rendering.OpenGL
 
         public void Draw( Matrix4 modelMatrix, GLShaderProgram shaderProgram )
         {
+            //if ( Material.METAPHOR_DistortionMaterialTest )
+            //    return;
             shaderProgram.SetUniform( "uModel", modelMatrix);
             Material.Bind( shaderProgram );
             shaderProgram.Check();

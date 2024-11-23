@@ -66,7 +66,10 @@ namespace GFDStudio.FormatModules
 
                 new FieldTexturePS3FormatModule(),
                 new DDSFormatModule(),
-                new GNFTextureFormatModule()
+                new GNFTextureFormatModule(),
+
+                // gfd loose model parts
+                new MetaphorTexpackFormatModule()
             );
         }
 

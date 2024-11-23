@@ -328,25 +328,25 @@ namespace GFDLibrary.Tests
 
             Assert.AreEqual( a.Name, b.Name );
             Assert.AreEqual( a.Flags, b.Flags );
-            Assert.AreEqual( a.AmbientColor, b.AmbientColor );
-            Assert.AreEqual( a.DiffuseColor, b.DiffuseColor );
-            Assert.AreEqual( a.SpecularColor, b.SpecularColor );
-            Assert.AreEqual( a.EmissiveColor, b.EmissiveColor );
-            Assert.AreEqual( a.Field40, b.Field40 );
-            Assert.AreEqual( a.Field44, b.Field44 );
+            Assert.AreEqual( a.LegacyParameters.AmbientColor, b.LegacyParameters.AmbientColor );
+            Assert.AreEqual( a.LegacyParameters.DiffuseColor, b.LegacyParameters.DiffuseColor );
+            Assert.AreEqual( a.LegacyParameters.EmissiveColor, b.LegacyParameters.EmissiveColor );
+            Assert.AreEqual( a.LegacyParameters.SpecularColor, b.LegacyParameters.SpecularColor );
+            Assert.AreEqual( a.LegacyParameters.Reflectivity, b.LegacyParameters.Reflectivity );
+            Assert.AreEqual( a.LegacyParameters.Diffusivity, b.LegacyParameters.Diffusivity );
             Assert.AreEqual( a.DrawMethod, b.DrawMethod );
-            Assert.AreEqual( a.Field49, b.Field49 );
-            Assert.AreEqual( a.Field4A, b.Field4A );
-            Assert.AreEqual( a.Field4B, b.Field4B );
-            Assert.AreEqual( a.Field4C, b.Field4C );
-            Assert.AreEqual( a.Field4D, b.Field4D );
-            Assert.AreEqual( a.Field90, b.Field90 );
-            Assert.AreEqual( a.Field92, b.Field92 );
+            Assert.AreEqual( a.BlendSourceColor, b.BlendSourceColor );
+            Assert.AreEqual( a.BlendDestinationColor, b.BlendDestinationColor );
+            Assert.AreEqual( a.SourceAlpha, b.SourceAlpha );
+            Assert.AreEqual( a.DestinationAlpha, b.DestinationAlpha );
+            Assert.AreEqual( a.HighlightMapBlendMode, b.HighlightMapBlendMode );
+            Assert.AreEqual( a.AlphaClip, b.AlphaClip );
+            Assert.AreEqual( a.AlphaClipMode, b.AlphaClipMode );
             Assert.AreEqual( a.Flags2,  b.Flags2 );
-            Assert.AreEqual( a.Field96, b.Field96 );
-            Assert.AreEqual( a.Field5C, b.Field5C );
-            Assert.AreEqual( a.Field6C, b.Field6C );
-            Assert.AreEqual( a.Field70, b.Field70 );
+            Assert.AreEqual( a.SortPriority, b.SortPriority );
+            Assert.AreEqual( a.ShaderId, b.ShaderId );
+            Assert.AreEqual( a.TexCoordFlags0, b.TexCoordFlags0 );
+            Assert.AreEqual( a.TexCoordFlags1, b.TexCoordFlags1 );
             Assert.AreEqual( a.DisableBackfaceCulling, b.DisableBackfaceCulling);
             Assert.AreEqual( a.Field98, b.Field98 );
 
@@ -371,11 +371,11 @@ namespace GFDLibrary.Tests
             }
 
             Assert.AreEqual( a.Name, b.Name );
-            Assert.AreEqual( a.Field44, b.Field44 );
-            Assert.AreEqual( a.Field48, b.Field48 );
-            Assert.AreEqual( a.Field49, b.Field49 );
-            Assert.AreEqual( a.Field4A, b.Field4A );
-            Assert.AreEqual( a.Field4B, b.Field4B );
+            Assert.AreEqual( a.Flags, b.Flags );
+            Assert.AreEqual( a.MinificationFilter, b.MinificationFilter );
+            Assert.AreEqual( a.MagnificationFilter, b.MagnificationFilter );
+            Assert.AreEqual( a.WrapModeU, b.WrapModeU );
+            Assert.AreEqual( a.WrapModeV, b.WrapModeV );
             Assert.AreEqual( a.Field4C, b.Field4C );
             Assert.AreEqual( a.Field50, b.Field50 );
             Assert.AreEqual( a.Field54, b.Field54 );
@@ -416,11 +416,11 @@ namespace GFDLibrary.Tests
                             var b2 = ( MaterialAttributeType0 )b[i];
 
                             Assert.AreEqual( a2.Color, b2.Color );
-                            Assert.AreEqual( a2.Field1C, b2.Field1C );
-                            Assert.AreEqual( a2.Field20, b2.Field20 );
-                            Assert.AreEqual( a2.Field24, b2.Field24 );
-                            Assert.AreEqual( a2.Field28, b2.Field28 );
-                            Assert.AreEqual( a2.Field2C, b2.Field2C );
+                            Assert.AreEqual( a2.LightTreshold, b2.LightTreshold );
+                            Assert.AreEqual( a2.LightFactor, b2.LightFactor );
+                            Assert.AreEqual( a2.LightBrightness, b2.LightBrightness );
+                            Assert.AreEqual( a2.ShadowTreshold, b2.ShadowTreshold );
+                            Assert.AreEqual( a2.ShadowFactor, b2.ShadowFactor );
                             Assert.AreEqual( a2.Type0Flags, b2.Type0Flags );
                         }
                         break;
@@ -430,11 +430,11 @@ namespace GFDLibrary.Tests
                             var b2 = ( MaterialAttributeType1 )b[i];
 
                             Assert.AreEqual( a2.Field0C, b2.Field0C);
-                            Assert.AreEqual( a2.Field1C, b2.Field1C );
-                            Assert.AreEqual( a2.Field20, b2.Field20 );
-                            Assert.AreEqual( a2.Field24, b2.Field24 );
-                            Assert.AreEqual( a2.Field34, b2.Field34 );
-                            Assert.AreEqual( a2.Field38, b2.Field38 );
+                            Assert.AreEqual( a2.LightTreshold, b2.LightTreshold );
+                            Assert.AreEqual( a2.LightFactor, b2.LightFactor );
+                            Assert.AreEqual( a2.ShadowColor, b2.ShadowColor );
+                            Assert.AreEqual( a2.ShadowThreshold, b2.ShadowThreshold );
+                            Assert.AreEqual( a2.ShadowFactor, b2.ShadowFactor );
                             Assert.AreEqual( a2.Type1Flags, b2.Type1Flags );
                         }
                         break;
@@ -443,8 +443,8 @@ namespace GFDLibrary.Tests
                             var a2 = ( MaterialAttributeType2 )a[i];
                             var b2 = ( MaterialAttributeType2 )b[i];
 
-                            Assert.AreEqual( a2.Field0C, b2.Field0C );
-                            Assert.AreEqual( a2.Field10, b2.Field10 );
+                            Assert.AreEqual( a2.Flags, b2.Flags );
+                            Assert.AreEqual( a2.Color, b2.Color );
                         }
                         break;
                     case MaterialAttributeType.Type3:
@@ -472,21 +472,21 @@ namespace GFDLibrary.Tests
                             var a2 = ( MaterialAttributeType4 )a[i];
                             var b2 = ( MaterialAttributeType4 )b[i];
 
-                            Assert.AreEqual( a2.Field0C, b2.Field0C );
-                            Assert.AreEqual( a2.Field1C, b2.Field1C );
-                            Assert.AreEqual( a2.Field20, b2.Field20 );
-                            Assert.AreEqual( a2.Field24, b2.Field24 );
-                            Assert.AreEqual( a2.Field34, b2.Field34 );
-                            Assert.AreEqual( a2.Field38, b2.Field38 );
-                            Assert.AreEqual( a2.Field3C, b2.Field3C );
-                            Assert.AreEqual( a2.Field40, b2.Field40 );
-                            Assert.AreEqual( a2.Field44, b2.Field44 );
-                            Assert.AreEqual( a2.Field48, b2.Field48 );
-                            Assert.AreEqual( a2.Field4C, b2.Field4C );
-                            Assert.AreEqual( a2.Field50, b2.Field50 );
-                            Assert.AreEqual( a2.Field54, b2.Field54 );
-                            Assert.AreEqual( a2.Field58, b2.Field58 );
-                            Assert.AreEqual( a2.Field5C, b2.Field5C );
+                            Assert.AreEqual( a2.LightColor, b2.LightColor );
+                            Assert.AreEqual( a2.LightThreshold, b2.LightThreshold );
+                            Assert.AreEqual( a2.LightFactor, b2.LightFactor );
+                            Assert.AreEqual( a2.ShadowColor, b2.ShadowColor );
+                            Assert.AreEqual( a2.ShadowThreshold, b2.ShadowThreshold );
+                            Assert.AreEqual( a2.ShadowFactor, b2.ShadowFactor );
+                            Assert.AreEqual( a2.NightMapSpeed, b2.NightMapSpeed );
+                            Assert.AreEqual( a2.NightMapPower, b2.NightMapPower );
+                            Assert.AreEqual( a2.NightMapScale, b2.NightMapScale );
+                            Assert.AreEqual( a2.NightMapHeight, b2.NightMapHeight );
+                            Assert.AreEqual( a2.NightMapAlpha, b2.NightMapAlpha );
+                            Assert.AreEqual( a2.NightMapDirection, b2.NightMapDirection );
+                            Assert.AreEqual( a2.DarkGradientHeight, b2.DarkGradientHeight );
+                            Assert.AreEqual( a2.DarkGradientAlpha, b2.DarkGradientAlpha );
+                            Assert.AreEqual( a2.Flags2, b2.Flags2 );
                         }
                         break;
                     case MaterialAttributeType.Type5:
@@ -779,8 +779,8 @@ namespace GFDLibrary.Tests
             Assert.AreEqual( a.MaterialName, b.MaterialName );
             Assert.AreEqual( a.BoundingBox, b.BoundingBox );
             Assert.AreEqual( a.BoundingSphere, b.BoundingSphere );
-            Assert.AreEqual( a.FieldD4, b.FieldD4 );
-            Assert.AreEqual( a.FieldD8, b.FieldD8 );
+            Assert.AreEqual( a.LodStart, b.LodStart );
+            Assert.AreEqual( a.LodEnd, b.LodEnd );
         }
 
         private void CompareMorphTargetLists( MorphTargetList a, MorphTargetList b )

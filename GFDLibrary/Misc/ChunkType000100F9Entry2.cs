@@ -4,13 +4,13 @@ namespace GFDLibrary.Misc
 {
     public class ChunkType000100F9Entry2
     {
-        public short Field94 { get; set; }
+        public short CapsuleType { get; set; }
 
-        public float Field84 { get; set; }
+        public float CapsuleRadius { get; set; }
 
-        public float Field88 { get; set; }
+        public float CapsuleHeight { get; set; }
 
-        public Matrix4x4 Field8C { get; set; }
+        public Matrix4x4 Matrix { get; set; }
 
         public string NodeName { get; set; }
     }

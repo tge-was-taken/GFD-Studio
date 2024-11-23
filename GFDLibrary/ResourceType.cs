@@ -7,6 +7,7 @@
         ShaderCachePS3,
         ShaderCachePSP2 = 4,
         ShaderCachePS4 = 6,
+        ModelPack_Metaphor = 8, // LITTLE_ENDIAN
 
         // These are all used as intermediary output formats
         TextureMap = 'R' << 24 | 'I' << 16 | 'G' << 8,
@@ -89,6 +90,8 @@
         EplLight,
         EplLightMeshData,
         EplLightSceneData,
+        EplLightPointData,
+        EplLightSpotData,
         EplPostEffect,
         EplPostEffectRadiationBlurData,
         EplPostEffectStraightBlurData,
@@ -98,7 +101,33 @@
         EplPostEffectLensFlareData,
         EplPostEffectColorCorrectionData,
         EplPostEffectMonotoneData,
+        EplPostEffectChromaticAberrationData,
+        EplPostEffectColorCorrectionExcludeToonData,
         EplHelper,
         EplDirectionalParticles,
+
+        MaterialParameterSetType0,
+        MaterialParameterSetType1,
+        MaterialParameterSetType2_3_13,
+        MaterialParameterSetType4,
+        MaterialParameterSetType5,
+        MaterialParameterSetType6,
+        MaterialParameterSetType7,
+        MaterialParameterSetType8,
+        MaterialParameterSetType9,
+        MaterialParameterSetType10,
+        MaterialParameterSetType11,
+        MaterialParameterSetType12,
+        MaterialParameterSetType14,
+        MaterialParameterSetType15,
+        MaterialParameterSetType16,
+        MaterialParameterSetLegacy,
+
+        ShaderMetaphorDX11,
+        EplPostEffectLensFlareMakeData,
+        EplPostEffectMotionBlurData,
+        EplPostEffectAfterimageBlurData,
+
+        ModelPack_Metaphor_BIG_ENDIAN = 0x8000000
     }
 }

@@ -10,36 +10,25 @@ namespace GFDLibrary.Rendering.OpenGL
     {
         public int Id { get; }
 
-        public GLVertexAttributeBuffer<Vector4> ColorBuffer { get; }
+        public GLVertexAttributeBuffer<Vector4>[] ColorChannelBuffers { get; } = new GLVertexAttributeBuffer<Vector4>[3];
         public GLVertexAttributeBuffer<Vector3> PositionBuffer { get; }
 
         public GLVertexAttributeBuffer<Vector3> NormalBuffer { get; }
 
-        public GLVertexAttributeBuffer<Vector2> TextureCoordinateChannel0Buffer { get; }
-        public GLVertexAttributeBuffer<Vector2> TextureCoordinateChannel1Buffer { get; }
-        public GLVertexAttributeBuffer<Vector2> TextureCoordinateChannel2Buffer { get; }
+        public GLVertexAttributeBuffer<Vector2>[] TextureCoordinateChannelBuffers { get; } = new GLVertexAttributeBuffer<Vector2>[3];
 
         public GLBuffer<uint> ElementBuffer { get; }
 
         public PrimitiveType PrimitiveType { get; }
 
-        public GLVertexArray( Vector3[] positions, Vector3[] normals, Vector2[] texCoords, Vector2[] texCoord1, Vector2[] texCoord2, uint[] vertColor, uint[] indices, PrimitiveType primitiveType )
+        public GLVertexArray( Vector3[] positions, Vector3[] normals, 
+            Vector2[][] texCoordChannels,
+            Graphics.Color[][] vertColorChannels, 
+            uint[] indices, PrimitiveType primitiveType )
         {
             // vertex array
             Id = GL.GenVertexArray();
             GL.BindVertexArray( Id );
-            // colors
-            if (vertColor != null )
-            {
-                Vector4[] vertColorVector4 = new Vector4[vertColor.Length];
-                for ( int i = 0; i < vertColor.Length; i++ )
-                {
-                    byte[] bytes = BitConverter.GetBytes( vertColor[i] );
-                    vertColorVector4[i] = new Vector4( bytes[0], bytes[1], bytes[2], bytes[3] ) / 255f;
-                }
-                ColorBuffer = new GLVertexAttributeBuffer<Vector4>( vertColorVector4, 7, 4, VertexAttribPointerType.Float );
-
-            }
 
             // positions
             PositionBuffer = new GLVertexAttributeBuffer<Vector3>( positions, 0, 3, VertexAttribPointerType.Float );
@@ -49,18 +38,30 @@ namespace GFDLibrary.Rendering.OpenGL
                 NormalBuffer = new GLVertexAttributeBuffer<Vector3>( normals, 1, 3, VertexAttribPointerType.Float );
 
 
-            if ( texCoords != null )
+            if (texCoordChannels != null )
             {
-                // texture coordinate channel 0
-                TextureCoordinateChannel0Buffer = new GLVertexAttributeBuffer<Vector2>( texCoords, 2, 2, VertexAttribPointerType.Float );
+                for ( int channelIndex = 0; channelIndex < 3; ++channelIndex)
+                {
+                    if ( texCoordChannels.Length > channelIndex && texCoordChannels[channelIndex] != null )
+                        TextureCoordinateChannelBuffers[channelIndex] = new GLVertexAttributeBuffer<Vector2>( texCoordChannels[channelIndex], channelIndex == 0 ? 2 : 5 + channelIndex, 2, VertexAttribPointerType.Float );
+                }
             }
-            if (texCoord1 != null )
+
+            if (vertColorChannels != null)
             {
-                TextureCoordinateChannel1Buffer = new GLVertexAttributeBuffer<Vector2>( texCoord1, 5, 2, VertexAttribPointerType.Float );
-            }
-            if (texCoord2 != null )
-            {
-                TextureCoordinateChannel2Buffer = new GLVertexAttributeBuffer<Vector2>( texCoord2, 6, 2, VertexAttribPointerType.Float );
+                for( int channelIndex = 0; channelIndex < 3; ++channelIndex)
+                {
+                    if ( vertColorChannels.Length > channelIndex && vertColorChannels[channelIndex] != null )
+                    {
+                        Vector4[] vertColorVector4 = new Vector4[vertColorChannels[channelIndex].Length];
+                        for ( int vertexIndex = 0; vertexIndex < vertColorChannels[channelIndex].Length; vertexIndex++ )
+                        {
+                            var color = vertColorChannels[channelIndex][vertexIndex];
+                            vertColorVector4[vertexIndex] = new Vector4( color.R, color.G, color.B, color.A ) / 255f;
+                        }
+                        ColorChannelBuffers[channelIndex] = new GLVertexAttributeBuffer<Vector4>( vertColorVector4, 7 + channelIndex, 4, VertexAttribPointerType.Float );
+                    }
+                }
             }
 
             // element index buffer
@@ -92,7 +93,10 @@ namespace GFDLibrary.Rendering.OpenGL
                 {
                     PositionBuffer.Dispose();
                     NormalBuffer?.Dispose();
-                    TextureCoordinateChannel0Buffer?.Dispose();
+                    foreach ( var buffer in TextureCoordinateChannelBuffers )
+                        buffer?.Dispose();
+                    foreach ( var buffer in ColorChannelBuffers )
+                        buffer?.Dispose();
                     ElementBuffer.Dispose();
                     GL.DeleteVertexArray( Id );
                 }

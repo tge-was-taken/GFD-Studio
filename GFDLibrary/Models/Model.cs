@@ -58,6 +58,8 @@ namespace GFDLibrary.Models
 
         public Node RootNode { get; set; }
 
+        public byte Field100_10 { get; set; }
+
         public IEnumerable<Node> Nodes
         {
             get
@@ -75,6 +77,9 @@ namespace GFDLibrary.Models
                 return RecursivelyAddToList( RootNode );
             }
         }
+
+        public IEnumerable<Mesh> Meshes
+            => Nodes.SelectMany( n => n.Meshes );
 
         public Model()
         {         
@@ -103,6 +108,8 @@ namespace GFDLibrary.Models
                 Bones = new List<Bone>( boneCount );
                 for ( int i = 0; i < boneCount; i++ )
                     Bones.Add( new Bone( boneToNodeIndices[ i ], inverseBindMatrices[ i ] ) );
+                if ( Version >= 0x2040001 )
+                    Field100_10 = reader.ReadByte();
             }
 
             if ( flags.HasFlag( ModelFlags.HasBoundingBox ) )
@@ -128,6 +135,9 @@ namespace GFDLibrary.Models
 
                 foreach ( var bone in Bones )
                     writer.WriteUInt16( bone.NodeIndex );
+
+                if ( Version >= 0x2040001 )
+                    writer.WriteByte( Field100_10 );
             }
 
             if ( Flags.HasFlag( ModelFlags.HasBoundingBox ) )
@@ -319,8 +329,6 @@ namespace GFDLibrary.Models
 
                     if ( boneIndex == -1 )
                     {
-                        Trace.Assert( Bones.Count < 255 );
-
                         // Node wasn't used as a bone, so we add it
                         // TODO: This is a lazy hack. This should be done during the Bones fixup
                         boneIndex = Bones.Count;
@@ -334,8 +342,8 @@ namespace GFDLibrary.Models
                         for ( int i = 0; i < geometry.VertexWeights.Length; i++ )
                         {
                             ref var weight = ref geometry.VertexWeights[i];
-                            weight.Indices = new byte[4];
-                            weight.Indices[0] = ( byte )boneIndex;
+                            weight.Indices = new ushort[4];
+                            weight.Indices[0] = (ushort)boneIndex;
                             weight.Weights = new float[4];
                             weight.Weights[0] = 1f;
                         }
@@ -418,13 +426,12 @@ namespace GFDLibrary.Models
                             if ( newBoneIndex == -1 )
                             {
                                 // Add if unique
-                                Trace.Assert( uniqueBones.Count < 255 );
                                 uniqueBones.Add( new Bone( (ushort)thisNodeIndex, inverseBindMatrix ) );
                                 newBoneIndex = uniqueBones.Count - 1;
                             }
 
                             // Update bone index
-                            weight.Indices[ i ] = ( byte ) newBoneIndex;
+                            weight.Indices[ i ] = (ushort)newBoneIndex;
                         }
                     }
                 }

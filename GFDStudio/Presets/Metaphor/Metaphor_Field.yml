@@ -1,0 +1,123 @@
+!Material
+ResourceType: Material
+Name: bg06_Old_Wood_01_m1
+Flags: HasAmbientColor, HasDiffuseColor, ApplyFog, Diffusitivity, EnableLight, ReceiveShadow, HasDiffuseMap, HasNormalMap, ExtraDistortion
+DrawMethod: Opaque
+LegacyParameters: !MaterialLegacyParameters
+  ResourceType: MaterialParameterSetLegacy
+  AmbientColor: &o0
+    X: 0
+    Y: 0
+    Z: 0
+    W: 0
+  DiffuseColor: *o0
+  SpecularColor: *o0
+  EmissiveColor: *o0
+  Field40: 1
+  Field44: 0
+  Version: 17846384
+Field49: 1
+Field4A: 0
+Field4B: 1
+Field4C: 0
+Field4D: Lerp
+Field90: 0
+Field92: GEqual
+Flags2: Bit15
+Field96: 0
+Field5C: 54
+Field6C: 4294967232
+Field70: 4294967232
+DisableBackfaceCulling: 0
+Field98: 4294967295
+DiffuseMap: &o1 !TextureMap
+  ResourceType: TextureMap
+  Name: bg06_Old_Wood_01_m1_basecolor.tga
+  Field44: 0
+  Field48: Linear
+  Field49: Linear
+  Field4A: Repeat
+  Field4B: Repeat
+  Field4C: 1
+  Field50: 0
+  Field54: 0
+  Field58: 0
+  Field5C: 0
+  Field60: 1
+  Field64: 0
+  Field68: 0
+  Field6C: 0
+  Field70: 0
+  Field74: 0
+  Field78: 0
+  Field7C: 0
+  Field80: 0
+  Field84: 0
+  Field88: 0
+  Version: 34669089
+NormalMap: &o2 !TextureMap
+  ResourceType: TextureMap
+  Name: bg06_Old_Wood_01_m1_normal.tga
+  Field44: 0
+  Field48: Linear
+  Field49: Linear
+  Field4A: Repeat
+  Field4B: Repeat
+  Field4C: 1
+  Field50: 0
+  Field54: 0
+  Field58: 0
+  Field5C: 0
+  Field60: 1
+  Field64: 0
+  Field68: 0
+  Field6C: 0
+  Field70: 0
+  Field74: 0
+  Field78: 0
+  Field7C: 0
+  Field80: 0
+  Field84: 0
+  Field88: 0
+  Version: 34669089
+SpecularMap: 
+ReflectionMap: 
+HighlightMap: 
+GlowMap: 
+NightMap: 
+DetailMap: 
+ShadowMap: 
+TextureMap10: 
+TextureMaps:
+- *o1
+- *o2
+- 
+- 
+- 
+- 
+- 
+- 
+- 
+- 
+Attributes: 
+METAPHOR_UseMaterialParameterSet: true
+METAPHOR_MaterialParameterSet: !MaterialParameterSetType0
+  P0_0:
+    X: 1
+    Y: 1
+    Z: 1
+    W: 1
+  P0_1: 0
+  P0_2: 1
+  P0_3: 0
+  P0_4: 1
+  P0_5: 0.5
+  Flags: FLAG2, FLAG3, FLAG4
+  ResourceType: MaterialParameterSetType0
+  Version: 34669089
+Field6C_2: 1
+MatFlags0: 0
+MatFlags1: 0
+MatFlags2: 0
+IsPresetMaterial: false
+Version: 34669089

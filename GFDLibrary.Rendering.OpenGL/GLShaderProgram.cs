@@ -14,6 +14,14 @@ namespace GFDLibrary.Rendering.OpenGL
             return TryCreate( File.OpenRead( vertexShaderFilepath ), File.OpenRead( fragmentShaderFilepath ), out shaderProgram );
         }
 
+        public static GLShaderProgram TryThrowOnFail( string vertexshaderFilepath, string fragmentShaderFilepath )
+        {
+            GLShaderProgram ShaderOut;
+            if (!TryCreate(vertexshaderFilepath, fragmentShaderFilepath, out ShaderOut))
+                throw new Exception( $"Failed to build shader program: VS \"{vertexshaderFilepath}\" PS \"{fragmentShaderFilepath}\"" );
+            return ShaderOut;
+        }
+
         public static bool TryCreate( Stream vertexShaderStream, Stream fragmentShaderStream, out GLShaderProgram shaderProgram )
         {
             var vertexShaderSource = new StreamReader( vertexShaderStream ).ReadToEnd();
@@ -90,6 +98,14 @@ namespace GFDLibrary.Rendering.OpenGL
                 Type     = type,
                 Location = location,
             };
+        }
+
+        public void SetUniform( string name, Vector3 value )
+        {
+            var uniform = GetUniform( name );
+            DebugSetUniformAssignedFlag( uniform, value );
+
+            GL.Uniform3( uniform.Location, value );
         }
 
         public void SetUniform( string name, Vector4 value )

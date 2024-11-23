@@ -18,7 +18,9 @@ namespace GFDStudio.FormatModules
 
         protected override bool CanImportCore( Stream stream, string filename = null )
         {
-            return Resource.GetResourceType( stream ) == ResourceType.ModelPack;
+            return Resource.GetResourceType( stream ) == ResourceType.ModelPack
+                || Resource.GetResourceType( stream ) == ResourceType.ModelPack_Metaphor
+                || Resource.GetResourceType( stream ) == ResourceType.ModelPack_Metaphor_BIG_ENDIAN;
         }
 
         protected override void ExportCore( AnimationPack obj, Stream stream, string filename = null )

@@ -18,6 +18,7 @@ namespace GFDLibrary.IO
         public bool EndOfStream => Position >= BaseStream.Length;
 
         public ResourceReader( Stream stream, bool leaveOpen ) : base( stream, Encoding.Default, leaveOpen, Endianness.BigEndian )
+        //public ResourceReader( Stream stream, bool leaveOpen ) : base( stream, Encoding.Default, leaveOpen, Endianness.LittleEndian )
         {
         }
 
@@ -54,11 +55,13 @@ namespace GFDLibrary.IO
         {
             var str = ReadString();
 
-            if ( isCatherineFullBodyData && withPadding )
-                SeekCurrent( 1 ); // padding byte
-
             if ( str.Length > 0 && version > 0x1080000 )
             {
+                if ( withPadding && ( version > 0x01105100 || isCatherineFullBodyData ) )
+                {
+                    SeekCurrent( 1 ); // padding byte
+                }
+
                 // hash
                 ReadUInt32();
             }
@@ -130,6 +133,14 @@ namespace GFDLibrary.IO
             value.X = ReadSingle();
             value.Y = ReadSingle();
             value.Z = ReadSingle();
+            return value;
+        }
+
+        public Vector2 ReadVector2Half()
+        {
+            Vector2 value;
+            value.X = ReadHalf();
+            value.Y = ReadHalf();
             return value;
         }
 

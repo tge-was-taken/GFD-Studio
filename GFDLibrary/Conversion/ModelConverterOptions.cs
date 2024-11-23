@@ -1,39 +1,86 @@
-﻿namespace GFDLibrary.Conversion;
+﻿using GFDLibrary.Graphics;
+using GFDLibrary.Materials;
+using GFDLibrary.Models;
+using System.Collections.Generic;
+
+namespace GFDLibrary.Conversion;
 
 public class ModelConverterOptions
 {
-    /// <summary>
-    /// Gets or sets the version to use for the converted resources.
-    /// </summary>
-    public uint Version { get; set; }
+    public uint Version { get; set; } = ResourceVersion.Persona5;
 
-    public object MaterialPreset { get; set; }
-
-    /// <summary>
-    /// Gets or sets whether to convert the up axis of the inverse bind pose matrices to Z-up. This is used by Persona 5's battle models for example.
-    /// </summary>
     public bool ConvertSkinToZUp { get; set; }
-
-    /// <summary>
-    /// Gets or sets whether to generate dummy (white) vertex colors if they're not already present. Some material shaders rely on vertex colors being present, and the lack of them will cause graphics corruption.
-    /// </summary>
-    public bool GenerateVertexColors { get; set; }
-
-    /// <summary>
-    /// Gets or sets whether to generate dummy (white) vertex colors if they're not already present. Some material shaders rely on vertex colors being present, and the lack of them will cause graphics corruption.
-    /// </summary>
-    public bool MinimalVertexAttributes { get; set; }
 
     public bool SetFullBodyNodeProperties { get; set; }
 
-    public bool AutoAddGFDHelperIDs { get; set; }
+    public bool AutoAddGFDHelperIDs { get; set; } = true;
 
-    public ModelConverterOptions()
+    public ModelConverterMaterialOptions DefaultMaterial { get; init; } = new();
+
+    public ModelConverterMeshOptions DefaultMesh { get; init; } = new();
+
+    public Dictionary<string, ModelConverterMeshOptions> Meshes { get; set; } = new();
+
+    public Dictionary<string, ModelConverterMaterialOptions> Materials { get; set; } = new();
+
+    public ModelConverterOptions() { }
+}
+
+public class ModelConverterMaterialOptions
+{
+    public Material Preset { get; set; }
+}
+
+public class ModelConverterTexCoordChannelOptions
+{
+    public int SourceChannel { get; set; }
+
+    public override string ToString()
     {
-        Version = ResourceVersion.Persona5;
-        ConvertSkinToZUp = false;
-        GenerateVertexColors = false;
-        MinimalVertexAttributes = true;
-        SetFullBodyNodeProperties = false;
+        return $"TexCoord Channel {SourceChannel}";
     }
+}
+
+public class ModelConverterColorChannelOptions
+{
+    public int SourceChannel { get; set; }
+
+    public bool UseDefaultColor { get; set; } = true;
+
+    public Graphics.Color DefaultColor { get; set; } = Graphics.Color.White;
+
+    public ColorSwizzle Swizzle { get; set; } = new()
+    {
+        Red = ColorChannel.Red,
+        Green = ColorChannel.Green,
+        Blue = ColorChannel.Blue,
+        Alpha = ColorChannel.Alpha,
+    };
+
+    public override string ToString()
+    {
+        return $"Color Channel {SourceChannel}";
+    }
+}
+
+public class ModelConverterMeshOptions
+{
+    public GeometryFlags GeometryFlags { get; set; } 
+        = GeometryFlags.Bit7;
+    public VertexAttributeFlags VertexAttributeFlags { get; set; } 
+        = VertexAttributeFlags.Position | VertexAttributeFlags.Normal | VertexAttributeFlags.TexCoord0;
+
+    public ModelConverterTexCoordChannelOptions[] TexCoordChannelMap { get; init; } = new ModelConverterTexCoordChannelOptions[]
+    {
+        new() { SourceChannel = 0 },
+        new() { SourceChannel = 1 },
+        new() { SourceChannel = 2 },
+    };
+
+    public ModelConverterColorChannelOptions[] ColorChannelMap { get; init; } = new ModelConverterColorChannelOptions[]
+    {
+        new() { SourceChannel = 0 },
+        new() { SourceChannel = 1 },
+        new() { SourceChannel = 2 },
+    };
 }

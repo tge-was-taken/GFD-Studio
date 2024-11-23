@@ -10,7 +10,7 @@ namespace GFDLibrary.Conversion.AssimpNet
     {
         public static Animation ConvertFromAssimpScene( string filePath, AnimationConverterOptions options )
         {
-            var aiScene = AssimpSceneImporter.ImportFile( filePath );
+            var aiScene = AssimpHelper.ImportScene( filePath );
             return ConvertFromAssimpScene( aiScene, options );
         }
 
