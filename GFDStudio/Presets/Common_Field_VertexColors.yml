@@ -4,46 +4,48 @@ Name: Common_Field_VertexColors
 Flags: HasAmbientColor, HasDiffuseColor, HasVertexColors, ApplyFog, Diffusitivity, EnableLight, ReceiveShadow, HasDiffuseMap
 DrawMethod: Opaque
 LegacyParameters: !MaterialLegacyParameters
-	AmbientColor:
-	  X: 0.54901963
-	  Y: 0.54901963
-	  Z: 0.54901963
-	  W: 1
-	DiffuseColor:
-	  X: 0.098039225
-	  Y: 0.098039225
-	  Z: 0.098039225
-	  W: 1
-	SpecularColor: &o0
-	  X: 0
-	  Y: 0
-	  Z: 0
-	  W: 0
-	EmissiveColor: *o0
-	Field40: 1
-	Field44: 0.1
-Field49: 1
-Field4A: 0
-Field4B: 1
-Field4C: 0
-Field4D: Add
-Field90: 0
-Field92: Greater
+  ResourceType: MaterialParameterSetLegacy
+  AmbientColor:
+    X: 0.54901963
+    Y: 0.54901963
+    Z: 0.54901963
+    W: 1
+  DiffuseColor:
+    X: 0.098039225
+    Y: 0.098039225
+    Z: 0.098039225
+    W: 1
+  EmissiveColor: &o0
+    X: 0
+    Y: 0
+    Z: 0
+    W: 0
+  SpecularColor: *o0
+  Reflectivity: 1
+  Diffusivity: 0.1
+  Version: 17846384
+BlendSourceColor: 1
+BlendDestinationColor: 0
+SourceAlpha: 1
+DestinationAlpha: 0
+HighlightMapBlendMode: Add
+AlphaClip: 0
+AlphaClipMode: Greater
 Flags2: Bloom
-Field96: 0
-Field5C: 0
-Field6C: 4294967288
-Field70: 4294967288
+SortPriority: 0
+ShaderId: 0
+TexCoordFlags0: 4294967288
+TexCoordFlags1: 4294967288
 DisableBackfaceCulling: 0
 Field98: 4294967295
 DiffuseMap: &o1 !TextureMap
   ResourceType: TextureMap
   Name: dum_b.dds
-  Field44: 0
-  Field48: Linear
-  Field49: Linear
-  Field4A: Repeat
-  Field4B: Repeat
+  Flags: 0
+  MinificationFilter: Linear
+  MagnificationFilter: Linear
+  WrapModeU: Repeat
+  WrapModeV: Repeat
   Field4C: 1
   Field50: 0
   Field54: 0
@@ -69,6 +71,7 @@ GlowMap:
 NightMap: 
 DetailMap: 
 ShadowMap: 
+TextureMap10: 
 TextureMaps:
 - *o1
 - 
@@ -79,6 +82,16 @@ TextureMaps:
 - 
 - 
 - 
+- 
 Attributes: 
-IsPresetMaterial: false
+METAPHOR_UseMaterialParameterSet: false
+METAPHOR_MaterialParameterSet: 
+Field6C_2: 0
+MatFlags0: 0
+MatFlags1: 0
+MatFlags2: 0
+RuntimeMetadata:
+  GeometryFlags: 0
+  VertexAttributeFlags: 0
+  IsCustomMaterial: false
 Version: 17846384

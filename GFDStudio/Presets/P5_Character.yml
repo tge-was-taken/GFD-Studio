@@ -4,50 +4,52 @@ Name: P5_Character
 Flags: HasAmbientColor, HasDiffuseColor, ApplyFog, HasEmissiveColor, EnableLight, ReceiveShadow, CastShadow, HasAttributes, HasDiffuseMap
 DrawMethod: Opaque
 LegacyParameters: !MaterialLegacyParameters
-    AmbientColor:
-      X: 0.6
-      Y: 0.6
-      Z: 0.6
-      W: 0
-    DiffuseColor:
-      X: 0.078431375
-      Y: 0.078431375
-      Z: 0.078431375
-      W: 1
-    SpecularColor:
-      X: 0.11764707
-      Y: 0.11764707
-      Z: 0.11764707
-      W: 1
-    EmissiveColor:
-      X: 0
-      Y: 0
-      Z: 0
-      W: 0
-    Field40: 0.5
-    Field44: 0
-Field49: 1
-Field4A: 0
-Field4B: 1
-Field4C: 0
-Field4D: Lerp
-Field90: 0
-Field92: Greater
+  ResourceType: MaterialParameterSetLegacy
+  AmbientColor:
+    X: 0.6
+    Y: 0.6
+    Z: 0.6
+    W: 0
+  DiffuseColor:
+    X: 0.078431375
+    Y: 0.078431375
+    Z: 0.078431375
+    W: 1
+  EmissiveColor:
+    X: 0.11764707
+    Y: 0.11764707
+    Z: 0.11764707
+    W: 1
+  SpecularColor:
+    X: 0
+    Y: 0
+    Z: 0
+    W: 0
+  Reflectivity: 0.5
+  Diffusivity: 0
+  Version: 17846384
+BlendSourceColor: 1
+BlendDestinationColor: 0
+SourceAlpha: 1
+DestinationAlpha: 0
+HighlightMapBlendMode: Lerp
+AlphaClip: 0
+AlphaClipMode: Greater
 Flags2: ShadowMapMultiply
-Field96: 0
-Field5C: 2
-Field6C: 4294967288
-Field70: 4294967288
+SortPriority: 0
+ShaderId: 2
+TexCoordFlags0: 4294967288
+TexCoordFlags1: 4294967288
 DisableBackfaceCulling: 0
 Field98: 4294967295
 DiffuseMap: &o0 !TextureMap
   ResourceType: TextureMap
   Name: dum_b.dds
-  Field44: 0
-  Field48: Linear
-  Field49: Linear
-  Field4A: Repeat
-  Field4B: Repeat
+  Flags: 0
+  MinificationFilter: Linear
+  MagnificationFilter: Linear
+  WrapModeU: Repeat
+  WrapModeV: Repeat
   Field4C: 1
   Field50: 0
   Field54: 0
@@ -73,8 +75,10 @@ GlowMap:
 NightMap: 
 DetailMap: 
 ShadowMap: 
+TextureMap10: 
 TextureMaps:
 - *o0
+- 
 - 
 - 
 - 
@@ -90,16 +94,25 @@ Attributes:
     Y: 0.98039234
     Z: 0.98039234
     W: 0.3921569
-  Field1C: 0.75
-  Field20: 14
-  Field24: 0.5
-  Field28: 0.4
-  Field2C: 15
+  LightTreshold: 0.75
+  LightFactor: 14
+  LightBrightness: 0.5
+  ShadowTreshold: 0.4
+  ShadowFactor: 15
   Type0Flags: LightNormalMap, ShadowNormalMap, LightShadowMapAlphaMask
   ResourceType: MaterialAttribute
   RawFlags: 65536
   Flags: Bit0
   AttributeType: Type0
   Version: 17846384
-IsPresetMaterial: false
+METAPHOR_UseMaterialParameterSet: false
+METAPHOR_MaterialParameterSet: 
+Field6C_2: 0
+MatFlags0: 0
+MatFlags1: 0
+MatFlags2: 0
+RuntimeMetadata:
+  GeometryFlags: 0
+  VertexAttributeFlags: 0
+  IsCustomMaterial: false
 Version: 17846384

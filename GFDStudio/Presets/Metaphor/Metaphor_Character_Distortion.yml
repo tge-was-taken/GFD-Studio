@@ -1,6 +1,6 @@
 !Material
 ResourceType: Material
-Name: mebika_a_001_MEBI
+Name: Metaphor_Character_Distortion
 Flags: HasAmbientColor, HasDiffuseColor, ApplyFog, AlphaTest, HasDiffuseMap, HasHighlightMap
 DrawMethod: Transparent
 LegacyParameters: !MaterialLegacyParameters
@@ -11,33 +11,33 @@ LegacyParameters: !MaterialLegacyParameters
     Z: 0
     W: 0
   DiffuseColor: *o0
-  SpecularColor: *o0
   EmissiveColor: *o0
-  Field40: 1
-  Field44: 0
+  SpecularColor: *o0
+  Reflectivity: 1
+  Diffusivity: 0
   Version: 17846384
-Field49: 1
-Field4A: 0
-Field4B: 1
-Field4C: 0
-Field4D: Lerp
-Field90: 0
-Field92: GEqual
+BlendSourceColor: 1
+BlendDestinationColor: 0
+SourceAlpha: 1
+DestinationAlpha: 0
+HighlightMapBlendMode: Lerp
+AlphaClip: 0
+AlphaClipMode: GEqual
 Flags2: Bit15
-Field96: 10
-Field5C: 146
-Field6C: 4294938616
-Field70: 4294938616
+SortPriority: 10
+ShaderId: 146
+TexCoordFlags0: 4294938616
+TexCoordFlags1: 4294938616
 DisableBackfaceCulling: 0
 Field98: 4294967295
 DiffuseMap: &o1 !TextureMap
   ResourceType: TextureMap
-  Name: a_0017_001_body01_BLACK.tga
-  Field44: 0
-  Field48: Linear
-  Field49: Linear
-  Field4A: Repeat
-  Field4B: Repeat
+  Name: c0006_001_eye_s.png
+  Flags: 0
+  MinificationFilter: Linear
+  MagnificationFilter: Linear
+  WrapModeU: Repeat
+  WrapModeV: Repeat
   Field4C: 1
   Field50: 0
   Field54: 0
@@ -61,11 +61,11 @@ ReflectionMap:
 HighlightMap: &o2 !TextureMap
   ResourceType: TextureMap
   Name: c0001_001_mebika.tga
-  Field44: 0
-  Field48: Linear
-  Field49: Linear
-  Field4A: Repeat
-  Field4B: Repeat
+  Flags: 0
+  MinificationFilter: Linear
+  MagnificationFilter: Linear
+  WrapModeU: Repeat
+  WrapModeV: Repeat
   Field4C: 1
   Field50: 0
   Field54: 0
@@ -117,13 +117,17 @@ METAPHOR_MaterialParameterSet: !MaterialParameterSetType4
   P4_4: 1
   Flags: FlowMapAlphaDistortion, FlowMapAlphaMaskDistortion, ForceBloomIntensity, Fitting, FlowMapDisablwColorCorrection, MultiFitting, FlowMapMultiRefAlphaBaseColor, FlowMapBloomRefAlphaMultiColor
   MatBloomIntensity: 0.65
-  P4_7: 1
-  P4_8: 1
+  FittingTile: 1
+  MultiFittingTile: 1
   ResourceType: MaterialParameterSetType4
+  Type: Type4
   Version: 34669089
 Field6C_2: 1
 MatFlags0: 0
 MatFlags1: 0
 MatFlags2: 0
-IsPresetMaterial: false
+RuntimeMetadata:
+  GeometryFlags: 0
+  VertexAttributeFlags: 0
+  IsCustomMaterial: false
 Version: 34669089

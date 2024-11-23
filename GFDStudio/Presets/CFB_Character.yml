@@ -4,46 +4,48 @@ Name: CFB_Character
 Flags: HasAmbientColor, HasDiffuseColor, ApplyFog, HasEmissiveColor, EnableLight, CastShadow, HasAttributes, HasDiffuseMap, HasShadowMap
 DrawMethod: Opaque
 LegacyParameters: !MaterialLegacyParameters
-    AmbientColor: &o0
-      X: 0.4901961
-      Y: 0.4901961
-      Z: 0.4901961
-      W: 1
-    DiffuseColor:
-      X: 0
-      Y: 0
-      Z: 0
-      W: 1
-    SpecularColor: *o0
-    EmissiveColor:
-      X: 0
-      Y: 0
-      Z: 0
-      W: 0
-    Field40: 1
-    Field44: 0
-Field49: 1
-Field4A: 0
-Field4B: 1
-Field4C: 0
-Field4D: Lerp
-Field90: 0
-Field92: Greater
+  ResourceType: MaterialParameterSetLegacy
+  AmbientColor: &o0
+    X: 0.4901961
+    Y: 0.4901961
+    Z: 0.4901961
+    W: 1
+  DiffuseColor:
+    X: 0
+    Y: 0
+    Z: 0
+    W: 1
+  EmissiveColor: *o0
+  SpecularColor:
+    X: 0
+    Y: 0
+    Z: 0
+    W: 0
+  Reflectivity: 1
+  Diffusivity: 0
+  Version: 17846384
+BlendSourceColor: 1
+BlendDestinationColor: 0
+SourceAlpha: 1
+DestinationAlpha: 0
+HighlightMapBlendMode: Lerp
+AlphaClip: 0
+AlphaClipMode: Greater
 Flags2: Bloom, ShadowMapMultiply
-Field96: 0
-Field5C: 104
-Field6C: 4177526776
-Field70: 4177526776
+SortPriority: 0
+ShaderId: 104
+TexCoordFlags0: 4177526776
+TexCoordFlags1: 4177526776
 DisableBackfaceCulling: 0
 Field98: 4294967295
 DiffuseMap: &o1 !TextureMap
   ResourceType: TextureMap
   Name: dum_b.dds
-  Field44: 0
-  Field48: Linear
-  Field49: Linear
-  Field4A: Repeat
-  Field4B: Repeat
+  Flags: 0
+  MinificationFilter: Linear
+  MagnificationFilter: Linear
+  WrapModeU: Repeat
+  WrapModeV: Repeat
   Field4C: 1
   Field50: 0
   Field54: 0
@@ -71,11 +73,11 @@ DetailMap:
 ShadowMap: &o2 !TextureMap
   ResourceType: TextureMap
   Name: dum_b.dds
-  Field44: 0
-  Field48: Linear
-  Field49: Linear
-  Field4A: Repeat
-  Field4B: Repeat
+  Flags: 0
+  MinificationFilter: Linear
+  MagnificationFilter: Linear
+  WrapModeU: Repeat
+  WrapModeV: Repeat
   Field4C: 1
   Field50: 0
   Field54: 0
@@ -93,6 +95,7 @@ ShadowMap: &o2 !TextureMap
   Field84: 0
   Field88: 0
   Version: 17846384
+TextureMap10: 
 TextureMaps:
 - *o1
 - 
@@ -103,6 +106,7 @@ TextureMaps:
 - 
 - 
 - *o2
+- 
 Attributes:
 - !MaterialAttributeType8
   Field00:
@@ -128,5 +132,14 @@ Attributes:
   Flags: Bit0
   AttributeType: Type8
   Version: 17846384
-IsPresetMaterial: false
+METAPHOR_UseMaterialParameterSet: false
+METAPHOR_MaterialParameterSet: 
+Field6C_2: 0
+MatFlags0: 0
+MatFlags1: 0
+MatFlags2: 0
+RuntimeMetadata:
+  GeometryFlags: 0
+  VertexAttributeFlags: 0
+  IsCustomMaterial: false
 Version: 17846384

@@ -1,31 +1,43 @@
 !Material
 ResourceType: Material
-Name: c0001_102_body1_b_
-Flags: HasAmbientColor, HasDiffuseColor, ApplyFog, EnableLight, ReceiveShadow, CastShadow, HasDiffuseMap, HasSpecularMap, HasDetailMap
+Name: 1_Metaphor_Character_Toon
+Flags: HasAmbientColor, HasDiffuseColor, ApplyFog, EnableLight, ReceiveShadow, CastShadow, HasDiffuseMap, HasSpecularMap
 DrawMethod: Opaque
-LegacyParameters:
-Field49: 1
-Field4A: 0
-Field4B: 1
-Field4C: 0
-Field4D: Lerp
-Field90: 0
-Field92: GEqual
+LegacyParameters: !MaterialLegacyParameters
+  ResourceType: MaterialParameterSetLegacy
+  AmbientColor: &o0
+    X: 0
+    Y: 0
+    Z: 0
+    W: 0
+  DiffuseColor: *o0
+  EmissiveColor: *o0
+  SpecularColor: *o0
+  Reflectivity: 1
+  Diffusivity: 0
+  Version: 17846384
+BlendSourceColor: 1
+BlendDestinationColor: 0
+SourceAlpha: 1
+DestinationAlpha: 0
+HighlightMapBlendMode: Lerp
+AlphaClip: 0
+AlphaClipMode: GEqual
 Flags2: Bit15
-Field96: 0
-Field5C: 3
-Field6C: 4294966840
-Field70: 4294966840
+SortPriority: 0
+ShaderId: 3
+TexCoordFlags0: 4294966840
+TexCoordFlags1: 4294966840
 DisableBackfaceCulling: 0
 Field98: 4294967295
 DiffuseMap: &o1 !TextureMap
   ResourceType: TextureMap
-  Name: c0001_102.png
-  Field44: 0
-  Field48: Linear
-  Field49: Linear
-  Field4A: Repeat
-  Field4B: Repeat
+  Name: c0006_001_face01.png
+  Flags: 0
+  MinificationFilter: Linear
+  MagnificationFilter: Linear
+  WrapModeU: Repeat
+  WrapModeV: Repeat
   Field4C: 1
   Field50: 0
   Field54: 0
@@ -46,12 +58,12 @@ DiffuseMap: &o1 !TextureMap
 NormalMap: 
 SpecularMap: &o2 !TextureMap
   ResourceType: TextureMap
-  Name: c0001_102.png
-  Field44: 0
-  Field48: Linear
-  Field49: Linear
-  Field4A: Repeat
-  Field4B: Repeat
+  Name: c0006_001_face01_sc.png
+  Flags: 0
+  MinificationFilter: Linear
+  MagnificationFilter: Linear
+  WrapModeU: Repeat
+  WrapModeV: Repeat
   Field4C: 1
   Field50: 0
   Field54: 0
@@ -73,7 +85,7 @@ ReflectionMap:
 HighlightMap: 
 GlowMap: 
 NightMap: 
-DetailMap:
+DetailMap: 
 ShadowMap: 
 TextureMap10: 
 TextureMaps:
@@ -84,18 +96,19 @@ TextureMaps:
 - 
 - 
 - 
--
 - 
 - 
-Attributes:
+- 
+Attributes: 
 METAPHOR_UseMaterialParameterSet: true
 METAPHOR_MaterialParameterSet: !MaterialParameterSetType2
+  Type: Type2
   BaseColor:
     X: 1
     Y: 1
     Z: 1
     W: 1
-  ShadowColor:
+  ShadowColor: &o3
     X: 0
     Y: 0
     Z: 0
@@ -105,11 +118,7 @@ METAPHOR_MaterialParameterSet: !MaterialParameterSetType2
     Y: 1
     Z: 1
     W: 0
-  EmissiveColor:
-    X: 0
-    Y: 0
-    Z: 0
-    W: 1
+  EmissiveColor: *o3
   SpecularColor:
     X: 0.5364
     Y: 0.54
@@ -142,5 +151,8 @@ Field6C_2: 1
 MatFlags0: 0
 MatFlags1: 0
 MatFlags2: 0
-IsPresetMaterial: false
+RuntimeMetadata:
+  GeometryFlags: 0
+  VertexAttributeFlags: 0
+  IsCustomMaterial: false
 Version: 34669089

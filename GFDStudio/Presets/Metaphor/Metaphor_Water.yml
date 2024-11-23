@@ -1,6 +1,6 @@
 !Material
 ResourceType: Material
-Name: bg04_s3d_forest01_water_m1
+Name: Metaphor_Water
 Flags: HasAmbientColor, HasDiffuseColor, ApplyFog, CastShadow
 DrawMethod: Opaque
 LegacyParameters: !MaterialLegacyParameters
@@ -11,23 +11,23 @@ LegacyParameters: !MaterialLegacyParameters
     Z: 0
     W: 0
   DiffuseColor: *o0
-  SpecularColor: *o0
   EmissiveColor: *o0
-  Field40: 1
-  Field44: 0
+  SpecularColor: *o0
+  Reflectivity: 1
+  Diffusivity: 0
   Version: 17846384
-Field49: 1
-Field4A: 0
-Field4B: 1
-Field4C: 0
-Field4D: Lerp
-Field90: 0
-Field92: Greater
+BlendSourceColor: 1
+BlendDestinationColor: 0
+SourceAlpha: 1
+DestinationAlpha: 0
+HighlightMapBlendMode: Lerp
+AlphaClip: 0
+AlphaClipMode: Greater
 Flags2: Bit15
-Field96: 0
-Field5C: 147
-Field6C: 4294967295
-Field70: 4294967295
+SortPriority: 0
+ShaderId: 147
+TexCoordFlags0: 4294967295
+TexCoordFlags1: 4294967295
 DisableBackfaceCulling: 0
 Field98: 4294967295
 DiffuseMap: 
@@ -56,24 +56,28 @@ METAPHOR_UseMaterialParameterSet: true
 METAPHOR_MaterialParameterSet: !MaterialParameterSetType5
   P5_0: 0.3
   P5_1: 2
-  P5_2: 1
+  TCScale: 1
   P5_3: 2
-  P5_4: 80
-  P5_5: 75
-  P5_6: 5
-  P5_7: 1
-  P5_8: 10
-  P5_9: 40
-  P5_10: 0.1
+  OceanDepthScale: 80
+  DisturbanceCameraScale: 75
+  DisturbanceDepthScale: 5
+  ScatteringCameraScale: 1
+  DisturbanceTolerance: 10
+  FoamDistance: 40
+  CausticsTolerance: 0.1
   P5_11: 1
-  P5_12: 7
+  TextureAnimationSpeed: 7
   P5_13: 0
   Flags: 0
   ResourceType: MaterialParameterSetType5
+  Type: Type5
   Version: 34669089
 Field6C_2: 1
 MatFlags0: 0
 MatFlags1: 0
 MatFlags2: 0
-IsPresetMaterial: false
+RuntimeMetadata:
+  GeometryFlags: 0
+  VertexAttributeFlags: 0
+  IsCustomMaterial: false
 Version: 34669089

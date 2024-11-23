@@ -387,7 +387,7 @@ namespace GFDLibrary.Materials
     public sealed class MaterialAttributeType2 : MaterialAttribute
     {
         // 0C
-        public MaterialAttributeType2Flags Flags { get; set; }
+        public MaterialAttributeType2Flags Flags2 { get; set; }
 
         // 10
         public int Color { get; set; }
@@ -402,7 +402,7 @@ namespace GFDLibrary.Materials
 
         protected override void ReadCore( ResourceReader reader )
         {
-            Flags = (MaterialAttributeType2Flags)reader.ReadInt32();
+            Flags2 = (MaterialAttributeType2Flags)reader.ReadInt32();
             Color = reader.ReadInt32();
         }
 

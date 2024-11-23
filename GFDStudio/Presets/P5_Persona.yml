@@ -4,50 +4,52 @@ Name: P5_Persona
 Flags: HasAmbientColor, HasDiffuseColor, HasSpecularColor, ApplyFog, Diffusitivity, EnableLight, CastShadow, HasAttributes, HasOutline, HasDiffuseMap, HasSpecularMap, HasShadowMap
 DrawMethod: Opaque
 LegacyParameters: !MaterialLegacyParameters
-    AmbientColor:
-      X: 0.6
-      Y: 0.6
-      Z: 0.6
-      W: 1
-    DiffuseColor:
-      X: 0.3
-      Y: 0.3
-      Z: 0.3
-      W: 1
-    SpecularColor: &o3
-      X: 0
-      Y: 0
-      Z: 0
-      W: 0
-    EmissiveColor:
-      X: 0.9
-      Y: 0.9
-      Z: 0.9
-      W: 10
-    Field40: 1
-    Field44: 0.1
-Field49: 1
-Field4A: 0
-Field4B: 1
-Field4C: 0
-Field4D: Lerp
-Field90: 0
-Field92: Greater
+  ResourceType: MaterialParameterSetLegacy
+  AmbientColor:
+    X: 0.6
+    Y: 0.6
+    Z: 0.6
+    W: 1
+  DiffuseColor:
+    X: 0.3
+    Y: 0.3
+    Z: 0.3
+    W: 1
+  EmissiveColor: &o3
+    X: 0
+    Y: 0
+    Z: 0
+    W: 0
+  SpecularColor:
+    X: 0.9
+    Y: 0.9
+    Z: 0.9
+    W: 10
+  Reflectivity: 1
+  Diffusivity: 0.1
+  Version: 17846384
+BlendSourceColor: 1
+BlendDestinationColor: 0
+SourceAlpha: 1
+DestinationAlpha: 0
+HighlightMapBlendMode: Lerp
+AlphaClip: 0
+AlphaClipMode: Greater
 Flags2: ShadowMapAdd
-Field96: 0
-Field5C: 3
-Field6C: 4177526328
-Field70: 4177526328
+SortPriority: 0
+ShaderId: 3
+TexCoordFlags0: 4177526328
+TexCoordFlags1: 4177526328
 DisableBackfaceCulling: 0
 Field98: 4294967295
 DiffuseMap: &o0 !TextureMap
   ResourceType: TextureMap
   Name: dum_b.dds
-  Field44: 0
-  Field48: Linear
-  Field49: Linear
-  Field4A: Repeat
-  Field4B: Repeat
+  Flags: 0
+  MinificationFilter: Linear
+  MagnificationFilter: Linear
+  WrapModeU: Repeat
+  WrapModeV: Repeat
   Field4C: 1
   Field50: 0
   Field54: 0
@@ -69,11 +71,11 @@ NormalMap:
 SpecularMap: &o1 !TextureMap
   ResourceType: TextureMap
   Name: dum_b.dds
-  Field44: 0
-  Field48: Linear
-  Field49: Linear
-  Field4A: Repeat
-  Field4B: Repeat
+  Flags: 0
+  MinificationFilter: Linear
+  MagnificationFilter: Linear
+  WrapModeU: Repeat
+  WrapModeV: Repeat
   Field4C: 1
   Field50: 0
   Field54: 0
@@ -99,11 +101,11 @@ DetailMap:
 ShadowMap: &o2 !TextureMap
   ResourceType: TextureMap
   Name: dum_b.dds
-  Field44: 0
-  Field48: Linear
-  Field49: Linear
-  Field4A: Repeat
-  Field4B: Repeat
+  Flags: 0
+  MinificationFilter: Linear
+  MagnificationFilter: Linear
+  WrapModeU: Repeat
+  WrapModeV: Repeat
   Field4C: 1
   Field50: 0
   Field54: 0
@@ -121,6 +123,7 @@ ShadowMap: &o2 !TextureMap
   Field84: 0
   Field88: 0
   Version: 17846384
+TextureMap10: 
 TextureMaps:
 - *o0
 - 
@@ -131,19 +134,20 @@ TextureMaps:
 - 
 - 
 - *o2
+- 
 Attributes:
 - !MaterialAttributeType1
   Field0C: 0
-  InnerGlow:
+  LightColor:
     X: 0.2352941
     Y: 0.5960785
     Z: 1
     W: 1
-  Field1C: 0.85
-  Field20: 2
-  Field24: *o3
-  Field34: 0
-  Field38: 0
+  LightTreshold: 0.85
+  LightFactor: 2
+  ShadowColor: *o3
+  ShadowThreshold: 0
+  ShadowFactor: 0
   Type1Flags: Backlight
   ResourceType: MaterialAttribute
   RawFlags: 65537
@@ -151,12 +155,21 @@ Attributes:
   AttributeType: Type1
   Version: 17846384
 - !MaterialAttributeType2
-  Field0C: Normal
-  Field10: 121
+  Flags2: Normal
+  Color: 121
   ResourceType: MaterialAttribute
   RawFlags: 65538
   Flags: Bit0
   AttributeType: Type2
   Version: 17846384
-IsPresetMaterial: false
+METAPHOR_UseMaterialParameterSet: false
+METAPHOR_MaterialParameterSet: 
+Field6C_2: 0
+MatFlags0: 0
+MatFlags1: 0
+MatFlags2: 0
+RuntimeMetadata:
+  GeometryFlags: 0
+  VertexAttributeFlags: 0
+  IsCustomMaterial: false
 Version: 17846384

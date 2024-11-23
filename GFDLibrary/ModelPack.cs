@@ -148,9 +148,12 @@ namespace GFDLibrary
                             .SelectMany( n => n.Meshes )
                             .Where( m => m.MaterialName == mat.Name )
                             .ToList();
-                        mat.RuntimeMetadata.IsCustomMaterial = false;
-                        mat.RuntimeMetadata.GeometryFlags = meshesWithMaterial.Max( m => m.Flags );
-                        mat.RuntimeMetadata.VertexAttributeFlags = meshesWithMaterial.Max( m => m.VertexAttributeFlags );
+                        if (meshesWithMaterial.Count > 0 )
+                        {
+                            mat.RuntimeMetadata.IsCustomMaterial = false;
+                            mat.RuntimeMetadata.GeometryFlags = meshesWithMaterial.Max( m => m.Flags );
+                            mat.RuntimeMetadata.VertexAttributeFlags = meshesWithMaterial.Max( m => m.VertexAttributeFlags );
+                        }
                     }
                 }
             }

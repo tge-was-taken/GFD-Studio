@@ -1,6 +1,6 @@
 !Material
 ResourceType: Material
-Name: lambert1
+Name: Metaphor_Lambert
 Flags: HasAmbientColor, HasDiffuseColor, ApplyFog, EnableLight, ReceiveShadow, CastShadow, ExtraDistortion
 DrawMethod: Opaque
 LegacyParameters: !MaterialLegacyParameters
@@ -11,23 +11,23 @@ LegacyParameters: !MaterialLegacyParameters
     Z: 0
     W: 0
   DiffuseColor: *o0
-  SpecularColor: *o0
   EmissiveColor: *o0
-  Field40: 1
-  Field44: 0
+  SpecularColor: *o0
+  Reflectivity: 1
+  Diffusivity: 0
   Version: 17846384
-Field49: 1
-Field4A: 0
-Field4B: 1
-Field4C: 0
-Field4D: Lerp
-Field90: 0
-Field92: Greater
+BlendSourceColor: 1
+BlendDestinationColor: 0
+SourceAlpha: 1
+DestinationAlpha: 0
+HighlightMapBlendMode: Lerp
+AlphaClip: 0
+AlphaClipMode: Greater
 Flags2: Bit15
-Field96: 0
-Field5C: 0
-Field6C: 4294967295
-Field70: 4294967295
+SortPriority: 0
+ShaderId: 0
+TexCoordFlags0: 4294967295
+TexCoordFlags1: 4294967295
 DisableBackfaceCulling: 0
 Field98: 4294967295
 DiffuseMap: 
@@ -65,10 +65,14 @@ METAPHOR_MaterialParameterSet: !MaterialParameterSetType1
   Reflectivity: 0
   LerpBlendRate: 0
   ResourceType: MaterialParameterSetType1
-  Version: 34669078
+  Type: Type1
+  Version: 34669089
 Field6C_2: 1
 MatFlags0: 0
 MatFlags1: 0
 MatFlags2: 0
-IsPresetMaterial: false
-Version: 34669078
+RuntimeMetadata:
+  GeometryFlags: 0
+  VertexAttributeFlags: 0
+  IsCustomMaterial: false
+Version: 34669089
