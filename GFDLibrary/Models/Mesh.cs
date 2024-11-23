@@ -266,9 +266,9 @@ namespace GFDLibrary.Models
             }
         }
 
-        public float FieldD4 { get; set; }
+        public float LodStart { get; set; }
 
-        public float FieldD8 { get; set; }
+        public float LodEnd { get; set; }
 
         public byte Unk_StrideType { get; set; }
         public byte Unk_VertexWeight { get; set; }
@@ -564,8 +564,8 @@ namespace GFDLibrary.Models
 
             if ( Flags.HasFlag( GeometryFlags.Bit12 ) )
             {
-                FieldD4 = reader.ReadSingle();
-                FieldD8 = reader.ReadSingle();
+                LodStart = reader.ReadSingle();
+                LodEnd = reader.ReadSingle();
             }
 
             Trace.Assert( Flags == flags, "Mesh flags don't match flags in file" );
@@ -778,8 +778,8 @@ namespace GFDLibrary.Models
 
             if ( Flags.HasFlag( GeometryFlags.Bit12 ) )
             {
-                writer.WriteSingle( FieldD4 );
-                writer.WriteSingle( FieldD8 );
+                writer.WriteSingle( LodStart );
+                writer.WriteSingle( LodEnd );
             }
         }
     }

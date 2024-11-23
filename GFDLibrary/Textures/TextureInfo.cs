@@ -50,6 +50,16 @@ namespace GFDLibrary.Textures
                 case DDSPixelFormatFourCC.A8R8G8B8:
                     format = TexturePixelFormat.ARGB;
                     break;
+                case DDSPixelFormatFourCC.DX10:
+                    switch ( ddsHeader.DxgiFormat )
+                    {
+                        case DDSDxgiFormat.BC7_UNORM:
+                            format = TexturePixelFormat.BC7;
+                            break;
+                        default:
+                            throw new NotSupportedException( $"Unsupported DXGI format {ddsHeader.DxgiFormat}" );
+                    }
+                    break;
                 case DDSPixelFormatFourCC.Unknown:
                     // Maybe from a screen ripping tool, or something else
                     Logger.Debug( $"{nameof(GetTextureInfo)}({texture}): DDS FourCC not set" );
@@ -86,7 +96,7 @@ namespace GFDLibrary.Textures
                     }
 
                 default:
-                    throw new NotSupportedException( $"Unsupported DDS pixel format" );
+                    throw new NotSupportedException( $"Unsupported DDS pixel format {ddsHeader.PixelFormat.FourCC}" );
             }
 
             return new TextureInfo( texture, ddsHeader.Width, ddsHeader.Height, ddsHeader.MipMapCount, format );

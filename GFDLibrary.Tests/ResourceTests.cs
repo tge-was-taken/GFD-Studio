@@ -779,8 +779,8 @@ namespace GFDLibrary.Tests
             Assert.AreEqual( a.MaterialName, b.MaterialName );
             Assert.AreEqual( a.BoundingBox, b.BoundingBox );
             Assert.AreEqual( a.BoundingSphere, b.BoundingSphere );
-            Assert.AreEqual( a.FieldD4, b.FieldD4 );
-            Assert.AreEqual( a.FieldD8, b.FieldD8 );
+            Assert.AreEqual( a.LodStart, b.LodStart );
+            Assert.AreEqual( a.LodEnd, b.LodEnd );
         }
 
         private void CompareMorphTargetLists( MorphTargetList a, MorphTargetList b )

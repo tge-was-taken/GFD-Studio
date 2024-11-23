@@ -40,17 +40,13 @@ namespace GFDStudio.GUI.Forms
             MaterialPresetComboBox = new System.Windows.Forms.ComboBox();
             ConvertSkinToZUpLabel = new MetroSetLabel();
             ConvertSkinToZUpCheckBox = new MetroSetCheckBox();
-            GenerateVertexColorsCheckBox = new MetroSetCheckBox();
-            GenerateVertexColorsLabel = new MetroSetLabel();
-            minVertexAttributesLabel = new MetroSetLabel();
-            MinimalVertexAttributesCheckBox = new MetroSetCheckBox();
-            AutoAddGFDHelperIDsLabel = new MetroSetLabel();
-            AutoAddGFDHelperIDsCheckBox = new MetroSetCheckBox();
             tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             ConvertButton = new System.Windows.Forms.Button();
             CancelButton = new System.Windows.Forms.Button();
             VersionComboBox = new System.Windows.Forms.ComboBox();
             VersionTextBox = new MetroSetTextBox();
+            AutoAddGFDHelperIDsLabel = new MetroSetLabel();
+            AutoAddGFDHelperIDsCheckBox = new MetroSetCheckBox();
             descriptionTooltip = new System.Windows.Forms.ToolTip( components );
             OpenPresetButton = new System.Windows.Forms.Button();
             tableLayoutPanel1.SuspendLayout();
@@ -68,15 +64,11 @@ namespace GFDStudio.GUI.Forms
             tableLayoutPanel1.Controls.Add( MaterialPresetComboBox, 1, 2 );
             tableLayoutPanel1.Controls.Add( ConvertSkinToZUpLabel, 0, 3 );
             tableLayoutPanel1.Controls.Add( ConvertSkinToZUpCheckBox, 1, 3 );
-            tableLayoutPanel1.Controls.Add( GenerateVertexColorsCheckBox, 1, 4 );
-            tableLayoutPanel1.Controls.Add( GenerateVertexColorsLabel, 0, 4 );
-            tableLayoutPanel1.Controls.Add( minVertexAttributesLabel, 0, 5 );
-            tableLayoutPanel1.Controls.Add( MinimalVertexAttributesCheckBox, 1, 5 );
-            tableLayoutPanel1.Controls.Add( AutoAddGFDHelperIDsLabel, 0, 6 );
-            tableLayoutPanel1.Controls.Add( AutoAddGFDHelperIDsCheckBox, 1, 6 );
             tableLayoutPanel1.Controls.Add( tableLayoutPanel2, 1, 7 );
             tableLayoutPanel1.Controls.Add( VersionComboBox, 1, 0 );
             tableLayoutPanel1.Controls.Add( VersionTextBox, 1, 1 );
+            tableLayoutPanel1.Controls.Add( AutoAddGFDHelperIDsLabel, 0, 4 );
+            tableLayoutPanel1.Controls.Add( AutoAddGFDHelperIDsCheckBox, 1, 4 );
             tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             tableLayoutPanel1.Location = new System.Drawing.Point( 2, 0 );
             tableLayoutPanel1.Margin = new System.Windows.Forms.Padding( 4, 3, 4, 3 );
@@ -90,7 +82,7 @@ namespace GFDStudio.GUI.Forms
             tableLayoutPanel1.RowStyles.Add( new System.Windows.Forms.RowStyle( System.Windows.Forms.SizeType.Percent, 11.11111F ) );
             tableLayoutPanel1.RowStyles.Add( new System.Windows.Forms.RowStyle( System.Windows.Forms.SizeType.Percent, 11.11111F ) );
             tableLayoutPanel1.RowStyles.Add( new System.Windows.Forms.RowStyle( System.Windows.Forms.SizeType.Percent, 22.22222F ) );
-            tableLayoutPanel1.Size = new System.Drawing.Size( 426, 323 );
+            tableLayoutPanel1.Size = new System.Drawing.Size( 610, 323 );
             tableLayoutPanel1.TabIndex = 0;
             // 
             // metroSetLabel1
@@ -99,7 +91,7 @@ namespace GFDStudio.GUI.Forms
             metroSetLabel1.AutoSize = true;
             metroSetLabel1.Font = new System.Drawing.Font( "Microsoft Sans Serif", 10F );
             metroSetLabel1.IsDerivedStyle = true;
-            metroSetLabel1.Location = new System.Drawing.Point( 136, 49 );
+            metroSetLabel1.Location = new System.Drawing.Point( 228, 49 );
             metroSetLabel1.Margin = new System.Windows.Forms.Padding( 4, 0, 4, 0 );
             metroSetLabel1.Name = "metroSetLabel1";
             metroSetLabel1.Size = new System.Drawing.Size( 73, 17 );
@@ -118,7 +110,7 @@ namespace GFDStudio.GUI.Forms
             VersionLabel.AutoSize = true;
             VersionLabel.Font = new System.Drawing.Font( "Microsoft Sans Serif", 10F );
             VersionLabel.IsDerivedStyle = true;
-            VersionLabel.Location = new System.Drawing.Point( 153, 11 );
+            VersionLabel.Location = new System.Drawing.Point( 245, 11 );
             VersionLabel.Margin = new System.Windows.Forms.Padding( 4, 0, 4, 0 );
             VersionLabel.Name = "VersionLabel";
             VersionLabel.Size = new System.Drawing.Size( 56, 17 );
@@ -137,7 +129,7 @@ namespace GFDStudio.GUI.Forms
             MaterialPresetLabel.AutoSize = true;
             MaterialPresetLabel.Font = new System.Drawing.Font( "Microsoft Sans Serif", 10F );
             MaterialPresetLabel.IsDerivedStyle = true;
-            MaterialPresetLabel.Location = new System.Drawing.Point( 107, 95 );
+            MaterialPresetLabel.Location = new System.Drawing.Point( 199, 95 );
             MaterialPresetLabel.Margin = new System.Windows.Forms.Padding( 4, 0, 4, 0 );
             MaterialPresetLabel.Name = "MaterialPresetLabel";
             MaterialPresetLabel.Size = new System.Drawing.Size( 102, 17 );
@@ -156,10 +148,10 @@ namespace GFDStudio.GUI.Forms
             MaterialPresetComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             MaterialPresetComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             MaterialPresetComboBox.ForeColor = System.Drawing.Color.Silver;
-            MaterialPresetComboBox.Location = new System.Drawing.Point( 217, 92 );
+            MaterialPresetComboBox.Location = new System.Drawing.Point( 309, 92 );
             MaterialPresetComboBox.Margin = new System.Windows.Forms.Padding( 4, 3, 4, 3 );
             MaterialPresetComboBox.Name = "MaterialPresetComboBox";
-            MaterialPresetComboBox.Size = new System.Drawing.Size( 205, 28 );
+            MaterialPresetComboBox.Size = new System.Drawing.Size( 297, 28 );
             MaterialPresetComboBox.TabIndex = 1;
             // 
             // ConvertSkinToZUpLabel
@@ -168,7 +160,7 @@ namespace GFDStudio.GUI.Forms
             ConvertSkinToZUpLabel.AutoSize = true;
             ConvertSkinToZUpLabel.Font = new System.Drawing.Font( "Microsoft Sans Serif", 10F );
             ConvertSkinToZUpLabel.IsDerivedStyle = true;
-            ConvertSkinToZUpLabel.Location = new System.Drawing.Point( 74, 138 );
+            ConvertSkinToZUpLabel.Location = new System.Drawing.Point( 166, 138 );
             ConvertSkinToZUpLabel.Margin = new System.Windows.Forms.Padding( 4, 0, 4, 0 );
             ConvertSkinToZUpLabel.Name = "ConvertSkinToZUpLabel";
             ConvertSkinToZUpLabel.Size = new System.Drawing.Size( 135, 17 );
@@ -193,7 +185,7 @@ namespace GFDStudio.GUI.Forms
             ConvertSkinToZUpCheckBox.DisabledBorderColor = System.Drawing.Color.FromArgb( 85, 85, 85 );
             ConvertSkinToZUpCheckBox.Font = new System.Drawing.Font( "Microsoft Sans Serif", 10F );
             ConvertSkinToZUpCheckBox.IsDerivedStyle = true;
-            ConvertSkinToZUpCheckBox.Location = new System.Drawing.Point( 217, 138 );
+            ConvertSkinToZUpCheckBox.Location = new System.Drawing.Point( 309, 138 );
             ConvertSkinToZUpCheckBox.Margin = new System.Windows.Forms.Padding( 4, 3, 4, 3 );
             ConvertSkinToZUpCheckBox.Name = "ConvertSkinToZUpCheckBox";
             ConvertSkinToZUpCheckBox.SignStyle = MetroSet_UI.Enums.SignStyle.Sign;
@@ -204,89 +196,91 @@ namespace GFDStudio.GUI.Forms
             ConvertSkinToZUpCheckBox.ThemeAuthor = "Narwin";
             ConvertSkinToZUpCheckBox.ThemeName = "MetroDark";
             // 
-            // GenerateVertexColorsCheckBox
+            // tableLayoutPanel2
             // 
-            GenerateVertexColorsCheckBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            GenerateVertexColorsCheckBox.BackColor = System.Drawing.Color.Transparent;
-            GenerateVertexColorsCheckBox.BackgroundColor = System.Drawing.Color.FromArgb( 30, 30, 30 );
-            GenerateVertexColorsCheckBox.BorderColor = System.Drawing.Color.FromArgb( 155, 155, 155 );
-            GenerateVertexColorsCheckBox.Checked = false;
-            GenerateVertexColorsCheckBox.CheckSignColor = System.Drawing.Color.FromArgb( 65, 177, 225 );
-            GenerateVertexColorsCheckBox.CheckState = MetroSet_UI.Enums.CheckState.Unchecked;
-            GenerateVertexColorsCheckBox.Cursor = System.Windows.Forms.Cursors.Hand;
-            GenerateVertexColorsCheckBox.DisabledBorderColor = System.Drawing.Color.FromArgb( 85, 85, 85 );
-            GenerateVertexColorsCheckBox.Font = new System.Drawing.Font( "Microsoft Sans Serif", 10F );
-            GenerateVertexColorsCheckBox.IsDerivedStyle = true;
-            GenerateVertexColorsCheckBox.Location = new System.Drawing.Point( 217, 169 );
-            GenerateVertexColorsCheckBox.Margin = new System.Windows.Forms.Padding( 4, 3, 4, 3 );
-            GenerateVertexColorsCheckBox.Name = "GenerateVertexColorsCheckBox";
-            GenerateVertexColorsCheckBox.SignStyle = MetroSet_UI.Enums.SignStyle.Sign;
-            GenerateVertexColorsCheckBox.Size = new System.Drawing.Size( 25, 16 );
-            GenerateVertexColorsCheckBox.Style = MetroSet_UI.Enums.Style.Dark;
-            GenerateVertexColorsCheckBox.StyleManager = null;
-            GenerateVertexColorsCheckBox.TabIndex = 6;
-            GenerateVertexColorsCheckBox.ThemeAuthor = "Narwin";
-            GenerateVertexColorsCheckBox.ThemeName = "MetroDark";
+            tableLayoutPanel2.ColumnCount = 2;
+            tableLayoutPanel2.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle( System.Windows.Forms.SizeType.Percent, 50F ) );
+            tableLayoutPanel2.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle( System.Windows.Forms.SizeType.Percent, 50F ) );
+            tableLayoutPanel2.Controls.Add( ConvertButton, 1, 0 );
+            tableLayoutPanel2.Controls.Add( CancelButton, 0, 0 );
+            tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            tableLayoutPanel2.Location = new System.Drawing.Point( 308, 258 );
+            tableLayoutPanel2.Name = "tableLayoutPanel2";
+            tableLayoutPanel2.RowCount = 1;
+            tableLayoutPanel2.RowStyles.Add( new System.Windows.Forms.RowStyle( System.Windows.Forms.SizeType.Percent, 100F ) );
+            tableLayoutPanel2.Size = new System.Drawing.Size( 299, 62 );
+            tableLayoutPanel2.TabIndex = 10;
             // 
-            // GenerateVertexColorsLabel
+            // ConvertButton
             // 
-            GenerateVertexColorsLabel.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            GenerateVertexColorsLabel.AutoSize = true;
-            GenerateVertexColorsLabel.Font = new System.Drawing.Font( "Microsoft Sans Serif", 10F );
-            GenerateVertexColorsLabel.IsDerivedStyle = true;
-            GenerateVertexColorsLabel.Location = new System.Drawing.Point( 57, 169 );
-            GenerateVertexColorsLabel.Margin = new System.Windows.Forms.Padding( 4, 0, 4, 0 );
-            GenerateVertexColorsLabel.Name = "GenerateVertexColorsLabel";
-            GenerateVertexColorsLabel.Size = new System.Drawing.Size( 152, 17 );
-            GenerateVertexColorsLabel.Style = MetroSet_UI.Enums.Style.Dark;
-            GenerateVertexColorsLabel.StyleManager = null;
-            GenerateVertexColorsLabel.TabIndex = 7;
-            GenerateVertexColorsLabel.Text = "Generate vertex colors";
-            GenerateVertexColorsLabel.ThemeAuthor = "Narwin";
-            GenerateVertexColorsLabel.ThemeName = "MetroDark";
-            descriptionTooltip.SetToolTip( GenerateVertexColorsLabel, "Generates dummy white vertex colors for models with none.\r\nFixes vertex explosion bug in P4D when vertex colors are missing." );
+            ConvertButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            ConvertButton.DialogResult = System.Windows.Forms.DialogResult.OK;
+            ConvertButton.Font = new System.Drawing.Font( "Microsoft Sans Serif", 13F );
+            ConvertButton.ForeColor = System.Drawing.Color.FromArgb( 30, 30, 30 );
+            ConvertButton.Location = new System.Drawing.Point( 176, 11 );
+            ConvertButton.Margin = new System.Windows.Forms.Padding( 4, 3, 4, 3 );
+            ConvertButton.Name = "ConvertButton";
+            ConvertButton.Size = new System.Drawing.Size( 96, 48 );
+            ConvertButton.TabIndex = 3;
+            ConvertButton.Text = "Convert";
+            ConvertButton.UseVisualStyleBackColor = true;
             // 
-            // minVertexAttributesLabel
+            // CancelButton
             // 
-            minVertexAttributesLabel.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            minVertexAttributesLabel.AutoSize = true;
-            minVertexAttributesLabel.Font = new System.Drawing.Font( "Microsoft Sans Serif", 10F );
-            minVertexAttributesLabel.IsDerivedStyle = true;
-            minVertexAttributesLabel.Location = new System.Drawing.Point( 47, 200 );
-            minVertexAttributesLabel.Name = "minVertexAttributesLabel";
-            minVertexAttributesLabel.Size = new System.Drawing.Size( 163, 17 );
-            minVertexAttributesLabel.Style = MetroSet_UI.Enums.Style.Dark;
-            minVertexAttributesLabel.StyleManager = null;
-            minVertexAttributesLabel.TabIndex = 8;
-            minVertexAttributesLabel.Text = "Minimal Vertex Attributes";
-            minVertexAttributesLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            minVertexAttributesLabel.ThemeAuthor = "Narwin";
-            minVertexAttributesLabel.ThemeName = "MetroDark";
-            descriptionTooltip.SetToolTip( minVertexAttributesLabel, resources.GetString( "minVertexAttributesLabel.ToolTip" ) );
+            CancelButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            CancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            CancelButton.ForeColor = System.Drawing.Color.FromArgb( 30, 30, 30 );
+            CancelButton.Location = new System.Drawing.Point( 27, 11 );
+            CancelButton.Margin = new System.Windows.Forms.Padding( 4, 3, 4, 3 );
+            CancelButton.Name = "CancelButton";
+            CancelButton.Size = new System.Drawing.Size( 95, 48 );
+            CancelButton.TabIndex = 4;
+            CancelButton.Text = "Cancel";
+            CancelButton.UseVisualStyleBackColor = true;
             // 
-            // MinimalVertexAttributesCheckBox
+            // VersionComboBox
             // 
-            MinimalVertexAttributesCheckBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            MinimalVertexAttributesCheckBox.BackColor = System.Drawing.Color.Transparent;
-            MinimalVertexAttributesCheckBox.BackgroundColor = System.Drawing.Color.FromArgb( 30, 30, 30 );
-            MinimalVertexAttributesCheckBox.BorderColor = System.Drawing.Color.FromArgb( 155, 155, 155 );
-            MinimalVertexAttributesCheckBox.Checked = true;
-            MinimalVertexAttributesCheckBox.CheckSignColor = System.Drawing.Color.FromArgb( 65, 177, 225 );
-            MinimalVertexAttributesCheckBox.CheckState = MetroSet_UI.Enums.CheckState.Checked;
-            MinimalVertexAttributesCheckBox.Cursor = System.Windows.Forms.Cursors.Hand;
-            MinimalVertexAttributesCheckBox.DisabledBorderColor = System.Drawing.Color.FromArgb( 85, 85, 85 );
-            MinimalVertexAttributesCheckBox.Font = new System.Drawing.Font( "Microsoft Sans Serif", 10F );
-            MinimalVertexAttributesCheckBox.IsDerivedStyle = true;
-            MinimalVertexAttributesCheckBox.Location = new System.Drawing.Point( 217, 200 );
-            MinimalVertexAttributesCheckBox.Margin = new System.Windows.Forms.Padding( 4, 3, 4, 3 );
-            MinimalVertexAttributesCheckBox.Name = "MinimalVertexAttributesCheckBox";
-            MinimalVertexAttributesCheckBox.SignStyle = MetroSet_UI.Enums.SignStyle.Sign;
-            MinimalVertexAttributesCheckBox.Size = new System.Drawing.Size( 25, 16 );
-            MinimalVertexAttributesCheckBox.Style = MetroSet_UI.Enums.Style.Dark;
-            MinimalVertexAttributesCheckBox.StyleManager = null;
-            MinimalVertexAttributesCheckBox.TabIndex = 9;
-            MinimalVertexAttributesCheckBox.ThemeAuthor = "Narwin";
-            MinimalVertexAttributesCheckBox.ThemeName = "MetroDark";
+            VersionComboBox.Anchor =  System.Windows.Forms.AnchorStyles.Left  |  System.Windows.Forms.AnchorStyles.Right ;
+            VersionComboBox.BackColor = System.Drawing.Color.FromArgb( 20, 20, 20 );
+            VersionComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            VersionComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            VersionComboBox.ForeColor = System.Drawing.Color.Silver;
+            VersionComboBox.Location = new System.Drawing.Point( 309, 8 );
+            VersionComboBox.Margin = new System.Windows.Forms.Padding( 4, 3, 4, 3 );
+            VersionComboBox.Name = "VersionComboBox";
+            VersionComboBox.Size = new System.Drawing.Size( 297, 28 );
+            VersionComboBox.TabIndex = 11;
+            // 
+            // VersionTextBox
+            // 
+            VersionTextBox.Anchor =  System.Windows.Forms.AnchorStyles.Left  |  System.Windows.Forms.AnchorStyles.Right ;
+            VersionTextBox.AutoCompleteCustomSource = null;
+            VersionTextBox.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.None;
+            VersionTextBox.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.None;
+            VersionTextBox.BorderColor = System.Drawing.Color.FromArgb( 110, 110, 110 );
+            VersionTextBox.DisabledBackColor = System.Drawing.Color.FromArgb( 80, 80, 80 );
+            VersionTextBox.DisabledBorderColor = System.Drawing.Color.FromArgb( 109, 109, 109 );
+            VersionTextBox.DisabledForeColor = System.Drawing.Color.FromArgb( 109, 109, 109 );
+            VersionTextBox.Font = new System.Drawing.Font( "Microsoft Sans Serif", 10F );
+            VersionTextBox.HoverColor = System.Drawing.Color.FromArgb( 65, 177, 225 );
+            VersionTextBox.Image = null;
+            VersionTextBox.IsDerivedStyle = true;
+            VersionTextBox.Lines = null;
+            VersionTextBox.Location = new System.Drawing.Point( 309, 43 );
+            VersionTextBox.Margin = new System.Windows.Forms.Padding( 4, 3, 4, 3 );
+            VersionTextBox.MaxLength = 32767;
+            VersionTextBox.Multiline = false;
+            VersionTextBox.Name = "VersionTextBox";
+            VersionTextBox.ReadOnly = false;
+            VersionTextBox.Size = new System.Drawing.Size( 297, 30 );
+            VersionTextBox.Style = MetroSet_UI.Enums.Style.Dark;
+            VersionTextBox.StyleManager = null;
+            VersionTextBox.TabIndex = 3;
+            VersionTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
+            VersionTextBox.ThemeAuthor = "Narwin";
+            VersionTextBox.ThemeName = "MetroDark";
+            VersionTextBox.UseSystemPasswordChar = false;
+            VersionTextBox.WatermarkText = "";
             // 
             // AutoAddGFDHelperIDsLabel
             // 
@@ -294,7 +288,7 @@ namespace GFDStudio.GUI.Forms
             AutoAddGFDHelperIDsLabel.AutoSize = true;
             AutoAddGFDHelperIDsLabel.Font = new System.Drawing.Font( "Microsoft Sans Serif", 10F );
             AutoAddGFDHelperIDsLabel.IsDerivedStyle = true;
-            AutoAddGFDHelperIDsLabel.Location = new System.Drawing.Point( 42, 231 );
+            AutoAddGFDHelperIDsLabel.Location = new System.Drawing.Point( 134, 169 );
             AutoAddGFDHelperIDsLabel.Name = "AutoAddGFDHelperIDsLabel";
             AutoAddGFDHelperIDsLabel.Size = new System.Drawing.Size( 168, 17 );
             AutoAddGFDHelperIDsLabel.Style = MetroSet_UI.Enums.Style.Dark;
@@ -318,7 +312,7 @@ namespace GFDStudio.GUI.Forms
             AutoAddGFDHelperIDsCheckBox.DisabledBorderColor = System.Drawing.Color.FromArgb( 85, 85, 85 );
             AutoAddGFDHelperIDsCheckBox.Font = new System.Drawing.Font( "Microsoft Sans Serif", 10F );
             AutoAddGFDHelperIDsCheckBox.IsDerivedStyle = true;
-            AutoAddGFDHelperIDsCheckBox.Location = new System.Drawing.Point( 217, 231 );
+            AutoAddGFDHelperIDsCheckBox.Location = new System.Drawing.Point( 309, 169 );
             AutoAddGFDHelperIDsCheckBox.Margin = new System.Windows.Forms.Padding( 4, 3, 4, 3 );
             AutoAddGFDHelperIDsCheckBox.Name = "AutoAddGFDHelperIDsCheckBox";
             AutoAddGFDHelperIDsCheckBox.SignStyle = MetroSet_UI.Enums.SignStyle.Sign;
@@ -328,92 +322,6 @@ namespace GFDStudio.GUI.Forms
             AutoAddGFDHelperIDsCheckBox.TabIndex = 9;
             AutoAddGFDHelperIDsCheckBox.ThemeAuthor = "Narwin";
             AutoAddGFDHelperIDsCheckBox.ThemeName = "MetroDark";
-            // 
-            // tableLayoutPanel2
-            // 
-            tableLayoutPanel2.ColumnCount = 2;
-            tableLayoutPanel2.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle( System.Windows.Forms.SizeType.Percent, 50F ) );
-            tableLayoutPanel2.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle( System.Windows.Forms.SizeType.Percent, 50F ) );
-            tableLayoutPanel2.Controls.Add( ConvertButton, 1, 0 );
-            tableLayoutPanel2.Controls.Add( CancelButton, 0, 0 );
-            tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            tableLayoutPanel2.Location = new System.Drawing.Point( 216, 258 );
-            tableLayoutPanel2.Name = "tableLayoutPanel2";
-            tableLayoutPanel2.RowCount = 1;
-            tableLayoutPanel2.RowStyles.Add( new System.Windows.Forms.RowStyle( System.Windows.Forms.SizeType.Percent, 100F ) );
-            tableLayoutPanel2.Size = new System.Drawing.Size( 207, 62 );
-            tableLayoutPanel2.TabIndex = 10;
-            // 
-            // ConvertButton
-            // 
-            ConvertButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            ConvertButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-            ConvertButton.Font = new System.Drawing.Font( "Microsoft Sans Serif", 13F );
-            ConvertButton.ForeColor = System.Drawing.Color.FromArgb( 30, 30, 30 );
-            ConvertButton.Location = new System.Drawing.Point( 107, 11 );
-            ConvertButton.Margin = new System.Windows.Forms.Padding( 4, 3, 4, 3 );
-            ConvertButton.Name = "ConvertButton";
-            ConvertButton.Size = new System.Drawing.Size( 96, 48 );
-            ConvertButton.TabIndex = 3;
-            ConvertButton.Text = "Convert";
-            ConvertButton.UseVisualStyleBackColor = true;
-            // 
-            // CancelButton
-            // 
-            CancelButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            CancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            CancelButton.ForeColor = System.Drawing.Color.FromArgb( 30, 30, 30 );
-            CancelButton.Location = new System.Drawing.Point( 4, 11 );
-            CancelButton.Margin = new System.Windows.Forms.Padding( 4, 3, 4, 3 );
-            CancelButton.Name = "CancelButton";
-            CancelButton.Size = new System.Drawing.Size( 95, 48 );
-            CancelButton.TabIndex = 4;
-            CancelButton.Text = "Cancel";
-            CancelButton.UseVisualStyleBackColor = true;
-            // 
-            // VersionComboBox
-            // 
-            VersionComboBox.Anchor =  System.Windows.Forms.AnchorStyles.Left  |  System.Windows.Forms.AnchorStyles.Right ;
-            VersionComboBox.BackColor = System.Drawing.Color.FromArgb( 20, 20, 20 );
-            VersionComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            VersionComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            VersionComboBox.ForeColor = System.Drawing.Color.Silver;
-            VersionComboBox.Location = new System.Drawing.Point( 217, 8 );
-            VersionComboBox.Margin = new System.Windows.Forms.Padding( 4, 3, 4, 3 );
-            VersionComboBox.Name = "VersionComboBox";
-            VersionComboBox.Size = new System.Drawing.Size( 205, 28 );
-            VersionComboBox.TabIndex = 11;
-            // 
-            // VersionTextBox
-            // 
-            VersionTextBox.Anchor =  System.Windows.Forms.AnchorStyles.Left  |  System.Windows.Forms.AnchorStyles.Right ;
-            VersionTextBox.AutoCompleteCustomSource = null;
-            VersionTextBox.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.None;
-            VersionTextBox.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.None;
-            VersionTextBox.BorderColor = System.Drawing.Color.FromArgb( 110, 110, 110 );
-            VersionTextBox.DisabledBackColor = System.Drawing.Color.FromArgb( 80, 80, 80 );
-            VersionTextBox.DisabledBorderColor = System.Drawing.Color.FromArgb( 109, 109, 109 );
-            VersionTextBox.DisabledForeColor = System.Drawing.Color.FromArgb( 109, 109, 109 );
-            VersionTextBox.Font = new System.Drawing.Font( "Microsoft Sans Serif", 10F );
-            VersionTextBox.HoverColor = System.Drawing.Color.FromArgb( 65, 177, 225 );
-            VersionTextBox.Image = null;
-            VersionTextBox.IsDerivedStyle = true;
-            VersionTextBox.Lines = null;
-            VersionTextBox.Location = new System.Drawing.Point( 217, 43 );
-            VersionTextBox.Margin = new System.Windows.Forms.Padding( 4, 3, 4, 3 );
-            VersionTextBox.MaxLength = 32767;
-            VersionTextBox.Multiline = false;
-            VersionTextBox.Name = "VersionTextBox";
-            VersionTextBox.ReadOnly = false;
-            VersionTextBox.Size = new System.Drawing.Size( 205, 30 );
-            VersionTextBox.Style = MetroSet_UI.Enums.Style.Dark;
-            VersionTextBox.StyleManager = null;
-            VersionTextBox.TabIndex = 3;
-            VersionTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
-            VersionTextBox.ThemeAuthor = "Narwin";
-            VersionTextBox.ThemeName = "MetroDark";
-            VersionTextBox.UseSystemPasswordChar = false;
-            VersionTextBox.WatermarkText = "";
             // 
             // descriptionTooltip
             // 
@@ -425,7 +333,7 @@ namespace GFDStudio.GUI.Forms
             // 
             OpenPresetButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             OpenPresetButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            OpenPresetButton.Location = new System.Drawing.Point( 32, 351 );
+            OpenPresetButton.Location = new System.Drawing.Point( 124, 351 );
             OpenPresetButton.Margin = new System.Windows.Forms.Padding( 4, 3, 4, 3 );
             OpenPresetButton.Name = "OpenPresetButton";
             OpenPresetButton.Size = new System.Drawing.Size( 120, 27 );
@@ -437,7 +345,7 @@ namespace GFDStudio.GUI.Forms
             // 
             BackColor = System.Drawing.Color.FromArgb( 30, 30, 30 );
             BackgroundColor = System.Drawing.Color.FromArgb( 30, 30, 30 );
-            ClientSize = new System.Drawing.Size( 430, 325 );
+            ClientSize = new System.Drawing.Size( 614, 325 );
             Controls.Add( OpenPresetButton );
             Controls.Add( tableLayoutPanel1 );
             DropShadowEffect = false;
@@ -470,13 +378,9 @@ namespace GFDStudio.GUI.Forms
         private MetroSetTextBox VersionTextBox;
         private MetroSetLabel ConvertSkinToZUpLabel;
         private MetroSetCheckBox ConvertSkinToZUpCheckBox;
-        private MetroSetCheckBox GenerateVertexColorsCheckBox;
-        private MetroSetLabel GenerateVertexColorsLabel;
         private System.Windows.Forms.ToolTip descriptionTooltip;
         private System.Windows.Forms.Button OpenPresetButton;
-        private MetroSetLabel minVertexAttributesLabel;
         private MetroSetLabel AutoAddGFDHelperIDsLabel;
-        private MetroSetCheckBox MinimalVertexAttributesCheckBox;
         private MetroSetCheckBox AutoAddGFDHelperIDsCheckBox;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.Button CancelButton;

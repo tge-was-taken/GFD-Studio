@@ -47,13 +47,16 @@ namespace GFDStudio
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault( false );
 
-            using ( var mainForm = new MainForm() )
-            {
-                if ( args.Length > 0 && File.Exists( args[0] ) )
-                    mainForm.OpenFile( args[0] );
+            using (var form = new ModelConversionOptionsDialog())
+                Application.Run( form );
 
-                Application.Run( mainForm );
-            }
+            //using ( var mainForm = new MainForm() )
+            //{
+            //    if ( args.Length > 0 && File.Exists( args[0] ) )
+            //        mainForm.OpenFile( args[0] );
+
+            //    Application.Run( mainForm );
+            //}
         }
 
 #if WINDOWS

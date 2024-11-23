@@ -1,30 +1,28 @@
 ﻿using GFDLibrary.Graphics;
 using GFDLibrary.Models;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.Linq;
-using System.Runtime.CompilerServices;
+using System.Reflection;
 
 namespace GFDLibrary.Conversion;
 
 public class ModelConverterOptions
 {
-    /// <summary>
-    /// Gets or sets the version to use for the converted resources.
-    /// </summary>
     public uint Version { get; set; } = ResourceVersion.Persona5;
 
     public object MaterialPreset { get; set; }
 
-    /// <summary>
-    /// Gets or sets whether to convert the up axis of the inverse bind pose matrices to Z-up. This is used by Persona 5's battle models for example.
-    /// </summary>
     public bool ConvertSkinToZUp { get; set; }
 
     public bool SetFullBodyNodeProperties { get; set; }
 
     public bool AutoAddGFDHelperIDs { get; set; } = true;
 
-    public ModelConverterGeometryOptions DefaultGeometryOptions { get; } = new()
+    public ModelConverterGeometryOptions DefaultGeometryOptions { get; init; } = new()
     {
         GeometryFlags = GeometryFlags.Bit7,
         VertexAttributeFlags = VertexAttributeFlags.Position | VertexAttributeFlags.Normal | VertexAttributeFlags.TexCoord0
@@ -34,13 +32,14 @@ public class ModelConverterOptions
 
     public Dictionary<string, ModelConverterGeometryOptions> GeometryOptionsOverrideByMaterialName { get; set; } = new();
 
-    public ModelConverterTexCoordChannelOptions[] TexCoordChannelMap { get; } = new ModelConverterTexCoordChannelOptions[]
+    public ModelConverterTexCoordChannelOptions[] TexCoordChannelMap { get; init; } = new ModelConverterTexCoordChannelOptions[]
     {
         new() { SourceChannel = 0 },
         new() { SourceChannel = 1 },
         new() { SourceChannel = 2 },
     };
-    public ModelConverterColorChannelOptions[] ColorChannelMap { get; } = new ModelConverterColorChannelOptions[]
+
+    public ModelConverterColorChannelOptions[] ColorChannelMap { get; init; } = new ModelConverterColorChannelOptions[]
     {
         new() { SourceChannel = 0 },
         new() { SourceChannel = 1 },
@@ -49,7 +48,7 @@ public class ModelConverterOptions
 
     public ModelConverterOptions() { }
 
-    public ModelConverterOptions(ModelPack originalModel)
+    public ModelConverterOptions( ModelPack originalModel )
     {
         if ( originalModel?.Model is not null )
         {
@@ -93,13 +92,21 @@ public class ModelConverterOptions
 public class ModelConverterTexCoordChannelOptions
 {
     public int SourceChannel { get; set; }
+
+    public override string ToString()
+    {
+        return $"TexCoord Channel {SourceChannel}";
+    }
 }
 
 public class ModelConverterColorChannelOptions
 {
     public int SourceChannel { get; set; }
+
     public bool UseDefaultColor { get; set; } = true;
-    public Graphics.Color DefaultColor { get; set; } = Graphics.Color.Black;
+
+    public Graphics.Color DefaultColor { get; set; } = Graphics.Color.White;
+
     public ColorSwizzle Swizzle { get; set; } = new()
     {
         Red = ColorChannel.Red,
@@ -107,10 +114,16 @@ public class ModelConverterColorChannelOptions
         Blue = ColorChannel.Blue,
         Alpha = ColorChannel.Alpha,
     };
+
+    public override string ToString()
+    {
+        return $"Color Channel {SourceChannel}";
+    }
 }
 
 public class ModelConverterGeometryOptions
 {
     public GeometryFlags GeometryFlags { get; set; }
+
     public VertexAttributeFlags VertexAttributeFlags { get; set; }
 }

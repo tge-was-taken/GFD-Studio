@@ -51,15 +51,15 @@ namespace GFDStudio.GUI.Forms
             get => ConvertSkinToZUpCheckBox.Checked;
         }
 
-        public bool GenerateVertexColors
-        {
-            get => GenerateVertexColorsCheckBox.Checked;
-        }
+        //public bool GenerateVertexColors
+        //{
+        //    get => GenerateVertexColorsCheckBox.Checked;
+        //}
 
-        public bool MinimalVertexAttributes
-        {
-            get => MinimalVertexAttributesCheckBox.Checked;
-        }
+        //public bool MinimalVertexAttributes
+        //{
+        //    get => MinimalVertexAttributesCheckBox.Checked;
+        //}
 
         public bool AutoAddGFDHelperIDs
         {
