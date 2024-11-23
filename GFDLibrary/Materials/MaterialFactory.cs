@@ -80,7 +80,7 @@ namespace GFDLibrary.Materials
                 if ( MaterialPreset.SpecularMap != null ) material.SpecularMap = NewTextureMapResource( specularMapName );
             }
 
-            material.IsPresetMaterial = false;
+            material.RuntimeMetadata.IsCustomMaterial = false;
 
             return material;
         }

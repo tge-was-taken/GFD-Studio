@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Reflection;
 using GFDLibrary.Animations;
 using GFDLibrary.Cameras;
 using GFDLibrary.Common;
@@ -203,49 +202,58 @@ namespace GFDLibrary
 
                 res.ReadCore( reader );
 
-                if ( res.ResourceType == ResourceType.ModelPack && type == typeof(AnimationPack) )
+                switch ( res.ResourceType )
                 {
-                    // Identify AnimationPack from a file with a model resource header
-                    var model = ( ModelPack )res;
-                    if ( model.AnimationPack != null && model.ChunkType000100F8 == null && model.ChunkType000100F9 == null &&
-                         model.Materials == null && model.Model == null && model.Textures == null )
-                    {
-                        res = model.AnimationPack;
-                    }
+                    case ResourceType.ModelPack:
+                    case ResourceType.ModelPack_Metaphor:
+                        DoModelPackPostReadFixups( res, type, source );
+                        break;
                 }
-                if ( ( res.ResourceType == ResourceType.ModelPack || res.ResourceType == ResourceType.ModelPack_Metaphor )
-                    && res.Version >= 0x02000000 )
+                return res;
+            }
+        }
+
+        private static void DoModelPackPostReadFixups(Resource res, Type type, string source)
+        {
+            if ( type == typeof( AnimationPack ) )
+            {
+                // Identify AnimationPack from a file with a model resource header
+                var model = (ModelPack)res;
+                if ( model.AnimationPack != null && model.ChunkType000100F8 == null && model.ChunkType000100F9 == null &&
+                     model.Materials == null && model.Model == null && model.Textures == null )
                 {
-                    // try loading a TEX from an external file, bundled in the same folder as the model.
-                    var model = (ModelPack)res;
-                    if (source != null)
+                    res = model.AnimationPack;
+                }
+            }
+            if ( res.Version >= 0x02000000 )
+            {
+                // try loading a TEX from an external file, bundled in the same folder as the model.
+                var model = (ModelPack)res;
+                if ( source != null )
+                {
+                    var modelDirectory = Path.GetDirectoryName( source );
+                    Logger.Debug( $"METAPHOR: Looking for loose chunks in {modelDirectory}" );
+                    string texPath = Path.Combine( modelDirectory, Path.GetFileNameWithoutExtension( source ) + ".TEX" );
+                    if ( File.Exists( texPath ) )
                     {
-                        string ModelDirectory = Path.GetDirectoryName( source );
-                        Logger.Debug( $"METAPHOR: Looking for loose chunks in {ModelDirectory}" );
-                        string TexPath = Path.Combine( ModelDirectory, Path.GetFileNameWithoutExtension( source ) + ".TEX" );
-                        if ( File.Exists( TexPath ) )
+                        using ( var texpackStream = File.OpenRead( texPath ) )
                         {
-                            using (var texpackStream = File.OpenRead( TexPath ))
+                            MetaphorTexpack texPack = new( texpackStream );
+                            if ( texPack != null )
                             {
-                                MetaphorTexpack MRFTexpack = new( texpackStream );
-                                if (MRFTexpack != null)
+                                foreach ( var tex in texPack.TextureList )
                                 {
-                                    foreach ( var tex in MRFTexpack.TextureList )
+                                    Logger.Debug( $"METAPHOR: Texture bin got {tex.Key}" );
+                                    if ( model.Textures.TryGetValue( tex.Key, out var modelTexPlaceholder ) )
                                     {
-                                        Logger.Debug( $"METAPHOR: Texture bin got {tex.Key}" );
-                                        if ( model.Textures.TryGetValue( tex.Key, out var modelTexPlaceholder ) )
-                                        {
-                                            modelTexPlaceholder.Data = tex.Value;
-                                            modelTexPlaceholder.IsTexSourceExternal = true;
-                                        }
+                                        modelTexPlaceholder.Data = tex.Value;
+                                        modelTexPlaceholder.IsTexSourceExternal = true;
                                     }
                                 }
                             }
                         }
                     }
                 }
-
-                return res;
             }
         }
 

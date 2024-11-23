@@ -277,14 +277,16 @@ namespace GFDLibrary.Materials
         public METAPHOR_MaterialFlags0 MatFlags0 { get; set; }
         public METAPHOR_MaterialFlags1 MatFlags1 { get; set; }
         public METAPHOR_MaterialFlags2 MatFlags2 { get; set; }
-
-        public bool IsPresetMaterial { get; internal set; }
+        public MaterialRuntimeMetadata RuntimeMetadata { get; set; }
 
         public Material( string name )
             : this()
         {
             Name = name;
-            IsPresetMaterial = true;
+            RuntimeMetadata = new()
+            {
+                IsCustomMaterial = true
+            };
         }
 
         public Material()
@@ -485,7 +487,8 @@ namespace GFDLibrary.Materials
             if (Version < 0x2000000 )
             {
                 LegacyParameters = reader.ReadResource<MaterialLegacyParameters>( Version );
-            } else
+            } 
+            else
             {
                 switch ( METAPHOR_MaterialParameterFormat )
                 {
