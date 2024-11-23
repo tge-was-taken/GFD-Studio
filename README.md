@@ -13,6 +13,7 @@ Latest debug/release builds can be found here: https://ci.appveyor.com/project/t
 - A videocard that supports at least OpenGL 3.3 to use the model viewer.
 (This is required for compiling shaders)
 ## Building
+- Install FBX SDK 2020.3.7 to the standard path (C:\Program Files\Autodesk\FBX\FBX SDK\2020.3.7)
 - Clone with `git clone https://github.com/tge-was-taken/GFD-Studio`
 - Navigate to the repo, and clone submodules with `git submodule update --init --recursive`
 - Open the solution in Visual Studio. You may get pop-ups prompting you to update the submodules' target frameworks. Click update.
