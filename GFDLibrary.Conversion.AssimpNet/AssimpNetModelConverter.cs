@@ -479,33 +479,37 @@ namespace GFDLibrary.Conversion.AssimpNet
             if ( aiNode.HasMeshes )
             {
                 var nodeInfo = nodeLookup[AssimpConverterCommon.UnescapeName( aiNode.Name )];
-                var node = nodeInfo.Node;
-                var nodeWorldTransform = node.WorldTransform;
-                Matrix4x4.Invert( nodeWorldTransform, out var nodeInverseWorldTransform );
+                Node targetNode = nodeInfo.Node;
+                var sourceToTargetModelMatrix = Matrix4x4.Identity;
+                if ( nodeInfo.IsMeshAttachment && nodeInfo.Node.Parent?.Name == "RootNode")
+                {
+                    var originalParentNodeName = nodeInfo.Node.Name[..nodeInfo.Node.Name.IndexOf( ModelConversionHelpers.MeshAttachmentNameSuffix )];
+                    if ( nodeLookup.TryGetValue( originalParentNodeName, out var originalParentNodeInfo ) )
+                    {
+                        targetNode = originalParentNodeInfo.Node;
+                        // Need to transform the vertices from the local space of the original node to the local space of the new node
+                        sourceToTargetModelMatrix = targetNode.WorldTransform.Inverted() * nodeInfo.Node.WorldTransform;
+                    }
+                }
+
+                var sourceNode = nodeInfo.Node;
+                var targetNodeWorldTransform = targetNode.WorldTransform;
+                Matrix4x4.Invert( targetNodeWorldTransform, out var targetNodeInverseWorldTransform );
 
                 foreach ( var aiMeshIndex in aiNode.MeshIndices )
                 {
                     var aiMesh = aiScene.Meshes[aiMeshIndex];
                     var aiMaterial = aiScene.Materials[aiMesh.MaterialIndex];
-                    var geometry = ConvertAssimpMeshToGeometry( aiMesh, aiMaterial, nodeLookup, ref nextBoneIndex, nodeToBoneIndices, boneInverseBindMatrices, ref nodeWorldTransform, ref nodeInverseWorldTransform, transformedVertices, options );
+                    var geometry = ConvertAssimpMeshToGeometry( aiMesh, aiMaterial, nodeLookup, ref nextBoneIndex, nodeToBoneIndices, boneInverseBindMatrices, sourceToTargetModelMatrix, ref targetNodeWorldTransform, ref targetNodeInverseWorldTransform, transformedVertices, options );
 
                     if ( !nodeInfo.IsMeshAttachment )
                     {
-                        node.Attachments.Add( new NodeMeshAttachment( geometry ) );
+                        targetNode.Attachments.Add( new NodeMeshAttachment( geometry ) );
                     }
                     else
                     {
-                        var attachmentParentNode = node.Parent;
-                        if (node.Parent?.Name == "RootNode")
-                        {
-                            // Find original node it was split from
-                            var originalParentNodeName = node.Name[..node.Name.IndexOf( ModelConversionHelpers.MeshAttachmentNameSuffix )];
-                            if ( nodeLookup.TryGetValue( originalParentNodeName, out var originalParentNodeInfo ) )
-                                attachmentParentNode = originalParentNodeInfo.Node;
-                        }
-
-                        attachmentParentNode.Attachments.Add( new NodeMeshAttachment( geometry ) );
-                        node.Parent.RemoveChildNode( node );
+                        targetNode.Attachments.Add( new NodeMeshAttachment( geometry ) );
+                        sourceNode.Parent.RemoveChildNode( sourceNode );
                     }
                 }
             }
@@ -516,7 +520,7 @@ namespace GFDLibrary.Conversion.AssimpNet
             }
         }
 
-        private static Mesh ConvertAssimpMeshToGeometry( Ai.Mesh aiMesh, Ai.Material material, Dictionary<string, NodeInfo> nodeLookup, ref int nextBoneIndex, Dictionary<int, List<int>> nodeToBoneIndices, List<Matrix4x4> boneInverseBindMatrices, ref Matrix4x4 nodeWorldTransform, ref Matrix4x4 nodeInverseWorldTransform, List<Vector3> transformedVertices, ModelConverterOptions options )
+        private static Mesh ConvertAssimpMeshToGeometry( Ai.Mesh aiMesh, Ai.Material material, Dictionary<string, NodeInfo> nodeLookup, ref int nextBoneIndex, Dictionary<int, List<int>> nodeToBoneIndices, List<Matrix4x4> boneInverseBindMatrices, Matrix4x4 modelMatrix, ref Matrix4x4 nodeWorldTransform, ref Matrix4x4 nodeInverseWorldTransform, List<Vector3> transformedVertices, ModelConverterOptions options )
         {
             if ( !aiMesh.HasVertices )
                 throw new Exception( "Assimp mesh has no vertices" );
@@ -531,7 +535,7 @@ namespace GFDLibrary.Conversion.AssimpNet
             var geometryTransformedVertices = new Vector3[ aiMesh.VertexCount ];
 
             geometry.Vertices = aiMesh.Vertices
-                                      .Select( x => new Vector3( x.X, x.Y, x.Z ) )
+                                      .Select( x => Vector3.Transform( new Vector3( x.X, x.Y, x.Z ), modelMatrix ) )
                                       .ToArray();
 
             for ( int i = 0; i < geometry.Vertices.Length; i++ )
@@ -545,7 +549,7 @@ namespace GFDLibrary.Conversion.AssimpNet
                 if ( aiMesh.HasNormals )
                 {
                     geometry.Normals = aiMesh.Normals
-                           .Select( x => new Vector3( x.X, x.Y, x.Z ) )
+                           .Select( x => Vector3.TransformNormal( new Vector3( x.X, x.Y, x.Z ), modelMatrix ) )
                            .ToArray();
                 }
             }
