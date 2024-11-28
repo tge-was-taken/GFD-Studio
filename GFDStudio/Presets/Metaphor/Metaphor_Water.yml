@@ -77,7 +77,7 @@ MatFlags0: 0
 MatFlags1: 0
 MatFlags2: 0
 RuntimeMetadata:
-  GeometryFlags: 0
-  VertexAttributeFlags: 0
+  GeometryFlags: null
+  VertexAttributeFlags: null
   IsCustomMaterial: false
 Version: 34669089

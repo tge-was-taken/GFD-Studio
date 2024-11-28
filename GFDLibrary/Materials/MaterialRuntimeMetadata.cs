@@ -7,7 +7,7 @@ namespace GFDLibrary.Materials;
 /// </summary>
 public class MaterialRuntimeMetadata
 {
-    public GeometryFlags GeometryFlags { get; set; }
-    public VertexAttributeFlags VertexAttributeFlags { get; set; }
+    public GeometryFlags? GeometryFlags { get; set; }
+    public VertexAttributeFlags? VertexAttributeFlags { get; set; }
     public bool IsCustomMaterial { get; set; }
 }

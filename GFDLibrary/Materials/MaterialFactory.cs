@@ -37,6 +37,7 @@ namespace GFDLibrary.Materials
                 SpecularMap = null,
                 Flags = materialPreset.Flags,
                 Attributes = materialPreset.Attributes,
+                RuntimeMetadata = materialPreset.RuntimeMetadata,
             };
             if ( materialPreset.METAPHOR_MaterialParameterSet != null )
             {

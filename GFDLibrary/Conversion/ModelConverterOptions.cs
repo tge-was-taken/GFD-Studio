@@ -17,8 +17,6 @@ public class ModelConverterOptions
 
     public ModelConverterMaterialOptions DefaultMaterial { get; init; } = new();
 
-    public ModelConverterMeshOptions DefaultMesh { get; init; } = new();
-
     public Dictionary<string, ModelConverterMeshOptions> Meshes { get; set; } = new();
 
     public Dictionary<string, ModelConverterMaterialOptions> Materials { get; set; } = new();
@@ -29,6 +27,7 @@ public class ModelConverterOptions
 public class ModelConverterMaterialOptions
 {
     public Material Preset { get; set; }
+    public ModelConverterMeshOptions Mesh { get; set; } = new();
 }
 
 public class ModelConverterTexCoordChannelOptions

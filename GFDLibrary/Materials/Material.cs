@@ -763,7 +763,7 @@ namespace GFDLibrary.Materials
             }
         }
 
-        public static Material ConvertToMaterialPreset(Material material, ModelConverterOptions options)
+        public static Material ConvertToMaterialPreset(Material material, Material materialPreset )
         {
             Material newMaterial = null;
 
@@ -776,7 +776,7 @@ namespace GFDLibrary.Materials
             if (specularTexture == null)
                 specularTexture = material.DiffuseMap;
             if ( diffuseTexture == null ) newMaterial = material;
-            else newMaterial = MaterialFactory.CreateMaterial( materialName, diffuseTexture.Name, options.DefaultMaterial.Preset );
+            else newMaterial = MaterialFactory.CreateMaterial( materialName, diffuseTexture.Name, materialPreset );
             return newMaterial;
         }
     }

@@ -18,7 +18,7 @@ using System.Windows.Forms.Design;
 
 namespace GFDStudio.GUI.Forms;
 
-public class ModelConverterOptionsViewModel : IHasResourceVersion
+public class ModelConverterOptionsViewModel
 {
     [CustomSortedCategory("Global settings",1,2)]
     [DisplayName( "Version" )]
@@ -38,10 +38,6 @@ public class ModelConverterOptionsViewModel : IHasResourceVersion
     public bool AutoAddGFDHelperIDs { get; set; } = true;
 
     [CustomSortedCategory( "Default settings", 2, 2 )]
-    [DisplayName( "Mesh settings" )]
-    public ModelConverterDefaultMeshOptionsViewModel DefaultMesh { get; } = new();
-
-    [CustomSortedCategory( "Default settings", 2, 2 )]
     [DisplayName( "Material settings" )]
     public ModelConverterDefaultMaterialOptionsViewModel DefaultMaterial { get; set; }
 
@@ -50,6 +46,9 @@ public class ModelConverterOptionsViewModel : IHasResourceVersion
 
     [Browsable( false )]
     public ObservableCollection<ModelConverterMeshOptionsViewModel> Meshes { get; set; } = new();
+
+    [Browsable( false )]
+    public ObservableCollection<Material> AdditionalMaterialPresets { get; set; } = new();
 
     public ModelConverterOptionsViewModel() 
     {
@@ -64,26 +63,30 @@ public class ModelConverterOptionsViewModel : IHasResourceVersion
             DefaultMaterial = new()
             {
                 Preset = DefaultMaterial.Preset.Material,
+                Mesh = new ModelConverterMeshOptions()
+                {
+                    GeometryFlags = DefaultMaterial.Mesh.GeometryFlags.GetValueOrDefault(),
+                    VertexAttributeFlags = DefaultMaterial.Mesh.VertexAttributeFlags.GetValueOrDefault(),
+                    TexCoordChannelMap =
+                            DefaultMaterial.Mesh.TexCoordChannelMap
+                            .Select( tc => new ModelConverterTexCoordChannelOptions
+                            {
+                                SourceChannel = tc.SourceChannel
+                            } ).ToArray(),
+                    ColorChannelMap =
+                            DefaultMaterial.Mesh.ColorChannelMap
+                            .Select( cc => new ModelConverterColorChannelOptions
+                            {
+                                SourceChannel = cc.SourceChannel,
+                                UseDefaultColor = cc.UseDefaultColor,
+                                DefaultColor = cc.DefaultColor,
+                                Swizzle = cc.Swizzle
+                            } ).ToArray(),
+                }
             },
             ConvertSkinToZUp = ConvertSkinToZUp,
             SetFullBodyNodeProperties = FullBodyCompatibilityMode,
             AutoAddGFDHelperIDs = AutoAddGFDHelperIDs,
-            DefaultMesh = new ModelConverterMeshOptions
-            {
-                GeometryFlags = DefaultMesh.GeometryFlags,
-                VertexAttributeFlags = DefaultMesh.VertexAttributeFlags,
-                TexCoordChannelMap = DefaultMesh.TexCoordChannelMap.Select( tc => new ModelConverterTexCoordChannelOptions
-                {
-                    SourceChannel = tc.SourceChannel
-                } ).ToArray(),
-                ColorChannelMap = DefaultMesh.ColorChannelMap.Select( cc => new ModelConverterColorChannelOptions
-                {
-                    SourceChannel = cc.SourceChannel,
-                    UseDefaultColor = cc.UseDefaultColor,
-                    DefaultColor = cc.DefaultColor,
-                    Swizzle = cc.Swizzle
-                } ).ToArray(),
-            },
             Meshes = Meshes
                 .Where(m => !m.InheritDefaults)
                 .Select(m => 
@@ -92,16 +95,16 @@ public class ModelConverterOptionsViewModel : IHasResourceVersion
                     Name = m.Name,
                     Options = new ModelConverterMeshOptions()
                     {
-                        GeometryFlags = m.GeometryFlags,
-                        VertexAttributeFlags = m.VertexAttributeFlags,
+                        GeometryFlags = m.GeometryFlags.GetValueOrDefault(),
+                        VertexAttributeFlags = m.VertexAttributeFlags.GetValueOrDefault(),
                         TexCoordChannelMap = 
-                            (m.InheritChannelSettingsDefaults ? DefaultMesh.TexCoordChannelMap : m.TexCoordChannelMap)
+                            (m.InheritChannelSettingsDefaults ? DefaultMaterial.Mesh.TexCoordChannelMap : m.TexCoordChannelMap)
                             .Select( tc => new ModelConverterTexCoordChannelOptions
                             {
                                 SourceChannel = tc.SourceChannel
                             } ).ToArray(),
                         ColorChannelMap =
-                            (m.InheritChannelSettingsDefaults ? DefaultMesh.ColorChannelMap : m.ColorChannelMap)
+                            (m.InheritChannelSettingsDefaults ? DefaultMaterial.Mesh.ColorChannelMap : m.ColorChannelMap)
                             .Select( cc => new ModelConverterColorChannelOptions
                             {
                                 SourceChannel = cc.SourceChannel,
@@ -146,11 +149,11 @@ public class ModelConverterMaterialPresetViewModel
     private readonly string _filePath;
     private readonly Lazy<Material> _materialLazy;
 
-    public string Name { get; set; }
+    public string Name { get; }
 
     public Material Material => _materialLazy.Value;
 
-    public bool SourcedFromOriginalModel { get; set; } = false;
+    public bool SourcedFromOriginalModel { get; } = false;
 
     public ModelConverterMaterialPresetViewModel(string filePath)
     {
@@ -187,22 +190,50 @@ public static class MaterialPresetHelper
 }
 
 [TypeConverter(typeof(ExpandableObjectConverter))]
-public class ModelConverterDefaultMaterialOptionsViewModel : IHasResourceVersion
+public class ModelConverterDefaultMaterialOptionsViewModel
 {
     private readonly ModelConverterOptionsViewModel _parent;
+    protected ModelConverterMaterialPresetViewModel _preset;
 
     [Category( "Material settings" )]
-    [DisplayName("Preset")]
-    [TypeConverter(typeof( ModelConverterMaterialPresetViewModelConverter ) )]
-    public ModelConverterMaterialPresetViewModel Preset { get; set; }
+    [DisplayName( "Preset" )]
+    [TypeConverter( typeof( ModelConverterMaterialPresetViewModelConverter ) )]
+    public ModelConverterMaterialPresetViewModel Preset
+    {
+        get => _preset;
+        set => SetPreset( value );
+    }
+
+    [Category( "Material settings" )]
+    [DisplayName( "Mesh" )]
+    public ModelConverterDefaultMeshOptionsViewModel Mesh { get; set; }
 
     [Browsable( false )]
-    public uint Version => _parent.Version;
+    public ModelConverterOptionsViewModel Parent => _parent;
 
     public ModelConverterDefaultMaterialOptionsViewModel(ModelConverterOptionsViewModel parent)
     {
         _parent = parent;
-        Preset = new( MaterialPresetHelper.GetDefaultMaterialPresetForVersion( Version ) );
+        Preset = new( MaterialPresetHelper.GetDefaultMaterialPresetForVersion( parent.Version ) );
+    }
+
+    protected virtual void SetPreset( ModelConverterMaterialPresetViewModel preset )
+    {
+        _preset = preset;
+        if ( _preset is null )
+        {
+            Mesh = null;
+        }
+        else
+        {
+            Mesh ??= new();
+            Mesh.VertexAttributeFlags = _preset.Material.RuntimeMetadata?.VertexAttributeFlags.HasValue ?? false
+                ? _preset.Material.RuntimeMetadata.VertexAttributeFlags.Value
+                : ModelConverterDefaultMeshOptionsViewModel.DefaultVertexAttributeFlags;
+            Mesh.GeometryFlags = _preset.Material.RuntimeMetadata?.GeometryFlags.HasValue ?? false
+                ? _preset.Material.RuntimeMetadata.GeometryFlags.Value
+                : ModelConverterDefaultMeshOptionsViewModel.DefaultGeometryFlags;
+        }
     }
 
     public override string ToString()
@@ -225,6 +256,12 @@ public class ModelConverterMaterialOptionsViewModel : ModelConverterDefaultMater
     public bool InheritDefaults { get; set; } = true;
 
     public ModelConverterMaterialOptionsViewModel( ModelConverterOptionsViewModel parent ) : base( parent ) { }
+
+    protected override void SetPreset( ModelConverterMaterialPresetViewModel preset )
+    {
+        InheritDefaults = preset is null;
+        base.SetPreset( preset );
+    }
 
     public override string ToString()
     {
@@ -294,21 +331,26 @@ public class ModelConverterColorChannelOptionsViewModel
 [TypeConverter( typeof( ExpandableObjectConverter ) )]
 public class ModelConverterDefaultMeshOptionsViewModel
 {
+    public static readonly VertexAttributeFlags DefaultVertexAttributeFlags = 
+        GFDLibrary.Models.VertexAttributeFlags.Position | GFDLibrary.Models.VertexAttributeFlags.Normal | GFDLibrary.Models.VertexAttributeFlags.TexCoord0;
+    public static readonly GeometryFlags DefaultGeometryFlags =
+        GFDLibrary.Models.GeometryFlags.Bit7;
+
     [CustomSortedCategory( "Mesh settings", 1, 2 )]
     [DisplayName( "Geometry flags" )]
     [Editor( typeof( FlagsEnumEditor ), typeof( UITypeEditor ) )]
-    public GeometryFlags GeometryFlags { get; set; } 
-        = GeometryFlags.Bit7;
+    public GeometryFlags? GeometryFlags { get; set; }
+        = DefaultGeometryFlags;
 
-    [CustomSortedCategory("Mesh settings", 1, 2)]
+    [CustomSortedCategory( "Mesh settings", 1, 2 )]
     [DisplayName( "Vertex attribute flags" )]
     [Editor( typeof( FlagsEnumEditor ), typeof( UITypeEditor ) )]
-    public VertexAttributeFlags VertexAttributeFlags { get; set; } 
-        = VertexAttributeFlags.Position | VertexAttributeFlags.Normal | VertexAttributeFlags.TexCoord0;
+    public VertexAttributeFlags? VertexAttributeFlags { get; set; }
+        = DefaultVertexAttributeFlags;
 
     [CustomSortedCategory("Mesh channel settings", 2, 2)]
     [DisplayName( "UV channel map" )]
-    public ModelConverterTexCoordChannelOptionsViewModel[] TexCoordChannelMap { get; } = new ModelConverterTexCoordChannelOptionsViewModel[]
+    public ModelConverterTexCoordChannelOptionsViewModel[] TexCoordChannelMap { get; set; } = new ModelConverterTexCoordChannelOptionsViewModel[]
     {
         new(0,0),
         new(1,1),
@@ -317,7 +359,7 @@ public class ModelConverterDefaultMeshOptionsViewModel
 
     [CustomSortedCategory("Mesh channel settings", 2, 2)]
     [DisplayName( "Color channel map" )]
-    public ModelConverterColorChannelOptionsViewModel[] ColorChannelMap { get; } = new ModelConverterColorChannelOptionsViewModel[]
+    public ModelConverterColorChannelOptionsViewModel[] ColorChannelMap { get; set; } = new ModelConverterColorChannelOptionsViewModel[]
     {
         new(0,0),
         new(1,1),
@@ -340,11 +382,11 @@ public class ModelConverterMeshOptionsViewModel : ModelConverterDefaultMeshOptio
     public string Name { get; set; }
 
     [CustomSortedCategory("Mesh settings", 1, 2)]
-    [DisplayName( "Inherit from defaults" )]
+    [DisplayName( "Inherit from material" )]
     public bool InheritDefaults { get; set; } = true;
 
     [CustomSortedCategory("Mesh channel settings", 2, 2)]
-    [DisplayName( "Inherit from defaults" )]
+    [DisplayName( "Inherit from material" )]
     public bool InheritChannelSettingsDefaults { get; set; } = true;
 }
 
@@ -404,7 +446,10 @@ public class FlagsEnumEditor : UITypeEditor
     {
         if ( provider?.GetService( typeof( IWindowsFormsEditorService ) ) is IWindowsFormsEditorService editorService )
         {
-            var enumType = value.GetType();
+            var enumType = context.PropertyDescriptor.PropertyType;
+            if ( enumType.IsConstructedGenericType )
+                enumType = enumType.GetGenericArguments()[0];
+
             var enumValues = Enum.GetValues( enumType );
 
             CheckedListBox listBox = new CheckedListBox
@@ -418,7 +463,7 @@ public class FlagsEnumEditor : UITypeEditor
             {
                 if ( Convert.ToInt64(enumValue) != 0 ) // Exclude "None" or default values if present
                 {
-                    listBox.Items.Add( enumValue, ( (Enum)value ).HasFlag( (Enum)enumValue ) );
+                    listBox.Items.Add( enumValue, value is not null && ( (Enum)value ).HasFlag( (Enum)enumValue ) );
                 }
             }
 
@@ -432,7 +477,10 @@ public class FlagsEnumEditor : UITypeEditor
                 result |= Convert.ToInt64(item);
             }
 
-            return Enum.ToObject( enumType, result );
+            if ( result == 0 && value is null )
+                return null;
+            else
+                return Enum.ToObject( enumType, result );
         }
 
         return value;
@@ -455,7 +503,13 @@ public class ModelConverterMaterialPresetViewModelConverter : TypeConverter
 
     public override StandardValuesCollection GetStandardValues( ITypeDescriptorContext context )
     {
-        List<string> presets = new();
+        var presets = new List<object>();
+
+        // Add original materials as presets
+        if ( context.Instance is ModelConverterDefaultMaterialOptionsViewModel viewModel )
+        {
+            presets.AddRange( viewModel.Parent.AdditionalMaterialPresets );
+        }
 
         // Fetch all file names from the specified folder as potential options.
         if ( Directory.Exists( MaterialPresetHelper.BasePresetLibraryPath ) )
@@ -476,28 +530,30 @@ public class ModelConverterMaterialPresetViewModelConverter : TypeConverter
     public override bool CanConvertFrom( ITypeDescriptorContext context, Type sourceType )
     {
         // Allow conversion from a string (e.g., user selects a preset name).
-        return sourceType == typeof( string ) || base.CanConvertFrom( context, sourceType );
+        return sourceType == typeof( string ) || sourceType == typeof(Material) || base.CanConvertFrom( context, sourceType );
     }
 
     public override object ConvertFrom( ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value )
     {
-        var version = ( context.Instance as IHasResourceVersion )!.Version;
-        if ( value is string presetName )
+        if ( context.Instance is ModelConverterDefaultMaterialOptionsViewModel viewModel )
         {
-            var filePath = Path.Combine( MaterialPresetHelper.BasePresetLibraryPath, $"{presetName}.yml" );
-            if ( File.Exists( filePath ) )
-                return new ModelConverterMaterialPresetViewModel( filePath );
+            var version = viewModel.Parent.Version;
+            if ( value is string stringValue )
+            {
+                var filePath = Path.Combine( MaterialPresetHelper.BasePresetLibraryPath, $"{stringValue}.yml" );
+                if ( File.Exists( filePath ) )
+                    return new ModelConverterMaterialPresetViewModel( filePath );
 
-            filePath = Path.Combine( MaterialPresetHelper.MetaphorPresetLibraryPath, $"{presetName}.yml" );
-            if ( File.Exists( filePath ) )
-                return new ModelConverterMaterialPresetViewModel( filePath );
+                filePath = Path.Combine( MaterialPresetHelper.MetaphorPresetLibraryPath, $"{stringValue}.yml" );
+                if ( File.Exists( filePath ) )
+                    return new ModelConverterMaterialPresetViewModel( filePath );
+
+                var mat = viewModel.Parent.AdditionalMaterialPresets.FirstOrDefault( m => m.Name == stringValue );
+                if ( mat is not null )
+                    return new ModelConverterMaterialPresetViewModel( mat );
+            }
         }
 
         return base.ConvertFrom( context, culture, value );
     }
-}
-
-public interface IHasResourceVersion
-{
-    uint Version { get; }
 }

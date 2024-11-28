@@ -28,7 +28,11 @@ namespace GFDStudio.GUI.Forms
                     var options = new ModelConverterMaterialOptionsViewModel( ViewModel )
                     {
                         Name = item.Name,
+                        InheritDefaults = true,
+                        Mesh = null,
+                        Preset = null,
                     };
+
                     if ( originalModel?.Materials?.Any() ?? false )
                     {
                         if ( originalModel.Materials.TryGetValue( item.Name, out var referenceMat ) )
@@ -56,11 +60,15 @@ namespace GFDStudio.GUI.Forms
                     var options = new ModelConverterMeshOptionsViewModel()
                     {
                         Name = item.Name,
+                        InheritDefaults = true,
+                        InheritChannelSettingsDefaults = true,
+                        GeometryFlags = null,
+                        VertexAttributeFlags = null
                     };
                     if ( originalModel is not null )
                     {
                         var findResult = FindReferenceMeshInOriginalModel( scene, originalModel, item );
-                        if ( findResult is not null )
+                        if ( findResult.Mesh is not null )
                         {
                             options.InheritDefaults = false;
                             options.GeometryFlags = findResult.Mesh.Flags;
@@ -82,6 +90,10 @@ namespace GFDStudio.GUI.Forms
             if (originalModel is not null)
             {
                 ViewModel.Version = originalModel.Version;
+                foreach ( var mat in originalModel.Materials.Values )
+                {
+                    ViewModel.AdditionalMaterialPresets.Add( Material.ConvertToMaterialPreset( mat, mat ) );
+                }
             }
             generalPropertyGrid.SelectedObject = ViewModel;
         }

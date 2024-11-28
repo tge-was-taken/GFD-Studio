@@ -527,9 +527,13 @@ namespace GFDLibrary.Conversion.AssimpNet
             
             var meshName = AssimpConverterCommon.UnescapeName( aiMesh.Name );
             var materialName = AssimpConverterCommon.UnescapeName( material.Name );
-            var geometryOptions = options.DefaultMesh;
-            if ( options.Meshes.TryGetValue( meshName, out var geometryOptionsOverride ) )
-                geometryOptions = geometryOptionsOverride;
+            var materialOptions = options.DefaultMaterial;
+            if ( options.Materials.TryGetValue( materialName, out var materialOptionsOverride ) )
+                materialOptions = materialOptionsOverride;
+
+            var meshOptions = materialOptions.Mesh;
+            if ( options.Meshes.TryGetValue( meshName, out var meshOptionsOverride ) )
+                meshOptions = meshOptionsOverride;
 
             var geometry = new Mesh( options.Version );
             var geometryTransformedVertices = new Vector3[ aiMesh.VertexCount ];
@@ -543,7 +547,7 @@ namespace GFDLibrary.Conversion.AssimpNet
 
             transformedVertices.AddRange( geometryTransformedVertices );
 
-            var useNormals = geometryOptions.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Normal );
+            var useNormals = meshOptions.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Normal );
             if ( useNormals )
             {
                 if ( aiMesh.HasNormals )
@@ -558,7 +562,7 @@ namespace GFDLibrary.Conversion.AssimpNet
                 // TODO 
             }
 
-            var useTangent = geometryOptions.VertexAttributeFlags.HasFlag(VertexAttributeFlags.Tangent);
+            var useTangent = meshOptions.VertexAttributeFlags.HasFlag(VertexAttributeFlags.Tangent);
             if ( useTangent )
             {
                 if ( aiMesh.HasTangentBasis )
@@ -573,7 +577,7 @@ namespace GFDLibrary.Conversion.AssimpNet
                 }
             }
 
-            var useBinormal = geometryOptions.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Binormal );
+            var useBinormal = meshOptions.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Binormal );
             if ( useBinormal )
             {
                 if ( aiMesh.HasTangentBasis )
@@ -591,10 +595,10 @@ namespace GFDLibrary.Conversion.AssimpNet
             var texCoordFlags = new[] { VertexAttributeFlags.TexCoord0, VertexAttributeFlags.TexCoord1, VertexAttributeFlags.TexCoord2 };
             for ( int channel = 0; channel < 3; channel++ )
             {
-                var useTexCoord = geometryOptions.VertexAttributeFlags.HasFlag( texCoordFlags[channel] );
+                var useTexCoord = meshOptions.VertexAttributeFlags.HasFlag( texCoordFlags[channel] );
                 if ( !useTexCoord ) continue;
 
-                var channelOptions = geometryOptions.TexCoordChannelMap[channel];
+                var channelOptions = meshOptions.TexCoordChannelMap[channel];
                 Vector2[] texCoords;
                 if ( aiMesh.HasTextureCoords( channelOptions.SourceChannel ) )
                 {
@@ -629,14 +633,14 @@ namespace GFDLibrary.Conversion.AssimpNet
             };
 
             // If only one color channel is active, we might use the first available source channel if the required source channel is not present
-            var activeColorChannels = colorFlags.Where( flag => geometryOptions.VertexAttributeFlags.HasFlag( flag ) );
+            var activeColorChannels = colorFlags.Where( flag => meshOptions.VertexAttributeFlags.HasFlag( flag ) );
             var useFirstAvailableSourceChannelAsFallback = activeColorChannels.Count() == 1;
 
             for ( int i = 0; i < 3; i++ )
             {
-                if ( geometryOptions.VertexAttributeFlags.HasFlag( colorFlags[i] ) )
+                if ( meshOptions.VertexAttributeFlags.HasFlag( colorFlags[i] ) )
                 {
-                    var channelOptions = geometryOptions.ColorChannelMap[i];
+                    var channelOptions = meshOptions.ColorChannelMap[i];
                     Graphics.Color[] colorChannel = null;
 
                     if ( aiMesh.HasVertexColors( channelOptions.SourceChannel ) )
@@ -765,9 +769,9 @@ namespace GFDLibrary.Conversion.AssimpNet
                 GeometryFlags.HasBoundingBox | GeometryFlags.HasBoundingSphere |
                 GeometryFlags.HasMaterial | GeometryFlags.HasMorphTargets |
                 GeometryFlags.HasTriangles | GeometryFlags.HasVertexWeights;
-            if ( geometryOptionsOverride is not null )
+            if ( meshOptionsOverride is not null )
             {
-                geometry.Flags |= geometryOptionsOverride.GeometryFlags & ~nonOverridableGeometryFlags;
+                geometry.Flags |= meshOptionsOverride.GeometryFlags & ~nonOverridableGeometryFlags;
             }
             else
             {

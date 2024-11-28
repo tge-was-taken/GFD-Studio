@@ -411,7 +411,7 @@ namespace GFDStudio.GUI.DataViewNodes
                     return;
 
                 var options = dialog.GetModelConversionOptions();
-                Replace(Material.ConvertToMaterialPreset(Data, options));
+                Replace(Material.ConvertToMaterialPreset(Data, options.DefaultMaterial.Preset));
             }
         }
     }
