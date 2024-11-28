@@ -88,15 +88,15 @@ public class ModelConverterOptionsViewModel
             SetFullBodyNodeProperties = FullBodyCompatibilityMode,
             AutoAddGFDHelperIDs = AutoAddGFDHelperIDs,
             Meshes = Meshes
-                .Where(m => !m.InheritDefaults)
+                .Where(m => !m.InheritDefaults || !m.InheritChannelSettingsDefaults)
                 .Select(m => 
                 new
                 {
                     Name = m.Name,
                     Options = new ModelConverterMeshOptions()
                     {
-                        GeometryFlags = m.GeometryFlags.GetValueOrDefault(),
-                        VertexAttributeFlags = m.VertexAttributeFlags.GetValueOrDefault(),
+                        GeometryFlags = m.InheritDefaults ? DefaultMaterial.Mesh.GeometryFlags.Value : m.GeometryFlags.GetValueOrDefault(),
+                        VertexAttributeFlags = m.InheritDefaults ? DefaultMaterial.Mesh.VertexAttributeFlags.Value : m.VertexAttributeFlags.GetValueOrDefault(),
                         TexCoordChannelMap = 
                             (m.InheritChannelSettingsDefaults ? DefaultMaterial.Mesh.TexCoordChannelMap : m.TexCoordChannelMap)
                             .Select( tc => new ModelConverterTexCoordChannelOptions
