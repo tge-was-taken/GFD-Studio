@@ -415,7 +415,7 @@ namespace GFDLibrary.Materials
 
         protected override void WriteCore( ResourceWriter writer )
         {
-            writer.WriteInt32( (int)Flags );
+            writer.WriteInt32( (int)Flags2 );
             writer.WriteInt32( Color );
         }
     }
