@@ -43,7 +43,7 @@ namespace GFDLibrary.Rendering.OpenGL
                 for ( int channelIndex = 0; channelIndex < 3; ++channelIndex)
                 {
                     if ( texCoordChannels.Length > channelIndex && texCoordChannels[channelIndex] != null )
-                        TextureCoordinateChannelBuffers[channelIndex] = new GLVertexAttributeBuffer<Vector2>( texCoordChannels[channelIndex], channelIndex == 0 ? 2 : 5 + channelIndex, 2, VertexAttribPointerType.Float );
+                        TextureCoordinateChannelBuffers[channelIndex] = new GLVertexAttributeBuffer<Vector2>( texCoordChannels[channelIndex], channelIndex == 0 ? 2 : 4 + channelIndex, 2, VertexAttribPointerType.Float );
                 }
             }
 
