@@ -481,14 +481,34 @@ namespace GFDLibrary.Conversion.AssimpNet
                 var nodeInfo = nodeLookup[AssimpConverterCommon.UnescapeName( aiNode.Name )];
                 Node targetNode = nodeInfo.Node;
                 var sourceToTargetModelMatrix = Matrix4x4.Identity;
-                if ( nodeInfo.IsMeshAttachment && nodeInfo.Node.Parent?.Name == "RootNode")
+                if ( nodeInfo.IsMeshAttachment )
                 {
-                    var originalParentNodeName = nodeInfo.Node.Name[..nodeInfo.Node.Name.IndexOf( ModelConversionHelpers.MeshAttachmentNameSuffix )];
-                    if ( nodeLookup.TryGetValue( originalParentNodeName, out var originalParentNodeInfo ) )
+                    if ( nodeInfo.Node.Parent?.Name == "RootNode" )
                     {
-                        targetNode = originalParentNodeInfo.Node;
-                        // Need to transform the vertices from the local space of the original node to the local space of the new node
-                        sourceToTargetModelMatrix = targetNode.WorldTransform.Inverted() * nodeInfo.Node.WorldTransform;
+                        // New convention (FBX SDK exporter): <originalParent>_gfdMesh_<N> parented under RootNode.
+                        // Look up the original parent by stripping the suffix.
+                        var suffixIndex = nodeInfo.Node.Name.IndexOf( ModelConversionHelpers.MeshAttachmentNameSuffix );
+                        if ( suffixIndex >= 0 )
+                        {
+                            var originalParentNodeName = nodeInfo.Node.Name[..suffixIndex];
+                            if ( nodeLookup.TryGetValue( originalParentNodeName, out var originalParentNodeInfo ) )
+                            {
+                                targetNode = originalParentNodeInfo.Node;
+                                // Need to transform the vertices from the local space of the original node to the local space of the new node
+                                sourceToTargetModelMatrix = targetNode.WorldTransform.Inverted() * nodeInfo.Node.WorldTransform;
+                            }
+                            else if ( nodeInfo.Node.Parent != null )
+                            {
+                                Logger.Info( $"Mesh attachment '{nodeInfo.Node.Name}' references unknown parent '{originalParentNodeName}'; attaching to its current parent instead." );
+                                targetNode = nodeInfo.Node.Parent;
+                            }
+                        }
+                    }
+                    else if ( nodeInfo.Node.Parent != null )
+                    {
+                        // Legacy convention (GMD Maxscript): <bone>_Mesh<N> parented under the bone itself.
+                        // IsLegacyMeshAttachmentNode guarantees identity local transform, so no vertex transform is needed.
+                        targetNode = nodeInfo.Node.Parent;
                     }
                 }
 
