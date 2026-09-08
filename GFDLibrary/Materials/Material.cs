@@ -769,14 +769,28 @@ namespace GFDLibrary.Materials
 
             var materialName = material.Name;
             var diffuseTexture = material.DiffuseMap;
-            var shadowTexture = material.ShadowMap;
-            if (shadowTexture == null)
-                shadowTexture = material.DiffuseMap;
-            var specularTexture = material.SpecularMap;
-            if (specularTexture == null)
-                specularTexture = material.DiffuseMap;
+            var shadowTexture = material.ShadowMap ?? diffuseTexture;
+            var specularTexture = material.SpecularMap ?? diffuseTexture;
             if ( diffuseTexture == null ) newMaterial = material;
-            else newMaterial = MaterialFactory.CreateMaterial( materialName, diffuseTexture.Name, materialPreset );
+            else newMaterial = MaterialFactory.CreateMaterial(
+                materialName,
+                diffuseTexture.Name,
+                null,
+                null,
+                null,
+                material.NormalMap?.Name,
+                null,
+                null,
+                null,
+                specularTexture?.Name,
+                material.ReflectionMap?.Name,
+                materialPreset,
+                material.HighlightMap?.Name,
+                material.GlowMap?.Name,
+                material.NightMap?.Name,
+                material.DetailMap?.Name,
+                shadowTexture?.Name,
+                material.TextureMap10?.Name );
             return newMaterial;
         }
     }

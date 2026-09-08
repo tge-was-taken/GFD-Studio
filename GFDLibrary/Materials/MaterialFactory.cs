@@ -6,7 +6,9 @@ namespace GFDLibrary.Materials
     public static class MaterialFactory
     {
         public static Material CreateMaterial( string name, string diffuseMapName, string lightmapName, string displacementMapName, string opacityMapName, string normalMapName, 
-            string heightMapName, string emissiveMapName, string ambientMapName, string specularMapName, string reflectionMapName, Material materialPreset )
+            string heightMapName, string emissiveMapName, string ambientMapName, string specularMapName, string reflectionMapName, Material materialPreset,
+            string highlightMapName = null, string glowMapName = null, string nightMapName = null, string detailMapName = null,
+            string shadowMapName = null, string textureMap10Name = null )
         {
             var material = new Material( name )
             {
@@ -51,6 +53,9 @@ namespace GFDLibrary.Materials
 
             TextureMap NewTextureMapResource(string name)
             {
+                if ( name == null )
+                    return null;
+
                 TextureMap newMap = new( name );
                 if (material.METAPHOR_UseMaterialParameterSet)
                     newMap.METAPHOR_ParentMaterialParameterSet = material.METAPHOR_MaterialParameterSet;
@@ -58,6 +63,12 @@ namespace GFDLibrary.Materials
             }
 
             if ( materialPreset.DiffuseMap != null ) material.DiffuseMap = NewTextureMapResource( diffuseMapName );
+            if ( materialPreset.HighlightMap != null ) material.HighlightMap = NewTextureMapResource( highlightMapName );
+            if ( materialPreset.GlowMap != null ) material.GlowMap = NewTextureMapResource( glowMapName );
+            if ( materialPreset.NightMap != null ) material.NightMap = NewTextureMapResource( nightMapName );
+            if ( materialPreset.DetailMap != null ) material.DetailMap = NewTextureMapResource( detailMapName );
+            if ( materialPreset.ShadowMap != null ) material.ShadowMap = NewTextureMapResource( shadowMapName );
+            if ( materialPreset.TextureMap10 != null ) material.TextureMap10 = NewTextureMapResource( textureMap10Name );
             if ( materialPreset.Version >= 0x2000000)
             {
                 // force adding toon shadow map to character models so that they don't crash by default
