@@ -49,7 +49,7 @@ namespace GFDStudio.GUI
     /// One way a node can be written out. A null <paramref name="Type"/> means YAML, which is
     /// handled by the view node itself rather than by a format module.
     /// </summary>
-    public sealed record ExportFormat( string Name, string Extension, Type Type )
+    public sealed record ExportFormat( string Name, string Description, string Extension, Type Type )
     {
         public override string ToString() => $"{Name}  (*.{Extension})";
     }

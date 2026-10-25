@@ -263,10 +263,14 @@ namespace GFDStudio.GUI.DataViewNodes
                     continue;
 
                 foreach ( var extension in module.Extensions )
-                    formats.Add( new ExportFormat( module.Name, extension, type ) );
+                {
+                    var (name, description) = ExportFormatDescriptions.For( extension, module.Name );
+                    formats.Add( new ExportFormat( name, description, extension, type ) );
+                }
             }
 
-            formats.Add( new ExportFormat( "YAML", "yml", null ) );
+            var (yamlName, yamlDescription) = ExportFormatDescriptions.For( "yml", "YAML" );
+            formats.Add( new ExportFormat( yamlName, yamlDescription, "yml", null ) );
             return formats;
         }
 

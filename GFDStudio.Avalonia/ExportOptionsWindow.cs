@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Templates;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
@@ -21,6 +22,13 @@ namespace GFDStudio.Avalonia
         private readonly ComboBox mFormat;
         private readonly TextBox mPath;
 
+        private readonly TextBlock mDescription = new()
+        {
+            Opacity = 0.75,
+            TextWrapping = TextWrapping.Wrap,
+            MinHeight = 34,
+        };
+
         private ExportOptionsWindow( ExportOptionsRequest request )
         {
             mRequest = request;
@@ -36,6 +44,11 @@ namespace GFDStudio.Avalonia
                 ItemsSource = request.Formats,
                 SelectedIndex = 0,
                 HorizontalAlignment = HorizontalAlignment.Stretch,
+                // Two lines in the list so the choice can be made at a glance, one in the closed
+                // box, where the description would crowd out the name.
+                ItemTemplate = new FuncDataTemplate<ExportFormat>( ( format, scope ) => Entry( format ), true ),
+                SelectionBoxItemTemplate = new FuncDataTemplate<ExportFormat>(
+                    ( format, scope ) => new TextBlock { Text = $"{format.Name}  (*.{format.Extension})" }, true ),
             };
 
             mPath = new TextBox { HorizontalAlignment = HorizontalAlignment.Stretch };
@@ -43,8 +56,13 @@ namespace GFDStudio.Avalonia
             var browse = new Button { Content = "Browse...", MinWidth = 90 };
             browse.Click += async ( s, e ) => await Browse();
 
-            mFormat.SelectionChanged += ( s, e ) => mPath.Text = WithExtension( mPath.Text );
+            mFormat.SelectionChanged += ( s, e ) =>
+            {
+                mPath.Text = WithExtension( mPath.Text );
+                mDescription.Text = Selected.Description;
+            };
             mPath.Text = WithExtension( Path.Combine( LastDirectory, Sanitize( request.SuggestedName ) ) );
+            mDescription.Text = Selected.Description;
 
             var export = new Button { Content = "Export", MinWidth = 90, IsDefault = true };
             export.Click += ( s, e ) =>
@@ -77,12 +95,7 @@ namespace GFDStudio.Avalonia
                 Children =
                 {
                     grid,
-                    new TextBlock
-                    {
-                        Text = "The format decides what is written, not the extension you type.",
-                        Opacity = 0.7,
-                        TextWrapping = TextWrapping.Wrap,
-                    },
+                    mDescription,
                     new StackPanel
                     {
                         Orientation = Orientation.Horizontal,
@@ -155,6 +168,26 @@ namespace GFDStudio.Avalonia
 
         private static string Sanitize( string name )
             => string.Concat( ( name ?? "export" ).Split( Path.GetInvalidFileNameChars() ) );
+
+        private static Control Entry( ExportFormat format )
+        {
+            var entry = new StackPanel { Spacing = 1 };
+            entry.Children.Add( new TextBlock { Text = $"{format.Name}  (*.{format.Extension})" } );
+
+            if ( !string.IsNullOrEmpty( format.Description ) )
+            {
+                entry.Children.Add( new TextBlock
+                {
+                    Text = format.Description,
+                    Opacity = 0.7,
+                    FontSize = 11,
+                    TextWrapping = TextWrapping.Wrap,
+                    MaxWidth = 520,
+                } );
+            }
+
+            return entry;
+        }
 
         private static TextBlock Label( string text )
             => new() { Text = text, VerticalAlignment = VerticalAlignment.Center };
