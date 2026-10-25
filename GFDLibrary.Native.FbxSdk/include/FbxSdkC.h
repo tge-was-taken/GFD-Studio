@@ -144,6 +144,15 @@ FBXSDK_C_API void FbxLayerElement_AddDirectVector4( FbxLayerElementC* element, d
 FBXSDK_C_API void FbxLayerElement_AddDirectColor( FbxLayerElementC* element, double r, double g, double b, double a );
 FBXSDK_C_API void FbxLayerElement_AddIndex( FbxLayerElementC* element, int index );
 
+/// The exporter sizes a direct array up front and fills it by index, because some channels are
+/// shorter than the control point count and the rest has to keep a default.
+FBXSDK_C_API void FbxLayerElement_SetDirectCount( FbxLayerElementC* element, int count );
+FBXSDK_C_API void FbxLayerElement_SetDirectVector2At( FbxLayerElementC* element, int index, double x, double y );
+FBXSDK_C_API void FbxLayerElement_SetDirectVector4At( FbxLayerElementC* element, int index,
+                                                      double x, double y, double z, double w );
+FBXSDK_C_API void FbxLayerElement_SetDirectColorAt( FbxLayerElementC* element, int index,
+                                                    double r, double g, double b, double a );
+
 // Skinning
 FBXSDK_C_API FbxSkinC*    FbxSkin_Create( FbxManagerC* manager, const char* name );
 FBXSDK_C_API void         FbxSkin_SetSkinningTypeLinear( FbxSkinC* skin );

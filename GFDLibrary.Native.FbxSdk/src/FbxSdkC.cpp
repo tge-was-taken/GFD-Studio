@@ -331,6 +331,43 @@ void FbxLayerElement_AddIndex( FbxLayerElementC* element, int index )
     }
 }
 
+void FbxLayerElement_SetDirectCount( FbxLayerElementC* element, int count )
+{
+    auto handle = As<LayerElementHandle>( element );
+    switch ( handle->type )
+    {
+        case FbxLayerElementTypeUV:
+            static_cast<FbxLayerElementUV*>( handle->element )->GetDirectArray().SetCount( count );
+            break;
+        case FbxLayerElementTypeNormal:
+            static_cast<FbxLayerElementNormal*>( handle->element )->GetDirectArray().SetCount( count );
+            break;
+        case FbxLayerElementTypeVertexColor:
+            static_cast<FbxLayerElementVertexColor*>( handle->element )->GetDirectArray().SetCount( count );
+            break;
+    }
+}
+
+void FbxLayerElement_SetDirectVector2At( FbxLayerElementC* element, int index, double x, double y )
+{
+    auto handle = As<LayerElementHandle>( element );
+    static_cast<FbxLayerElementUV*>( handle->element )->GetDirectArray().SetAt( index, FbxVector2( x, y ) );
+}
+
+void FbxLayerElement_SetDirectVector4At( FbxLayerElementC* element, int index,
+                                         double x, double y, double z, double w )
+{
+    auto handle = As<LayerElementHandle>( element );
+    static_cast<FbxLayerElementNormal*>( handle->element )->GetDirectArray().SetAt( index, FbxVector4( x, y, z, w ) );
+}
+
+void FbxLayerElement_SetDirectColorAt( FbxLayerElementC* element, int index,
+                                       double r, double g, double b, double a )
+{
+    auto handle = As<LayerElementHandle>( element );
+    static_cast<FbxLayerElementVertexColor*>( handle->element )->GetDirectArray().SetAt( index, FbxColor( r, g, b, a ) );
+}
+
 FbxSkinC* FbxSkin_Create( FbxManagerC* manager, const char* name )
 {
     return reinterpret_cast<FbxSkinC*>( FbxSkin::Create( Sdk( manager ), name ) );
