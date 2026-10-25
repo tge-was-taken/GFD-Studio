@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Numerics;
@@ -19,6 +19,15 @@ namespace GFDLibrary.Rendering.OpenGL
 
         public bool IsVisible { get; }
 
+        /// <summary>
+        /// Whether the vertices follow the bones, and so have to be worked out again whenever
+        /// the pose changes.
+        /// </summary>
+        public bool IsSkinned { get; }
+
+        private readonly Vector3[] mSkinnedVertices;
+        private readonly Vector3[] mSkinnedNormals;
+
         public GLMesh( GLVertexArray vertexArray, GLBaseMaterial material, bool isVisible )
         {
             Mesh = null;
@@ -30,43 +39,25 @@ namespace GFDLibrary.Rendering.OpenGL
         public GLMesh( Mesh mesh, Matrix4x4 modelMatrix, List<Bone> bones, List<GLNode> nodes, Dictionary<string, GLBaseMaterial> materials )
         {
             Mesh = mesh;
+            IsSkinned = mesh.VertexWeights != null;
 
-            var vertices = mesh.Vertices;
-            var normals = mesh.Normals;
+            Vector3[] vertices;
+            Vector3[] normals;
 
-            if ( mesh.VertexWeights != null )
+            if ( IsSkinned )
             {
-                vertices = new Vector3[mesh.VertexCount];
-                normals = null;
+                mSkinnedVertices = new Vector3[mesh.VertexCount];
+                mSkinnedNormals = mesh.Normals == null ? null : new Vector3[mesh.VertexCount];
 
-                if ( mesh.Normals != null )
-                    normals = new Vector3[mesh.VertexCount];
+                Skin( modelMatrix, bones, nodes );
 
-                Matrix4x4.Invert( modelMatrix, out var modelMatrixInv );
-
-                for ( int i = 0; i < mesh.VertexCount; i++ )
-                {
-                    var position = mesh.Vertices[i];
-                    var normal = mesh.Normals?[i] ?? Vector3.Zero;
-
-                    var newPosition = Vector3.Zero;
-                    var newNormal = Vector3.Zero;
-                    for ( int j = 0; j < mesh.VertexWeights[i].Weights.Length; j++ )
-                    {
-                        var weight = mesh.VertexWeights[i].Weights[j];
-                        if ( weight == 0 )
-                            continue;
-
-                        var boneIndex = mesh.VertexWeights[i].Indices[j];
-                        TransformVertex( bones, nodes, position, normal, ref newPosition, ref newNormal, weight, boneIndex );
-                    }
-
-                    vertices[i] = Vector3.Transform( newPosition, modelMatrixInv );
-
-                    if ( normals != null )
-                        normals[i] =
-                            Vector3.Normalize( Vector3.TransformNormal( newNormal, modelMatrixInv ) );
-                }
+                vertices = mSkinnedVertices;
+                normals = mSkinnedNormals;
+            }
+            else
+            {
+                vertices = mesh.Vertices;
+                normals = mesh.Normals;
             }
 
             var indices = new uint[mesh.Triangles.Length * 3];
@@ -101,6 +92,48 @@ namespace GFDLibrary.Rendering.OpenGL
             }
 
             IsVisible = true;
+        }
+
+        /// <summary>
+        /// Works the vertices out for the pose the bones are in and hands them to the buffers
+        /// that are already there. Rebuilding the mesh instead costs an allocation a frame.
+        /// </summary>
+        public void Reskin( Matrix4x4 modelMatrix, List<Bone> bones, List<GLNode> nodes )
+        {
+            if ( !IsSkinned )
+                return;
+
+            Skin( modelMatrix, bones, nodes );
+            VertexArray.UpdateGeometry( mSkinnedVertices, mSkinnedNormals );
+        }
+
+        private void Skin( Matrix4x4 modelMatrix, List<Bone> bones, List<GLNode> nodes )
+        {
+            Matrix4x4.Invert( modelMatrix, out var modelMatrixInv );
+
+            for ( var i = 0; i < Mesh.VertexCount; i++ )
+            {
+                var position = Mesh.Vertices[i];
+                var normal = Mesh.Normals?[i] ?? Vector3.Zero;
+
+                var newPosition = Vector3.Zero;
+                var newNormal = Vector3.Zero;
+
+                for ( var j = 0; j < Mesh.VertexWeights[i].Weights.Length; j++ )
+                {
+                    var weight = Mesh.VertexWeights[i].Weights[j];
+                    if ( weight == 0 )
+                        continue;
+
+                    TransformVertex( bones, nodes, position, normal, ref newPosition, ref newNormal,
+                                     weight, Mesh.VertexWeights[i].Indices[j] );
+                }
+
+                mSkinnedVertices[i] = Vector3.Transform( newPosition, modelMatrixInv );
+
+                if ( mSkinnedNormals != null )
+                    mSkinnedNormals[i] = Vector3.Normalize( Vector3.TransformNormal( newNormal, modelMatrixInv ) );
+            }
         }
 
         private static void TransformVertex( List<Bone> bones, List<GLNode> nodes, Vector3 position, Vector3 normal, ref Vector3 newPosition, ref Vector3 newNormal, float weight, ushort boneIndex )

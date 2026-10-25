@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Numerics;
 using GFDLibrary.Models;
@@ -67,6 +67,19 @@ namespace GFDLibrary.Rendering.OpenGL
             // element index buffer
             ElementBuffer = new GLBuffer<uint>( BufferTarget.ElementArrayBuffer, indices );
             PrimitiveType = primitiveType;
+        }
+
+        /// <summary>
+        /// Replaces the positions and normals without rebuilding the array, for a mesh that is
+        /// reskinned every frame.
+        /// </summary>
+        public void UpdateGeometry( Vector3[] positions, Vector3[] normals )
+        {
+            GL.BindVertexArray( Id );
+            PositionBuffer.Update( BufferTarget.ArrayBuffer, positions );
+
+            if ( normals != null )
+                NormalBuffer?.Update( BufferTarget.ArrayBuffer, normals );
         }
 
         public static void UnbindAll() => GL.BindVertexArray( 0 );

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Runtime.CompilerServices;
 using OpenTK.Graphics.OpenGL4;
 
@@ -38,6 +38,16 @@ namespace GFDLibrary.Rendering.OpenGL
             {
             }
 #endif
+        }
+
+        /// <summary>
+        /// Overwrites the buffer's contents, keeping the same buffer object. Skinning a frame
+        /// this way costs one upload rather than a fresh allocation.
+        /// </summary>
+        public void Update( BufferTarget target, T[] data )
+        {
+            GL.BindBuffer( target, Id );
+            GL.BufferSubData( target, IntPtr.Zero, Math.Min( TotalSize, Unsafe.SizeOf<T>() * data.Length ), data );
         }
 
         #region IDisposable Support

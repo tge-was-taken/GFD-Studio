@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -139,11 +139,7 @@ namespace GFDLibrary.Rendering.OpenGL
                     var glMesh = glNode.Meshes[i];
 
                     if ( Animation != null && glMesh.Mesh != null )
-                    {
-                        var oldGlMesh = glMesh;
-                        glMesh = glNode.Meshes[i] = new GLMesh( oldGlMesh.Mesh, glNode.WorldTransform, ModelPack.Model.Bones, Nodes, Materials );
-                        oldGlMesh.Dispose();
-                    }
+                        glMesh.Reskin( glNode.WorldTransform, ModelPack.Model.Bones, Nodes );
                     GLShaderProgram targetShader = GetTargetShader( context.ShaderRegistry, glMesh, context.Camera.View, context.Camera.Projection, shaderProgramsInUse );
                     if ( !glMesh.Material.IsMaterialTransparent() ) // If opaque
                     {
