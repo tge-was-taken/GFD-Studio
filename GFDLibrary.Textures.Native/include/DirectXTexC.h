@@ -43,6 +43,12 @@ DIRECTXTEX_C_API HRESULT DirectXTex_LoadFromBlocks( const void* source, size_t s
                                                     size_t width, size_t height, int format,
                                                     DirectXTex_ScratchImage** image );
 
+/// PNG goes through DirectXTex's Auxiliary codec, which is file based on every platform.
+/// Paths are UTF-8 and converted internally.
+DIRECTXTEX_C_API HRESULT DirectXTex_LoadFromPNGFile( const char* path, DirectXTex_ScratchImage** image );
+
+DIRECTXTEX_C_API HRESULT DirectXTex_SaveToPNGFile( const DirectXTex_ScratchImage* image, const char* path );
+
 DIRECTXTEX_C_API HRESULT DirectXTex_Initialize2D( const void* pixels, size_t width, size_t height,
                                                   int format, DirectXTex_ScratchImage** image );
 
@@ -60,6 +66,10 @@ DIRECTXTEX_C_API HRESULT DirectXTex_GenerateMipMaps( const DirectXTex_ScratchIma
 
 DIRECTXTEX_C_API HRESULT DirectXTex_SaveToDDSMemory( const DirectXTex_ScratchImage* image,
                                                      DirectXTex_Blob** blob );
+
+/// Reinterprets the pixels as another format of the same size, with no conversion. Used to
+/// strip the sRGB tag a PNG arrives with, which Convert would otherwise act on.
+DIRECTXTEX_C_API HRESULT DirectXTex_OverrideFormat( DirectXTex_ScratchImage* image, int format );
 
 DIRECTXTEX_C_API HRESULT DirectXTex_GetMetadata( const DirectXTex_ScratchImage* image,
                                                  DirectXTex_TexMetadata* metadata );

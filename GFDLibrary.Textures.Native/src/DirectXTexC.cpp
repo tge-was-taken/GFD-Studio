@@ -2,9 +2,11 @@
 
 #include <cstring>
 #include <memory>
+#include <string>
 #include <new>
 
 #include <DirectXTex.h>
+#include <DirectXTexPNG.h>
 
 using namespace DirectX;
 
@@ -88,6 +90,67 @@ HRESULT DirectXTex_LoadFromBlocks( const void* source, size_t size, size_t width
         return hr;
 
     return Wrap( std::move( loaded ), image );
+}
+
+namespace
+{
+    /// DirectXTex takes wide paths; the managed side hands over UTF-8.
+    std::wstring ToWide( const char* path )
+    {
+        std::wstring wide;
+        if ( !path )
+            return wide;
+
+        // The paths here come from the host filesystem, so a plain widening of the UTF-8 code
+        // units is not enough; decode the sequences properly.
+        for ( const unsigned char* p = reinterpret_cast<const unsigned char*>( path ); *p; )
+        {
+            char32_t cp;
+            if ( *p < 0x80 ) { cp = *p++; }
+            else if ( ( *p & 0xE0 ) == 0xC0 ) { cp = ( *p & 0x1F ); cp = ( cp << 6 ) | ( p[1] & 0x3F ); p += 2; }
+            else if ( ( *p & 0xF0 ) == 0xE0 ) { cp = ( *p & 0x0F ); cp = ( cp << 6 ) | ( p[1] & 0x3F ); cp = ( cp << 6 ) | ( p[2] & 0x3F ); p += 3; }
+            else { cp = ( *p & 0x07 ); cp = ( cp << 6 ) | ( p[1] & 0x3F ); cp = ( cp << 6 ) | ( p[2] & 0x3F ); cp = ( cp << 6 ) | ( p[3] & 0x3F ); p += 4; }
+
+            if ( sizeof( wchar_t ) == 2 && cp > 0xFFFF )
+            {
+                cp -= 0x10000;
+                wide.push_back( static_cast<wchar_t>( 0xD800 + ( cp >> 10 ) ) );
+                wide.push_back( static_cast<wchar_t>( 0xDC00 + ( cp & 0x3FF ) ) );
+            }
+            else
+            {
+                wide.push_back( static_cast<wchar_t>( cp ) );
+            }
+        }
+
+        return wide;
+    }
+}
+
+HRESULT DirectXTex_LoadFromPNGFile( const char* path, DirectXTex_ScratchImage** image )
+{
+    if ( !path || !image )
+        return E_INVALIDARG;
+
+    ScratchImage loaded;
+    HRESULT hr = LoadFromPNGFile( ToWide( path ).c_str(), PNG_FLAGS_NONE, nullptr, loaded );
+    if ( FAILED( hr ) )
+        return hr;
+
+    return Wrap( std::move( loaded ), image );
+}
+
+HRESULT DirectXTex_SaveToPNGFile( const DirectXTex_ScratchImage* image, const char* path )
+{
+    const ScratchImage* source = Unwrap( image );
+    if ( !source || !path )
+        return E_INVALIDARG;
+
+    const Image* top = source->GetImage( 0, 0, 0 );
+    if ( !top )
+        return E_FAIL;
+
+    return SaveToPNGFile( *top, PNG_FLAGS_NONE, ToWide( path ).c_str() );
 }
 
 HRESULT DirectXTex_Initialize2D( const void* pixels, size_t width, size_t height, int format,
@@ -201,6 +264,15 @@ HRESULT DirectXTex_SaveToDDSMemory( const DirectXTex_ScratchImage* image, Direct
 
     *blob = reinterpret_cast<DirectXTex_Blob*>( handle );
     return S_OK;
+}
+
+HRESULT DirectXTex_OverrideFormat( DirectXTex_ScratchImage* image, int format )
+{
+    if ( !image )
+        return E_INVALIDARG;
+
+    auto self = reinterpret_cast<ScratchImageHandle*>( image );
+    return self->value.OverrideFormat( static_cast<DXGI_FORMAT>( format ) ) ? S_OK : E_FAIL;
 }
 
 HRESULT DirectXTex_GetMetadata( const DirectXTex_ScratchImage* image, DirectXTex_TexMetadata* metadata )

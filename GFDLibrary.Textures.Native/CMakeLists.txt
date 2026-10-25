@@ -19,6 +19,8 @@ include(FetchContent)
 set(DIRECTXMATH_TAG      jun2026     CACHE STRING "DirectXMath release tag")
 set(DIRECTXHEADERS_TAG   v1.619.5    CACHE STRING "DirectX-Headers release tag")
 set(DIRECTXTEX_TAG       may2026     CACHE STRING "DirectXTex release tag")
+set(ZLIB_TAG             v1.3.1      CACHE STRING "zlib release tag")
+set(LIBPNG_TAG           v1.6.50     CACHE STRING "libpng release tag")
 
 if(NOT WIN32)
     # DirectXMath includes sal.h, which only ships with the Windows SDK. This is the same MIT
@@ -56,8 +58,44 @@ if(NOT TARGET Microsoft::DirectXMath)
     add_library(Microsoft::DirectXMath ALIAS DirectXMath)
 endif()
 
-# GFD Studio only needs the DDS, TGA and block codecs, so the Direct3D paths and the command
-# line tools stay out of the build.
+# PNG is the interchange format the tool imports and exports, so libpng comes along. DirectXTex
+# reaches it through its Auxiliary PNG codec, which works the same on every platform.
+FetchContent_Declare(ZLIB
+    GIT_REPOSITORY https://github.com/madler/zlib.git
+    GIT_TAG ${ZLIB_TAG}
+    GIT_SHALLOW TRUE
+    OVERRIDE_FIND_PACKAGE
+)
+set(ZLIB_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(ZLIB)
+
+if(NOT TARGET ZLIB::ZLIB)
+    add_library(ZLIB::ZLIB ALIAS zlibstatic)
+endif()
+set(ZLIB_LIBRARY zlibstatic CACHE STRING "" FORCE)
+set(ZLIB_INCLUDE_DIR "${zlib_SOURCE_DIR};${zlib_BINARY_DIR}" CACHE STRING "" FORCE)
+
+FetchContent_Declare(PNG
+    GIT_REPOSITORY https://github.com/pnggroup/libpng.git
+    GIT_TAG ${LIBPNG_TAG}
+    GIT_SHALLOW TRUE
+    OVERRIDE_FIND_PACKAGE
+)
+set(PNG_SHARED OFF CACHE BOOL "" FORCE)
+set(PNG_TESTS OFF CACHE BOOL "" FORCE)
+set(PNG_TOOLS OFF CACHE BOOL "" FORCE)
+set(PNG_FRAMEWORK OFF CACHE BOOL "" FORCE)
+set(SKIP_INSTALL_ALL ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(PNG)
+
+if(NOT TARGET PNG::PNG)
+    add_library(PNG::PNG ALIAS png_static)
+endif()
+
+set(ENABLE_LIBPNG_SUPPORT ON CACHE BOOL "" FORCE)
+
+# GFD Studio only needs the DDS, TGA, PNG and block codecs, so the Direct3D paths and the
+# command line tools stay out of the build.
 set(BUILD_TOOLS OFF CACHE BOOL "" FORCE)
 set(BUILD_SAMPLE OFF CACHE BOOL "" FORCE)
 set(BUILD_DX11 OFF CACHE BOOL "" FORCE)
@@ -78,6 +116,8 @@ endif()
 add_library(DirectXTexC SHARED src/DirectXTexC.cpp)
 
 target_include_directories(DirectXTexC PUBLIC include)
+# The PNG codec lives in DirectXTex's Auxiliary directory, which it does not export.
+target_include_directories(DirectXTexC PRIVATE ${directxtex_SOURCE_DIR}/Auxiliary)
 target_link_libraries(DirectXTexC PRIVATE DirectXTex)
 
 # DllImport looks for the same file name on every platform.
