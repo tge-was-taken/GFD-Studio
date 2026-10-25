@@ -25,11 +25,11 @@
     <Folder Include="Animations\Conversion\" />
   </ItemGroup>
 
-  <!-- The DirectXTex codecs live in a native library built by GFDLibrary.Conversion.DirectXTex. A local
+  <!-- The DirectXTex codecs live in a native library built by GFDLibrary.Native.DirectXTex. A local
        CMake build lands in its out directory; CI publishes per runtime binaries instead. Point
        DirectXTexCNativeDir elsewhere to use a build from another location. -->
   <PropertyGroup>
-    <DirectXTexCNativeDir Condition="'$(DirectXTexCNativeDir)' == ''">$(MSBuildThisFileDirectory)..\GFDLibrary.Conversion.DirectXTex\out</DirectXTexCNativeDir>
+    <DirectXTexCNativeDir Condition="'$(DirectXTexCNativeDir)' == ''">$(MSBuildThisFileDirectory)..\GFDLibrary.Native.DirectXTex\out</DirectXTexCNativeDir>
   </PropertyGroup>
 
   <ItemGroup>
