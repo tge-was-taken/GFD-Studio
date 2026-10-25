@@ -32,14 +32,12 @@ namespace GFDStudio.GUI.DataViewNodes
             RegisterCustomHandler("Convert to", "Material preset (All)", () => { ConvertAllToMaterialPreset(); });
             RegisterCustomHandler( "Export", "All", () =>
             {
-                var dialog = new VistaFolderBrowserDialog();
-                {
-                    if ( dialog.ShowDialog() != true )
-                        return;
+                var directory = DataViewNodeDialogs.Current.SelectFolder( "Select a folder to export to." );
+                if ( directory == null )
+                    return;
 
-                    foreach ( MaterialViewNode viewModel in Nodes )
-                        viewModel.Data.Save( Path.Combine( dialog.SelectedPath, viewModel.Text + ".gmt" ) );
-                }
+                foreach ( MaterialViewNode viewModel in Nodes )
+                    viewModel.Data.Save( Path.Combine( directory, viewModel.Text + ".gmt" ) );
             } );
 
             RegisterModelUpdateHandler( () =>

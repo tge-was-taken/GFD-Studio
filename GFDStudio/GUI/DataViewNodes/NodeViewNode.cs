@@ -1,8 +1,7 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Numerics;
-using System.Windows.Forms;
 using GFDLibrary;
 using GFDLibrary.Common;
 using GFDLibrary.Models;
@@ -155,7 +154,7 @@ namespace GFDStudio.GUI.DataViewNodes
                 }
                 else
                 {
-                    MessageBox.Show( "This resource type is not supported as an attachment", "Error", MessageBoxButtons.OK );
+                    DataViewNodeDialogs.Current.ShowMessage( "This resource type is not supported as an attachment", "Error", DataViewNodeMessageKind.Error );
                 }
             } );
 

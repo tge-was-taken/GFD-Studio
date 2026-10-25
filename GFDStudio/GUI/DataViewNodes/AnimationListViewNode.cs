@@ -1,10 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Windows.Forms;
 using GFDLibrary;
 using GFDLibrary.Animations;
-using Ookii.Dialogs;
-using Ookii.Dialogs.Wpf;
 
 namespace GFDStudio.GUI.DataViewNodes
 {
@@ -27,14 +24,12 @@ namespace GFDStudio.GUI.DataViewNodes
             } );
             RegisterCustomHandler( "Export", "All", () =>
             {
-                var dialog = new VistaFolderBrowserDialog();
-                {
-                    if ( dialog.ShowDialog() != true )
-                        return;
+                var directory = DataViewNodeDialogs.Current.SelectFolder( "Select a folder to export to." );
+                if ( directory == null )
+                    return;
 
-                    foreach ( AnimationViewNode animationViewModel in Nodes )
-                        animationViewModel.Data.Save( Path.Combine( dialog.SelectedPath, animationViewModel.Text + ".ganm" ) );
-                }
+                foreach ( AnimationViewNode animationViewModel in Nodes )
+                    animationViewModel.Data.Save( Path.Combine( directory, animationViewModel.Text + ".ganm" ) );
             } );
             RegisterCustomHandler( "Add", "New animation", () =>
             {

@@ -1,10 +1,7 @@
 ﻿using System.Drawing;
 using System.IO;
-using System.Windows.Forms;
 using GFDLibrary;
 using GFDLibrary.Textures;
-using Ookii.Dialogs;
-using Ookii.Dialogs.Wpf;
 using GFDStudio.FormatModules;
 
 namespace GFDStudio.GUI.DataViewNodes
@@ -53,35 +50,28 @@ namespace GFDStudio.GUI.DataViewNodes
 
             RegisterCustomHandler( "Export", "All", () =>
             {
-                var dialog = new VistaFolderBrowserDialog();
-                {
-                    if ( dialog.ShowDialog() != true )
-                        return;
+                var directory = DataViewNodeDialogs.Current.SelectFolder( "Select a folder to export to." );
+                if ( directory == null )
+                    return;
 
-                    foreach ( TextureViewNode viewModel in Nodes )
-                        File.WriteAllBytes( Path.Combine( dialog.SelectedPath, viewModel.Text ), viewModel.Data.Data );
-                }
+                foreach ( TextureViewNode viewModel in Nodes )
+                    File.WriteAllBytes( Path.Combine( directory, viewModel.Text ), viewModel.Data.Data );
             } );
         }
 
         private void ConvertToFieldTextureArchive( bool usePs4Format )
         {
-            using ( var dialog = new SaveFileDialog() )
+            var result = DataViewNodeDialogs.Current.SaveFile( new FileDialogRequest
             {
-                dialog.Filter = "Field Texture Archive (*.bin)|*.bin";
-                dialog.AutoUpgradeEnabled = true;
-                dialog.CheckPathExists = true;
-                dialog.FileName = Text;
-                dialog.OverwritePrompt = true;
-                dialog.Title = "Select a file to export to.";
-                dialog.ValidateNames = true;
-                dialog.AddExtension = true;
+                Title = "Select a file to export to.",
+                Filter = "Field Texture Archive (*.bin)|*.bin",
+                FileName = Text,
+            } );
 
-                if ( dialog.ShowDialog() != DialogResult.OK )
-                    return;
+            if ( result == null )
+                return;
 
-                Replace( TextureDictionary.ConvertToFieldTextureArchive( Data, dialog.FileName, usePs4Format ) );
-            }
+            Replace( TextureDictionary.ConvertToFieldTextureArchive( Data, result.FileName, usePs4Format ) );
         }
 
         protected override void InitializeViewCore()

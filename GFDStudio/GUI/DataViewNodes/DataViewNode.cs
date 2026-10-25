@@ -6,7 +6,6 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Windows.Forms;
 using GFDLibrary;
 using GFDStudio.DataManagement;
 using GFDStudio.FormatModules;
@@ -225,27 +224,20 @@ namespace GFDStudio.GUI.DataViewNodes
             if ( mExportHandlers.Count == 0 )
                 return null;
 
-            using ( var dialog = new SaveFileDialog() )
+            ( var filter, var filterIndexToTypeMap ) = ModuleFilterGenerator.GenerateFilter( FormatModuleUsageFlags.Export, mExportHandlers.Keys.ToArray() );
+
+            var result = DataViewNodeDialogs.Current.SaveFile( new FileDialogRequest
             {
-                ( var filter, var filterIndexToTypeMap ) = ModuleFilterGenerator.GenerateFilter( FormatModuleUsageFlags.Export, mExportHandlers.Keys.ToArray() );
+                Title = "Select a file to export to.",
+                Filter = filter,
+                FileName = Text,
+            } );
 
-                dialog.AutoUpgradeEnabled = true;
-                dialog.CheckPathExists = true;
-                dialog.FileName = Text;
-                dialog.Filter = filter;
-                dialog.OverwritePrompt = true;
-                dialog.Title = "Select a file to export to.";
-                dialog.ValidateNames = true;
-                dialog.AddExtension = true;
+            if ( result == null )
+                return null;
 
-                if ( dialog.ShowDialog() != DialogResult.OK )
-                {
-                    return null;
-                }
-
-                Export( dialog.FileName, filterIndexToTypeMap[ dialog.FilterIndex ] );
-                return dialog.FileName;
-            }
+            Export( result.FileName, filterIndexToTypeMap[ result.FilterIndex ] );
+            return result.FileName;
         }
 
         public void Export( string filePath )
@@ -274,28 +266,20 @@ namespace GFDStudio.GUI.DataViewNodes
             if ( mReplaceHandlers.Count == 0 )
                 return;
 
-            using ( var dialog = new OpenFileDialog() )
+            (var filter, var filterIndexToTypeMap) = ModuleFilterGenerator.GenerateFilter( new[] { FormatModuleUsageFlags.Import, FormatModuleUsageFlags.ImportForEditing },
+                                                                                          mReplaceHandlers.Keys.ToArray() );
+
+            var result = DataViewNodeDialogs.Current.OpenFile( new FileDialogRequest
             {
-                (var filter, var filterIndexToTypeMap) = ModuleFilterGenerator.GenerateFilter( new[] { FormatModuleUsageFlags.Import, FormatModuleUsageFlags.ImportForEditing },
-                                                                                              mReplaceHandlers.Keys.ToArray() );
+                Title = "Select a replacement file.",
+                Filter = filter,
+                FileName = Text,
+            } );
 
-                dialog.AutoUpgradeEnabled = true;
-                dialog.CheckPathExists = true;
-                dialog.CheckFileExists = true;
-                dialog.FileName = Text;
-                dialog.Filter = filter;
-                dialog.Multiselect = false;
-                dialog.SupportMultiDottedExtensions = true;
-                dialog.Title = "Select a replacement file.";
-                dialog.ValidateNames = true;
+            if ( result == null )
+                return;
 
-                if ( dialog.ShowDialog() != DialogResult.OK )
-                {
-                    return;
-                }
-
-                ReplaceInternal( dialog.FileName, filterIndexToTypeMap[ dialog.FilterIndex ] );
-            }
+            ReplaceInternal( result.FileName, filterIndexToTypeMap[ result.FilterIndex ] );
         }
 
         public void Replace( string filepath )
@@ -320,13 +304,10 @@ namespace GFDStudio.GUI.DataViewNodes
         {
             if ( type == typeof( GFDLibrary.Materials.Material ) )
             {
-                ToolStripMenuItem retainTexName = Forms.MainForm.Instance.retainTexNameToolStripMenuItem;
-                ToolStripMenuItem retainColorValues = Forms.MainForm.Instance.retainColorValuesToolStripMenuItem;
-
                 GFDLibrary.Materials.Material OriginalMat = (GFDLibrary.Materials.Material)Data;
                 GFDLibrary.Materials.Material ReplacementMat = (GFDLibrary.Materials.Material)replacement;
 
-                if ( retainTexName.Checked )
+                if ( DataViewNodeOptions.Current.RetainMaterialTextureNames )
                 {
                     // Retain original mat's texture names
                     ReplacementMat.Name = OriginalMat.Name;
@@ -341,7 +322,7 @@ namespace GFDStudio.GUI.DataViewNodes
                     if ( OriginalMat.ShadowMap != null && ReplacementMat.ShadowMap != null ) ReplacementMat.ShadowMap.Name = OriginalMat.ShadowMap.Name;
                 }
 
-                if ( retainColorValues.Checked )
+                if ( DataViewNodeOptions.Current.RetainMaterialColorValues )
                 {
                     // TODO: Fix for Metaphor!
                     ReplacementMat.LegacyParameters.AmbientColor = OriginalMat.LegacyParameters.AmbientColor;
@@ -372,30 +353,23 @@ namespace GFDStudio.GUI.DataViewNodes
             if ( mAddHandlers.Count == 0 )
                 return;
 
-            using ( OpenFileDialog openFileDlg = new OpenFileDialog() )
+            (var filter, var filterIndexToTypeMap) = ModuleFilterGenerator.GenerateFilter( new[] { FormatModuleUsageFlags.Import, FormatModuleUsageFlags.ImportForEditing }, mAddHandlers.Keys.ToArray() );
+
+            var result = DataViewNodeDialogs.Current.OpenFile( new FileDialogRequest
             {
-                (var filter, var filterIndexToTypeMap) = ModuleFilterGenerator.GenerateFilter( new[] { FormatModuleUsageFlags.Import, FormatModuleUsageFlags.ImportForEditing }, mAddHandlers.Keys.ToArray() );
-                openFileDlg.AutoUpgradeEnabled = true;
-                openFileDlg.CheckPathExists = true;
-                openFileDlg.CheckFileExists = true;
-                openFileDlg.Filter = filter;
-                openFileDlg.Multiselect = true;
-                openFileDlg.SupportMultiDottedExtensions = true;
-                openFileDlg.Title = "Select file(s) to add.";
-                openFileDlg.ValidateNames = true;
+                Title = "Select file(s) to add.",
+                Filter = filter,
+                Multiselect = true,
+            } );
 
-                if ( openFileDlg.ShowDialog() != DialogResult.OK )
-                {
-                    return;
-                }
+            if ( result == null )
+                return;
 
-                var selectedType = filterIndexToTypeMap[ openFileDlg.FilterIndex ];
-                foreach ( string fileName in openFileDlg.FileNames )
-                    AddInternal( fileName, selectedType );
+            var selectedType = filterIndexToTypeMap[ result.FilterIndex ];
+            foreach ( string fileName in result.FileNames )
+                AddInternal( fileName, selectedType );
 
-                InitializeView( true );
-            }
-
+            InitializeView( true );
         }
 
         public void Add( string filepath )
@@ -628,45 +602,30 @@ namespace GFDStudio.GUI.DataViewNodes
             // Register default handlers
             RegisterCustomHandler( "Export", "YAML", () =>
             {
-                using ( var dialog = new SaveFileDialog() )
+                var result = DataViewNodeDialogs.Current.SaveFile( new FileDialogRequest
                 {
-                    dialog.AutoUpgradeEnabled = true;
-                    dialog.CheckPathExists = true;
-                    dialog.FileName = Text;
-                    dialog.Filter = "YAML files (*.yml)|*.yml";
-                    dialog.OverwritePrompt = true;
-                    dialog.Title = "Select a file to export to.";
-                    dialog.ValidateNames = true;
-                    dialog.AddExtension = true;
+                    Title = "Select a file to export to.",
+                    Filter = "YAML files (*.yml)|*.yml",
+                    FileName = Text,
+                } );
 
-                    if ( dialog.ShowDialog() != DialogResult.OK )
-                    {
-                        return;
-                    }
-
-                    YamlSerializer.SaveYamlFile( Data, dialog.FileName );
-                }
+                if ( result != null )
+                    YamlSerializer.SaveYamlFile( Data, result.FileName );
             } );
             RegisterCustomHandler( "Replace", "YAML", () =>
             {
-                using ( var dialog = new OpenFileDialog() )
+                var result = DataViewNodeDialogs.Current.OpenFile( new FileDialogRequest
                 {
-                    dialog.AutoUpgradeEnabled = true;
-                    dialog.CheckPathExists = true;
-                    dialog.FileName = Text;
-                    dialog.Filter = "YAML files (*.yml)|*.yml";
-                    dialog.Title = "Select a file to export to.";
-                    dialog.ValidateNames = true;
-                    dialog.AddExtension = true;
+                    Title = "Select a file to replace from.",
+                    Filter = "YAML files (*.yml)|*.yml",
+                    FileName = Text,
+                } );
 
-                    if ( dialog.ShowDialog() != DialogResult.OK )
-                    {
-                        return;
-                    }
+                if ( result == null )
+                    return;
 
-                    var data = YamlSerializer.LoadYamlFile( dialog.FileName, DataType );
-                    ReplaceProcessing( DataType, data );
-                }
+                var data = YamlSerializer.LoadYamlFile( result.FileName, DataType );
+                ReplaceProcessing( DataType, data );
             } );
 
             // initialize the derived view model

@@ -1,13 +1,10 @@
 ﻿using System;
 using System.IO;
-using System.Windows.Forms;
 using GFDLibrary.Common;
 using GFDLibrary.Textures;
 using GFDLibrary.Textures.DDS;
 using GFDLibrary.Textures.GNF;
 using GFDStudio.FormatModules;
-using Ookii.Dialogs;
-using Ookii.Dialogs.Wpf;
 
 namespace GFDStudio.GUI.DataViewNodes
 {
@@ -41,20 +38,18 @@ namespace GFDStudio.GUI.DataViewNodes
             });
             RegisterCustomHandler("Export", "All", () =>
             {
-                var dialog = new VistaFolderBrowserDialog();
+                var directory = DataViewNodeDialogs.Current.SelectFolder( "Select a folder to export to." );
+                if ( directory == null )
+                    return;
+
+                foreach ( DataViewNode node in Nodes )
                 {
-                    if ( dialog.ShowDialog() != true )
-                        return;
+                    // Hack for field texture archives: prefer DDS output format
+                    Type type = null;
+                    if ( node.DataType == typeof( FieldTexturePS3 ) || node.DataType == typeof( GNFTexture ) )
+                        type = typeof( DDSStream );
 
-                    foreach ( DataViewNode node in Nodes )
-                    {
-                        // Hack for field texture archives: prefer DDS output format
-                        Type type = null;
-                        if ( node.DataType == typeof( FieldTexturePS3 ) || node.DataType == typeof( GNFTexture ) )
-                            type = typeof( DDSStream );
-
-                        node.Export( Path.Combine( dialog.SelectedPath, node.Text ), type );
-                    }
+                    node.Export( Path.Combine( directory, node.Text ), type );
                 }
             } );
         }

@@ -1,7 +1,6 @@
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Linq;
-using System.Windows.Forms;
 using GFDLibrary;
 using GFDLibrary.Animations;
 using GFDLibrary.Common;
@@ -120,8 +119,7 @@ namespace GFDStudio.GUI.DataViewNodes
                 if ( newModel == null )
                     return;
 
-                bool fixArms = MessageBox.Show( "Fix arms? If unsure, select No.", "Question", MessageBoxButtons.YesNo,
-                                                MessageBoxIcon.Question, MessageBoxDefaultButton.Button2 ) == DialogResult.Yes;
+                bool fixArms = DataViewNodeDialogs.Current.AskYesNo( "Fix arms? If unsure, select No.", "Question" );
 
                 Data.Retarget( originalModel, newModel, fixArms );
             } );
@@ -135,28 +133,24 @@ namespace GFDStudio.GUI.DataViewNodes
 
         private static void ImportModelAndFixTargetIds( Animation animation )
         {
-            using ( var dialog = new OpenFileDialog() )
+            var result = DataViewNodeDialogs.Current.OpenFile( new FileDialogRequest
             {
-                dialog.Filter = ModuleFilterGenerator.GenerateFilter( new[] { FormatModuleUsageFlags.Import }, typeof( ModelPack ) ).Filter;
-                dialog.AutoUpgradeEnabled = true;
-                dialog.CheckPathExists = true;
-                dialog.Title = "Select a model file.";
-                dialog.ValidateNames = true;
-                dialog.AddExtension = true;
+                Title = "Select a model file.",
+                Filter = ModuleFilterGenerator.GenerateFilter( new[] { FormatModuleUsageFlags.Import }, typeof( ModelPack ) ).Filter,
+            } );
 
-                if ( dialog.ShowDialog() != DialogResult.OK )
-                    return;
+            if ( result == null )
+                return;
 
-                try
-                {
-                    var model = Resource.Load<ModelPack>( dialog.FileName );
-                    if ( model.Model != null )
-                        animation.FixTargetIds( model.Model );
-                }
-                catch ( Exception e )
-                {
-                    Console.WriteLine( e );
-                }
+            try
+            {
+                var model = Resource.Load<ModelPack>( result.FileName );
+                if ( model.Model != null )
+                    animation.FixTargetIds( model.Model );
+            }
+            catch ( Exception e )
+            {
+                Console.WriteLine( e );
             }
         }
     }

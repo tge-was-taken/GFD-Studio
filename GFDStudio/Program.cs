@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using GFDLibrary;
 using GFDLibrary.Conversion.AssimpNet.Utilities;
+using GFDStudio.GUI.DataViewNodes;
 using GFDStudio.GUI.Forms;
 
 namespace GFDStudio
@@ -27,6 +28,9 @@ namespace GFDStudio
         [STAThread]
         private static void Main( string[] args )
         {
+            DataViewNodeDialogs.Current = new DataViewNodeDialogsWinForms();
+            DataViewNodeOptions.Current = new DataViewNodeOptionsWinForms();
+
 #if WINDOWS && DEBUG
             AllocConsole();
 #endif

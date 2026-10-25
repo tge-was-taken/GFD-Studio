@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel;
-using System.Windows.Forms;
 using GFDLibrary;
 using GFDStudio.FormatModules;
 using GFDStudio.GUI.TypeConverters;
