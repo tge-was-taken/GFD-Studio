@@ -24,24 +24,10 @@
         <MenuItem Name="mLoadAnimation" Header="_Load external" />
       </MenuItem>
 
-      <MenuItem Header="_Tools">
-        <MenuItem Name="mRetargetAnimations" Header="Retarget animation packs in directory" />
-        <MenuItem Name="mRescaleAnimations" Header="Rescale or reposition animation packs in directory" />
-        <MenuItem Name="mConvertAnimations" Header="Convert P5R animations to P5 in directory" />
-        <MenuItem Name="mConvertMaterials" Header="Convert model materials in directory" />
-        <MenuItem Name="mCopySplitGap" Header="Copy P5 split GAP to multiple models in directory" />
-        <Separator />
-        <MenuItem Name="mExportTextures" Header="Mass export textures from models" />
-        <MenuItem Name="mReplaceTextures" Header="Mass replace textures in models" />
-      </MenuItem>
+      <MenuItem Name="mTools" Header="_Tools..." />
 
-      <MenuItem Header="_Options">
-        <MenuItem Name="mRetainTextureNames" Header="Retain the original material's texture names when replacing" ToggleType="CheckBox" />
-        <MenuItem Name="mRetainColorValues" Header="Retain the original material's colour values when replacing" ToggleType="CheckBox" />
-        <MenuItem Name="mSaveTexturesExternally" Header="(Metaphor) Save replaced textures externally" ToggleType="CheckBox" />
-        <Separator />
-        <MenuItem Name="mDarkTheme" Header="Use the dark theme" ToggleType="CheckBox" />
-      </MenuItem>
+      <MenuItem Name="mOptions" Header="_Options..." />
+
     </Menu>
 
     <Border DockPanel.Dock="Bottom" BorderThickness="0,1,0,0" BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}">
@@ -64,7 +50,23 @@
 
         <Panel Background="{DynamicResource ViewportBackgroundBrush}">
           <local:ModelView Name="mModelView" IsVisible="False" />
-          <Image Name="mImageView" IsVisible="False" Stretch="Uniform" />
+
+          <DockPanel Name="mTexturePanel" IsVisible="False">
+            <Border DockPanel.Dock="Top" Padding="8,4"
+                    Background="{DynamicResource PanelBackgroundBrush}">
+              <StackPanel Orientation="Horizontal" Spacing="6">
+                <TextBlock Name="mTextureSize" VerticalAlignment="Center" Margin="0,0,8,0" />
+                <ToggleButton Name="mChannelR" Content="R" IsChecked="True" MinWidth="34" />
+                <ToggleButton Name="mChannelG" Content="G" IsChecked="True" MinWidth="34" />
+                <ToggleButton Name="mChannelB" Content="B" IsChecked="True" MinWidth="34" />
+                <ToggleButton Name="mChannelA" Content="A" IsChecked="True" MinWidth="34" />
+                <Button Name="mTextureReset" Content="1:1" MinWidth="40" Margin="8,0,0,0"
+                        ToolTip.Tip="Show the texture at its own size" />
+              </StackPanel>
+            </Border>
+
+            <local:TextureView Name="mTextureView" />
+          </DockPanel>
         </Panel>
       </DockPanel>
 

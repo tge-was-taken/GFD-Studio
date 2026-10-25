@@ -18,6 +18,7 @@ namespace GFDStudio.Avalonia
                 CellEditFactoryService.Default.AddFactory( new TypeConverterCellEditFactory() );
                 CellEditFactoryService.Default.AddFactory( new EnumCellEditFactory() );
                 CellEditFactoryService.Default.AddFactory( new FlagsCellEditFactory() );
+                CellEditFactoryService.Default.AddFactory( new Vector4ColorCellEditFactory() );
 
                 UserOptions.Current = new UserOptionsAvalonia();
 
