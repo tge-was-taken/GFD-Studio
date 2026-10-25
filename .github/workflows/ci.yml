@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  # GFD Studio is a WinForms application and the FBX exporter is a C++/CLI project, so the build
+  # only runs on Windows. Branch builds leave out the FBX exporter, which needs the Autodesk SDK
+  # installed; the release builds put it back.
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      # The filter leaves out the FBX exporter, which a solution build would build regardless
+      # of EnableFbxSdk.
+      - run: dotnet build GFDStudio.NoFbx.slnf -c Release -p:EnableFbxSdk=false
+
+      # The test data is not in the repository, so the tests only run where it is available.
+      - id: testdata
+        shell: bash
+        run: |
+          if [ -d Resources/TestData ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::Resources/TestData is absent, skipping the tests"
+          fi
+
+      - if: steps.testdata.outputs.available
+        run: dotnet test GFDLibrary.Tests/GFDLibrary.Tests.csproj -c Release -p:EnableFbxSdk=false --no-build
+
+  # A master build is released as the next 0.10 patch version, with the commit it was built from.
+  # Other branches get artifacts but no tag.
+  version:
+    needs: build
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.next.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - id: next
+        if: github.ref == 'refs/heads/master'
+        shell: bash
+        run: |
+          set -eu
+          patch=$(git tag --list 'v0.10.*' '0.10.*' \
+            | sed -nE 's/^v?0\.10\.([0-9]+).*$/\1/p' | sort -n | tail -1)
+          # No 0.10 tag yet, so the numbering continues from the version the projects declare.
+          if [ -z "$patch" ]; then
+            patch=$(sed -nE 's|.*<Version>0\.10\.([0-9]+)</Version>.*|\1|p' GFDStudio/GFDStudio.csproj | head -1)
+          fi
+          echo "tag=v0.10.$((patch + 1))-$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+
+  # Downloadable per commit builds, as the AppVeyor builds used to be.
+  binaries:
+    needs: version
+    if: github.event_name != 'pull_request'
+    uses: ./.github/workflows/publish.yml
+    permissions:
+      contents: write
+    with:
+      tag: ${{ needs.version.outputs.tag }}

@@ -1,0 +1,23 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Tag to publish the binaries under
+        required: true
+      prerelease:
+        description: Mark the release as a prerelease
+        type: boolean
+        default: true
+
+jobs:
+  publish:
+    uses: ./.github/workflows/publish.yml
+    permissions:
+      contents: write
+    with:
+      tag: ${{ github.event.inputs.tag || github.ref_name }}
+      prerelease: ${{ github.event_name == 'workflow_dispatch' && inputs.prerelease }}

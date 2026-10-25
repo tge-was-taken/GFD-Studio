@@ -1,0 +1,138 @@
+name: Publish
+
+on:
+  workflow_call:
+    inputs:
+      tag:
+        description: Release tag to attach the archives to. Leave empty to only upload artifacts.
+        type: string
+        required: false
+        default: ''
+      prerelease:
+        description: Mark the release as a prerelease.
+        type: boolean
+        required: false
+        default: false
+
+env:
+  FBXSDK_VERSION: '2020.3.7'
+  FBXSDK_INSTALLER: fbx202037_fbxsdk_vs2019_win.exe
+
+jobs:
+  publish:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - rid: win-x64
+
+    # GFD Studio is a WinForms application, so there is only a Windows build to publish.
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      # The FBX exporter is a C++/CLI project built against the Autodesk FBX SDK, which is not on
+      # the runner image. Released builds install it so they keep FBX export.
+      - name: Install the FBX SDK
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $url = "https://damassets.autodesk.net/content/dam/autodesk/www/files/$env:FBXSDK_INSTALLER"
+          Invoke-WebRequest $url -OutFile $env:FBXSDK_INSTALLER
+          Start-Process ".\$env:FBXSDK_INSTALLER" -ArgumentList '/S' -Wait
+          $root = "C:\Program Files\Autodesk\FBX\FBX SDK\$env:FBXSDK_VERSION"
+          if (-not (Test-Path "$root\include\fbxsdk.h")) {
+            throw "the FBX SDK did not install to $root"
+          }
+          "FBXSDK_ROOT=$root" >> $env:GITHUB_ENV
+
+      - name: Publish the executable
+        shell: bash
+        run: |
+          set -eu
+          out="publish/GFDStudio-${{ matrix.rid }}"
+          dotnet publish GFDStudio/GFDStudio.csproj -c Release \
+            -r ${{ matrix.rid }} --self-contained -o "$out"
+          rm -rf "$out"/*.pdb
+
+      - name: Archive
+        shell: bash
+        run: |
+          set -eu
+          cd publish
+          7z a "GFDStudio-${{ matrix.rid }}.zip" "GFDStudio-${{ matrix.rid }}"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: GFDStudio-${{ matrix.rid }}
+          path: publish/GFDStudio-${{ matrix.rid }}.zip
+
+      - name: Attach to the release
+        if: inputs.tag != ''
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.tag }}
+          prerelease: ${{ inputs.prerelease }}
+          files: publish/GFDStudio-${{ matrix.rid }}.zip
+
+  # The portable build is not self contained, so it needs an installed .NET desktop runtime but
+  # is a much smaller download.
+  portable:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Install the FBX SDK
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $url = "https://damassets.autodesk.net/content/dam/autodesk/www/files/$env:FBXSDK_INSTALLER"
+          Invoke-WebRequest $url -OutFile $env:FBXSDK_INSTALLER
+          Start-Process ".\$env:FBXSDK_INSTALLER" -ArgumentList '/S' -Wait
+          $root = "C:\Program Files\Autodesk\FBX\FBX SDK\$env:FBXSDK_VERSION"
+          if (-not (Test-Path "$root\include\fbxsdk.h")) {
+            throw "the FBX SDK did not install to $root"
+          }
+          "FBXSDK_ROOT=$root" >> $env:GITHUB_ENV
+
+      - name: Publish the executable
+        shell: bash
+        run: |
+          set -eu
+          out=publish/GFDStudio-dotnet
+          dotnet publish GFDStudio/GFDStudio.csproj -c Release --no-self-contained -o "$out"
+          rm -rf "$out"/*.pdb
+
+      - name: Archive
+        shell: bash
+        run: |
+          set -eu
+          cd publish
+          7z a GFDStudio-dotnet.zip GFDStudio-dotnet
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: GFDStudio-dotnet
+          path: publish/GFDStudio-dotnet.zip
+
+      - name: Attach to the release
+        if: inputs.tag != ''
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.tag }}
+          prerelease: ${{ inputs.prerelease }}
+          files: publish/GFDStudio-dotnet.zip
