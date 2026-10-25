@@ -118,8 +118,8 @@ namespace GFDLibrary.Conversion.AssimpNet
             }
             else
             {
-                var bitmap = new Bitmap( fullFilePath );
-                texture = TextureEncoder.Encode( textureName, TextureFormat.DDS, bitmap );
+                using var image = SixLabors.ImageSharp.Image.Load<SixLabors.ImageSharp.PixelFormats.Rgba32>( fullFilePath );
+                texture = TextureEncoder.Encode( textureName, TextureFormat.DDS, image );
             }
             if ( options.Version == ResourceVersion.MetaphorRefantazio)
                 texture.IsTexSourceExternal = true;

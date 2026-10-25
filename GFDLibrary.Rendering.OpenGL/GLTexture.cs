@@ -55,31 +55,17 @@ namespace GFDLibrary.Rendering.OpenGL
                         var bitmap = TextureDecoder.Decode( texture );
                         SetTextureParameters( TextureWrapMode.Repeat, TextureWrapMode.Repeat, TextureMagFilter.Linear, TextureMinFilter.Linear, 1 );
 
-                        var bitmapData = bitmap.LockBits( new System.Drawing.Rectangle( 0, 0, bitmap.Width, bitmap.Height ),
-                                         System.Drawing.Imaging.ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb );
+                        var pixels = GFDLibrary.Textures.Utilities.ImageHelper.ToBgra( bitmap );
 
-                        var pixels = new byte[bitmap.Width * bitmap.Height * 4];
+                        // GL wants RGBA, the helper gives BGRA.
+                        for ( int i = 0; i < pixels.Length; i += 4 )
+                            ( pixels[i], pixels[i + 2] ) = ( pixels[i + 2], pixels[i] );
+
                         fixed ( byte* pPixels = &pixels[ 0 ] )
                         {
-                            var pSrc = ( byte* ) bitmapData.Scan0;
-                            var pDest = pPixels;
-                            for ( int y = 0; y < bitmap.Height; y++ )
-                            {
-                                for ( int x = 0; x < bitmap.Width; x++ )
-                                {
-                                    *pDest++ = pSrc[ 2 ];
-                                    *pDest++ = pSrc[ 1 ];
-                                    *pDest++ = pSrc[ 0 ];
-                                    *pDest++ = pSrc[ 3 ];
-                                    pSrc += 4;
-                                }
-                            }
-
                             GL.TexImage2D( TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, bitmap.Width, bitmap.Height, 0, PixelFormat.Rgba,
                                            PixelType.UnsignedByte, ( IntPtr )pPixels );
                         }
-
-                        bitmap.UnlockBits( bitmapData );
                     }
                     break;
 
