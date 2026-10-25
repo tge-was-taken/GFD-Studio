@@ -5,26 +5,24 @@ using GFDLibrary.Textures.DDS;
 using GFDLibrary.Textures.Native;
 using GFDLibrary.Textures.GNF;
 using GFDLibrary.Textures.Swizzle;
-using GFDLibrary.Textures.Utilities;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
+using GFDLibrary.Graphics;
 
 namespace GFDLibrary.Textures
 {
     public static class TextureDecoder
     {
-        public static Image<Rgba32> Decode( Texture texture )
+        public static Image Decode( Texture texture )
         {
             return Decode( texture.Data, texture.Format );
         }
 
-        public static Image<Rgba32> Decode( FieldTexturePS3 texture )
+        public static Image Decode( FieldTexturePS3 texture )
         {
             var ddsBytes = DecodeToDDS( texture );
             return DecodeDDS( ddsBytes );
         }
 
-        public static Image<Rgba32> Decode( GNFTexture texture )
+        public static Image Decode( GNFTexture texture )
         {
             var ddsBytes = DecodeToDDS( texture );
             return DecodeDDS( ddsBytes );
@@ -119,7 +117,7 @@ namespace GFDLibrary.Textures
             return ddsBytes;
         }
 
-        public static Image<Rgba32> Decode( byte[] data, TextureFormat format )
+        public static Image Decode( byte[] data, TextureFormat format )
         {
             switch ( format )
             {
@@ -139,7 +137,7 @@ namespace GFDLibrary.Textures
             }
         }
 
-        private static Image<Rgba32> DecodeDDS( byte[] data )
+        private static Image DecodeDDS( byte[] data )
         {
             try
             {
@@ -149,37 +147,37 @@ namespace GFDLibrary.Textures
             catch ( Exception )
             {
                 Trace.WriteLine( "Failed to decode DDS texture" );
-                return new Image<Rgba32>( 32, 32 );
+                return new Image( 32, 32 );
             }
         }
 
-        private static Image<Rgba32> DecodeTMX( byte[] data )
+        private static Image DecodeTMX( byte[] data )
         {
             var tmx = new Scarlet.IO.ImageFormats.TMX();
             tmx.Open( new MemoryStream( data ), Scarlet.IO.Endian.LittleEndian );
             return FromScarlet( tmx.GetPixels() );
         }
-        private static Image<Rgba32> DecodeTGA( byte[] data )
+        private static Image DecodeTGA( byte[] data )
         {
             using var image = DirectXTex.ScratchImage.FromTGA( data );
             return DDSCodec.ToImage( image );
         }
-        private static Image<Rgba32> DecodeGXT( byte[] data )
+        private static Image DecodeGXT( byte[] data )
         {
             var gxt = new Scarlet.IO.ImageFormats.GXT();
             gxt.Open( new MemoryStream( data ), Scarlet.IO.Endian.LittleEndian );
             return FromScarlet( gxt.GetPixels() );
         }
-        private static Image<Rgba32> DecodeGNF(byte[] data)
+        private static Image DecodeGNF(byte[] data)
         {
             var gnf = new Scarlet.IO.ImageFormats.GNF();
             gnf.Open(new MemoryStream(data), Scarlet.IO.Endian.LittleEndian);
             return FromScarlet( gnf.GetPixels() );
         }
     
-        private static Image<Rgba32> FromScarlet( Scarlet.Drawing.ImagePixels pixels )
+        private static Image FromScarlet( Scarlet.Drawing.ImagePixels pixels )
         {
-            return ImageHelper.FromBgra( pixels.Data, pixels.Width, pixels.Height );
+            return Image.FromBgra( pixels.Data, pixels.Width, pixels.Height );
         }
     }
 }

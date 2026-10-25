@@ -1,5 +1,4 @@
-﻿using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
+﻿using GFDLibrary.Textures;
 using System.IO;
 
 namespace GFDLibrary.Textures.DDS
@@ -19,7 +18,7 @@ namespace GFDLibrary.Textures.DDS
             if ( Path.GetExtension( filepath ) == ".dds" )
                 return File.OpenRead( filepath );
             else
-                return new MemoryStream( DDSCodec.CompressImage( Image.Load<Rgba32>( filepath ) ) );
+                return new MemoryStream( DDSCodec.CompressImage( PngCodec.Load( filepath ) ) );
         }
     }
 }

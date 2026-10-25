@@ -1,18 +1,17 @@
 ﻿using System;
 using GFDLibrary.Textures.DDS;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
+using GFDLibrary.Graphics;
 
 namespace GFDLibrary.Textures
 {
     public static class TextureEncoder
     {
-        public static Texture Encode( string name, TextureFormat format, Image<Rgba32> image )
+        public static Texture Encode( string name, TextureFormat format, Image image )
         {
             return Encode( name, format, 1, 1, 0, 0, image );
         }
 
-        public static Texture Encode( string name, TextureFormat format, byte field1C, byte field1D, byte field1E, byte field1F, Image<Rgba32> image )
+        public static Texture Encode( string name, TextureFormat format, byte field1C, byte field1D, byte field1E, byte field1F, Image image )
         {
             if ( format != TextureFormat.DDS )
                 throw new NotImplementedException();

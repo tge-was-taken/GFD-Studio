@@ -32,6 +32,12 @@ namespace GFDLibrary.Textures.Native
         private static extern int LoadFromBlocks( IntPtr source, nuint size, nuint width, nuint height,
                                                   int format, out IntPtr image );
 
+        [DllImport( Library, EntryPoint = "DirectXTex_LoadFromPNGFile" )]
+        private static extern int LoadFromPNGFile( [MarshalAs( UnmanagedType.LPUTF8Str )] string path, out IntPtr image );
+
+        [DllImport( Library, EntryPoint = "DirectXTex_SaveToPNGFile" )]
+        private static extern int SaveToPNGFile( IntPtr image, [MarshalAs( UnmanagedType.LPUTF8Str )] string path );
+
         [DllImport( Library, EntryPoint = "DirectXTex_Initialize2D" )]
         private static extern int Initialize2D( IntPtr pixels, nuint width, nuint height, int format,
                                                 out IntPtr image );
@@ -50,6 +56,9 @@ namespace GFDLibrary.Textures.Native
 
         [DllImport( Library, EntryPoint = "DirectXTex_SaveToDDSMemory" )]
         private static extern int SaveToDDSMemory( IntPtr image, out IntPtr blob );
+
+        [DllImport( Library, EntryPoint = "DirectXTex_OverrideFormat" )]
+        private static extern int OverrideFormat( IntPtr image, int format );
 
         [DllImport( Library, EntryPoint = "DirectXTex_GetMetadata" )]
         private static extern int GetMetadata( IntPtr image, out TexMetadata metadata );
@@ -114,6 +123,17 @@ namespace GFDLibrary.Textures.Native
                 }
             }
 
+            public static ScratchImage FromPNGFile( string path )
+            {
+                Check( LoadFromPNGFile( path, out var handle ) );
+                return new ScratchImage( handle );
+            }
+
+            public void SaveToPNGFile( string path )
+            {
+                Check( DirectXTex.SaveToPNGFile( Handle, path ) );
+            }
+
             private static ReadOnlySpan<byte> Require( ReadOnlySpan<byte> data )
                 => !data.IsEmpty ? data : throw new ArgumentException( "No data", nameof( data ) );
 
@@ -134,6 +154,12 @@ namespace GFDLibrary.Textures.Native
             {
                 Check( DirectXTex.Decompress( Handle, ( int )format, out var result ) );
                 return new ScratchImage( result );
+            }
+
+            /// <summary>Reinterprets the pixels as another format of the same size.</summary>
+            public void OverrideFormat( DDSDxgiFormat format )
+            {
+                Check( DirectXTex.OverrideFormat( Handle, ( int )format ) );
             }
 
             public ScratchImage Convert( DDSDxgiFormat format )

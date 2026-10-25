@@ -1,6 +1,5 @@
 ﻿using System;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
+using GFDLibrary.Graphics;
 using System.IO;
 using System.Text;
 using GFDLibrary.IO.Common;
@@ -69,7 +68,7 @@ namespace GFDLibrary.Textures
             Data = data;
         }
 
-        public FieldTexturePS3( Image<Rgba32> bitmap )
+        public FieldTexturePS3( Image bitmap )
         {
             Field00 = 0x020200FF;
             Field08 = 0x00000001;

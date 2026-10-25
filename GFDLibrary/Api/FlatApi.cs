@@ -10,7 +10,6 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Scarlet.Platform.Sony;
-using SixLabors.ImageSharp;
 using GFDLibrary.Materials;
 using GFDLibrary.Animations;
 
@@ -249,7 +248,7 @@ namespace GFDLibrary.Api
                         break;
                     default:
                         texPath = Path.Combine( dirPath, Path.ChangeExtension( tex.Name, ".png" ) );
-                        TextureDecoder.Decode( tex ).Save( texPath );
+                        PngCodec.Save( TextureDecoder.Decode( tex ), texPath );
                         break;
                 }
 

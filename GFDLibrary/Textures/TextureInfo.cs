@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.IO;
 using GFDLibrary.Textures.DDS;
-using GFDLibrary.Textures.Utilities;
 
 namespace GFDLibrary.Textures
 {
@@ -84,7 +83,7 @@ namespace GFDLibrary.Textures
                         }
                         
                         // Create RGBA bitmap
-                        var bitmap = ImageHelper.Create( pixelData, ddsHeader.Width, ddsHeader.Height );
+                        var bitmap = GFDLibrary.Graphics.Image.FromColors( pixelData, ddsHeader.Width, ddsHeader.Height );
 
                         // Convert bitmap to DDS
                         texture.Data = DDSCodec.CompressImage( bitmap );
