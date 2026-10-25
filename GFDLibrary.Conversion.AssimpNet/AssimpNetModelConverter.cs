@@ -57,7 +57,7 @@ namespace GFDLibrary.Conversion.AssimpNet
             return scene;
         }
 
-        private static Ai.Matrix4x4 GetWorldTransform( Ai.Node aiNode )
+        private static Matrix4x4 GetWorldTransform( Ai.Node aiNode )
         {
             var transform = aiNode.Transform;
             var parent = aiNode.Parent;
@@ -94,12 +94,12 @@ namespace GFDLibrary.Conversion.AssimpNet
             }
         }
 
-        private static bool NearlyEquals( Ai.Matrix4x4 left, Ai.Matrix4x4 right )
+        private static bool NearlyEquals( Matrix4x4 left, Matrix4x4 right )
         {
-            return NearlyEquals( left.A1, right.A1 ) && NearlyEquals( left.A2, right.A2 ) && NearlyEquals( left.A3, right.A3 ) && NearlyEquals( left.A4, right.A4 ) &&
-                   NearlyEquals( left.B1, right.B1 ) && NearlyEquals( left.B2, right.B2 ) && NearlyEquals( left.B3, right.B3 ) && NearlyEquals( left.B4, right.B4 ) &&
-                   NearlyEquals( left.C1, right.C1 ) && NearlyEquals( left.C2, right.C2 ) && NearlyEquals( left.C3, right.C3 ) && NearlyEquals( left.C4, right.C4 ) &&
-                   NearlyEquals( left.D1, right.D1 ) && NearlyEquals( left.D2, right.D2 ) && NearlyEquals( left.D3, right.D3 ) && NearlyEquals( left.D4, right.D4 );
+            return NearlyEquals( left.M11, right.M11 ) && NearlyEquals( left.M12, right.M12 ) && NearlyEquals( left.M13, right.M13 ) && NearlyEquals( left.M14, right.M14 ) &&
+                   NearlyEquals( left.M21, right.M21 ) && NearlyEquals( left.M22, right.M22 ) && NearlyEquals( left.M23, right.M23 ) && NearlyEquals( left.M24, right.M24 ) &&
+                   NearlyEquals( left.M31, right.M31 ) && NearlyEquals( left.M32, right.M32 ) && NearlyEquals( left.M33, right.M33 ) && NearlyEquals( left.M34, right.M34 ) &&
+                   NearlyEquals( left.M41, right.M41 ) && NearlyEquals( left.M42, right.M42 ) && NearlyEquals( left.M43, right.M43 ) && NearlyEquals( left.M44, right.M44 );
         }
 
         private static bool IsLegacyMeshAttachmentNode( Ai.Node node )
@@ -107,7 +107,7 @@ namespace GFDLibrary.Conversion.AssimpNet
             bool isMeshAttachmentNode = node.Parent != null &&                                                          // definitely not a mesh attachment if it doesnt have a parent -> RootNode
                                         node.Parent.Name != "RootNode" &&                                               // probably not a mesh attachment if its part of the scene root
                                         AssimpConverterCommon.LegacyMeshAttachmentNameRegex.IsMatch( node.Name ) &&     // match name regex
-                                        NearlyEquals( node.Transform, Ai.Matrix4x4.Identity );                          // transform must be identity
+                                        NearlyEquals( node.Transform, Matrix4x4.Identity );                          // transform must be identity
             return isMeshAttachmentNode;
         }
 
@@ -119,7 +119,7 @@ namespace GFDLibrary.Conversion.AssimpNet
             bool isMeshAttachmentNode = node.Parent != null &&                                                          // mesh attachments are parented to the root of the scene to prevent animation issues
                                         node.Parent.Name == "RootNode" &&
                                         AssimpConverterCommon.MeshAttachmentNameRegex.IsMatch( node.Name ) &&           // match name regex
-                                        NearlyEquals( node.Transform, Ai.Matrix4x4.Identity );                          // transform must be identity
+                                        NearlyEquals( node.Transform, Matrix4x4.Identity );                          // transform must be identity
             return isMeshAttachmentNode;
         }
 
@@ -271,7 +271,7 @@ namespace GFDLibrary.Conversion.AssimpNet
 
         private static Node ConvertAssimpNodeRecursively( Assimp.Scene aiScene, Ai.Node aiNode, Dictionary<string, NodeInfo> nodeLookup, ref int nextIndex, ModelConverterOptions options )
         {
-            aiNode.Transform.Decompose( out var scale, out var rotation, out var translation );
+            Matrix4x4.Decompose( aiNode.Transform.ToNumerics(), out var scale, out var rotation, out var translation );
 
             // Create node
             var node = new Node( AssimpConverterCommon.UnescapeName( aiNode.Name ),
@@ -325,7 +325,7 @@ namespace GFDLibrary.Conversion.AssimpNet
                 if ( ( index = aiScene.Cameras.FindIndex( x => x.Name == node.Name ) ) != -1 )
                 {
                     var aiCamera = aiScene.Cameras[index];
-                    var camera = new Camera( -aiCamera.Direction.ToNumerics(), aiCamera.Up.ToNumerics(), aiCamera.Position.ToNumerics(),
+                    var camera = new Camera( -aiCamera.Direction, aiCamera.Up, aiCamera.Position,
                         aiCamera.ClipPlaneNear, aiCamera.ClipPlaneFar, MathHelper.RadiansToDegrees( aiCamera.FieldOfview ),
                         aiCamera.AspectRatio, 0
                     )
@@ -354,9 +354,9 @@ namespace GFDLibrary.Conversion.AssimpNet
                     var light = new Light
                     {
                         Version = options.Version,
-                        AmbientColor = aiLight.ColorAmbient.ToNumerics(),
-                        DiffuseColor = aiLight.ColorDiffuse.ToNumerics(),
-                        SpecularColor = aiLight.ColorSpecular.ToNumerics(),
+                        AmbientColor = aiLight.ColorAmbient.ToNumericsAsVector4(),
+                        DiffuseColor = aiLight.ColorDiffuse.ToNumericsAsVector4(),
+                        SpecularColor = aiLight.ColorSpecular.ToNumericsAsVector4(),
                         AngleInnerCone = aiLight.AngleInnerCone,
                         AngleOuterCone = aiLight.AngleOuterCone,
                         Type = lightType,
@@ -456,8 +456,8 @@ namespace GFDLibrary.Conversion.AssimpNet
                         case Ai.MetaDataType.String:
                             property = new UserStringProperty( metadataEntry.Key, (string)metadataEntry.Value.Data );
                             break;
-                        case Ai.MetaDataType.Vector3D:
-                            var data = metadataEntry.Value.DataAs<Ai.Vector3D>().Value;
+                        case Ai.MetaDataType.Vector3:
+                            var data = metadataEntry.Value.DataAs<Vector3>().Value;
                             property = new UserVector3Property( metadataEntry.Key, new Vector3( data.X, data.Y, data.Z ) );
                             break;
                         default:
@@ -781,9 +781,9 @@ namespace GFDLibrary.Conversion.AssimpNet
             return geometry;
         }
 
-        private static GFDLibrary.Graphics.Color SwizzleColor( Ai.Color4D sourceColor, ColorSwizzle swizzle )
+        private static GFDLibrary.Graphics.Color SwizzleColor( Vector4 sourceColor, ColorSwizzle swizzle )
         {
-            float[] channels = new float[4] { sourceColor.R, sourceColor.G, sourceColor.B, sourceColor.A };
+            float[] channels = new float[4] { sourceColor.X, sourceColor.Y, sourceColor.Z, sourceColor.W };
             return new GFDLibrary.Graphics.Color(
                 channels[(int)swizzle.Red],
                 channels[(int)swizzle.Green],

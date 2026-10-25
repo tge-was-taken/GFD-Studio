@@ -93,17 +93,17 @@ namespace GFDLibrary.Conversion.AssimpNet
             var aiMaterial = new Ai.Material { Name = AssimpConverterCommon.EscapeName( material.Name ) };
             if ( material.METAPHOR_MaterialParameterSet == null )
             {
-                aiMaterial.ColorAmbient = material.LegacyParameters.AmbientColor.ToAssimp();
-                aiMaterial.ColorDiffuse = material.LegacyParameters.DiffuseColor.ToAssimp();
-                aiMaterial.ColorSpecular = material.LegacyParameters.EmissiveColor.ToAssimp();
-                aiMaterial.ColorEmissive = material.LegacyParameters.SpecularColor.ToAssimp();
+                aiMaterial.ColorAmbient = material.LegacyParameters.AmbientColor;
+                aiMaterial.ColorDiffuse = material.LegacyParameters.DiffuseColor;
+                aiMaterial.ColorSpecular = material.LegacyParameters.EmissiveColor;
+                aiMaterial.ColorEmissive = material.LegacyParameters.SpecularColor;
             }
             return aiMaterial;
         }
 
         private void ConvertToAssimp( MaterialParameterSetType0 materialParameterSet, Ai.Material aiMaterial, Material material )
         {
-            aiMaterial.ColorDiffuse = materialParameterSet.BaseColor.ToAssimp();
+            aiMaterial.ColorDiffuse = materialParameterSet.BaseColor;
             if ( material.Flags.HasFlag( MaterialFlags.HasNormalMap ) )
             {
                 aiMaterial.TextureNormal = new Ai.TextureSlot(
@@ -114,10 +114,10 @@ namespace GFDLibrary.Conversion.AssimpNet
 
         private void ConvertToAssimp( MaterialParameterSetType1 materialParameterSet, Ai.Material aiMaterial, Material material )
         {
-            aiMaterial.ColorAmbient = materialParameterSet.AmbientColor.ToAssimp();
-            aiMaterial.ColorDiffuse = materialParameterSet.DiffuseColor.ToAssimp();
-            aiMaterial.ColorSpecular = materialParameterSet.SpecularColor.ToAssimp();
-            aiMaterial.ColorEmissive = materialParameterSet.EmissiveColor.ToAssimp();
+            aiMaterial.ColorAmbient = materialParameterSet.AmbientColor;
+            aiMaterial.ColorDiffuse = materialParameterSet.DiffuseColor;
+            aiMaterial.ColorSpecular = materialParameterSet.SpecularColor;
+            aiMaterial.ColorEmissive = materialParameterSet.EmissiveColor;
             aiMaterial.Reflectivity = materialParameterSet.Reflectivity;
             if ( material.Flags.HasFlag( MaterialFlags.HasNormalMap ) )
             {
@@ -135,9 +135,9 @@ namespace GFDLibrary.Conversion.AssimpNet
 
         private void ConvertToAssimp( MaterialParameterSetType2Base materialParameterSet, Ai.Material aiMaterial, Material material )
         {
-            aiMaterial.ColorDiffuse = materialParameterSet.BaseColor.ToAssimp();
-            aiMaterial.ColorSpecular = new Vector4( materialParameterSet.SpecularColor, materialParameterSet.SpecularPower ).ToAssimp();
-            aiMaterial.ColorEmissive = materialParameterSet.EmissiveColor.ToAssimp();
+            aiMaterial.ColorDiffuse = materialParameterSet.BaseColor;
+            aiMaterial.ColorSpecular = new Vector4( materialParameterSet.SpecularColor, materialParameterSet.SpecularPower );
+            aiMaterial.ColorEmissive = materialParameterSet.EmissiveColor;
             if ( material.Flags.HasFlag( MaterialFlags.HasNormalMap ) )
             {
                 aiMaterial.TextureNormal = new Ai.TextureSlot(
@@ -220,16 +220,8 @@ namespace GFDLibrary.Conversion.AssimpNet
         {
             var aiNode = new Ai.Node( AssimpConverterCommon.EscapeName( node.Name ), aiParent )
             {
-                Transform = new Ai.Matrix4x4( node.LocalTransform.M11, node.LocalTransform.M21, node.LocalTransform.M31, node.LocalTransform.M41,
-                                              node.LocalTransform.M12, node.LocalTransform.M22, node.LocalTransform.M32, node.LocalTransform.M42,
-                                              node.LocalTransform.M13, node.LocalTransform.M23, node.LocalTransform.M33, node.LocalTransform.M43,
-                                              node.LocalTransform.M14, node.LocalTransform.M24, node.LocalTransform.M34, node.LocalTransform.M44 )
+                Transform = node.LocalTransform.ToAssimp(),
             };
-
-            if ( node.HasProperties )
-            {
-                ConvertNodeProperties( node.Properties, aiNode );
-            }
 
             if ( node.HasAttachments )
             {
@@ -284,9 +276,9 @@ namespace GFDLibrary.Conversion.AssimpNet
                             mAiScene.Cameras.Add( new Ai.Camera
                             {
                                 Name = node.Name,
-                                Position = camera.Position.ToAssimp(),
-                                Up = camera.Up.ToAssimp(),
-                                Direction = -camera.Direction.ToAssimp(),
+                                Position = camera.Position,
+                                Up = camera.Up,
+                                Direction = -camera.Direction,
                                 FieldOfview = MathHelper.DegreesToRadians( camera.FieldOfView ),
                                 ClipPlaneNear = camera.ClipPlaneNear,
                                 ClipPlaneFar = camera.ClipPlaneFar,
@@ -303,9 +295,9 @@ namespace GFDLibrary.Conversion.AssimpNet
                                 Name = node.Name,
                                 AngleInnerCone = light.AngleInnerCone,
                                 AngleOuterCone = light.AngleOuterCone,
-                                ColorAmbient = light.AmbientColor.ToAssimpAsColor3D(),
-                                ColorDiffuse = light.DiffuseColor.ToAssimpAsColor3D(),
-                                ColorSpecular = light.SpecularColor.ToAssimpAsColor3D(),
+                                ColorAmbient = light.AmbientColor.ToAssimpAsVector3(),
+                                ColorDiffuse = light.DiffuseColor.ToAssimpAsVector3(),
+                                ColorSpecular = light.SpecularColor.ToAssimpAsVector3(),
                                 LightType = light.Type == LightType.Point ? Ai.LightSourceType.Point : light.Type == LightType.Spot ? Ai.LightSourceType.Spot : Ai.LightSourceType.Directional,
                             } );
                         }
@@ -342,7 +334,7 @@ namespace GFDLibrary.Conversion.AssimpNet
             {
                 foreach ( var vertex in vertices )
                 {
-                    aiMesh.Vertices.Add( new Ai.Vector3D( vertex.X, vertex.Y, vertex.Z ) );
+                    aiMesh.Vertices.Add( new Vector3( vertex.X, vertex.Y, vertex.Z ) );
                 }
             }
 
@@ -350,7 +342,7 @@ namespace GFDLibrary.Conversion.AssimpNet
             {
                 foreach ( var normal in normals )
                 {
-                    aiMesh.Normals.Add( new Ai.Vector3D( normal.X, normal.Y, normal.Z ) );
+                    aiMesh.Normals.Add( new Vector3( normal.X, normal.Y, normal.Z ) );
                 }
             }
 
@@ -358,7 +350,7 @@ namespace GFDLibrary.Conversion.AssimpNet
             {
                 foreach ( var tangent in mesh.Tangents )
                 {
-                    aiMesh.Tangents.Add( new Ai.Vector3D( tangent.X, tangent.Y, tangent.Z ) );
+                    aiMesh.Tangents.Add( new Vector3( tangent.X, tangent.Y, tangent.Z ) );
                 }
             }
 
@@ -366,7 +358,7 @@ namespace GFDLibrary.Conversion.AssimpNet
             {
                 foreach ( var binormal in mesh.Binormals )
                 {
-                    aiMesh.BiTangents.Add( new Ai.Vector3D( binormal.X, binormal.Y, binormal.Z ) );
+                    aiMesh.BiTangents.Add( new Vector3( binormal.X, binormal.Y, binormal.Z ) );
                 }
             }
 
@@ -374,7 +366,7 @@ namespace GFDLibrary.Conversion.AssimpNet
             {
                 foreach ( var vertex in mesh.TexCoordsChannel0 )
                 {
-                    aiMesh.TextureCoordinateChannels[0].Add( new Ai.Vector3D( vertex.X, vertex.Y, 0 ) );
+                    aiMesh.TextureCoordinateChannels[0].Add( new Vector3( vertex.X, vertex.Y, 0 ) );
                 }
             }
 
@@ -382,7 +374,7 @@ namespace GFDLibrary.Conversion.AssimpNet
             {
                 foreach ( var vertex in mesh.TexCoordsChannel1 )
                 {
-                    aiMesh.TextureCoordinateChannels[1].Add( new Ai.Vector3D( vertex.X, vertex.Y, 0 ) );
+                    aiMesh.TextureCoordinateChannels[1].Add( new Vector3( vertex.X, vertex.Y, 0 ) );
                 }
             }
 
@@ -390,7 +382,7 @@ namespace GFDLibrary.Conversion.AssimpNet
             {
                 foreach ( var vertex in mesh.TexCoordsChannel2 )
                 {
-                    aiMesh.TextureCoordinateChannels[2].Add( new Ai.Vector3D( vertex.X, vertex.Y, 0 ) );
+                    aiMesh.TextureCoordinateChannels[2].Add( new Vector3( vertex.X, vertex.Y, 0 ) );
                 }
             }
 
@@ -431,10 +423,7 @@ namespace GFDLibrary.Conversion.AssimpNet
 
                             Matrix4x4.Invert( geometryNode.WorldTransform, out Matrix4x4 invGeometryNodeWorldTransform );
                             Matrix4x4.Invert( boneNode.WorldTransform * invGeometryNodeWorldTransform, out Matrix4x4 offsetMatrix );
-                            aiBone.OffsetMatrix = new Ai.Matrix4x4( offsetMatrix.M11, offsetMatrix.M21, offsetMatrix.M31, offsetMatrix.M41,
-                                                                    offsetMatrix.M12, offsetMatrix.M22, offsetMatrix.M32, offsetMatrix.M42,
-                                                                    offsetMatrix.M13, offsetMatrix.M23, offsetMatrix.M33, offsetMatrix.M43,
-                                                                    offsetMatrix.M14, offsetMatrix.M24, offsetMatrix.M34, offsetMatrix.M44 );
+                            aiBone.OffsetMatrix = offsetMatrix.ToAssimp();
                             boneMap[nodeIndex] = aiBone;
                         }
                         else

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Numerics;
 using Assimp;
 
 namespace GFDLibrary.Conversion.AssimpNet.Utilities
@@ -318,12 +319,12 @@ namespace GFDLibrary.Conversion.AssimpNet.Utilities
 
         private static int FindVertexCacheIndex( Assimp.Mesh mesh, int i, List<(Assimp.Bone, float)>[] vertexWeights, List<Vertex> vertexCache, out Vertex vertex )
         {
-            var position = mesh.HasVertices ? mesh.Vertices[i] : new Vector3D();
-            var normal = mesh.HasNormals ? mesh.Normals[i] : new Vector3D();
-            var tangent = mesh.HasTangentBasis ? mesh.Tangents[i] : new Vector3D();
-            var texCoord = mesh.HasTextureCoords( 0 ) ? mesh.TextureCoordinateChannels[0][i] : new Vector3D();
-            var texCoord2 = mesh.HasTextureCoords( 1 ) ? mesh.TextureCoordinateChannels[1][i] : new Vector3D();
-            var color = mesh.HasVertexColors( 0 ) ? mesh.VertexColorChannels[0][i] : new Color4D();
+            var position = mesh.HasVertices ? mesh.Vertices[i] : new Vector3();
+            var normal = mesh.HasNormals ? mesh.Normals[i] : new Vector3();
+            var tangent = mesh.HasTangentBasis ? mesh.Tangents[i] : new Vector3();
+            var texCoord = mesh.HasTextureCoords( 0 ) ? mesh.TextureCoordinateChannels[0][i] : new Vector3();
+            var texCoord2 = mesh.HasTextureCoords( 1 ) ? mesh.TextureCoordinateChannels[1][i] : new Vector3();
+            var color = mesh.HasVertexColors( 0 ) ? mesh.VertexColorChannels[0][i] : new Vector4();
             var weights = mesh.HasBones ? vertexWeights[i] : new List<(Assimp.Bone, float)>();
             var cacheIndex = vertexCache.FindIndex( y => y.Position == position && y.Normal == normal && y.Tangent == tangent && y.TexCoord == texCoord &&
                                                          y.TexCoord2 == texCoord2 && y.Color == color &&
@@ -397,15 +398,15 @@ namespace GFDLibrary.Conversion.AssimpNet.Utilities
 
         private struct Vertex
         {
-            public readonly Vector3D Position;
-            public readonly Vector3D Normal;
-            public readonly Vector3D Tangent;
-            public readonly Vector3D TexCoord;
-            public readonly Vector3D TexCoord2;
-            public readonly Color4D Color;
+            public readonly Vector3 Position;
+            public readonly Vector3 Normal;
+            public readonly Vector3 Tangent;
+            public readonly Vector3 TexCoord;
+            public readonly Vector3 TexCoord2;
+            public readonly Vector4 Color;
             public readonly List<(Assimp.Bone Bone, float Weight)> Weights;
 
-            public Vertex( Vector3D position, Vector3D normal, Vector3D tangent, Vector3D texCoord, Vector3D texCoord2, Color4D color, List<(Assimp.Bone, float)> weights )
+            public Vertex( Vector3 position, Vector3 normal, Vector3 tangent, Vector3 texCoord, Vector3 texCoord2, Vector4 color, List<(Assimp.Bone, float)> weights )
             {
                 Position = position;
                 Normal = normal;

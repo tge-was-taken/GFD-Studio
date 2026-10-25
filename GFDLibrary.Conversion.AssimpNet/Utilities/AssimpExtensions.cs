@@ -4,47 +4,33 @@ using System.Linq;
 using System.Numerics;
 using Assimp;
 using GFDLibrary.Graphics;
-using Matrix4x4 = Assimp.Matrix4x4;
-using Quaternion = Assimp.Quaternion;
 
 namespace GFDLibrary.Conversion.AssimpNet.Utilities
 {
     public static class AssimpExtensions
     {
-        public static Vector3D ToAssimp( this Vector3 value ) => new Vector3D( value.X, value.Y, value.Z );
+        // AssimpNetter hands out System.Numerics types holding assimp's own memory layout, so the
+        // conversions left are the ones that change shape or convention.
 
-        public static IEnumerable<Vector3D> ToAssimp( this IEnumerable<Vector3> values ) => values.Select( x => x.ToAssimp() );
+        public static Vector3 ToAssimp( this Vector2 value ) => new Vector3( value.X, value.Y, 0 );
 
-        public static Vector3D ToAssimp( this Vector2 value ) => new Vector3D( value.X, value.Y, 0 );
+        public static IEnumerable<Vector3> ToAssimp( this IEnumerable<Vector2> values ) => values.Select( x => x.ToAssimp() );
 
-        public static IEnumerable<Vector3D> ToAssimp( this IEnumerable<Vector2> values ) => values.Select( x => x.ToAssimp() );
+        public static Vector3 ToAssimpAsVector3( this Vector4 value ) => new Vector3( value.X, value.Y, value.Z );
 
-        public static Color4D ToAssimp( this Vector4 value ) => new Color4D( value.X, value.Y, value.Z, value.W );
+        public static Vector4 ToAssimp( this Color value )
+            => new Vector4( value.R / 255f, value.G / 255f, value.B / 255f, value.A / 255f );
 
-        public static Color3D ToAssimpAsColor3D( this Vector4 value ) => new Color3D( value.X, value.Y, value.Z );
+        public static IEnumerable<Vector4> ToAssimp( this IEnumerable<Color> values ) => values.Select( x => x.ToAssimp() );
 
-        public static IEnumerable<Color4D> ToAssimp( this IEnumerable<Vector4> values ) => values.Select( x => x.ToAssimp() );
+        /// <summary>
+        /// Assimp keeps the translation in the fourth column and System.Numerics in the fourth row,
+        /// so moving a matrix between the two conventions is a transpose.
+        /// </summary>
+        public static Matrix4x4 ToAssimp( this Matrix4x4 matrix ) => Matrix4x4.Transpose( matrix );
 
-        public static Quaternion ToAssimp( this System.Numerics.Quaternion quaternion ) =>
-            new Quaternion( quaternion.W, quaternion.X, quaternion.Y, quaternion.Z );
-
-        public static Matrix4x4 ToAssimp( this System.Numerics.Matrix4x4 matrix )
-        {
-            return new Matrix4x4( matrix.M11, matrix.M21, matrix.M31, matrix.M41,
-                                         matrix.M12, matrix.M22, matrix.M32, matrix.M42,
-                                         matrix.M13, matrix.M23, matrix.M33, matrix.M43,
-                                         matrix.M14, matrix.M24, matrix.M34, matrix.M44 );
-        }
-
-        public static Color4D ToAssimp( this Color value )
-        {
-            return new Color4D( value.R / 255f,
-                                       value.G / 255f,
-                                       value.B / 255f,
-                                       value.A / 255f );
-        }
-
-        public static IEnumerable<Color4D> ToAssimp( this IEnumerable<Color> values ) => values.Select( x => x.ToAssimp() );
+        /// <inheritdoc cref="ToAssimp(Matrix4x4)"/>
+        public static Matrix4x4 ToNumerics( this Matrix4x4 matrix ) => Matrix4x4.Transpose( matrix );
 
         public static void ExportColladaFile( this Scene aiScene, string path )
         {
@@ -52,50 +38,21 @@ namespace GFDLibrary.Conversion.AssimpNet.Utilities
                 aiContext.ExportFile( aiScene, path, "collada", PostProcessSteps.JoinIdenticalVertices | PostProcessSteps.FlipUVs | PostProcessSteps.GenerateSmoothNormals );
         }
 
-        public static Color ToNumerics( this Color4D value )
+        public static Color ToNumerics( this Vector4 value )
         {
-            return new Color( (byte)( value.R * 255f ),
-                              (byte)( value.G * 255f ),
-                              (byte)( value.B * 255f ),
-                              (byte)( value.A * 255f ) );
+            return new Color( (byte)( value.X * 255f ),
+                              (byte)( value.Y * 255f ),
+                              (byte)( value.Z * 255f ),
+                              (byte)( value.W * 255f ) );
         }
 
-        public static Vector4 ToNumerics( this Color3D value )
-        {
-            return new Vector4( value.R,
-                                value.G,
-                                value.B,
-                                1.0f );
-        }
+        public static IEnumerable<Color> ToNumerics( this IEnumerable<Vector4> values ) => values.Select( x => x.ToNumerics() );
 
-        public static IEnumerable<Color> ToNumerics( this IEnumerable<Color4D> values ) => values.Select( x => x.ToNumerics() );
+        public static Vector4 ToNumericsAsVector4( this Vector3 value ) => new Vector4( value.X, value.Y, value.Z, 1.0f );
 
-        public static System.Numerics.Matrix4x4 ToNumerics( this Matrix4x4 matrix )
-        {
-            return new System.Numerics.Matrix4x4( matrix.A1, matrix.B1, matrix.C1, matrix.D1,
-                                  matrix.A2, matrix.B2, matrix.C2, matrix.D2,
-                                  matrix.A3, matrix.B3, matrix.C3, matrix.D3,
-                                  matrix.A4, matrix.B4, matrix.C4, matrix.D4 );
-        }
+        public static Vector2 FromAssimpAsVector2( this Vector3 value ) => new Vector2( value.X, value.Y );
 
-        public static Vector3 ToNumerics( this Vector3D value )
-        {
-            return new Vector3( value.X, value.Y, value.Z );
-        }
-
-        public static IEnumerable<Vector3> ToNumerics( this IEnumerable<Vector3D> values ) => values.Select( x => x.ToNumerics() );
-
-        public static Vector2 FromAssimpAsVector2( this Vector3D value )
-        {
-            return new Vector2( value.X, value.Y );
-        }
-
-        public static IEnumerable<Vector2> FromAssimpAsVector2( this IEnumerable<Vector3D> values ) => values.Select( x => x.FromAssimpAsVector2() );
-
-        public static System.Numerics.Quaternion ToNumerics( this Quaternion value )
-        {
-            return new System.Numerics.Quaternion( value.X, value.Y, value.Z, value.W );
-        }
+        public static IEnumerable<Vector2> FromAssimpAsVector2( this IEnumerable<Vector3> values ) => values.Select( x => x.FromAssimpAsVector2() );
 
         public static System.Numerics.Matrix4x4 CalculateWorldTransform( this Assimp.Node node )
         {
@@ -178,7 +135,7 @@ namespace GFDLibrary.Conversion.AssimpNet.Utilities
             return vertexWeights;
         }
 
-        private static bool IsWithinRange( Vector3D position, float range )
+        private static bool IsWithinRange( Vector3 position, float range )
         {
             return ( position.X < 0 ? position.X >= -range : position.X <= range ) &&
                    ( position.Y < 0 ? position.Y >= -range : position.Y <= range ) &&
