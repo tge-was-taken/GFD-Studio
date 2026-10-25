@@ -72,7 +72,7 @@ namespace GFDStudio.Avalonia
             => Wait( ModelConversionOptionsWindow.Show( mOwner, scene, originalModel ) );
 
         public NewTextureMap AskNewTextureMap()
-            => Wait( NewTextureMapWindow.Show( mOwner ) );
+            => Wait( NewTextureMapWindow.Ask( mOwner ) );
 
         private static string[] LocalPaths( IEnumerable<IStorageItem> items )
             => items?.Select( x => x.TryGetLocalPath() ).Where( x => x != null ).ToArray() ?? [];

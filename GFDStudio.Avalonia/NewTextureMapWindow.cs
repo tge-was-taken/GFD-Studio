@@ -66,7 +66,7 @@ namespace GFDStudio.Avalonia
             };
         }
 
-        public static Task<NewTextureMap> Show( Window owner )
+        public static Task<NewTextureMap> Ask( Window owner )
             => new NewTextureMapWindow().ShowDialog<NewTextureMap>( owner );
 
         private static Control Label( string text, int row )

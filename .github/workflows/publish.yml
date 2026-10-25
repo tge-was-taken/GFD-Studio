@@ -15,15 +15,20 @@ on:
         default: false
 
 jobs:
+  # The Avalonia front end runs everywhere, so it is published for each platform.
   publish:
     strategy:
       fail-fast: false
       matrix:
         include:
           - rid: win-x64
+            os: windows-latest
+          - rid: linux-x64
+            os: ubuntu-latest
+          - rid: osx-arm64
+            os: macos-latest
 
-    # GFD Studio is a WinForms application, so there is only a Windows build to publish.
-    runs-on: windows-latest
+    runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v4
@@ -41,21 +46,29 @@ jobs:
         run: |
           set -eu
           out="publish/GFDStudio-${{ matrix.rid }}"
-          dotnet publish GFDStudio/GFDStudio.csproj -c Release \
+          dotnet publish GFDStudio.Avalonia/GFDStudio.Avalonia.csproj -c Release \
             -r ${{ matrix.rid }} --self-contained -o "$out"
           rm -rf "$out"/*.pdb
 
       - name: Archive
+        id: archive
         shell: bash
         run: |
           set -eu
           cd publish
-          7z a "GFDStudio-${{ matrix.rid }}.zip" "GFDStudio-${{ matrix.rid }}"
+          name="GFDStudio-${{ matrix.rid }}"
+          if [ "${{ runner.os }}" = "Windows" ]; then
+            7z a "$name.zip" "$name"
+            echo "file=publish/$name.zip" >> "$GITHUB_OUTPUT"
+          else
+            tar -czf "$name.tar.gz" "$name"
+            echo "file=publish/$name.tar.gz" >> "$GITHUB_OUTPUT"
+          fi
 
       - uses: actions/upload-artifact@v4
         with:
           name: GFDStudio-${{ matrix.rid }}
-          path: publish/GFDStudio-${{ matrix.rid }}.zip
+          path: ${{ steps.archive.outputs.file }}
 
       - name: Attach to the release
         if: inputs.tag != ''
@@ -63,11 +76,10 @@ jobs:
         with:
           tag_name: ${{ inputs.tag }}
           prerelease: ${{ inputs.prerelease }}
-          files: publish/GFDStudio-${{ matrix.rid }}.zip
+          files: ${{ steps.archive.outputs.file }}
 
-  # The portable build is not self contained, so it needs an installed .NET desktop runtime but
-  # is a much smaller download.
-  portable:
+  # The WinForms front end is still the one with every tool, and is Windows only.
+  winforms:
     runs-on: windows-latest
 
     steps:
@@ -77,16 +89,15 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
-      # The shared libraries the texture codecs and the FBX exporter load at runtime. They are
-      # built here rather than taken from the CI artifacts, so a release is self contained.
       - uses: ./.github/actions/build-native
 
       - name: Publish the executable
         shell: bash
         run: |
           set -eu
-          out=publish/GFDStudio-dotnet
-          dotnet publish GFDStudio/GFDStudio.csproj -c Release --no-self-contained -o "$out"
+          out=publish/GFDStudio-winforms-win-x64
+          dotnet publish GFDStudio/GFDStudio.csproj -c Release \
+            -r win-x64 --self-contained -o "$out"
           rm -rf "$out"/*.pdb
 
       - name: Archive
@@ -94,12 +105,12 @@ jobs:
         run: |
           set -eu
           cd publish
-          7z a GFDStudio-dotnet.zip GFDStudio-dotnet
+          7z a GFDStudio-winforms-win-x64.zip GFDStudio-winforms-win-x64
 
       - uses: actions/upload-artifact@v4
         with:
-          name: GFDStudio-dotnet
-          path: publish/GFDStudio-dotnet.zip
+          name: GFDStudio-winforms-win-x64
+          path: publish/GFDStudio-winforms-win-x64.zip
 
       - name: Attach to the release
         if: inputs.tag != ''
@@ -107,4 +118,46 @@ jobs:
         with:
           tag_name: ${{ inputs.tag }}
           prerelease: ${{ inputs.prerelease }}
-          files: publish/GFDStudio-dotnet.zip
+          files: publish/GFDStudio-winforms-win-x64.zip
+
+  # The portable build is not self contained, so it needs an installed .NET runtime but is a
+  # much smaller download.
+  portable:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - uses: ./.github/actions/build-native
+
+      - name: Publish the executable
+        shell: bash
+        run: |
+          set -eu
+          out=publish/GFDStudio-dotnet
+          dotnet publish GFDStudio.Avalonia/GFDStudio.Avalonia.csproj -c Release --no-self-contained -o "$out"
+          rm -rf "$out"/*.pdb
+
+      - name: Archive
+        shell: bash
+        run: |
+          set -eu
+          cd publish
+          tar -czf GFDStudio-dotnet.tar.gz GFDStudio-dotnet
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: GFDStudio-dotnet
+          path: publish/GFDStudio-dotnet.tar.gz
+
+      - name: Attach to the release
+        if: inputs.tag != ''
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ inputs.tag }}
+          prerelease: ${{ inputs.prerelease }}
+          files: publish/GFDStudio-dotnet.tar.gz
