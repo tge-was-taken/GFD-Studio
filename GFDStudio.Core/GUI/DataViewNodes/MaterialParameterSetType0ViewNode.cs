@@ -1,4 +1,4 @@
-﻿using GFDLibrary.Materials;
+using GFDLibrary.Materials;
 using GFDStudio.GUI.TypeConverters;
 using System.ComponentModel;
 using System.Numerics;
@@ -17,12 +17,6 @@ namespace GFDStudio.GUI.DataViewNodes
             get => Data.BaseColor;
             set => SetDataProperty(value); 
         } // 0x90
-        [DisplayName( "Base Color (RGBA)" )]
-        public System.Drawing.Color BaseColorRGBA
-        {
-            get => Data.BaseColor.ToByte();
-            set => Data.BaseColor = value.ToFloat();
-        }
         [DisplayName( "Emissive Strength" )]
         public float EmissiveStrength {
             get => Data.EmissiveStrength;

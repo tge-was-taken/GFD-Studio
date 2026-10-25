@@ -1,4 +1,4 @@
-﻿using GFDLibrary.Materials;
+using GFDLibrary.Materials;
 using GFDStudio.GUI.TypeConverters;
 using System.ComponentModel;
 using System.Numerics;
@@ -14,12 +14,6 @@ namespace GFDStudio.GUI.DataViewNodes
             get => Data.BaseColor;
             set => SetDataProperty( value );
         } // 0x90
-        [DisplayName( "Base Color (RGBA)" )]
-        public System.Drawing.Color BaseColorRGBA
-        {
-            get => Data.BaseColor.ToByte();
-            set => Data.BaseColor = value.ToFloat();
-        }
         
         [TypeConverter( typeof( Vector4TypeConverter ) )]
         [DisplayName( "Shadow Color (float)" )]
@@ -28,12 +22,6 @@ namespace GFDStudio.GUI.DataViewNodes
             get => Data.ShadowColor;
             set => SetDataProperty( value );
         } // 0xa0
-        [DisplayName( "Shadow Color (RGBA)" )]
-        public System.Drawing.Color ShadowColorRGBA
-        {
-            get => Data.ShadowColor.ToByte();
-            set => Data.ShadowColor = value.ToFloat();
-        }
 
         [TypeConverter( typeof( Vector4TypeConverter ) )]
         [DisplayName( "Edge Color (float)" )]
@@ -42,12 +30,6 @@ namespace GFDStudio.GUI.DataViewNodes
             get => Data.EdgeColor;
             set => SetDataProperty( value );
         } // 0xb0
-        [DisplayName( "Edge Color (RGBA)" )]
-        public System.Drawing.Color EdgeColorRGBA
-        {
-            get => Data.EdgeColor.ToByte();
-            set => Data.EdgeColor = value.ToFloat();
-        }
 
         [TypeConverter( typeof( Vector4TypeConverter ) )]
         [DisplayName( "Emissive Color (float)" )]
@@ -56,12 +38,6 @@ namespace GFDStudio.GUI.DataViewNodes
             get => Data.EmissiveColor;
             set => SetDataProperty( value );
         } // 0xc0
-        [DisplayName( "Emissive Color (RGBA)" )]
-        public System.Drawing.Color EmissiveColorRGBA
-        {
-            get => Data.EmissiveColor.ToByte();
-            set => Data.EmissiveColor = value.ToFloat();
-        }
 
         [TypeConverter( typeof( Vector3TypeConverter ) )]
         [DisplayName( "Specular Color" )]

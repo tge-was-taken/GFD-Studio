@@ -1,4 +1,4 @@
-﻿using GFDLibrary.Materials;
+using GFDLibrary.Materials;
 using GFDStudio.GUI.TypeConverters;
 using System.ComponentModel;
 using System.Numerics;
@@ -16,25 +16,12 @@ namespace GFDStudio.GUI.DataViewNodes
             get => Data.BaseColor;
             set => SetDataProperty(value); 
         } // 0x90
-        [DisplayName( "Base Color (RGBA)" )]
-        public System.Drawing.Color BaseColorRGBA
-        {
-            get => Data.BaseColor.ToByte();
-
-            set => Data.BaseColor = value.ToFloat();
-        }
         [TypeConverter( typeof( Vector4TypeConverter ) )]
         [DisplayName( "Emissive Color (float)" )]
         public Vector4 EmissiveColor { 
             get => GetDataProperty<Vector4>(); 
             set => SetDataProperty(value); 
         } // 0xa0
-        [DisplayName( "Emissive Color (RGBA)" )]
-        public System.Drawing.Color EmissiveColorRGBA
-        {
-            get => Data.EmissiveColor.ToByte();
-            set => Data.EmissiveColor = value.ToFloat();
-        }
         [DisplayName( "Distortion Power" )]
         public float DistortionPower {
             get => Data.DistortionPower;

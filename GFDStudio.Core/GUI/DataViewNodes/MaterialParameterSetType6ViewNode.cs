@@ -1,4 +1,4 @@
-﻿using GFDLibrary.Materials;
+using GFDLibrary.Materials;
 using GFDStudio.GUI.TypeConverters;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -68,12 +68,6 @@ namespace GFDStudio.GUI.DataViewNodes
             get => Data.BaseColor;
             set => SetDataProperty( value );
         } // 0x90
-        [DisplayName( "Base Color (RGBA)" )]
-        public System.Drawing.Color BaseColorRGBA
-        {
-            get => BaseColor.ToByte();
-            set => BaseColor = value.ToFloat();
-        }
         public float Field1 {
             get => Data.Field1;
             set => SetDataProperty(value); 

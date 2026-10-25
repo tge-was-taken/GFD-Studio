@@ -25,13 +25,6 @@ namespace GFDStudio.GUI.DataViewNodes
             set => SetDataProperty( value );
         }
 
-        [DisplayName( "Light Color (RGBA)" )]
-        public System.Drawing.Color LightColorRGBA
-        {
-            get => Data.LightColor.ToByte();
-            set => Data.LightColor = value.ToFloat();
-        }
-
         // 1C
         [Browsable( true )]
         [DisplayName( "Light threshold" )]
@@ -58,13 +51,6 @@ namespace GFDStudio.GUI.DataViewNodes
         {
             get => Data.ShadowColor;
             set => SetDataProperty( value );
-        }
-
-        [DisplayName( "Shadow Color (RGBA)" )]
-        public System.Drawing.Color ShadowRGBA
-        {
-            get => Data.ShadowColor.ToByte();
-            set => Data.ShadowColor = value.ToFloat();
         }
 
         // 34
