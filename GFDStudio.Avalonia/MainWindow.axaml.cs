@@ -1,5 +1,9 @@
 using System;
+using System.IO;
+using System.Linq;
 using Avalonia.Controls;
+using Avalonia.Input;
+using Avalonia.Platform.Storage;
 using GFDLibrary;
 using GFDLibrary.Animations;
 using GFDLibrary.Models;
@@ -23,6 +27,10 @@ namespace GFDStudio.Avalonia
             mSave.Click += ( s, e ) => SaveFile();
             mSaveAs.Click += ( s, e ) => SaveFileAs();
             mExit.Click += ( s, e ) => Close();
+
+            DragDrop.SetAllowDrop( this, true );
+            AddHandler( DragDrop.DragOverEvent, OnDragOver );
+            AddHandler( DragDrop.DropEvent, OnDrop );
 
             BindOption( mRetainTextureNames, x => Options.RetainMaterialTextureNames = x, Options.RetainMaterialTextureNames );
             BindOption( mRetainColorValues, x => Options.RetainMaterialColorValues = x, Options.RetainMaterialColorValues );
@@ -85,6 +93,18 @@ namespace GFDStudio.Avalonia
             var path = TopNode?.Export();
             if ( path != null )
                 mFilePath = path;
+        }
+
+        private static void OnDragOver( object sender, DragEventArgs e )
+            => e.DragEffects = e.DataTransfer.Contains( DataFormat.File )
+                               ? DragDropEffects.Copy
+                               : DragDropEffects.None;
+
+        private void OnDrop( object sender, DragEventArgs e )
+        {
+            var file = e.DataTransfer.TryGetFile()?.TryGetLocalPath();
+            if ( file != null && File.Exists( file ) )
+                OpenFile( file );
         }
 
         private static void BindOption( MenuItem item, Action<bool> set, bool initial )
