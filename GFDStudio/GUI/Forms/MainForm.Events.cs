@@ -517,7 +517,7 @@ namespace GFDStudio.GUI.Forms
                                 break;
                             default:
                                 texPath = Path.Combine( outpath, Path.ChangeExtension( tex.Name, ".png" ) );
-                                TextureDecoder.Decode( tex ).Save( texPath );
+                                TextureDecoder.Decode( tex ).SaveImage( texPath );
                                 break;
                         }
                     }

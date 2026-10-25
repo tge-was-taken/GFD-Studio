@@ -1,12 +1,13 @@
-﻿using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
-using GFDLibrary.Textures.Utilities;
 using GFDStudio.IO;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.PixelFormats;
+using Bitmap = System.Drawing.Bitmap;
 
 namespace GFDStudio.FormatModules
 {
-    public class BitmapFormatModule : FormatModule<Bitmap>
+    public class BitmapFormatModule : FormatModule<Image<Rgba32>>
     {
         public override string Name =>
             "Bitmap";
@@ -22,19 +23,23 @@ namespace GFDStudio.FormatModules
             return PathUtilities.MatchesAnyExtension( filename, Extensions );
         }
 
-        protected override void ExportCore( Bitmap obj, Stream stream, string filename = null )
+        protected override void ExportCore( Image<Rgba32> obj, Stream stream, string filename = null )
         {
-            obj.Save( stream, filename != null ? ImageFormatHelper.GetImageFormatFromPath(filename) : ImageFormat.Png );
+            // The encoder comes from the file extension, with PNG for an unknown or absent one.
+            var manager = Configuration.Default.ImageFormatsManager;
+            var format = filename != null ? manager.FindFormatByFileExtension( Path.GetExtension( filename ) ) : null;
+
+            obj.Save( stream, format != null ? manager.FindEncoder( format ) : new PngEncoder() );
         }
 
-        protected override Bitmap ImportCore( Stream stream, string filename = null )
+        protected override Image<Rgba32> ImportCore( Stream stream, string filename = null )
         {
-            return new Bitmap( stream );
+            return Image.Load<Rgba32>( stream );
         }
 
-        protected override Bitmap GetBitmapCore( Bitmap obj )
+        protected override Bitmap GetBitmapCore( Image<Rgba32> obj )
         {
-            return obj;
+            return obj.ToBitmap();
         }
     }
 }

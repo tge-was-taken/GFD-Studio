@@ -7,6 +7,8 @@ using GFDLibrary.Textures.DDS;
 using GFDLibrary.Textures.Utilities;
 using GFDStudio.GUI.Forms;
 using GFDStudio.GUI.TypeConverters;
+using GFDStudio.FormatModules;
+using Rgba32Image = SixLabors.ImageSharp.Image<SixLabors.ImageSharp.PixelFormats.Rgba32>;
 
 namespace GFDStudio.GUI.DataViewNodes
 {
@@ -77,10 +79,10 @@ namespace GFDStudio.GUI.DataViewNodes
 
         protected override void InitializeCore()
         {
-            RegisterExportHandler<Bitmap>( path => TextureDecoder.Decode( Data ).Save( path, ImageFormatHelper.GetImageFormatFromPath( path ) ) );
+            RegisterExportHandler<Rgba32Image>( path => TextureDecoder.Decode( Data ).SaveImage( path ) );
             RegisterExportHandler<DDSStream>( path => File.WriteAllBytes( path, Data.Data ) );
 
-            RegisterReplaceHandler<Bitmap>( path => MainForm.Instance.HandleTextureToReplace( Data.Version, TextureEncoder.Encode( Name, Format, Field1C, Field1D, Field1E, Field1F, new Bitmap( path ) ) ) );
+            RegisterReplaceHandler<Rgba32Image>( path => MainForm.Instance.HandleTextureToReplace( Data.Version, TextureEncoder.Encode( Name, Format, Field1C, Field1D, Field1E, Field1F, ImageSharpExtensions.LoadImage( path ) ) ) );
             RegisterReplaceHandler<DDSStream>( path => MainForm.Instance.HandleTextureToReplace( Data.Version, new Texture( Name, Format, File.ReadAllBytes( path ), Field1C, Field1D, Field1E, Field1F ) ) );
 
             TextChanged += ( s, o ) => Name = Text;

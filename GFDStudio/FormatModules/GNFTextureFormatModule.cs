@@ -40,7 +40,7 @@ namespace GFDStudio.FormatModules
 
         protected override Bitmap GetBitmapCore( GNFTexture obj )
         {
-            return TextureDecoder.Decode( obj );
+            return TextureDecoder.Decode( obj ).ToBitmap();
         }
     }
 }

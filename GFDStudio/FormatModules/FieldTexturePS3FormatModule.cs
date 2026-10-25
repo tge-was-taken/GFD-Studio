@@ -39,7 +39,7 @@ namespace GFDStudio.FormatModules
 
         protected override Bitmap GetBitmapCore( FieldTexturePS3 obj )
         {
-            return TextureDecoder.Decode( obj );
+            return TextureDecoder.Decode( obj ).ToBitmap();
         }
     }
 }

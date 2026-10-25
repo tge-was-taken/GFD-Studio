@@ -6,6 +6,8 @@ using GFDLibrary.Textures;
 using GFDLibrary.Textures.DDS;
 using GFDLibrary.Textures.GNF;
 using GFDLibrary.Textures.Utilities;
+using GFDStudio.FormatModules;
+using Rgba32Image = SixLabors.ImageSharp.Image<SixLabors.ImageSharp.PixelFormats.Rgba32>;
 
 namespace GFDStudio.GUI.DataViewNodes
 {
@@ -205,10 +207,10 @@ namespace GFDStudio.GUI.DataViewNodes
         protected override void InitializeCore()
         {
             RegisterExportHandler<GNFTexture>( filePath => Data.Save( filePath ) );
-            RegisterExportHandler<Bitmap>( path => TextureDecoder.Decode( Data ).Save( path, ImageFormatHelper.GetImageFormatFromPath( path ) ) );
+            RegisterExportHandler<Rgba32Image>( path => TextureDecoder.Decode( Data ).SaveImage( path ) );
             RegisterExportHandler<DDSStream>( path => File.WriteAllBytes( path, TextureDecoder.DecodeToDDS( Data ) ) );
 
-            RegisterReplaceHandler<Bitmap>( path => new GNFTexture( new Bitmap( path ) ) );
+            RegisterReplaceHandler<Rgba32Image>( path => new GNFTexture( ImageSharpExtensions.LoadImage( path ) ) );
             RegisterReplaceHandler<DDSStream>( path =>
             {
                 if ( Path.GetExtension( path ).ToLowerInvariant() != ".dds" )
