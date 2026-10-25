@@ -36,6 +36,17 @@ dotnet build GFDStudio.NoFbx.slnf -c Release -p:EnableFbxSdk=false
 
 FBX export then goes through assimp instead of the FBX SDK exporter.
 
+### Platforms
+
+`GFDLibrary` and its tests build and run on Windows, Linux and macOS:
+
+```
+dotnet build GFDLibrary.slnf -c Release
+```
+
+The application itself is Windows only, because the GUI is WinForms, the model viewer is an
+OpenTK `GLControl` and the FBX exporter is a C++/CLI project.
+
 ### Publishing
 
 Every push to master publishes a release tagged `v0.10.<patch>-<commit>`, numbering the patch from
