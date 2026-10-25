@@ -8,9 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using GFDLibrary.Textures;
 using GFDLibrary.Textures.DDS;
-using GFDLibrary.Textures.Utilities;
 using GFDStudio.FormatModules;
-using Rgba32Image = SixLabors.ImageSharp.Image<SixLabors.ImageSharp.PixelFormats.Rgba32>;
 
 namespace GFDStudio.GUI.DataViewNodes
 {
@@ -98,10 +96,10 @@ namespace GFDStudio.GUI.DataViewNodes
         protected override void InitializeCore()
         {
             RegisterExportHandler<FieldTexturePS3>( filePath => Data.Save( filePath ) );
-            RegisterExportHandler<Rgba32Image>( path => TextureDecoder.Decode( Data ).SaveImage( path ) );
+            RegisterExportHandler<GFDLibrary.Graphics.Image>( path => PngCodec.Save( TextureDecoder.Decode( Data ), path ) );
             RegisterExportHandler<DDSStream>( path => File.WriteAllBytes( path, TextureDecoder.DecodeToDDS( Data ) ) );
 
-            RegisterReplaceHandler<Rgba32Image>( path => new FieldTexturePS3( ImageSharpExtensions.LoadImage( path ) ) );
+            RegisterReplaceHandler<GFDLibrary.Graphics.Image>( path => new FieldTexturePS3( GFDLibrary.Textures.PngCodec.Load( path ) ) );
             RegisterReplaceHandler<DDSStream>( path =>
             {
                 if ( Path.GetExtension( path ).ToLowerInvariant() != ".dds" )

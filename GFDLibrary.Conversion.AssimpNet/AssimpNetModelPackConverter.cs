@@ -118,7 +118,7 @@ namespace GFDLibrary.Conversion.AssimpNet
             }
             else
             {
-                using var image = SixLabors.ImageSharp.Image.Load<SixLabors.ImageSharp.PixelFormats.Rgba32>( fullFilePath );
+                var image = PngCodec.Load( fullFilePath );
                 texture = TextureEncoder.Encode( textureName, TextureFormat.DDS, image );
             }
             if ( options.Version == ResourceVersion.MetaphorRefantazio)

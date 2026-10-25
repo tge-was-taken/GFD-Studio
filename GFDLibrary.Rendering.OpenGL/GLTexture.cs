@@ -55,11 +55,7 @@ namespace GFDLibrary.Rendering.OpenGL
                         var bitmap = TextureDecoder.Decode( texture );
                         SetTextureParameters( TextureWrapMode.Repeat, TextureWrapMode.Repeat, TextureMagFilter.Linear, TextureMinFilter.Linear, 1 );
 
-                        var pixels = GFDLibrary.Textures.Utilities.ImageHelper.ToBgra( bitmap );
-
-                        // GL wants RGBA, the helper gives BGRA.
-                        for ( int i = 0; i < pixels.Length; i += 4 )
-                            ( pixels[i], pixels[i + 2] ) = ( pixels[i + 2], pixels[i] );
+                        var pixels = bitmap.Pixels;
 
                         fixed ( byte* pPixels = &pixels[ 0 ] )
                         {

@@ -1,19 +1,18 @@
 using System.IO;
+using GFDLibrary.Graphics;
+using GFDLibrary.Textures;
 using GFDStudio.IO;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Png;
-using SixLabors.ImageSharp.PixelFormats;
 using Bitmap = System.Drawing.Bitmap;
 
 namespace GFDStudio.FormatModules
 {
-    public class BitmapFormatModule : FormatModule<Image<Rgba32>>
+    public class BitmapFormatModule : FormatModule<Image>
     {
         public override string Name =>
             "Bitmap";
 
         public override string[] Extensions =>
-            new[] { "png", "bmp" };
+            new[] { "png" };
 
         public override FormatModuleUsageFlags UsageFlags =>
              FormatModuleUsageFlags.ImportForEditing | FormatModuleUsageFlags.Export | FormatModuleUsageFlags.Bitmap;
@@ -23,21 +22,17 @@ namespace GFDStudio.FormatModules
             return PathUtilities.MatchesAnyExtension( filename, Extensions );
         }
 
-        protected override void ExportCore( Image<Rgba32> obj, Stream stream, string filename = null )
+        protected override void ExportCore( Image obj, Stream stream, string filename = null )
         {
-            // The encoder comes from the file extension, with PNG for an unknown or absent one.
-            var manager = Configuration.Default.ImageFormatsManager;
-            var format = filename != null ? manager.FindFormatByFileExtension( Path.GetExtension( filename ) ) : null;
-
-            obj.Save( stream, format != null ? manager.FindEncoder( format ) : new PngEncoder() );
+            PngCodec.Save( obj, stream );
         }
 
-        protected override Image<Rgba32> ImportCore( Stream stream, string filename = null )
+        protected override Image ImportCore( Stream stream, string filename = null )
         {
-            return Image.Load<Rgba32>( stream );
+            return PngCodec.Load( stream );
         }
 
-        protected override Bitmap GetBitmapCore( Image<Rgba32> obj )
+        protected override Bitmap GetBitmapCore( Image obj )
         {
             return obj.ToBitmap();
         }

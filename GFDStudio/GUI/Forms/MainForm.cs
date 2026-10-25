@@ -17,7 +17,6 @@ using GFDStudio.GUI.DataViewNodes;
 using GFDStudio.IO;
 using MetroSet_UI.Controls;
 using MetroSet_UI.Forms;
-using SixLabors.ImageSharp;
 using Control = System.Windows.Forms.Control;
 
 namespace GFDStudio.GUI.Forms

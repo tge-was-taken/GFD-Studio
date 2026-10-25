@@ -6,7 +6,6 @@ using GFDLibrary.Textures;
 using Ookii.Dialogs;
 using Ookii.Dialogs.Wpf;
 using GFDStudio.FormatModules;
-using Rgba32Image = SixLabors.ImageSharp.Image<SixLabors.ImageSharp.PixelFormats.Rgba32>;
 
 namespace GFDStudio.GUI.DataViewNodes
 {
@@ -26,8 +25,8 @@ namespace GFDStudio.GUI.DataViewNodes
         {
             base.InitializeCore();
 
-            RegisterAddHandler<Rgba32Image>( path => Data.Add( TextureEncoder.Encode( Path.GetFileNameWithoutExtension( path ) + ".dds",
-                                                                                 TextureFormat.DDS, ImageSharpExtensions.LoadImage( path ) ) ) );
+            RegisterAddHandler<GFDLibrary.Graphics.Image>( path => Data.Add( TextureEncoder.Encode( Path.GetFileNameWithoutExtension( path ) + ".dds",
+                                                                                 TextureFormat.DDS, GFDLibrary.Textures.PngCodec.Load( path ) ) ) );
 
             RegisterAddHandler<Stream>( path => Data.Add( new Texture( Path.GetFileNameWithoutExtension( path ) + ".dds",
                                                                        TextureFormat.DDS, File.ReadAllBytes( path ) ) ) );
