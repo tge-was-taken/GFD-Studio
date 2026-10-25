@@ -4,7 +4,6 @@
     "projects": [
       "Dependencies\\Scarlet\\Scarlet.IO.ImageFormats\\Scarlet.IO.ImageFormats.csproj",
       "Dependencies\\Scarlet\\Scarlet\\Scarlet.csproj",
-      "Dependencies\\tga-decoder-cs\\TgaDecoderTest.csproj",
       "GFDLibrary.Conversion.AssimpNet\\GFDLibrary.Conversion.AssimpNet.csproj",
       "GFDLibrary.Conversion.FbxSdk.Tests\\GFDLibrary.Conversion.FbxSdk.Tests.csproj",
       "GFDLibrary.Rendering.OpenGL\\GFDLibrary.Rendering.OpenGL.csproj",
