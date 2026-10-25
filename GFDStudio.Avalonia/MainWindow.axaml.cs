@@ -26,6 +26,8 @@ namespace GFDStudio.Avalonia
         {
             InitializeComponent();
 
+            Title = $"GFD Studio {typeof( MainWindow ).Assembly.GetName().Version?.ToString( 3 )}";
+
             mTree.SelectionChanged += ( s, e ) => ShowSelection( mTree.SelectedNode );
             mTree.NodeSelected += ( s, node ) => ShowSelection( node );
             mAnimationTree.SelectionChanged += ( s, e ) => SelectAnimation( mAnimationTree.SelectedNode );
@@ -66,7 +68,7 @@ namespace GFDStudio.Avalonia
 
             mModelView.AnimationLoaded += ( s, animation ) => ShowAnimationControls( animation );
             mModelView.AnimationPlaybackStateChanged += ( s, state ) =>
-                mPlayPause.Content = state == AnimationPlaybackState.Playing ? "Pause" : "Play";
+                mPlayPause.Content = state == AnimationPlaybackState.Playing ? "\u23F8" : "\u25B6";
             mModelView.AnimationTimeChanged += ( s, time ) =>
             {
                 mUpdatingAnimationTime = true;
@@ -219,12 +221,11 @@ namespace GFDStudio.Avalonia
 
         private void ShowAnimationControls( Animation animation )
         {
-            mAnimationControls.IsVisible = animation != null;
+            mAnimationControls.IsEnabled = animation != null;
             if ( animation == null )
                 return;
 
             mAnimationTime.Maximum = animation.Duration * 1000d;
-            mAnimationLabel.Text = $"{animation.Duration:0.00}s";
         }
 
         private void RebuildRecentFiles()

@@ -3,7 +3,7 @@
         xmlns:local="clr-namespace:GFDStudio.Avalonia"
         xmlns:pg="clr-namespace:Avalonia.PropertyGrid.Controls;assembly=Avalonia.PropertyGrid"
         x:Class="GFDStudio.Avalonia.MainWindow"
-        Title="GFD Studio" Width="1280" Height="800">
+        Width="1280" Height="800">
 
   <DockPanel>
 
@@ -47,41 +47,43 @@
       <TextBlock Name="mStatus" Margin="8,4" Text="Ready" />
     </Border>
 
-    <Grid ColumnDefinitions="2*,4,3*,4,3*">
+    <!-- The viewer takes the left half, with the trees above the properties on the right. -->
+    <Grid ColumnDefinitions="*,4,420">
 
-      <TabControl Grid.Column="0">
-        <TabItem Header="Model">
-          <local:DataViewNodeTree Name="mTree" />
-        </TabItem>
-        <TabItem Header="Animations">
-          <local:DataViewNodeTree Name="mAnimationTree" />
-        </TabItem>
-      </TabControl>
-
-      <GridSplitter Grid.Column="1" ResizeDirection="Columns" />
-
-      <DockPanel Grid.Column="2">
-        <Border Name="mAnimationControls" DockPanel.Dock="Bottom" IsVisible="False"
+      <DockPanel Grid.Column="0">
+        <Border Name="mAnimationControls" DockPanel.Dock="Bottom" IsEnabled="False"
                 BorderThickness="0,1,0,0" BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}">
-          <StackPanel Orientation="Horizontal" Margin="8" Spacing="8">
-            <Button Name="mPlayPause" Content="Play" MinWidth="70" />
-            <Button Name="mStop" Content="Stop" MinWidth="70" />
-            <Slider Name="mAnimationTime" Width="320" Minimum="0" Maximum="1000"
+          <Grid ColumnDefinitions="*,Auto,Auto" Margin="8" ColumnSpacing="8">
+            <Slider Name="mAnimationTime" Grid.Column="0" Minimum="0" Maximum="1000"
                     VerticalAlignment="Center" />
-            <TextBlock Name="mAnimationLabel" VerticalAlignment="Center" />
-          </StackPanel>
+            <Button Name="mPlayPause" Grid.Column="1" Content="&#x25B6;" MinWidth="80" />
+            <Button Name="mStop" Grid.Column="2" Content="&#x25A0;" MinWidth="80" />
+          </Grid>
         </Border>
 
-        <Panel>
+        <Panel Background="#3C3F41">
           <local:ModelView Name="mModelView" IsVisible="False" />
           <Image Name="mImageView" IsVisible="False" Stretch="Uniform" />
         </Panel>
       </DockPanel>
 
-      <GridSplitter Grid.Column="3" ResizeDirection="Columns" />
+      <GridSplitter Grid.Column="1" ResizeDirection="Columns" />
 
-      <pg:PropertyGrid Grid.Column="4" Name="mProperties"
-                       IsTitleVisible="False" IsQuickFilterVisible="True" />
+      <Grid Grid.Column="2" RowDefinitions="3*,4,4*">
+        <TabControl Grid.Row="0">
+          <TabItem Header="Model Editor">
+            <local:DataViewNodeTree Name="mTree" />
+          </TabItem>
+          <TabItem Header="Animation List">
+            <local:DataViewNodeTree Name="mAnimationTree" />
+          </TabItem>
+        </TabControl>
+
+        <GridSplitter Grid.Row="1" ResizeDirection="Rows" />
+
+        <pg:PropertyGrid Grid.Row="2" Name="mProperties"
+                         IsTitleVisible="False" IsQuickFilterVisible="True" />
+      </Grid>
 
     </Grid>
 
