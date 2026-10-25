@@ -38,10 +38,44 @@ jobs:
       - if: steps.testdata.outputs.available
         run: dotnet test GFDLibrary.Tests/GFDLibrary.Tests.csproj -c Release -p:EnableFbxSdk=false --no-build
 
+  # GFDLibrary and its tests are platform neutral, so they are built everywhere. The GUI, the
+  # renderer and the FBX exporter are Windows only and stay out of this filter.
+  library:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - run: dotnet build GFDLibrary.slnf -c Release
+
+      # The test data is not in the repository, so the tests only run where it is available.
+      - id: testdata
+        shell: bash
+        run: |
+          if [ -d Resources/TestData ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::Resources/TestData is absent, skipping the tests"
+          fi
+
+      - if: steps.testdata.outputs.available
+        run: dotnet test GFDLibrary.Tests/GFDLibrary.Tests.csproj -c Release --no-build
+
   # A master build is released as the next 0.10 patch version, with the commit it was built from.
   # Other branches get artifacts but no tag.
   version:
-    needs: build
+    needs: [build, library]
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     outputs:

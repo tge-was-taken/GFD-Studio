@@ -1,0 +1,13 @@
+{
+  "solution": {
+    "path": "GFDStudio.sln",
+    "projects": [
+      "Dependencies\\Scarlet\\Scarlet.IO.ImageFormats\\Scarlet.IO.ImageFormats.csproj",
+      "Dependencies\\Scarlet\\Scarlet\\Scarlet.csproj",
+      "Dependencies\\tga-decoder-cs\\TgaDecoderTest.csproj",
+      "GFDLibrary.Conversion.AssimpNet\\GFDLibrary.Conversion.AssimpNet.csproj",
+      "GFDLibrary.Tests\\GFDLibrary.Tests.csproj",
+      "GFDLibrary\\GFDLibrary.csproj"
+    ]
+  }
+}
