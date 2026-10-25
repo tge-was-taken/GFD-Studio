@@ -67,7 +67,7 @@ namespace GFDStudio.GUI.DataViewNodes
                 Data[dialog.Result.Type] = textureMap;
                 InitializeView( true );
 
-            }, Keys.Control | Keys.A );
+            }, DataViewNodeMenuShortcut.Control( DataViewNodeMenuKey.A ) );
 
             RegisterModelUpdateHandler(() =>
             {
