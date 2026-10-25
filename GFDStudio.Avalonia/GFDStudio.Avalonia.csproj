@@ -13,7 +13,7 @@
     <PackageReference Include="Avalonia" Version="12.1.4" />
     <PackageReference Include="Avalonia.Desktop" Version="12.1.4" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.4" />
-    <PackageReference Include="Avalonia.Diagnostics" Version="12.1.4" Condition="'$(Configuration)' == 'Debug'" />
+    <PackageReference Include="bodong.Avalonia.PropertyGrid" Version="12.1.1.1" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Avalonia.PropertyGrid.Services;
 using GFDStudio.GUI;
 
 namespace GFDStudio.Avalonia
@@ -13,6 +14,8 @@ namespace GFDStudio.Avalonia
         {
             if ( ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop )
             {
+                CellEditFactoryService.Default.AddFactory( new DrawingColorCellEditFactory() );
+
                 UserOptions.Current = new UserOptionsAvalonia();
 
                 // The dialogs need a window to sit over, so they are registered once there is one.

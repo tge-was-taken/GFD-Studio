@@ -1,6 +1,7 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:GFDStudio.Avalonia"
+        xmlns:pg="clr-namespace:Avalonia.PropertyGrid.Controls;assembly=Avalonia.PropertyGrid"
         x:Class="GFDStudio.Avalonia.MainWindow"
         Title="GFD Studio" Width="1100" Height="720">
 
@@ -31,9 +32,8 @@
       <Grid Grid.Column="2" RowDefinitions="*,4,2*">
         <Border Grid.Row="0" Name="mContent" />
         <GridSplitter Grid.Row="1" ResizeDirection="Rows" />
-        <ScrollViewer Grid.Row="2">
-          <TextBlock Name="mProperties" Margin="8" TextWrapping="Wrap" />
-        </ScrollViewer>
+        <pg:PropertyGrid Grid.Row="2" Name="mProperties"
+                         IsTitleVisible="False" IsQuickFilterVisible="True" />
       </Grid>
     </Grid>
 

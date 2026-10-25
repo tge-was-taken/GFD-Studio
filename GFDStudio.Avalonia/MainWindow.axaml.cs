@@ -1,6 +1,4 @@
 using System;
-using System.Linq;
-using System.Text;
 using Avalonia.Controls;
 using GFDLibrary;
 using GFDLibrary.Animations;
@@ -89,48 +87,9 @@ namespace GFDStudio.Avalonia
 
         private void ShowSelection( DataViewNode node )
         {
-            if ( node == null )
-            {
-                mProperties.Text = string.Empty;
-                return;
-            }
-
-            mProperties.Text = Describe( node );
+            mProperties.DataContext = node;
+            mStatus.Text = node == null ? string.Empty : $"{node.Text}  ({node.DataType.Name})";
         }
 
-        /// <summary>
-        /// A stand in for the property grid, which Avalonia has none of yet.
-        /// </summary>
-        private static string Describe( DataViewNode node )
-        {
-            var text = new StringBuilder();
-            text.AppendLine( $"{node.Text}  ({node.DataType.Name})" );
-            text.AppendLine();
-
-            foreach ( var property in node.GetType().GetProperties().OrderBy( x => x.Name ) )
-            {
-                if ( !property.CanRead || property.GetIndexParameters().Length > 0 )
-                    continue;
-
-                var browsable = property.GetCustomAttributes( typeof( System.ComponentModel.BrowsableAttribute ), true )
-                                        .OfType<System.ComponentModel.BrowsableAttribute>().FirstOrDefault();
-                if ( browsable is { Browsable: false } )
-                    continue;
-
-                string value;
-                try
-                {
-                    value = property.GetValue( node )?.ToString() ?? "(null)";
-                }
-                catch ( Exception e )
-                {
-                    value = $"({e.InnerException?.Message ?? e.Message})";
-                }
-
-                text.AppendLine( $"{property.Name}: {value}" );
-            }
-
-            return text.ToString();
-        }
     }
 }
