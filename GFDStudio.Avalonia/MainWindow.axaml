@@ -30,7 +30,10 @@
       <local:DataViewNodeTree Name="mTree" Grid.Column="0" />
       <GridSplitter Grid.Column="1" ResizeDirection="Columns" />
       <Grid Grid.Column="2" RowDefinitions="*,4,2*">
-        <Border Grid.Row="0" Name="mContent" />
+        <Panel Grid.Row="0">
+          <local:ModelView Name="mModelView" IsVisible="False" />
+          <Image Name="mImageView" IsVisible="False" Stretch="Uniform" />
+        </Panel>
         <GridSplitter Grid.Row="1" ResizeDirection="Rows" />
         <pg:PropertyGrid Grid.Row="2" Name="mProperties"
                          IsTitleVisible="False" IsQuickFilterVisible="True" />

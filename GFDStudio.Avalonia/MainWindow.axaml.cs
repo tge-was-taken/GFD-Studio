@@ -89,6 +89,32 @@ namespace GFDStudio.Avalonia
         {
             mProperties.DataContext = node;
             mStatus.Text = node == null ? string.Empty : $"{node.Text}  ({node.DataType.Name})";
+
+            ShowPreview( node );
+        }
+
+        /// <summary>
+        /// Shows whichever preview suits the node, which is the model viewer for a model pack and
+        /// the image view for anything a format module can draw.
+        /// </summary>
+        private void ShowPreview( DataViewNode node )
+        {
+            mModelView.IsVisible = false;
+            mImageView.IsVisible = false;
+
+            if ( node == null || !FormatModuleRegistry.ModuleByType.TryGetValue( node.DataType, out var module ) )
+                return;
+
+            if ( module.UsageFlags.HasFlag( FormatModuleUsageFlags.Image ) )
+            {
+                mImageView.Source = module.GetImage( node.Data ).ToAvaloniaBitmap();
+                mImageView.IsVisible = true;
+            }
+            else if ( module.ModelType == typeof( ModelPack ) )
+            {
+                mModelView.LoadModel( (ModelPack)node.Data );
+                mModelView.IsVisible = true;
+            }
         }
 
     }
