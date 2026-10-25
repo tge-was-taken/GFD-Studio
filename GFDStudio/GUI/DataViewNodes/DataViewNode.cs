@@ -8,7 +8,6 @@ using System.Runtime.CompilerServices;
 using GFDLibrary;
 using GFDStudio.DataManagement;
 using GFDStudio.FormatModules;
-using GFDStudio.GUI.Forms;
 
 namespace GFDStudio.GUI.DataViewNodes
 {

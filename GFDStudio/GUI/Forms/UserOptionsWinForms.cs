@@ -8,5 +8,7 @@ namespace GFDStudio.GUI.Forms
         public bool RetainMaterialTextureNames => MainForm.Instance.retainTexNameToolStripMenuItem.Checked;
 
         public bool RetainMaterialColorValues => MainForm.Instance.retainColorValuesToolStripMenuItem.Checked;
+
+        public bool SaveReplacedTexturesExternally => MainForm.settings.SaveReplacedTexturesExternally;
     }
 }

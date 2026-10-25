@@ -113,7 +113,11 @@ namespace GFDStudio.GUI.DataViewNodes
 
         protected override void InitializeViewCore()
         {
-            Properties = new VariantUserPropertyList( Data.Properties, () => Properties = mProperties );
+            Properties = new VariantUserPropertyList( Data.Properties, () =>
+            {
+                Properties = mProperties;
+                View?.RefreshSelection();
+            } );
 
             AttachmentListViewNode = ( AttachmentListViewNode )DataViewNodeFactory.Create(
                 "Attachments",

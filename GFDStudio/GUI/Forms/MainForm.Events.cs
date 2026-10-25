@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.IO;
 using System.Linq;
@@ -535,13 +535,6 @@ namespace GFDStudio.GUI.Forms
             else MessageBox.Show( "All Textures successfully mass dumped!" );
         }
 
-        public Texture HandleTextureToReplace( uint ver, Texture tex )
-        {
-            tex.Version = ver;
-            if ( settings.SaveReplacedTexturesExternally && tex.Version >= 0x2000000 )
-                tex.IsTexSourceExternal = true;
-            return tex;
-        }
         private void MassReplaceTexturesToolStripMenuItem_Click( object sender, EventArgs e )
         {
             string directoryPath;
@@ -608,7 +601,7 @@ namespace GFDStudio.GUI.Forms
                         if ( FoundTexPath != null )
                         {
                             Logger.Debug( $"Tex Replace: replacing texture with { FoundTexPath }" );
-                            Texture newTexture = HandleTextureToReplace( targetModel.Version, new Texture( tex.Name, TextureFormat.DDS, File.ReadAllBytes( FoundTexPath ) ) );
+                            Texture newTexture = TextureReplacement.Prepare( targetModel.Version, new Texture( tex.Name, TextureFormat.DDS, File.ReadAllBytes( FoundTexPath ) ) );
                             newTexDic.Add( newTexture );
                         }
                         else newTexDic.Add( tex );

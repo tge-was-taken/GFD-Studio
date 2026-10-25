@@ -87,7 +87,11 @@ namespace GFDStudio.GUI.DataViewNodes
 
         protected override void InitializeCore()
         {
-            Properties = new VariantUserPropertyList( Data.Properties, () => Properties = mProperties );
+            Properties = new VariantUserPropertyList( Data.Properties, () =>
+            {
+                Properties = mProperties;
+                View?.RefreshSelection();
+            } );
             RegisterExportHandler<Animation>( path => Data.Save( path ) );
             RegisterReplaceHandler<Animation>( Resource.Load<Animation> );
             RegisterReplaceHandler<AssimpScene>( file =>

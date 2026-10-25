@@ -1,9 +1,8 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using GFDLibrary.Common;
-using GFDStudio.GUI.Forms;
 
 namespace GFDStudio.GUI.TypeConverters
 {
@@ -32,43 +31,27 @@ namespace GFDStudio.GUI.TypeConverters
 
         protected override void OnClearComplete()
         {
-            if ( mModifiedCallback != null )
-            {
-                mModifiedCallback();
-                MainForm.Instance.UpdateSelection();
-            }
+            mModifiedCallback?.Invoke();
 
             base.OnClearComplete();
         }
 
         protected override void OnInsertComplete( int index, object value )
         {
-            if ( mModifiedCallback != null )
-            {
-                mModifiedCallback();
-                MainForm.Instance.UpdateSelection();
-            }
+            mModifiedCallback?.Invoke();
 
             base.OnInsertComplete( index, value );
         }
 
         protected override void OnRemoveComplete( int index, object value )
         {
-            if ( mModifiedCallback != null )
-            {
-                mModifiedCallback();
-                MainForm.Instance.UpdateSelection();
-            }
+            mModifiedCallback?.Invoke();
             base.OnRemoveComplete( index, value );
         }
 
         protected override void OnSetComplete( int index, object oldValue, object newValue )
         {
-            if ( mModifiedCallback != null )
-            {
-                mModifiedCallback();
-                MainForm.Instance.UpdateSelection();
-            }
+            mModifiedCallback?.Invoke();
             base.OnSetComplete( index, oldValue, newValue );
         }
 

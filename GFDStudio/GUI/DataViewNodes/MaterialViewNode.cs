@@ -6,7 +6,6 @@ using GFDLibrary;
 using GFDLibrary.Conversion;
 using GFDLibrary.Materials;
 using GFDLibrary.Models;
-using GFDStudio.GUI.Forms;
 using GFDStudio.GUI.TypeConverters;
 
 namespace GFDStudio.GUI.DataViewNodes

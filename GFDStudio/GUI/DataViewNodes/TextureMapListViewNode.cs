@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using GFDLibrary.Models;
-using GFDStudio.GUI.Forms;
 
 namespace GFDStudio.GUI.DataViewNodes
 {

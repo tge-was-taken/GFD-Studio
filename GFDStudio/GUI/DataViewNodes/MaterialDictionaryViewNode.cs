@@ -2,7 +2,6 @@ using System.IO;
 using GFDLibrary;
 using GFDLibrary.Conversion;
 using GFDLibrary.Materials;
-using GFDStudio.GUI.Forms;
 
 namespace GFDStudio.GUI.DataViewNodes
 {

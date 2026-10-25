@@ -6,7 +6,6 @@ using GFDLibrary.Conversion.AssimpNet;
 using GFDLibrary.Conversion.AssimpNet.Utilities;
 using GFDLibrary.Models;
 using GFDStudio.FormatModules;
-using GFDStudio.GUI.Forms;
 using GFDStudio.GUI.TypeConverters;
 
 namespace GFDStudio.GUI.DataViewNodes

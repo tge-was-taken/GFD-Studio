@@ -1,9 +1,9 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.IO;
 using GFDLibrary;
 using GFDLibrary.Textures;
 using GFDLibrary.Textures.DDS;
-using GFDStudio.GUI.Forms;
+using GFDStudio.IO;
 using GFDStudio.GUI.TypeConverters;
 using GFDStudio.FormatModules;
 
@@ -79,8 +79,8 @@ namespace GFDStudio.GUI.DataViewNodes
             RegisterExportHandler<GFDLibrary.Graphics.Image>( path => PngCodec.Save( TextureDecoder.Decode( Data ), path ) );
             RegisterExportHandler<DDSStream>( path => File.WriteAllBytes( path, Data.Data ) );
 
-            RegisterReplaceHandler<GFDLibrary.Graphics.Image>( path => MainForm.Instance.HandleTextureToReplace( Data.Version, TextureEncoder.Encode( Name, Format, Field1C, Field1D, Field1E, Field1F, GFDLibrary.Textures.PngCodec.Load( path ) ) ) );
-            RegisterReplaceHandler<DDSStream>( path => MainForm.Instance.HandleTextureToReplace( Data.Version, new Texture( Name, Format, File.ReadAllBytes( path ), Field1C, Field1D, Field1E, Field1F ) ) );
+            RegisterReplaceHandler<GFDLibrary.Graphics.Image>( path => TextureReplacement.Prepare( Data.Version, TextureEncoder.Encode( Name, Format, Field1C, Field1D, Field1E, Field1F, GFDLibrary.Textures.PngCodec.Load( path ) ) ) );
+            RegisterReplaceHandler<DDSStream>( path => TextureReplacement.Prepare( Data.Version, new Texture( Name, Format, File.ReadAllBytes( path ), Field1C, Field1D, Field1E, Field1F ) ) );
 
             TextChanged += ( s, o ) => Name = Text;
         }

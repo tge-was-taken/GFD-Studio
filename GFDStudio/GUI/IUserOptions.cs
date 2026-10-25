@@ -17,6 +17,11 @@ namespace GFDStudio.GUI
         /// Keep the replaced material's colour parameters rather than taking the replacement's.
         /// </summary>
         bool RetainMaterialColorValues { get; }
+
+        /// <summary>
+        /// Point a replaced texture at a file beside the model rather than storing it inside.
+        /// </summary>
+        bool SaveReplacedTexturesExternally { get; }
     }
 
     public static class UserOptions
