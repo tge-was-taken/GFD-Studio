@@ -21,13 +21,23 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <ProjectGuid>{9034CDF5-52AC-4E6C-9759-879B0B4F3887}</ProjectGuid>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <Keyword>ManagedCProj</Keyword>
     <RootNamespace>GFDLibrary.Conversion.FbxSdk</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <WindowsTargetPlatformMinVersion>7.0</WindowsTargetPlatformMinVersion>
     <EnableManagedPackageReferenceSupport>true</EnableManagedPackageReferenceSupport>
     <ProjectName>GFDLibrary.Conversion.FbxSdk</ProjectName>
+  </PropertyGroup>
+  <PropertyGroup Label="FbxSdk">
+    <!-- Override with -p:FbxSdkRoot=... or an FBXSDK_ROOT environment variable to build against
+         an SDK installed somewhere else. -->
+    <FbxSdkRoot Condition="'$(FbxSdkRoot)' == '' and '$(FBXSDK_ROOT)' != ''">$(FBXSDK_ROOT)</FbxSdkRoot>
+    <FbxSdkRoot Condition="'$(FbxSdkRoot)' == ''">C:\Program Files\Autodesk\FBX\FBX SDK\2020.3.7</FbxSdkRoot>
+    <!-- 2020.3.x installers put the libraries under a per toolset directory; older ones did not. -->
+    <FbxSdkLibDir Condition="'$(FbxSdkLibDir)' == '' and Exists('$(FbxSdkRoot)\lib\vs2019')">$(FbxSdkRoot)\lib\vs2019</FbxSdkLibDir>
+    <FbxSdkLibDir Condition="'$(FbxSdkLibDir)' == '' and Exists('$(FbxSdkRoot)\lib\vs2022')">$(FbxSdkRoot)\lib\vs2022</FbxSdkLibDir>
+    <FbxSdkLibDir Condition="'$(FbxSdkLibDir)' == ''">$(FbxSdkRoot)\lib</FbxSdkLibDir>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -83,12 +93,12 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Program Files\Autodesk\FBX\FBX SDK\2020.3.7\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(FbxSdkRoot)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalDependencies>wininet.lib;x64\debug\libfbxsdk-md.lib;x64\debug\libxml2-md.lib;x64\debug\zlib-md.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Program Files\Autodesk\FBX\FBX SDK\2020.3.7\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(FbxSdkLibDir)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>LIBCMT</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
@@ -98,12 +108,12 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Program Files\Autodesk\FBX\FBX SDK\2020.3.7\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(FbxSdkRoot)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalDependencies>wininet.lib;x64\debug\libfbxsdk-md.lib;x64\debug\libxml2-md.lib;x64\debug\zlib-md.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Program Files\Autodesk\FBX\FBX SDK\2020.3.7\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(FbxSdkLibDir)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>LIBCMT</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
@@ -113,11 +123,11 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Program Files\Autodesk\FBX\FBX SDK\2020.0.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(FbxSdkRoot)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>C:\Program Files\Autodesk\FBX\FBX SDK\2020.0.1\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(FbxSdkLibDir)</AdditionalLibraryDirectories>
       <AdditionalDependencies>wininet.lib;x64\release\libfbxsdk-md.lib;x64\release\libxml2-md.lib;x64\release\zlib-md.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -127,12 +137,12 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Program Files\Autodesk\FBX\FBX SDK\2020.3.7\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(FbxSdkRoot)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalDependencies>x64\release\libfbxsdk-md.lib;x64\release\libxml2-md.lib;x64\release\zlib-md.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Program Files\Autodesk\FBX\FBX SDK\2020.3.7\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(FbxSdkLibDir)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

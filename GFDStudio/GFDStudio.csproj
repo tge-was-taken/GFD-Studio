@@ -1,8 +1,8 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFramework>net10.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <Version>0.10.3</Version>
     <Authors>TGE</Authors>
@@ -10,6 +10,13 @@
     <ApplicationIcon>app_data\icons\main_icon.ico</ApplicationIcon>
     <StartupObject>GFDStudio.Program</StartupObject>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- The FBX exporter is a C++/CLI project that needs the Autodesk FBX SDK installed, so a
+         build can drop it and fall back to the Assimp exporter for .fbx. -->
+    <EnableFbxSdk Condition="'$(EnableFbxSdk)' == ''">true</EnableFbxSdk>
+    <DefineConstants Condition="'$(EnableFbxSdk)' == 'true'">$(DefineConstants);FBXSDK</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,9 +27,12 @@
     <PackageReference Include="OpenTK.GLControl" Version="3.1.0" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(EnableFbxSdk)' == 'true'">
+    <ProjectReference Include="..\GFDLibrary.Conversion.FbxSdk\GFDLibrary.Conversion.FbxSdk.vcxproj" />
+  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\GFDLibrary.Conversion.AssimpNet\GFDLibrary.Conversion.AssimpNet.csproj" />
-    <ProjectReference Include="..\GFDLibrary.Conversion.FbxSdk\GFDLibrary.Conversion.FbxSdk.vcxproj" />
     <ProjectReference Include="..\GFDLibrary.Rendering.OpenGL\GFDLibrary.Rendering.OpenGL.csproj" />
     <ProjectReference Include="..\GFDLibrary\GFDLibrary.csproj" />
   </ItemGroup>

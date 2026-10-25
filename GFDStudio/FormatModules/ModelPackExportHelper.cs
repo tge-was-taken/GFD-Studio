@@ -1,7 +1,9 @@
 ﻿using System.IO;
 using GFDLibrary;
 using GFDLibrary.Conversion.AssimpNet;
+#if FBXSDK
 using GFDLibrary.Conversion.FbxSdk;
+#endif
 
 namespace GFDStudio.FormatModules
 {
@@ -9,15 +11,14 @@ namespace GFDStudio.FormatModules
     {
         public static void ExportFile( ModelPack modelPack, string path )
         {
-            var ext = Path.GetExtension( path );
-            if ( ext.Equals( ".fbx", System.StringComparison.OrdinalIgnoreCase ) )
+#if FBXSDK
+            if ( Path.GetExtension( path ).Equals( ".fbx", System.StringComparison.OrdinalIgnoreCase ) )
             {
                 FbxSdkModelPackExporter.ExportFile( modelPack, path, new FbxSdkModelPackExporterConfig() );
+                return;
             }
-            else
-            {
-                AssimpNetModelPackExporter.ExportFile( modelPack, path );
-            }
+#endif
+            AssimpNetModelPackExporter.ExportFile( modelPack, path );
         }
     }
 }

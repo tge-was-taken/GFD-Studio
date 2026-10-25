@@ -1,12 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0-windows7.0</TargetFramework>
+    <TargetFramework>net10.0-windows</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
+
+    <!-- Nothing here can be built without the Autodesk FBX SDK, so the tests compile out with
+         the exporter rather than failing the build. -->
+    <EnableFbxSdk Condition="'$(EnableFbxSdk)' == ''">true</EnableFbxSdk>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,8 +20,15 @@
     <PackageReference Include="MSTest.TestFramework" Version="3.1.1" />
   </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(EnableFbxSdk)' == 'true'">
     <ProjectReference Include="..\GFDLibrary.Conversion.FbxSdk\GFDLibrary.Conversion.FbxSdk.vcxproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(EnableFbxSdk)' != 'true'">
+    <Compile Remove="FbxSdkConversionTests.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\GFDLibrary\GFDLibrary.csproj" />
   </ItemGroup>
 

@@ -5,7 +5,6 @@ using System.Windows.Forms;
 using GFDLibrary;
 using GFDLibrary.Animations;
 using GFDLibrary.Conversion.AssimpNet;
-using GFDLibrary.Conversion.FbxSdk;
 using GFDLibrary.Misc;
 using GFDStudio.FormatModules;
 using GFDStudio.IO;
