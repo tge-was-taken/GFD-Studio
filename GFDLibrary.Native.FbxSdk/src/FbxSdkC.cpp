@@ -36,6 +36,8 @@ namespace
 
     template <typename T> T* As( void* p ) { return reinterpret_cast<T*>( p ); }
 
+    FbxScene* Scn( FbxSceneC* s ) { return reinterpret_cast<FbxScene*>( s ); }
+
     FbxAMatrix ToMatrix( const double* m )
     {
         FbxAMatrix matrix;
@@ -51,6 +53,39 @@ namespace
             for ( int col = 0; col < 4; ++col )
                 m[( row * 4 ) + col] = matrix[row][col];
     }
+
+    FbxLayerElement::EType ToElementType( int type, bool* ok )
+    {
+        *ok = true;
+        switch ( type )
+        {
+            case FbxLayerElementTypeNormal:      return FbxLayerElement::eNormal;
+            case FbxLayerElementTypeUV:          return FbxLayerElement::eUV;
+            case FbxLayerElementTypeVertexColor: return FbxLayerElement::eVertexColor;
+            case FbxLayerElementTypeMaterial:    return FbxLayerElement::eMaterial;
+            default:
+                *ok = false;
+                return FbxLayerElement::eUnknown;
+        }
+    }
+
+    FbxLayerElementC* TrackElement( FbxManagerC* manager, int type, FbxLayerElement* element )
+    {
+        if ( !element )
+        {
+            SetLastError( "creating the layer element failed" );
+            return nullptr;
+        }
+
+        auto handle = std::make_unique<LayerElementHandle>();
+        handle->type = type;
+        handle->element = element;
+
+        auto raw = handle.get();
+        Mgr( manager )->layerElements.push_back( std::move( handle ) );
+
+        return reinterpret_cast<FbxLayerElementC*>( raw );
+    }
 }
 
 FbxManagerC* FbxManager_Create( void )
@@ -63,6 +98,13 @@ FbxManagerC* FbxManager_Create( void )
     }
 
     FbxIOSettings* settings = FbxIOSettings::Create( manager, IOSROOT );
+    settings->SetBoolProp( EXP_FBX_MATERIAL, true );
+    settings->SetBoolProp( EXP_FBX_TEXTURE, true );
+    settings->SetBoolProp( EXP_FBX_EMBEDDED, false );
+    settings->SetBoolProp( EXP_FBX_SHAPE, true );
+    settings->SetBoolProp( EXP_FBX_GOBO, true );
+    settings->SetBoolProp( EXP_FBX_ANIMATION, true );
+    settings->SetBoolProp( EXP_FBX_GLOBAL_SETTINGS, true );
     manager->SetIOSettings( settings );
 
     auto handle = new ManagerHandle();
@@ -89,25 +131,37 @@ FbxSceneC* FbxScene_Create( FbxManagerC* manager, const char* name )
 
 FbxNodeC* FbxScene_GetRootNode( FbxSceneC* scene )
 {
-    return reinterpret_cast<FbxNodeC*>( As<FbxScene>( scene )->GetRootNode() );
+    return reinterpret_cast<FbxNodeC*>( Scn( scene )->GetRootNode() );
 }
 
-void FbxScene_SetAxisSystem( FbxSceneC* scene, int upVector, int frontVector, int coordSystem )
+void FbxScene_SetAxisSystem( FbxSceneC* scene, int preset )
 {
-    FbxAxisSystem axisSystem( static_cast<FbxAxisSystem::EUpVector>( upVector ),
-                              static_cast<FbxAxisSystem::EFrontVector>( frontVector ),
-                              static_cast<FbxAxisSystem::ECoordSystem>( coordSystem ) );
-    As<FbxScene>( scene )->GetGlobalSettings().SetAxisSystem( axisSystem );
+    FbxAxisSystem axisSystem = FbxAxisSystem::DirectX;
+    switch ( preset )
+    {
+        case FbxAxisSystemPresetMayaZUp:        axisSystem = FbxAxisSystem::MayaZUp; break;
+        case FbxAxisSystemPresetMayaYUp:        axisSystem = FbxAxisSystem::MayaYUp; break;
+        case FbxAxisSystemPresetMax:            axisSystem = FbxAxisSystem::Max; break;
+        case FbxAxisSystemPresetMotionBuilder:  axisSystem = FbxAxisSystem::Motionbuilder; break;
+        case FbxAxisSystemPresetOpenGL:         axisSystem = FbxAxisSystem::OpenGL; break;
+        case FbxAxisSystemPresetDirectX:        axisSystem = FbxAxisSystem::DirectX; break;
+        case FbxAxisSystemPresetLightwave:      axisSystem = FbxAxisSystem::Lightwave; break;
+        default:
+            SetLastError( "unknown axis system preset" );
+            return;
+    }
+
+    Scn( scene )->GetGlobalSettings().SetAxisSystem( axisSystem );
 }
 
 void FbxScene_SetSystemUnit( FbxSceneC* scene, double scaleFactor )
 {
-    As<FbxScene>( scene )->GetGlobalSettings().SetSystemUnit( FbxSystemUnit( scaleFactor ) );
+    Scn( scene )->GetGlobalSettings().SetSystemUnit( FbxSystemUnit( scaleFactor ) );
 }
 
-FbxNodeC* FbxNode_Create( FbxManagerC* manager, const char* name )
+FbxNodeC* FbxNode_Create( FbxSceneC* scene, const char* name )
 {
-    return reinterpret_cast<FbxNodeC*>( FbxNode::Create( Sdk( manager ), name ) );
+    return reinterpret_cast<FbxNodeC*>( FbxNode::Create( Scn( scene ), name ) );
 }
 
 void FbxNode_AddChild( FbxNodeC* parent, FbxNodeC* child )
@@ -116,17 +170,18 @@ void FbxNode_AddChild( FbxNodeC* parent, FbxNodeC* child )
 }
 
 void FbxNode_SetLocalTransform( FbxNodeC* node, const double* translation,
-                                const double* rotationDegrees, const double* scale )
+                                const double* rotationQuaternion, const double* scale )
 {
     FbxNode* self = As<FbxNode>( node );
-    self->LclTranslation.Set( FbxDouble3( translation[0], translation[1], translation[2] ) );
-    self->LclRotation.Set( FbxDouble3( rotationDegrees[0], rotationDegrees[1], rotationDegrees[2] ) );
-    self->LclScaling.Set( FbxDouble3( scale[0], scale[1], scale[2] ) );
-}
 
-void FbxNode_SetPreferedAngle( FbxNodeC* node, const double* anglesDegrees )
-{
-    As<FbxNode>( node )->SetPreferedAngle( FbxVector4( anglesDegrees[0], anglesDegrees[1], anglesDegrees[2] ) );
+    FbxAMatrix rotation;
+    rotation.SetQ( FbxQuaternion( rotationQuaternion[0], rotationQuaternion[1],
+                                  rotationQuaternion[2], rotationQuaternion[3] ) );
+
+    self->LclRotation.Set( rotation.GetR() );
+    self->LclScaling.Set( FbxDouble3( scale[0], scale[1], scale[2] ) );
+    self->LclTranslation.Set( FbxDouble3( translation[0], translation[1], translation[2] ) );
+    self->SetPreferedAngle( self->LclRotation.Get() );
 }
 
 void FbxNode_EvaluateGlobalTransform( FbxNodeC* node, double* matrix16 )
@@ -201,9 +256,19 @@ void FbxNode_SetUserPropertyDouble4( FbxNodeC* node, const char* name, const dou
                      FbxDouble4( values[0], values[1], values[2], values[3] ) );
 }
 
-FbxMeshC* FbxMesh_Create( FbxManagerC* manager, const char* name )
+FbxSkeletonC* FbxSkeleton_Create( FbxSceneC* scene, const char* name )
 {
-    return reinterpret_cast<FbxMeshC*>( FbxMesh::Create( Sdk( manager ), name ) );
+    return reinterpret_cast<FbxSkeletonC*>( FbxSkeleton::Create( Scn( scene ), name ) );
+}
+
+void FbxSkeleton_SetSkeletonType( FbxSkeletonC* skeleton, int type )
+{
+    As<FbxSkeleton>( skeleton )->SetSkeletonType( static_cast<FbxSkeleton::EType>( type ) );
+}
+
+FbxMeshC* FbxMesh_Create( FbxSceneC* scene, const char* name )
+{
+    return reinterpret_cast<FbxMeshC*>( FbxMesh::Create( Scn( scene ), name ) );
 }
 
 void FbxMesh_InitControlPoints( FbxMeshC* mesh, int count )
@@ -223,7 +288,7 @@ void FbxMesh_SetControlPointAt( FbxMeshC* mesh, int index, double x, double y, d
 
 void FbxMesh_BeginPolygon( FbxMeshC* mesh, int material )
 {
-    As<FbxMesh>( mesh )->BeginPolygon( material );
+    As<FbxMesh>( mesh )->BeginPolygon( material, -1, -1, false );
 }
 
 void FbxMesh_AddPolygon( FbxMeshC* mesh, int index )
@@ -236,51 +301,49 @@ void FbxMesh_EndPolygon( FbxMeshC* mesh )
     As<FbxMesh>( mesh )->EndPolygon();
 }
 
-int FbxMesh_CreateLayer( FbxMeshC* mesh )
+FbxLayerElementC* FbxMesh_CreateElement( FbxManagerC* manager, FbxMeshC* mesh, int type, const char* name )
 {
-    return As<FbxMesh>( mesh )->CreateLayer();
+    FbxMesh* self = As<FbxMesh>( mesh );
+
+    FbxLayerElement* element = nullptr;
+    switch ( type )
+    {
+        case FbxLayerElementTypeNormal:      element = self->CreateElementNormal(); break;
+        case FbxLayerElementTypeUV:          element = self->CreateElementUV( name ); break;
+        case FbxLayerElementTypeVertexColor: element = self->CreateElementVertexColor(); break;
+        case FbxLayerElementTypeMaterial:    element = self->CreateElementMaterial(); break;
+        default:
+            SetLastError( "unknown layer element type" );
+            return nullptr;
+    }
+
+    if ( element && name )
+        element->SetName( name );
+
+    return TrackElement( manager, type, element );
 }
 
 FbxLayerElementC* FbxMesh_CreateLayerElement( FbxManagerC* manager, FbxMeshC* mesh, int layerIndex,
-                                             int type, const char* name )
+                                              int type, const char* name )
 {
     FbxMesh* self = As<FbxMesh>( mesh );
 
     while ( !self->GetLayer( layerIndex ) )
         self->CreateLayer();
 
-    FbxLayer* layer = self->GetLayer( layerIndex );
-
-    FbxLayerElement::EType elementType;
-    switch ( type )
+    bool ok = false;
+    FbxLayerElement::EType elementType = ToElementType( type, &ok );
+    if ( !ok )
     {
-        case FbxLayerElementTypeNormal:      elementType = FbxLayerElement::eNormal; break;
-        case FbxLayerElementTypeUV:          elementType = FbxLayerElement::eUV; break;
-        case FbxLayerElementTypeVertexColor: elementType = FbxLayerElement::eVertexColor; break;
-        case FbxLayerElementTypeMaterial:    elementType = FbxLayerElement::eMaterial; break;
-        default:
-            SetLastError( "unknown layer element type" );
-            return nullptr;
-    }
-
-    FbxLayerElement* element = layer->CreateLayerElementOfType( elementType );
-    if ( !element )
-    {
-        SetLastError( "CreateLayerElementOfType failed" );
+        SetLastError( "unknown layer element type" );
         return nullptr;
     }
 
-    if ( name )
+    FbxLayerElement* element = self->GetLayer( layerIndex )->CreateLayerElementOfType( elementType );
+    if ( element && name )
         element->SetName( name );
 
-    auto handle = std::make_unique<LayerElementHandle>();
-    handle->type = type;
-    handle->element = element;
-
-    auto raw = handle.get();
-    Mgr( manager )->layerElements.push_back( std::move( handle ) );
-
-    return reinterpret_cast<FbxLayerElementC*>( raw );
+    return TrackElement( manager, type, element );
 }
 
 void FbxLayerElement_SetMappingMode( FbxLayerElementC* element, int mode )
@@ -368,9 +431,9 @@ void FbxLayerElement_SetDirectColorAt( FbxLayerElementC* element, int index,
     static_cast<FbxLayerElementVertexColor*>( handle->element )->GetDirectArray().SetAt( index, FbxColor( r, g, b, a ) );
 }
 
-FbxSkinC* FbxSkin_Create( FbxManagerC* manager, const char* name )
+FbxSkinC* FbxSkin_Create( FbxSceneC* scene, const char* name )
 {
-    return reinterpret_cast<FbxSkinC*>( FbxSkin::Create( Sdk( manager ), name ) );
+    return reinterpret_cast<FbxSkinC*>( FbxSkin::Create( Scn( scene ), name ) );
 }
 
 void FbxSkin_SetSkinningTypeLinear( FbxSkinC* skin )
@@ -388,9 +451,9 @@ void FbxMesh_AddSkinDeformer( FbxMeshC* mesh, FbxSkinC* skin )
     As<FbxMesh>( mesh )->AddDeformer( As<FbxSkin>( skin ) );
 }
 
-FbxClusterC* FbxCluster_Create( FbxManagerC* manager, const char* name )
+FbxClusterC* FbxCluster_Create( FbxSceneC* scene, const char* name )
 {
-    return reinterpret_cast<FbxClusterC*>( FbxCluster::Create( Sdk( manager ), name ) );
+    return reinterpret_cast<FbxClusterC*>( FbxCluster::Create( Scn( scene ), name ) );
 }
 
 void FbxCluster_SetLink( FbxClusterC* cluster, FbxNodeC* node )
@@ -413,9 +476,9 @@ void FbxCluster_AddControlPointIndex( FbxClusterC* cluster, int index, double we
     As<FbxCluster>( cluster )->AddControlPointIndex( index, weight );
 }
 
-FbxPoseC* FbxPose_Create( FbxManagerC* manager, const char* name )
+FbxPoseC* FbxPose_Create( FbxSceneC* scene, const char* name )
 {
-    return reinterpret_cast<FbxPoseC*>( FbxPose::Create( Sdk( manager ), name ) );
+    return reinterpret_cast<FbxPoseC*>( FbxPose::Create( Scn( scene ), name ) );
 }
 
 void FbxPose_SetIsBindPose( FbxPoseC* pose, int isBindPose )
@@ -430,22 +493,22 @@ void FbxPose_Add( FbxPoseC* pose, FbxNodeC* node, const double* matrix16 )
 
 void FbxScene_AddPose( FbxSceneC* scene, FbxPoseC* pose )
 {
-    As<FbxScene>( scene )->AddPose( As<FbxPose>( pose ) );
+    Scn( scene )->AddPose( As<FbxPose>( pose ) );
 }
 
-FbxBlendShapeC* FbxBlendShape_Create( FbxManagerC* manager, const char* name )
+FbxBlendShapeC* FbxBlendShape_Create( FbxSceneC* scene, const char* name )
 {
-    return reinterpret_cast<FbxBlendShapeC*>( FbxBlendShape::Create( Sdk( manager ), name ) );
+    return reinterpret_cast<FbxBlendShapeC*>( FbxBlendShape::Create( Scn( scene ), name ) );
 }
 
-FbxBlendShapeChannelC* FbxBlendShapeChannel_Create( FbxManagerC* manager, const char* name )
+FbxBlendShapeChannelC* FbxBlendShapeChannel_Create( FbxSceneC* scene, const char* name )
 {
-    return reinterpret_cast<FbxBlendShapeChannelC*>( FbxBlendShapeChannel::Create( Sdk( manager ), name ) );
+    return reinterpret_cast<FbxBlendShapeChannelC*>( FbxBlendShapeChannel::Create( Scn( scene ), name ) );
 }
 
-FbxShapeC* FbxShape_Create( FbxManagerC* manager, const char* name )
+FbxShapeC* FbxShape_Create( FbxSceneC* scene, const char* name )
 {
-    return reinterpret_cast<FbxShapeC*>( FbxShape::Create( Sdk( manager ), name ) );
+    return reinterpret_cast<FbxShapeC*>( FbxShape::Create( Scn( scene ), name ) );
 }
 
 void FbxMesh_AddBlendShapeDeformer( FbxMeshC* mesh, FbxBlendShapeC* blendShape )
@@ -481,19 +544,14 @@ void FbxShape_SetNormalAt( FbxShapeC* shape, int index, double x, double y, doub
     As<FbxShape>( shape )->GetLayer( 0 )->GetNormals()->GetDirectArray().SetAt( index, FbxVector4( x, y, z ) );
 }
 
-FbxSurfaceMaterialC* FbxSurfacePhong_Create( FbxManagerC* manager, const char* name )
+FbxSurfaceMaterialC* FbxSurfacePhong_Create( FbxSceneC* scene, const char* name )
 {
-    return reinterpret_cast<FbxSurfaceMaterialC*>( FbxSurfacePhong::Create( Sdk( manager ), name ) );
+    return reinterpret_cast<FbxSurfaceMaterialC*>( FbxSurfacePhong::Create( Scn( scene ), name ) );
 }
 
-FbxFileTextureC* FbxFileTexture_Create( FbxManagerC* manager, const char* name )
+void FbxSurfaceMaterial_SetShadingModel( FbxSurfaceMaterialC* material, const char* model )
 {
-    return reinterpret_cast<FbxFileTextureC*>( FbxFileTexture::Create( Sdk( manager ), name ) );
-}
-
-void FbxFileTexture_SetFileName( FbxFileTextureC* texture, const char* path )
-{
-    As<FbxFileTexture>( texture )->SetFileName( path );
+    As<FbxSurfaceMaterial>( material )->ShadingModel.Set( FbxString( model ? model : "" ) );
 }
 
 void FbxSurfaceMaterial_ConnectDiffuseTexture( FbxSurfaceMaterialC* material, FbxFileTextureC* texture )
@@ -521,14 +579,44 @@ void FbxSurfaceMaterial_SetUserPropertyDouble( FbxSurfaceMaterialC* material, co
     SetUserProperty( As<FbxSurfaceMaterial>( material ), name, FbxDoubleDT, value );
 }
 
-FbxCameraC* FbxCamera_Create( FbxManagerC* manager, const char* name )
+FbxFileTextureC* FbxFileTexture_Create( FbxSceneC* scene, const char* name )
 {
-    return reinterpret_cast<FbxCameraC*>( FbxCamera::Create( Sdk( manager ), name ) );
+    return reinterpret_cast<FbxFileTextureC*>( FbxFileTexture::Create( Scn( scene ), name ) );
 }
 
-void FbxCamera_SetAspect( FbxCameraC* camera, double width, double height )
+void FbxFileTexture_SetFileName( FbxFileTextureC* texture, const char* path )
 {
-    As<FbxCamera>( camera )->SetAspect( FbxCamera::eFixedRatio, width, height );
+    As<FbxFileTexture>( texture )->SetFileName( path );
+}
+
+void FbxFileTexture_SetUVSet( FbxFileTextureC* texture, const char* name )
+{
+    As<FbxFileTexture>( texture )->UVSet.Set( FbxString( name ? name : "" ) );
+}
+
+void FbxFileTexture_SetUseMaterial( FbxFileTextureC* texture, int useMaterial )
+{
+    As<FbxFileTexture>( texture )->UseMaterial.Set( useMaterial != 0 );
+}
+
+FbxCameraC* FbxCamera_Create( FbxSceneC* scene, const char* name )
+{
+    return reinterpret_cast<FbxCameraC*>( FbxCamera::Create( Scn( scene ), name ) );
+}
+
+void FbxCamera_SetPosition( FbxCameraC* camera, double x, double y, double z )
+{
+    As<FbxCamera>( camera )->Position.Set( FbxDouble3( x, y, z ) );
+}
+
+void FbxCamera_SetUpVector( FbxCameraC* camera, double x, double y, double z )
+{
+    As<FbxCamera>( camera )->UpVector.Set( FbxDouble3( x, y, z ) );
+}
+
+void FbxCamera_SetInterestPosition( FbxCameraC* camera, double x, double y, double z )
+{
+    As<FbxCamera>( camera )->InterestPosition.Set( FbxDouble3( x, y, z ) );
 }
 
 void FbxCamera_SetFieldOfView( FbxCameraC* camera, double degrees )
@@ -543,9 +631,14 @@ void FbxCamera_SetNearFarPlane( FbxCameraC* camera, double nearPlane, double far
     self->FarPlane.Set( farPlane );
 }
 
-FbxLightC* FbxLight_Create( FbxManagerC* manager, const char* name )
+void FbxCamera_SetAspect( FbxCameraC* camera, double width, double height )
 {
-    return reinterpret_cast<FbxLightC*>( FbxLight::Create( Sdk( manager ), name ) );
+    As<FbxCamera>( camera )->SetAspect( FbxCamera::eFixedResolution, width, height );
+}
+
+FbxLightC* FbxLight_Create( FbxSceneC* scene, const char* name )
+{
+    return reinterpret_cast<FbxLightC*>( FbxLight::Create( Scn( scene ), name ) );
 }
 
 void FbxLight_SetType( FbxLightC* light, int type )
@@ -558,25 +651,61 @@ void FbxLight_SetColor( FbxLightC* light, double r, double g, double b )
     As<FbxLight>( light )->Color.Set( FbxDouble3( r, g, b ) );
 }
 
+void FbxLight_SetFarAttenuation( FbxLightC* light, int enable, double start, double end )
+{
+    FbxLight* self = As<FbxLight>( light );
+    self->EnableFarAttenuation.Set( enable != 0 );
+    self->FarAttenuationStart.Set( start );
+    self->FarAttenuationEnd.Set( end );
+}
+
+void FbxLight_SetConeAngles( FbxLightC* light, double innerDegrees, double outerDegrees )
+{
+    FbxLight* self = As<FbxLight>( light );
+    self->InnerAngle.Set( innerDegrees );
+    self->OuterAngle.Set( outerDegrees );
+}
+
+namespace
+{
+    /// The ascii writer's description carries the version, so it is matched on substring
+    /// rather than by an exact name.
+    int FindAsciiWriterFormat( FbxManager* sdk )
+    {
+        FbxIOPluginRegistry* registry = sdk->GetIOPluginRegistry();
+        for ( int i = 0, count = registry->GetWriterFormatCount(); i < count; ++i )
+        {
+            if ( !registry->WriterIsFBX( i ) )
+                continue;
+
+            if ( FbxString( registry->GetWriterFormatDescription( i ) ).Find( "ascii" ) >= 0 )
+                return i;
+        }
+
+        return -1;
+    }
+}
+
 int FbxScene_Export( FbxManagerC* manager, FbxSceneC* scene, const char* path, int fileFormatBinary )
 {
     FbxManager* sdk = Sdk( manager );
-    FbxExporter* exporter = FbxExporter::Create( sdk, "" );
 
-    int format = fileFormatBinary
-        ? sdk->GetIOPluginRegistry()->GetNativeWriterFormat()
-        : sdk->GetIOPluginRegistry()->FindWriterIDByDescription( "FBX ascii (*.fbx)" );
-
-    if ( !exporter->Initialize( path, format, sdk->GetIOSettings() ) )
+    int format = sdk->GetIOPluginRegistry()->GetNativeWriterFormat();
+    if ( !fileFormatBinary )
     {
-        SetLastError( exporter->GetStatus().GetErrorString() );
-        exporter->Destroy();
-        return -1;
+        format = FindAsciiWriterFormat( sdk );
+        if ( format < 0 )
+        {
+            SetLastError( "no FBX ascii writer format available" );
+            return -1;
+        }
     }
 
-    exporter->SetFileExportVersion( FBX_2014_00_COMPATIBLE );
+    FbxExporter* exporter = FbxExporter::Create( sdk, "" );
 
-    if ( !exporter->Export( As<FbxScene>( scene ) ) )
+    if ( !exporter->Initialize( path, format, sdk->GetIOSettings() ) ||
+         !exporter->SetFileExportVersion( FBX_2014_00_COMPATIBLE ) ||
+         !exporter->Export( Scn( scene ) ) )
     {
         SetLastError( exporter->GetStatus().GetErrorString() );
         exporter->Destroy();

@@ -93,21 +93,35 @@ enum FbxLightType
     FbxLightTypeVolume = 4,
 };
 
-// Manager and scene
+/// The predefined systems FbxAxisSystem exposes as static members.
+enum FbxAxisSystemPreset
+{
+    FbxAxisSystemPresetMayaZUp = 0,
+    FbxAxisSystemPresetMayaYUp = 1,
+    FbxAxisSystemPresetMax = 2,
+    FbxAxisSystemPresetMotionBuilder = 3,
+    FbxAxisSystemPresetOpenGL = 4,
+    FbxAxisSystemPresetDirectX = 5,
+    FbxAxisSystemPresetLightwave = 6,
+};
+
+// Manager and scene. Everything else is created with the scene as its container, so the
+// scene owns it and the writer sees it.
 FBXSDK_C_API FbxManagerC* FbxManager_Create( void );
 FBXSDK_C_API void         FbxManager_Destroy( FbxManagerC* manager );
 FBXSDK_C_API FbxSceneC*   FbxScene_Create( FbxManagerC* manager, const char* name );
 FBXSDK_C_API FbxNodeC*    FbxScene_GetRootNode( FbxSceneC* scene );
-/// Sets the axis system and unit scale of the scene's global settings.
-FBXSDK_C_API void         FbxScene_SetAxisSystem( FbxSceneC* scene, int upVector, int frontVector, int coordSystem );
+FBXSDK_C_API void         FbxScene_SetAxisSystem( FbxSceneC* scene, int preset );
+/// The scale factor is centimetres per unit, so FbxSystemUnit::m is 100.
 FBXSDK_C_API void         FbxScene_SetSystemUnit( FbxSceneC* scene, double scaleFactor );
 
 // Nodes
-FBXSDK_C_API FbxNodeC* FbxNode_Create( FbxManagerC* manager, const char* name );
+FBXSDK_C_API FbxNodeC* FbxNode_Create( FbxSceneC* scene, const char* name );
 FBXSDK_C_API void      FbxNode_AddChild( FbxNodeC* parent, FbxNodeC* child );
+/// The rotation is a quaternion (x, y, z, w) run through FbxAMatrix so the Euler angles come
+/// out in the SDK's own order. Also sets the prefered angle, which is what 3ds Max reads.
 FBXSDK_C_API void      FbxNode_SetLocalTransform( FbxNodeC* node, const double* translation,
-                                                  const double* rotationDegrees, const double* scale );
-FBXSDK_C_API void      FbxNode_SetPreferedAngle( FbxNodeC* node, const double* anglesDegrees );
+                                                  const double* rotationQuaternion, const double* scale );
 FBXSDK_C_API void      FbxNode_EvaluateGlobalTransform( FbxNodeC* node, double* matrix16 );
 FBXSDK_C_API void      FbxNode_SetMeshAttribute( FbxNodeC* node, FbxMeshC* mesh );
 FBXSDK_C_API void      FbxNode_SetSkeletonAttribute( FbxNodeC* node, FbxSkeletonC* skeleton );
@@ -123,18 +137,26 @@ FBXSDK_C_API void FbxNode_SetUserPropertyString( FbxNodeC* node, const char* nam
 FBXSDK_C_API void FbxNode_SetUserPropertyDouble3( FbxNodeC* node, const char* name, const double* values );
 FBXSDK_C_API void FbxNode_SetUserPropertyDouble4( FbxNodeC* node, const char* name, const double* values );
 
+// Skeletons
+FBXSDK_C_API FbxSkeletonC* FbxSkeleton_Create( FbxSceneC* scene, const char* name );
+FBXSDK_C_API void          FbxSkeleton_SetSkeletonType( FbxSkeletonC* skeleton, int type );
+
 // Meshes
-FBXSDK_C_API FbxMeshC* FbxMesh_Create( FbxManagerC* manager, const char* name );
+FBXSDK_C_API FbxMeshC* FbxMesh_Create( FbxSceneC* scene, const char* name );
 FBXSDK_C_API void      FbxMesh_InitControlPoints( FbxMeshC* mesh, int count );
 FBXSDK_C_API int       FbxMesh_GetControlPointsCount( FbxMeshC* mesh );
 FBXSDK_C_API void      FbxMesh_SetControlPointAt( FbxMeshC* mesh, int index, double x, double y, double z );
+/// Begins a polygon on the given material index. Legacy mode is off, as 3ds Max writes it.
 FBXSDK_C_API void      FbxMesh_BeginPolygon( FbxMeshC* mesh, int material );
 FBXSDK_C_API void      FbxMesh_AddPolygon( FbxMeshC* mesh, int index );
 FBXSDK_C_API void      FbxMesh_EndPolygon( FbxMeshC* mesh );
-FBXSDK_C_API int       FbxMesh_CreateLayer( FbxMeshC* mesh );
 
-/// Creates a layer element on the given layer, in the order the layer already has. The exporter
-/// relies on that order, because 3ds Max maps layers to map channels positionally.
+/// Creates a layer element on the first layer that does not have one of this type yet,
+/// matching FbxGeometryBase::CreateElementNormal and its siblings.
+FBXSDK_C_API FbxLayerElementC* FbxMesh_CreateElement( FbxManagerC* manager, FbxMeshC* mesh,
+                                                      int type, const char* name );
+/// Creates a layer element on a specific layer, creating layers up to it as needed. The
+/// exporter needs this because 3ds Max maps layers to map channels positionally.
 FBXSDK_C_API FbxLayerElementC* FbxMesh_CreateLayerElement( FbxManagerC* manager, FbxMeshC* mesh,
                                                            int layer, int type, const char* name );
 FBXSDK_C_API void FbxLayerElement_SetMappingMode( FbxLayerElementC* element, int mode );
@@ -154,26 +176,26 @@ FBXSDK_C_API void FbxLayerElement_SetDirectColorAt( FbxLayerElementC* element, i
                                                     double r, double g, double b, double a );
 
 // Skinning
-FBXSDK_C_API FbxSkinC*    FbxSkin_Create( FbxManagerC* manager, const char* name );
+FBXSDK_C_API FbxSkinC*    FbxSkin_Create( FbxSceneC* scene, const char* name );
 FBXSDK_C_API void         FbxSkin_SetSkinningTypeLinear( FbxSkinC* skin );
 FBXSDK_C_API void         FbxSkin_AddCluster( FbxSkinC* skin, FbxClusterC* cluster );
 FBXSDK_C_API void         FbxMesh_AddSkinDeformer( FbxMeshC* mesh, FbxSkinC* skin );
-FBXSDK_C_API FbxClusterC* FbxCluster_Create( FbxManagerC* manager, const char* name );
+FBXSDK_C_API FbxClusterC* FbxCluster_Create( FbxSceneC* scene, const char* name );
 FBXSDK_C_API void         FbxCluster_SetLink( FbxClusterC* cluster, FbxNodeC* node );
 FBXSDK_C_API void         FbxCluster_SetLinkMode( FbxClusterC* cluster, int mode );
 FBXSDK_C_API void         FbxCluster_SetTransformLinkMatrix( FbxClusterC* cluster, const double* matrix16 );
 FBXSDK_C_API void         FbxCluster_AddControlPointIndex( FbxClusterC* cluster, int index, double weight );
 
 // Bind pose
-FBXSDK_C_API FbxPoseC* FbxPose_Create( FbxManagerC* manager, const char* name );
+FBXSDK_C_API FbxPoseC* FbxPose_Create( FbxSceneC* scene, const char* name );
 FBXSDK_C_API void      FbxPose_SetIsBindPose( FbxPoseC* pose, int isBindPose );
 FBXSDK_C_API void      FbxPose_Add( FbxPoseC* pose, FbxNodeC* node, const double* matrix16 );
 FBXSDK_C_API void      FbxScene_AddPose( FbxSceneC* scene, FbxPoseC* pose );
 
 // Blend shapes
-FBXSDK_C_API FbxBlendShapeC*        FbxBlendShape_Create( FbxManagerC* manager, const char* name );
-FBXSDK_C_API FbxBlendShapeChannelC* FbxBlendShapeChannel_Create( FbxManagerC* manager, const char* name );
-FBXSDK_C_API FbxShapeC*             FbxShape_Create( FbxManagerC* manager, const char* name );
+FBXSDK_C_API FbxBlendShapeC*        FbxBlendShape_Create( FbxSceneC* scene, const char* name );
+FBXSDK_C_API FbxBlendShapeChannelC* FbxBlendShapeChannel_Create( FbxSceneC* scene, const char* name );
+FBXSDK_C_API FbxShapeC*             FbxShape_Create( FbxSceneC* scene, const char* name );
 FBXSDK_C_API void FbxMesh_AddBlendShapeDeformer( FbxMeshC* mesh, FbxBlendShapeC* blendShape );
 FBXSDK_C_API void FbxBlendShape_AddChannel( FbxBlendShapeC* blendShape, FbxBlendShapeChannelC* channel );
 FBXSDK_C_API void FbxBlendShapeChannel_AddTargetShape( FbxBlendShapeChannelC* channel, FbxShapeC* shape, double fullWeight );
@@ -182,23 +204,32 @@ FBXSDK_C_API void FbxShape_SetControlPointAt( FbxShapeC* shape, int index, doubl
 FBXSDK_C_API void FbxShape_SetNormalAt( FbxShapeC* shape, int index, double x, double y, double z );
 
 // Materials and textures
-FBXSDK_C_API FbxSurfaceMaterialC* FbxSurfacePhong_Create( FbxManagerC* manager, const char* name );
-FBXSDK_C_API FbxFileTextureC*     FbxFileTexture_Create( FbxManagerC* manager, const char* name );
-FBXSDK_C_API void FbxFileTexture_SetFileName( FbxFileTextureC* texture, const char* path );
+FBXSDK_C_API FbxSurfaceMaterialC* FbxSurfacePhong_Create( FbxSceneC* scene, const char* name );
+FBXSDK_C_API void FbxSurfaceMaterial_SetShadingModel( FbxSurfaceMaterialC* material, const char* model );
 FBXSDK_C_API void FbxSurfaceMaterial_ConnectDiffuseTexture( FbxSurfaceMaterialC* material, FbxFileTextureC* texture );
 FBXSDK_C_API void FbxSurfaceMaterial_SetUserPropertyString( FbxSurfaceMaterialC* material, const char* name, const char* value );
 FBXSDK_C_API void FbxSurfaceMaterial_SetUserPropertyInt( FbxSurfaceMaterialC* material, const char* name, int value );
 FBXSDK_C_API void FbxSurfaceMaterial_SetUserPropertyBool( FbxSurfaceMaterialC* material, const char* name, int value );
 FBXSDK_C_API void FbxSurfaceMaterial_SetUserPropertyDouble( FbxSurfaceMaterialC* material, const char* name, double value );
+FBXSDK_C_API FbxFileTextureC* FbxFileTexture_Create( FbxSceneC* scene, const char* name );
+FBXSDK_C_API void FbxFileTexture_SetFileName( FbxFileTextureC* texture, const char* path );
+FBXSDK_C_API void FbxFileTexture_SetUVSet( FbxFileTextureC* texture, const char* name );
+FBXSDK_C_API void FbxFileTexture_SetUseMaterial( FbxFileTextureC* texture, int useMaterial );
 
 // Cameras and lights
-FBXSDK_C_API FbxCameraC* FbxCamera_Create( FbxManagerC* manager, const char* name );
-FBXSDK_C_API void        FbxCamera_SetAspect( FbxCameraC* camera, double width, double height );
+FBXSDK_C_API FbxCameraC* FbxCamera_Create( FbxSceneC* scene, const char* name );
+FBXSDK_C_API void        FbxCamera_SetPosition( FbxCameraC* camera, double x, double y, double z );
+FBXSDK_C_API void        FbxCamera_SetUpVector( FbxCameraC* camera, double x, double y, double z );
+FBXSDK_C_API void        FbxCamera_SetInterestPosition( FbxCameraC* camera, double x, double y, double z );
 FBXSDK_C_API void        FbxCamera_SetFieldOfView( FbxCameraC* camera, double degrees );
 FBXSDK_C_API void        FbxCamera_SetNearFarPlane( FbxCameraC* camera, double nearPlane, double farPlane );
-FBXSDK_C_API FbxLightC*  FbxLight_Create( FbxManagerC* manager, const char* name );
+/// Fixes the resolution to the given width and height, which also sets the aspect ratio mode.
+FBXSDK_C_API void        FbxCamera_SetAspect( FbxCameraC* camera, double width, double height );
+FBXSDK_C_API FbxLightC*  FbxLight_Create( FbxSceneC* scene, const char* name );
 FBXSDK_C_API void        FbxLight_SetType( FbxLightC* light, int type );
 FBXSDK_C_API void        FbxLight_SetColor( FbxLightC* light, double r, double g, double b );
+FBXSDK_C_API void        FbxLight_SetFarAttenuation( FbxLightC* light, int enable, double start, double end );
+FBXSDK_C_API void        FbxLight_SetConeAngles( FbxLightC* light, double innerDegrees, double outerDegrees );
 
 /// Writes the scene. Returns 0 on success; the message is available from FbxGetLastError.
 FBXSDK_C_API int FbxScene_Export( FbxManagerC* manager, FbxSceneC* scene, const char* path, int fileFormatBinary );
