@@ -1,0 +1,41 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:GFDStudio.Avalonia"
+        x:Class="GFDStudio.Avalonia.MainWindow"
+        Title="GFD Studio" Width="1100" Height="720">
+
+  <DockPanel>
+
+    <Menu DockPanel.Dock="Top">
+      <MenuItem Header="_File">
+        <MenuItem Name="mOpen" Header="_Open" InputGesture="Ctrl+O" />
+        <MenuItem Name="mSave" Header="_Save" InputGesture="Ctrl+S" />
+        <MenuItem Name="mSaveAs" Header="Save _as" InputGesture="Ctrl+Shift+S" />
+        <Separator />
+        <MenuItem Name="mExit" Header="E_xit" />
+      </MenuItem>
+      <MenuItem Header="_Options">
+        <MenuItem Name="mRetainTextureNames" Header="Retain texture names" ToggleType="CheckBox" />
+        <MenuItem Name="mRetainColorValues" Header="Retain material colours" ToggleType="CheckBox" />
+        <MenuItem Name="mSaveTexturesExternally" Header="(Metaphor) Save replaced textures externally" ToggleType="CheckBox" />
+      </MenuItem>
+    </Menu>
+
+    <Border DockPanel.Dock="Bottom" BorderThickness="0,1,0,0" BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}">
+      <TextBlock Name="mStatus" Margin="8,4" Text="Ready" />
+    </Border>
+
+    <Grid ColumnDefinitions="2*,4,3*">
+      <local:DataViewNodeTree Name="mTree" Grid.Column="0" />
+      <GridSplitter Grid.Column="1" ResizeDirection="Columns" />
+      <Grid Grid.Column="2" RowDefinitions="*,4,2*">
+        <Border Grid.Row="0" Name="mContent" />
+        <GridSplitter Grid.Row="1" ResizeDirection="Rows" />
+        <ScrollViewer Grid.Row="2">
+          <TextBlock Name="mProperties" Margin="8" TextWrapping="Wrap" />
+        </ScrollViewer>
+      </Grid>
+    </Grid>
+
+  </DockPanel>
+</Window>
