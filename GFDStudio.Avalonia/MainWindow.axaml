@@ -3,7 +3,8 @@
         xmlns:local="clr-namespace:GFDStudio.Avalonia"
         xmlns:pg="clr-namespace:Avalonia.PropertyGrid.Controls;assembly=Avalonia.PropertyGrid"
         x:Class="GFDStudio.Avalonia.MainWindow"
-        Width="1280" Height="800">
+        Width="1280" Height="800"
+        Background="{DynamicResource WindowBackgroundBrush}">
 
   <DockPanel>
 
@@ -61,7 +62,7 @@
           </Grid>
         </Border>
 
-        <Panel Background="#3C3F41">
+        <Panel Background="{DynamicResource ViewportBackgroundBrush}">
           <local:ModelView Name="mModelView" IsVisible="False" />
           <Image Name="mImageView" IsVisible="False" Stretch="Uniform" />
         </Panel>

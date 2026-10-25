@@ -2,7 +2,53 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="GFDStudio.Avalonia.App"
              RequestedThemeVariant="Dark">
+
   <Application.Styles>
     <FluentTheme />
+
+    <!-- Fluent sizes tab headers for touch, which is far too large for a tool window. -->
+    <Style Selector="TabItem">
+      <Setter Property="FontSize" Value="13" />
+      <Setter Property="MinHeight" Value="30" />
+      <Setter Property="Padding" Value="10,4" />
+    </Style>
+
+    <!-- Property names are often longer than the column, so let them wrap rather than clip. -->
+    <Style Selector="TextBlock.property-name">
+      <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
   </Application.Styles>
+
+  <Application.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.ThemeDictionaries>
+        <!-- Fluent's dark is near black, which leaves too little contrast against dark
+             textures and model surfaces. These are the greys the old front end used. -->
+        <ResourceDictionary x:Key="Dark">
+          <!-- Fluent builds its surfaces from these, so the grey has to start here rather than
+               on the window alone. -->
+          <Color x:Key="SystemAltHighColor">#2D2D30</Color>
+          <Color x:Key="SystemAltMediumHighColor">#333337</Color>
+          <Color x:Key="SystemChromeLowColor">#3E3E42</Color>
+          <Color x:Key="SystemChromeMediumLowColor">#37373B</Color>
+          <Color x:Key="SystemChromeMediumColor">#3E3E42</Color>
+          <Color x:Key="SystemListLowColor">#3A3A3E</Color>
+          <Color x:Key="SystemListMediumColor">#45454A</Color>
+
+          <Color x:Key="WindowBackground">#2D2D30</Color>
+          <Color x:Key="PanelBackground">#37373B</Color>
+          <SolidColorBrush x:Key="WindowBackgroundBrush" Color="#2D2D30" />
+          <SolidColorBrush x:Key="PanelBackgroundBrush" Color="#37373B" />
+          <SolidColorBrush x:Key="ViewportBackgroundBrush" Color="#2F3133" />
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="Light">
+          <Color x:Key="WindowBackground">#F3F3F3</Color>
+          <Color x:Key="PanelBackground">#FFFFFF</Color>
+          <SolidColorBrush x:Key="WindowBackgroundBrush" Color="#F3F3F3" />
+          <SolidColorBrush x:Key="PanelBackgroundBrush" Color="#FFFFFF" />
+          <SolidColorBrush x:Key="ViewportBackgroundBrush" Color="#D8D8D8" />
+        </ResourceDictionary>
+      </ResourceDictionary.ThemeDictionaries>
+    </ResourceDictionary>
+  </Application.Resources>
 </Application>
