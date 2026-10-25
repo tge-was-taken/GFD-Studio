@@ -1,9 +1,5 @@
-using System;
-using System.IO;
-using BCnEncoder.Encoder;
-using BCnEncoder.ImageSharp;
-using BCnEncoder.Shared;
-using GFDLibrary.Textures.Utilities;
+﻿using System;
+using GFDLibrary.Textures.DDS;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
@@ -21,21 +17,7 @@ namespace GFDLibrary.Textures
             if ( format != TextureFormat.DDS )
                 throw new NotImplementedException();
 
-            var encoder = new BcEncoder
-            {
-                OutputOptions =
-                {
-                    GenerateMipMaps = true,
-                    Quality = CompressionQuality.BestQuality,
-                    Format = ImageHelper.HasTransparency( image ) ? CompressionFormat.Bc3 : CompressionFormat.Bc1,
-                    FileFormat = OutputFileFormat.Dds
-                }
-            };
-
-            using var stream = new MemoryStream();
-            encoder.EncodeToStream( image, stream );
-
-            return new Texture( name, format, stream.ToArray(), field1C, field1D, field1E, field1F );
+            return new Texture( name, format, DDSCodec.CompressImage( image ), field1C, field1D, field1E, field1F );
         }
     }
 }

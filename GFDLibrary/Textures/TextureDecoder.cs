@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using BCnEncoder.Decoder;
-using BCnEncoder.ImageSharp;
 using GFDLibrary.Textures.DDS;
+using GFDLibrary.Textures.Native;
 using GFDLibrary.Textures.GNF;
 using GFDLibrary.Textures.Swizzle;
 using GFDLibrary.Textures.Utilities;
@@ -144,8 +143,8 @@ namespace GFDLibrary.Textures
         {
             try
             {
-                var decoder = new BcDecoder();
-                return decoder.DecodeToImageRgba32( new MemoryStream( data ) );
+                using var image = DirectXTex.ScratchImage.FromDDS( data );
+                return DDSCodec.ToImage( image );
             }
             catch ( Exception )
             {
@@ -162,8 +161,8 @@ namespace GFDLibrary.Textures
         }
         private static Image<Rgba32> DecodeTGA( byte[] data )
         {
-            var pixels = TgaDecoderTest.TgaDecoder.DecodeToPixels( data, out var width, out var height );
-            return ImageHelper.FromBgra( pixels, width, height );
+            using var image = DirectXTex.ScratchImage.FromTGA( data );
+            return DDSCodec.ToImage( image );
         }
         private static Image<Rgba32> DecodeGXT( byte[] data )
         {
