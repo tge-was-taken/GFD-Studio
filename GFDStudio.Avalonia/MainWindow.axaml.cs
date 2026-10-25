@@ -33,6 +33,8 @@ namespace GFDStudio.Avalonia
 
         public DataViewNode TopNode { get; private set; }
 
+        private string mFilePath;
+
         public void OpenFile()
         {
             var result = UserDialogs.Current.OpenFile( new FileDialogRequest
@@ -58,25 +60,31 @@ namespace GFDStudio.Avalonia
                 CollectModelParts.CollectDisconnectedModelPartsForModelPack( (ModelPack)node.Data, path );
 
             TopNode = node;
+            mFilePath = path;
             mTree.Load( node );
             mTree.Select( node );
             mStatus.Text = path;
         }
 
+        /// <summary>
+        /// Writes the open file back where it came from.
+        /// </summary>
         public void SaveFile()
         {
             if ( TopNode == null )
                 return;
 
-            TopNode.Export();
+            if ( mFilePath == null )
+                SaveFileAs();
+            else
+                TopNode.Export( mFilePath );
         }
 
         public void SaveFileAs()
         {
-            if ( TopNode == null )
-                return;
-
-            TopNode.Export();
+            var path = TopNode?.Export();
+            if ( path != null )
+                mFilePath = path;
         }
 
         private static void BindOption( MenuItem item, Action<bool> set, bool initial )

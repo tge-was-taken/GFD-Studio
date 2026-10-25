@@ -26,18 +26,22 @@
       <TextBlock Name="mStatus" Margin="8,4" Text="Ready" />
     </Border>
 
-    <Grid ColumnDefinitions="2*,4,3*">
+    <Grid ColumnDefinitions="2*,4,3*,4,3*">
+
       <local:DataViewNodeTree Name="mTree" Grid.Column="0" />
+
       <GridSplitter Grid.Column="1" ResizeDirection="Columns" />
-      <Grid Grid.Column="2" RowDefinitions="*,4,2*">
-        <Panel Grid.Row="0">
-          <local:ModelView Name="mModelView" IsVisible="False" />
-          <Image Name="mImageView" IsVisible="False" Stretch="Uniform" />
-        </Panel>
-        <GridSplitter Grid.Row="1" ResizeDirection="Rows" />
-        <pg:PropertyGrid Grid.Row="2" Name="mProperties"
-                         IsTitleVisible="False" IsQuickFilterVisible="True" />
-      </Grid>
+
+      <Panel Grid.Column="2">
+        <local:ModelView Name="mModelView" IsVisible="False" />
+        <Image Name="mImageView" IsVisible="False" Stretch="Uniform" />
+      </Panel>
+
+      <GridSplitter Grid.Column="3" ResizeDirection="Columns" />
+
+      <pg:PropertyGrid Grid.Column="4" Name="mProperties"
+                       IsTitleVisible="False" IsQuickFilterVisible="True" />
+
     </Grid>
 
   </DockPanel>
