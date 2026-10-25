@@ -49,3 +49,12 @@ set_target_properties(FbxSdkC PROPERTIES
     PREFIX ""
     CXX_VISIBILITY_PRESET hidden
 )
+
+# Multi config generators would otherwise put the binary in a per configuration subdirectory,
+# leaving the managed build and CI with a different path on Windows than everywhere else.
+foreach(config "" _DEBUG _RELEASE _RELWITHDEBINFO _MINSIZEREL)
+    set_target_properties(FbxSdkC PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY${config} "${CMAKE_BINARY_DIR}"
+        LIBRARY_OUTPUT_DIRECTORY${config} "${CMAKE_BINARY_DIR}"
+    )
+endforeach()
