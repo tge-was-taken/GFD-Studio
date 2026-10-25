@@ -86,7 +86,7 @@ namespace GFDStudio.GUI.DataViewNodes
 
         protected override void InitializeCore()
         {
-            TextChanged += ( o, s ) => Text = Name = s.Label;
+            TextChanged += ( o, s ) => Name = Text;
 
             RegisterExportHandler<Node>( path => Data.Save( path ) );
             RegisterReplaceHandler<Node>( Resource.Load<Node> );

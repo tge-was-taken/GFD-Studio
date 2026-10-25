@@ -94,7 +94,7 @@ namespace GFDStudio.GUI.Forms
 
         private void HandleTreeViewAfterSelect( object sender, TreeViewEventArgs e )
         {
-            var node = ( DataViewNode )e.Node;
+            var node = DataTreeView.GetViewNode( e.Node );
             UpdateSelection( node );
         }
 
@@ -806,7 +806,7 @@ namespace GFDStudio.GUI.Forms
 
         private void HandleAnimationTreeViewAfterSelect( object sender, TreeViewEventArgs e )
         {
-            var node = ( DataViewNode )e.Node;
+            var node = DataTreeView.GetViewNode( e.Node );
             if ( node.DataType == typeof(Animation) )
                 ModelViewControl.Instance.LoadAnimation( ( Animation ) node.Data );
 

@@ -36,13 +36,11 @@ namespace GFDStudio.GUI.DataViewNodes
     /// <summary>
     /// Represents an view model for a node of a DataTreeView with extra additions.
     /// </summary>
-    public abstract partial class DataViewNode : TreeNode, INotifyPropertyChanged
+    public abstract partial class DataViewNode : INotifyPropertyChanged
     {
         private readonly Dictionary<Type, DataViewNodeExportHandler> mExportHandlers;
         private readonly Dictionary<Type, DataViewNodeReplaceHandler> mReplaceHandlers;
         private readonly Dictionary<Type, DataViewNodeAddHandler> mAddHandlers;
-
-        internal static ImageList ImageList { get; } = new ImageList();
 
         /// <summary>
         /// Gets or sets the resource held by the view model.
@@ -72,36 +70,76 @@ namespace GFDStudio.GUI.DataViewNodes
         /// Gets or sets the text displayed in the label of the tree node.
         /// </summary>
         [Browsable( false )]
-        public new string Text
+        public string Text
         {
-            get => base.Text;
+            get => mText;
             set
             {
-                if ( value != base.Text )
+                if ( value != mText )
                 {
-                    base.Text = value;
+                    mText = value;
                     NotifyPropertyChanged();
                 }
             }
         }
 
         /// <summary>
-        /// Gets the parent of the tree node.
+        /// An identifier for the node, which is not what gets displayed.
         /// </summary>
         [Browsable( false )]
-        public new DataViewNode Parent => ( DataViewNode )base.Parent;
+        public string Name { get; set; }
 
         /// <summary>
-        /// Gets the parent tree view of the tree node.
+        /// Paths to the icons to show, resolved by the view.
         /// </summary>
         [Browsable( false )]
-        public DataTreeView DataTreeView => ( DataTreeView )base.TreeView;
+        public string ImageKey { get; set; }
+
+        [Browsable( false )]
+        public string SelectedImageKey { get; set; }
+
+        [Browsable( false )]
+        public bool IsExpanded { get; internal set; }
+
+        /// <summary>
+        /// Gets the parent of the node.
+        /// </summary>
+        [Browsable( false )]
+        public DataViewNode Parent { get; private set; }
+
+        /// <summary>
+        /// Gets the child nodes.
+        /// </summary>
+        [Browsable( false )]
+        public DataViewNodeCollection Nodes { get; }
+
+        /// <summary>
+        /// The position among the parent's children.
+        /// </summary>
+        [Browsable( false )]
+        public int Index => Parent?.Nodes.IndexOf( this ) ?? 0;
+
+        /// <summary>
+        /// The view displaying this node, which the root of the tree holds on everyone's behalf.
+        /// </summary>
+        [Browsable( false )]
+        public IDataViewNodeView View
+        {
+            get => Parent != null ? Parent.View : mView;
+            private set => mView = value;
+        }
+
+        /// <summary>
+        /// The node's context menu, described without reference to a UI framework.
+        /// </summary>
+        [Browsable( false )]
+        public List<DataViewNodeMenuItem> MenuItems { get; private set; } = new();
 
         /// <summary>
         /// This event is fired whenever the tree node label text is changed.
         /// </summary>
         [Browsable( false )]
-        public event EventHandler<NodeLabelEditEventArgs> TextChanged;
+        public event EventHandler TextChanged;
 
         /// <summary>
         /// This event is fired whenever a property of the tree node is changed.
@@ -121,6 +159,8 @@ namespace GFDStudio.GUI.DataViewNodes
 
         private bool mHasPendingChanges;
         private bool mIsInitializingView;
+        private string mText;
+        private IDataViewNodeView mView;
         private readonly List<(string Menu, DataViewNodeMenuItem Item)> mCustomHandlers;
 
         /// <summary>
@@ -142,15 +182,29 @@ namespace GFDStudio.GUI.DataViewNodes
             }
         }
 
-        protected DataViewNode( string text ) : base( text )
-        {      
+        protected DataViewNode( string text )
+        {
+            mText = text;
+            Nodes = new DataViewNodeCollection( this );
             mExportHandlers = new Dictionary<Type, DataViewNodeExportHandler>();
             mReplaceHandlers = new Dictionary<Type, DataViewNodeReplaceHandler>();
             mAddHandlers = new Dictionary<Type, DataViewNodeAddHandler>();
             mCustomHandlers = new List<(string Menu, DataViewNodeMenuItem Item)>();
         }
 
-        public void AddChildNode( TreeNode node )
+        internal void SetParent( DataViewNode parent ) => Parent = parent;
+
+        internal void AttachView( IDataViewNodeView view ) => View = view;
+
+        internal void NotifyChildrenChanged() => View?.OnChildrenChanged( this );
+
+        public void Expand()
+        {
+            IsExpanded = true;
+            View?.OnChildrenChanged( this );
+        }
+
+        public void AddChildNode( DataViewNode node )
         {
             Nodes.Add( node );
 
@@ -307,7 +361,7 @@ namespace GFDStudio.GUI.DataViewNodes
             Data = model;
             NotifyDataPropertyChanged();
             InitializeView( true );
-            DataTreeView.RefreshSelection();
+            View?.RefreshSelection();
         }
 
         //
@@ -368,7 +422,7 @@ namespace GFDStudio.GUI.DataViewNodes
         //
         public void MoveUp()
         {
-            TreeNode parent = Parent;
+            var parent = Parent;
 
             if ( parent != null )
             {
@@ -379,23 +433,13 @@ namespace GFDStudio.GUI.DataViewNodes
                     parent.Nodes.Insert( index - 1, this );
                 }
             }
-            else if ( DataTreeView != null && DataTreeView.Nodes.Contains( this ) ) //root node
-            {
-                int index = DataTreeView.Nodes.IndexOf( this );
-                if ( index > 0 )
-                {
-                    DataTreeView.Nodes.RemoveAt( index );
-                    DataTreeView.Nodes.Insert( index - 1, this );
-                }
-            }
 
-            if ( DataTreeView != null )
-                DataTreeView.SelectedNode = this;
+            View?.Select( this );
         }
 
         public void MoveDown()
         {
-            TreeNode parent = Parent;
+            var parent = Parent;
             if ( parent != null )
             {
                 int index = parent.Nodes.IndexOf( this );
@@ -405,18 +449,8 @@ namespace GFDStudio.GUI.DataViewNodes
                     parent.Nodes.Insert( index + 1, this );
                 }
             }
-            else if ( DataTreeView != null && DataTreeView.Nodes.Contains( this ) ) //root node
-            {
-                int index = DataTreeView.Nodes.IndexOf( this );
-                if ( index < DataTreeView.Nodes.Count - 1 )
-                {
-                    DataTreeView.Nodes.RemoveAt( index );
-                    DataTreeView.Nodes.Insert( index + 1, this );
-                }
-            }
 
-            if ( DataTreeView != null )
-                DataTreeView.SelectedNode = this;
+            View?.Select( this );
         }
 
         //
@@ -424,8 +458,8 @@ namespace GFDStudio.GUI.DataViewNodes
         //
         public void ExpandAllNodes()
         {
-            DataTreeView.ExpandAll();
-            DataTreeView.Nodes[0].EnsureVisible();
+            View?.ExpandAll();
+            View?.EnsureVisible( this );
         }
 
         //
@@ -435,10 +469,9 @@ namespace GFDStudio.GUI.DataViewNodes
         {
             if ( Parent != null )
                 Parent.HasPendingChanges = true;
-            base.Remove();
-        }
 
-        public new void Remove() => Delete();
+            Parent?.Nodes.Remove( this );
+        }
 
         // INotifyPropertyChanged
         protected void SetProperty<T>( object instance, T value, [CallerMemberName] string propertyName = null )
@@ -510,7 +543,7 @@ namespace GFDStudio.GUI.DataViewNodes
 
             // invoke property changed event
             PropertyChanged?.Invoke( this, new PropertyChangedEventArgs( propertyName ) );
-            DataTreeView?.InvokeUserPropertyChanged( this, propertyName );
+            View?.NotifyUserPropertyChanged( this, propertyName );
         }
 
         protected void NotifyDataPropertyChanged()
@@ -526,7 +559,7 @@ namespace GFDStudio.GUI.DataViewNodes
 
             // invoke property changed event
             PropertyChanged?.Invoke( this, new PropertyChangedEventArgs( nameof( Data ) ) );
-            DataTreeView?.InvokeUserPropertyChanged( this, nameof(Data) );
+            View?.NotifyUserPropertyChanged( this, nameof( Data ) );
         }
 
         // 
@@ -565,35 +598,18 @@ namespace GFDStudio.GUI.DataViewNodes
         protected virtual void InitializeViewCore() { }
 
         // Rename methods
-        private void BeginRename()
+        private void BeginRename() => View?.BeginRename( this );
+
+        /// <summary>
+        /// Applies a label the user edited. A null label means they cancelled.
+        /// </summary>
+        public void CommitRename( string newText )
         {
-            // renaming can only be done through the treeview that owns this node
-            if ( DataTreeView != null )
-            {
-                // start editing the name
-                DataTreeView.LabelEdit = true;
-                BeginEdit();
+            if ( newText == null || newText == Text )
+                return;
 
-                // subscribe to the label edit event, so we can finish 
-                DataTreeView.AfterLabelEdit += EndRename;
-            }
-        }
-
-        private void EndRename( object sender, NodeLabelEditEventArgs e )
-        {
-            // stop editing the name
-            EndEdit( false );
-
-            bool textWasEdited = !e.CancelEdit && e.Label != null && e.Label != Text;
-            if ( textWasEdited )
-                Text = e.Label;
-
-            // unsubscribe from the event
-            if ( DataTreeView != null )
-                DataTreeView.AfterLabelEdit -= EndRename;
-
-            if ( TextChanged != null && textWasEdited )
-                TextChanged.Invoke( this, e );
+            Text = newText;
+            TextChanged?.Invoke( this, EventArgs.Empty );
         }
 
         //
@@ -681,10 +697,7 @@ namespace GFDStudio.GUI.DataViewNodes
                 }
             }
 
-            if ( !ImageList.Images.ContainsKey( ImageKey ) )
-                ImageList.Images.Add( ImageKey, new Bitmap( ImageKey ) );
-
-            ImageKey = SelectedImageKey = ImageKey;
+            SelectedImageKey = ImageKey;
         }
 
         protected virtual void OnPropertyChanged( object sender, PropertyChangedEventArgs e )
@@ -718,18 +731,14 @@ namespace GFDStudio.GUI.DataViewNodes
                 // let the derived view model populate the view
                 InitializeViewCore();
 
-                if ( DataTreeView != null )
-                {
-                    // expand node to refresh view of child nodes, required for late view initialization
-                    // if this is missing the expand button won't show up until the child node is selected
-                    DataTreeView.ExpandNode( this );
-                }
+                // let the view catch up, so the expander shows before a child is selected
+                View?.OnChildrenChanged( this );
             }
 
             if ( !IsViewInitialized )
             {
                 // initialize the context menu strip if the view model isn't initialized yet
-                InitializeContextMenuStrip();
+                MenuItems = BuildContextMenu();
             }
 
             mIsInitializingView = false;
@@ -739,12 +748,6 @@ namespace GFDStudio.GUI.DataViewNodes
         /// <summary>
         /// Populates the context menu strip, should be called after the context menu options have been set.
         /// </summary>
-        private void InitializeContextMenuStrip()
-        {
-            ContextMenuStrip = BuildContextMenu().ToContextMenuStrip( () => ContextMenuStrip );
-            ContextMenuStrip.VisibleChanged += ( s, e ) => ShowContextMenuStrip();
-        }
-
         /// <summary>
         /// Describes the node's context menu without building any UI.
         /// </summary>
@@ -824,12 +827,6 @@ namespace GFDStudio.GUI.DataViewNodes
 
             static DataViewNodeMenuItem Item( string name, string text, Action action, DataViewNodeMenuKey key )
                 => new() { Name = name, Text = text, Action = action, Shortcut = DataViewNodeMenuShortcut.Control( key ) };
-        }
-
-        private void ShowContextMenuStrip()
-        {
-            Theme.RecursivelySetColor( ContextMenuStrip );
-            return;
         }
 
         //

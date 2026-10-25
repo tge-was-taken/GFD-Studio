@@ -1,97 +1,137 @@
-﻿using System.ComponentModel;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
 using System.Windows.Forms;
+using GFDStudio.GUI.Forms;
 
 namespace GFDStudio.GUI.DataViewNodes
 {
     public delegate void DataTreeNodeViewModelPropertyChangedEventHandler( object sender, DataViewNodePropertyChangedEventArgs args );
 
-    public class DataTreeView : TreeView
+    /// <summary>
+    /// Mirrors a tree of <see cref="DataViewNode"/> into WinForms tree nodes. The view nodes know
+    /// nothing about this; they describe themselves and ask for view operations through
+    /// <see cref="IDataViewNodeView"/>.
+    /// </summary>
+    public class DataTreeView : TreeView, IDataViewNodeView
     {
         public event DataTreeNodeViewModelPropertyChangedEventHandler UserPropertyChanged;
+
+        private readonly Dictionary<DataViewNode, TreeNode> mTreeNodes = new();
+        private DataViewNode mTopNode;
+        private DataViewNode mRenamingNode;
 
         [DesignerSerializationVisibility( DesignerSerializationVisibility.Hidden )]
         public new DataViewNode TopNode
         {
-            get
-            {
-                if ( !DesignMode )
-                {
-                    return Nodes.Count > 0 ? ( DataViewNode ) Nodes[ 0 ] : null;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            set
-            {
-                if ( Nodes.Count > 0 )
-                    Nodes[ 0 ] = value;
-                else if ( value != null )
-                    Nodes.Add( value );
-            }
+            get => DesignMode ? null : mTopNode;
+            set => SetTopNode( value );
         }
 
         public DataTreeView()
         {
-            ImageList = DataViewNode.ImageList;
+            ImageList = new ImageList();
         }
 
         /// <summary>
-        /// Sets the first visible node in the tree. Clears all nodes if not empty.
+        /// Shows the given node as the only node in the tree.
         /// </summary>
-        /// <param name="node"></param>
         public void SetTopNode( DataViewNode node )
         {
-            // clear nodes if not empty
-            if ( Nodes.Count != 0 )
-            {
-                Nodes.Clear();
-            }
+            Nodes.Clear();
+            mTreeNodes.Clear();
+            mTopNode = node;
 
-            // initialize its view as it will be the first visible node
+            if ( node == null )
+                return;
+
+            node.AttachView( this );
             node.InitializeView();
-
-            // add top node
-            Nodes.Add( node );
+            Nodes.Add( Build( node ) );
         }
 
-        public void RefreshSelection()
+        /// <summary>
+        /// Gets the view node a WinForms tree node stands for.
+        /// </summary>
+        public static DataViewNode GetViewNode( TreeNode treeNode ) => treeNode?.Tag as DataViewNode;
+
+        public void RefreshSelection() => OnAfterSelect( new TreeViewEventArgs( SelectedNode ) );
+
+        public void Select( DataViewNode node )
         {
-            OnAfterSelect( new TreeViewEventArgs( SelectedNode ) );
+            if ( mTreeNodes.TryGetValue( node, out var treeNode ) )
+                SelectedNode = treeNode;
         }
 
-        public void ExpandNode( DataViewNode viewModel )
+        public void EnsureVisible( DataViewNode node )
         {
-            // check if the first child node is a dummy node
-            if ( viewModel.Nodes.Count > 0 && viewModel.Nodes[0].Text.Length == 0 )
+            if ( mTreeNodes.TryGetValue( node, out var treeNode ) )
+                treeNode.EnsureVisible();
+        }
+
+        public void BeginRename( DataViewNode node )
+        {
+            if ( !mTreeNodes.TryGetValue( node, out var treeNode ) )
+                return;
+
+            mRenamingNode = node;
+            LabelEdit = true;
+            treeNode.BeginEdit();
+        }
+
+        public void NotifyUserPropertyChanged( DataViewNode node, string propertyName )
+            => UserPropertyChanged?.Invoke( this, new DataViewNodePropertyChangedEventArgs( node, propertyName ) );
+
+        public void OnChildrenChanged( DataViewNode node )
+        {
+            if ( mTreeNodes.TryGetValue( node, out var treeNode ) )
+                SyncChildren( node, treeNode );
+        }
+
+        private TreeNode Build( DataViewNode node )
+        {
+            var treeNode = new TreeNode( node.Text ) { Tag = node, Name = node.Name };
+            mTreeNodes[node] = treeNode;
+
+            ApplyIcon( node, treeNode );
+            treeNode.ContextMenuStrip = node.MenuItems.ToContextMenuStrip( () => treeNode.ContextMenuStrip );
+            if ( treeNode.ContextMenuStrip != null )
+                treeNode.ContextMenuStrip.VisibleChanged += ( s, e ) => Theme.RecursivelySetColor( treeNode.ContextMenuStrip );
+
+            SyncChildren( node, treeNode );
+            return treeNode;
+        }
+
+        private void ApplyIcon( DataViewNode node, TreeNode treeNode )
+        {
+            if ( string.IsNullOrWhiteSpace( node.ImageKey ) )
+                return;
+
+            if ( !ImageList.Images.ContainsKey( node.ImageKey ) )
+                ImageList.Images.Add( node.ImageKey, new Bitmap( node.ImageKey ) );
+
+            treeNode.ImageKey = treeNode.SelectedImageKey = node.ImageKey;
+        }
+
+        private void SyncChildren( DataViewNode node, TreeNode treeNode )
+        {
+            treeNode.Nodes.Clear();
+
+            foreach ( var child in node.Nodes )
             {
-                // initialize the view so the user doesn't get to see the dummy node
-                viewModel.InitializeView(true);
-            }
+                var childTreeNode = Build( child );
+                treeNode.Nodes.Add( childTreeNode );
 
-            foreach ( DataViewNode childNode in viewModel.Nodes )
-            {
-                if ( childNode.Nodes.Count == 0 && childNode.NodeFlags.HasFlag( DataViewNodeFlags.Branch ) )
-                {
-                    // HACK: add a dummy node for each branch
-                    // so the expand icon shows up even when a node hasn't initialized yet
-                    childNode.Nodes.Add( new TreeNode() );
-                }
+                // A branch that has not built its view yet gets a placeholder, so the expander
+                // shows up before the user ever selects it.
+                if ( child.Nodes.Count == 0 && child.NodeFlags.HasFlag( DataViewNodeFlags.Branch ) )
+                    childTreeNode.Nodes.Add( new TreeNode() );
             }
-        }
-
-        internal void InvokeUserPropertyChanged( DataViewNode viewModel, string propertyName )
-        {
-            UserPropertyChanged?.Invoke( this, new DataViewNodePropertyChangedEventArgs( viewModel, propertyName ) );
         }
 
         protected override void OnAfterSelect( TreeViewEventArgs e )
         {
-            // initialize view for selected node
-            var adapter = ( DataViewNode )e.Node;
-            adapter.InitializeView();
-
+            GetViewNode( e?.Node )?.InitializeView();
             base.OnAfterSelect( e );
         }
 
@@ -101,11 +141,40 @@ namespace GFDStudio.GUI.DataViewNodes
                 SelectedNode = e.Node;
         }
 
+        protected override void OnBeforeExpand( TreeViewCancelEventArgs e )
+        {
+            GetViewNode( e.Node )?.InitializeView();
+            base.OnBeforeExpand( e );
+        }
+
         protected override void OnAfterExpand( TreeViewEventArgs e )
         {
-            ExpandNode( ( DataViewNode )e.Node );
+            var node = GetViewNode( e.Node );
+            if ( node != null )
+                node.IsExpanded = true;
 
             base.OnAfterExpand( e );
+        }
+
+        protected override void OnAfterCollapse( TreeViewEventArgs e )
+        {
+            var node = GetViewNode( e.Node );
+            if ( node != null )
+                node.IsExpanded = false;
+
+            base.OnAfterCollapse( e );
+        }
+
+        protected override void OnAfterLabelEdit( NodeLabelEditEventArgs e )
+        {
+            var node = mRenamingNode ?? GetViewNode( e.Node );
+            mRenamingNode = null;
+            LabelEdit = false;
+
+            if ( node != null && !e.CancelEdit )
+                node.CommitRename( e.Label );
+
+            base.OnAfterLabelEdit( e );
         }
     }
 }
