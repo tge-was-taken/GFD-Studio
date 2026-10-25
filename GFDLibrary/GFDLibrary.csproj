@@ -22,11 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Dependencies\Scarlet\Scarlet.IO.ImageFormats\Scarlet.IO.ImageFormats.csproj" />
-    <ProjectReference Include="..\Dependencies\Scarlet\Scarlet\Scarlet.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="Animations\Conversion\" />
   </ItemGroup>
 
