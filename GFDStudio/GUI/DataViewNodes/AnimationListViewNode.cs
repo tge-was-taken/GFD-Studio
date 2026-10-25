@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using GFDLibrary;
 using GFDLibrary.Animations;
@@ -24,7 +24,7 @@ namespace GFDStudio.GUI.DataViewNodes
             } );
             RegisterCustomHandler( "Export", "All", () =>
             {
-                var directory = DataViewNodeDialogs.Current.SelectFolder( "Select a folder to export to." );
+                var directory = UserDialogs.Current.SelectFolder( "Select a folder to export to." );
                 if ( directory == null )
                     return;
 

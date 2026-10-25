@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using GFDLibrary;
 using GFDLibrary.Common;
 using GFDLibrary.Conversion;
@@ -59,18 +59,15 @@ namespace GFDStudio.GUI.DataViewNodes
                 var scene = AssimpHelper.ImportScene( path );
                 var originalModel = Parent?.Data as ModelPack;
 
-                using ( var dialog = new ModelConversionOptionsDialog( scene, originalModel ) )
-                {
-                    if ( dialog.ShowDialog() != System.Windows.Forms.DialogResult.OK )
-                        return Data;
-
-                    var options = dialog.GetModelConversionOptions();
-                    var model = AssimpNetModelConverter.ConvertFromAssimpScene( scene, options );
-                    if ( model != null )
-                        Data.ReplaceWith( model );
-
+                var options = UserDialogs.Current.AskModelConversionOptions( scene, originalModel );
+                if ( options == null )
                     return Data;
-                }
+
+                var model = AssimpNetModelConverter.ConvertFromAssimpScene( scene, options );
+                if ( model != null )
+                    Data.ReplaceWith( model );
+
+                return Data;
             } );
 
             RegisterModelUpdateHandler( () =>

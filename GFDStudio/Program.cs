@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using GFDLibrary;
 using GFDLibrary.Conversion.AssimpNet.Utilities;
+using GFDStudio.GUI;
 using GFDStudio.GUI.DataViewNodes;
 using GFDStudio.GUI.Forms;
 
@@ -28,8 +29,8 @@ namespace GFDStudio
         [STAThread]
         private static void Main( string[] args )
         {
-            DataViewNodeDialogs.Current = new DataViewNodeDialogsWinForms();
-            DataViewNodeOptions.Current = new DataViewNodeOptionsWinForms();
+            UserDialogs.Current = new UserDialogsWinForms();
+            UserOptions.Current = new UserOptionsWinForms();
 
 #if WINDOWS && DEBUG
             AllocConsole();

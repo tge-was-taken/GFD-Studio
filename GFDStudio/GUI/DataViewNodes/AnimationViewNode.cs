@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Linq;
 using GFDLibrary;
@@ -119,7 +119,7 @@ namespace GFDStudio.GUI.DataViewNodes
                 if ( newModel == null )
                     return;
 
-                bool fixArms = DataViewNodeDialogs.Current.AskYesNo( "Fix arms? If unsure, select No.", "Question" );
+                bool fixArms = UserDialogs.Current.AskYesNo( "Fix arms? If unsure, select No.", "Question" );
 
                 Data.Retarget( originalModel, newModel, fixArms );
             } );
@@ -133,7 +133,7 @@ namespace GFDStudio.GUI.DataViewNodes
 
         private static void ImportModelAndFixTargetIds( Animation animation )
         {
-            var result = DataViewNodeDialogs.Current.OpenFile( new FileDialogRequest
+            var result = UserDialogs.Current.OpenFile( new FileDialogRequest
             {
                 Title = "Select a model file.",
                 Filter = ModuleFilterGenerator.GenerateFilter( new[] { FormatModuleUsageFlags.Import }, typeof( ModelPack ) ).Filter,

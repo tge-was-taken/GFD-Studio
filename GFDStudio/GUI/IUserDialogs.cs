@@ -1,8 +1,10 @@
-﻿using System;
+using System;
+using GFDLibrary.Conversion;
+using GFDLibrary;
 
-namespace GFDStudio.GUI.DataViewNodes
+namespace GFDStudio.GUI
 {
-    public enum DataViewNodeMessageKind
+    public enum UserMessageKind
     {
         Information,
         Warning,
@@ -35,12 +37,18 @@ namespace GFDStudio.GUI.DataViewNodes
     }
 
     /// <summary>
-    /// The prompts a view node needs. Implemented once per UI framework so the nodes do not open
-    /// windows themselves.
+    /// The texture map the user asked for, or null when they cancelled. A type of -1 means no
+    /// slot was picked.
     /// </summary>
-    public interface IDataViewNodeDialogs
+    public sealed record NewTextureMap( string Name, int Type );
+
+    /// <summary>
+    /// The prompts the application needs. Implemented once per UI framework so that the view
+    /// nodes, format modules and converters do not open windows themselves.
+    /// </summary>
+    public interface IUserDialogs
     {
-        void ShowMessage( string text, string caption, DataViewNodeMessageKind kind );
+        void ShowMessage( string text, string caption, UserMessageKind kind );
 
         bool AskYesNo( string text, string caption, bool defaultYes = false );
 
@@ -52,16 +60,24 @@ namespace GFDStudio.GUI.DataViewNodes
         /// Asks for a directory, returning null when the user cancelled.
         /// </summary>
         string SelectFolder( string title );
+
+        /// <summary>
+        /// Asks how to convert an imported scene, returning null when the user cancelled. Both
+        /// arguments may be null, which asks for the defaults alone.
+        /// </summary>
+        ModelConverterOptions AskModelConversionOptions( Assimp.Scene scene, ModelPack originalModel );
+
+        NewTextureMap AskNewTextureMap();
     }
 
     /// <summary>
-    /// The dialogs the view nodes use, set once by the application that hosts them.
+    /// The dialogs the application uses, set once by whatever hosts it.
     /// </summary>
-    public static class DataViewNodeDialogs
+    public static class UserDialogs
     {
-        private static IDataViewNodeDialogs mCurrent;
+        private static IUserDialogs mCurrent;
 
-        public static IDataViewNodeDialogs Current
+        public static IUserDialogs Current
         {
             get => mCurrent ?? throw new InvalidOperationException( "No dialog implementation has been registered" );
             set => mCurrent = value;

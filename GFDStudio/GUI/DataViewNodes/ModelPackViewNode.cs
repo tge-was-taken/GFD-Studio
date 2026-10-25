@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using GFDLibrary;
@@ -65,8 +65,8 @@ namespace GFDStudio.GUI.DataViewNodes
                         }
 
                         if ( missingTextures.Count > 0 )
-                            DataViewNodeDialogs.Current.ShowMessage( $"Material \"{material.Name}\" references one or more textures that cannot be found:\n{string.Join( "\n", missingTextures.ToArray() )}" +
-                                                     $"\n\nThis will lead to an inevitable crash in-game.", "Warning", DataViewNodeMessageKind.Warning );
+                            UserDialogs.Current.ShowMessage( $"Material \"{material.Name}\" references one or more textures that cannot be found:\n{string.Join( "\n", missingTextures.ToArray() )}" +
+                                                     $"\n\nThis will lead to an inevitable crash in-game.", "Warning", UserMessageKind.Warning );
                     }
                 }
 
@@ -78,7 +78,7 @@ namespace GFDStudio.GUI.DataViewNodes
                         foreach ( var mesh in node.Meshes )
                         {
                             if ( modelPack.Materials == null || !modelPack.Materials.ContainsKey( mesh.MaterialName ) )
-                                DataViewNodeDialogs.Current.ShowMessage( $"Scene Geometry under \"{node.Name}\" references a Material that cannot be found:\n{mesh.MaterialName}", "Warning", DataViewNodeMessageKind.Warning );
+                                UserDialogs.Current.ShowMessage( $"Scene Geometry under \"{node.Name}\" references a Material that cannot be found:\n{mesh.MaterialName}", "Warning", UserMessageKind.Warning );
                         }
                     }
                 }

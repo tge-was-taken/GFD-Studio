@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -225,7 +225,7 @@ namespace GFDStudio.GUI.DataViewNodes
 
             ( var filter, var filterIndexToTypeMap ) = ModuleFilterGenerator.GenerateFilter( FormatModuleUsageFlags.Export, mExportHandlers.Keys.ToArray() );
 
-            var result = DataViewNodeDialogs.Current.SaveFile( new FileDialogRequest
+            var result = UserDialogs.Current.SaveFile( new FileDialogRequest
             {
                 Title = "Select a file to export to.",
                 Filter = filter,
@@ -268,7 +268,7 @@ namespace GFDStudio.GUI.DataViewNodes
             (var filter, var filterIndexToTypeMap) = ModuleFilterGenerator.GenerateFilter( new[] { FormatModuleUsageFlags.Import, FormatModuleUsageFlags.ImportForEditing },
                                                                                           mReplaceHandlers.Keys.ToArray() );
 
-            var result = DataViewNodeDialogs.Current.OpenFile( new FileDialogRequest
+            var result = UserDialogs.Current.OpenFile( new FileDialogRequest
             {
                 Title = "Select a replacement file.",
                 Filter = filter,
@@ -306,7 +306,7 @@ namespace GFDStudio.GUI.DataViewNodes
                 GFDLibrary.Materials.Material OriginalMat = (GFDLibrary.Materials.Material)Data;
                 GFDLibrary.Materials.Material ReplacementMat = (GFDLibrary.Materials.Material)replacement;
 
-                if ( DataViewNodeOptions.Current.RetainMaterialTextureNames )
+                if ( UserOptions.Current.RetainMaterialTextureNames )
                 {
                     // Retain original mat's texture names
                     ReplacementMat.Name = OriginalMat.Name;
@@ -321,7 +321,7 @@ namespace GFDStudio.GUI.DataViewNodes
                     if ( OriginalMat.ShadowMap != null && ReplacementMat.ShadowMap != null ) ReplacementMat.ShadowMap.Name = OriginalMat.ShadowMap.Name;
                 }
 
-                if ( DataViewNodeOptions.Current.RetainMaterialColorValues )
+                if ( UserOptions.Current.RetainMaterialColorValues )
                 {
                     // TODO: Fix for Metaphor!
                     ReplacementMat.LegacyParameters.AmbientColor = OriginalMat.LegacyParameters.AmbientColor;
@@ -354,7 +354,7 @@ namespace GFDStudio.GUI.DataViewNodes
 
             (var filter, var filterIndexToTypeMap) = ModuleFilterGenerator.GenerateFilter( new[] { FormatModuleUsageFlags.Import, FormatModuleUsageFlags.ImportForEditing }, mAddHandlers.Keys.ToArray() );
 
-            var result = DataViewNodeDialogs.Current.OpenFile( new FileDialogRequest
+            var result = UserDialogs.Current.OpenFile( new FileDialogRequest
             {
                 Title = "Select file(s) to add.",
                 Filter = filter,
@@ -601,7 +601,7 @@ namespace GFDStudio.GUI.DataViewNodes
             // Register default handlers
             RegisterCustomHandler( "Export", "YAML", () =>
             {
-                var result = DataViewNodeDialogs.Current.SaveFile( new FileDialogRequest
+                var result = UserDialogs.Current.SaveFile( new FileDialogRequest
                 {
                     Title = "Select a file to export to.",
                     Filter = "YAML files (*.yml)|*.yml",
@@ -613,7 +613,7 @@ namespace GFDStudio.GUI.DataViewNodes
             } );
             RegisterCustomHandler( "Replace", "YAML", () =>
             {
-                var result = DataViewNodeDialogs.Current.OpenFile( new FileDialogRequest
+                var result = UserDialogs.Current.OpenFile( new FileDialogRequest
                 {
                     Title = "Select a file to replace from.",
                     Filter = "YAML files (*.yml)|*.yml",

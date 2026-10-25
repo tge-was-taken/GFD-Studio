@@ -1,7 +1,7 @@
 using System.IO;
-using System.Windows.Forms;
 using GFDLibrary;
 using GFDLibrary.Animations;
+using GFDStudio.GUI;
 
 namespace GFDStudio.FormatModules
 {
@@ -32,8 +32,8 @@ namespace GFDStudio.FormatModules
         {
             var pack = Resource.Load<AnimationPack>( stream );
             if ( pack != null && pack.ErrorsOccuredDuringLoad )
-                MessageBox.Show( "One or more error(s) occured while loading the animation pack. The data may be truncated, or otherwise corrupted",
-                                 "Warning", MessageBoxButtons.OK );
+                UserDialogs.Current.ShowMessage( "One or more error(s) occured while loading the animation pack. The data may be truncated, or otherwise corrupted",
+                                                 "Warning", UserMessageKind.Warning );
 
             return pack;
         }

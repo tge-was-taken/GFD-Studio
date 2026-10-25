@@ -1,19 +1,21 @@
-﻿using System.Windows.Forms;
+using System.Windows.Forms;
+using GFDLibrary.Conversion;
+using GFDLibrary;
 using Ookii.Dialogs.Wpf;
 
-namespace GFDStudio.GUI.DataViewNodes
+namespace GFDStudio.GUI.Forms
 {
     /// <summary>
-    /// The WinForms prompts behind <see cref="IDataViewNodeDialogs"/>.
+    /// The WinForms prompts behind <see cref="IUserDialogs"/>.
     /// </summary>
-    public sealed class DataViewNodeDialogsWinForms : IDataViewNodeDialogs
+    public sealed class UserDialogsWinForms : IUserDialogs
     {
-        public void ShowMessage( string text, string caption, DataViewNodeMessageKind kind )
+        public void ShowMessage( string text, string caption, UserMessageKind kind )
         {
             var icon = kind switch
             {
-                DataViewNodeMessageKind.Warning => MessageBoxIcon.Exclamation,
-                DataViewNodeMessageKind.Error => MessageBoxIcon.Error,
+                UserMessageKind.Warning => MessageBoxIcon.Exclamation,
+                UserMessageKind.Error => MessageBoxIcon.Error,
                 _ => MessageBoxIcon.Information,
             };
 
@@ -68,6 +70,20 @@ namespace GFDStudio.GUI.DataViewNodes
             return dialog.ShowDialog() != DialogResult.OK
                 ? null
                 : new FileDialogResult( dialog.FileNames, dialog.FilterIndex );
+        }
+
+        public ModelConverterOptions AskModelConversionOptions( Assimp.Scene scene, ModelPack originalModel )
+        {
+            using var dialog = new ModelConversionOptionsDialog( scene, originalModel );
+            return dialog.ShowDialog() != DialogResult.OK ? null : dialog.GetModelConversionOptions();
+        }
+
+        public NewTextureMap AskNewTextureMap()
+        {
+            using var dialog = new CreateTextureMapDialog();
+            return dialog.ShowDialog() != DialogResult.OK
+                ? null
+                : new NewTextureMap( dialog.Result.Name, dialog.Result.Type );
         }
     }
 }

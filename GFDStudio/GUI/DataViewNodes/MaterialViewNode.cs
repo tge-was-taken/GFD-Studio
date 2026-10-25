@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Numerics;
 using System.Reflection;
-using System.Windows.Forms;
 using GFDLibrary;
 using GFDLibrary.Conversion;
 using GFDLibrary.Materials;
@@ -405,14 +404,11 @@ namespace GFDStudio.GUI.DataViewNodes
 
         private void ConvertToMaterialPreset()
         {
-            using (var dialog = new ModelConversionOptionsDialog())
-            {
-                if (dialog.ShowDialog() != DialogResult.OK)
-                    return;
+            var options = UserDialogs.Current.AskModelConversionOptions( null, null );
+            if ( options == null )
+                return;
 
-                var options = dialog.GetModelConversionOptions();
-                Replace(Material.ConvertToMaterialPreset(Data, options.DefaultMaterial.Preset));
-            }
+            Replace( Material.ConvertToMaterialPreset( Data, options.DefaultMaterial.Preset ) );
         }
     }
 }

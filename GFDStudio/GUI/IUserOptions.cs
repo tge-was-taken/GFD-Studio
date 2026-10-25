@@ -1,11 +1,11 @@
 using System;
 
-namespace GFDStudio.GUI.DataViewNodes
+namespace GFDStudio.GUI
 {
     /// <summary>
     /// User toggles the view nodes consult, which the application surfaces however it likes.
     /// </summary>
-    public interface IDataViewNodeOptions
+    public interface IUserOptions
     {
         /// <summary>
         /// Keep the replaced material's own name and texture names rather than taking the
@@ -19,11 +19,11 @@ namespace GFDStudio.GUI.DataViewNodes
         bool RetainMaterialColorValues { get; }
     }
 
-    public static class DataViewNodeOptions
+    public static class UserOptions
     {
-        private static IDataViewNodeOptions mCurrent;
+        private static IUserOptions mCurrent;
 
-        public static IDataViewNodeOptions Current
+        public static IUserOptions Current
         {
             get => mCurrent ?? throw new InvalidOperationException( "No options implementation has been registered" );
             set => mCurrent = value;

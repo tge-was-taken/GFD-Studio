@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Windows.Forms;
+using System.Linq;
 using GFDLibrary;
 using GFDLibrary.Conversion;
 using GFDLibrary.Conversion.AssimpNet;
@@ -7,7 +6,7 @@ using GFDLibrary.Conversion.AssimpNet.Utilities;
 using GFDLibrary.Materials;
 using GFDLibrary.Models;
 using GFDStudio.FormatModules;
-using GFDStudio.GUI.Forms;
+using GFDStudio.GUI;
 
 namespace GFDStudio.IO
 {
@@ -15,37 +14,20 @@ namespace GFDStudio.IO
     {
         public static ModelPack ConvertAssimpModel(ModelPack originalModel)
         {
-            using ( var dialog = new OpenFileDialog() )
+            var result = UserDialogs.Current.OpenFile( new FileDialogRequest
             {
-                dialog.AutoUpgradeEnabled = true;
-                dialog.CheckPathExists = true;
-                dialog.CheckFileExists = true;
-                dialog.Filter = ModuleFilterGenerator.GenerateFilter( FormatModuleUsageFlags.ImportForEditing, typeof( AssimpScene ) ).Filter;
-                dialog.Multiselect = false;
-                dialog.SupportMultiDottedExtensions = true;
-                dialog.Title = "Select an Assimp model.";
-                dialog.ValidateNames = true;
+                Title = "Select an Assimp model.",
+                Filter = ModuleFilterGenerator.GenerateFilter( FormatModuleUsageFlags.ImportForEditing, typeof( AssimpScene ) ).Filter,
+            } );
 
-                if ( dialog.ShowDialog() != DialogResult.OK )
-                {
-                    return null;
-                }
-
-                return ConvertAssimpModel( dialog.FileName, originalModel );
-            }
+            return result == null ? null : ConvertAssimpModel( result.FileName, originalModel );
         }
 
         public static ModelPack ConvertAssimpModel( string path, ModelPack originalModel)
         {
             var scene = AssimpHelper.ImportScene( path );
-            using ( var dialog = new ModelConversionOptionsDialog( scene, originalModel ) )
-            {
-                if ( dialog.ShowDialog() != DialogResult.OK )
-                    return null;
-
-                var options = dialog.GetModelConversionOptions();
-                return AssimpNetModelPackConverter.ConvertFromAssimpScene( path, options );
-            }
+            var options = UserDialogs.Current.AskModelConversionOptions( scene, originalModel );
+            return options == null ? null : AssimpNetModelPackConverter.ConvertFromAssimpScene( path, options );
         }
     }
 }

@@ -1,10 +1,8 @@
-﻿using System.IO;
-using System.Windows.Forms;
+using System.IO;
 using GFDLibrary;
 using GFDLibrary.Conversion;
 using GFDLibrary.Materials;
 using GFDStudio.GUI.Forms;
-using Ookii.Dialogs.Wpf;
 
 namespace GFDStudio.GUI.DataViewNodes
 {
@@ -32,7 +30,7 @@ namespace GFDStudio.GUI.DataViewNodes
             RegisterCustomHandler("Convert to", "Material preset (All)", () => { ConvertAllToMaterialPreset(); });
             RegisterCustomHandler( "Export", "All", () =>
             {
-                var directory = DataViewNodeDialogs.Current.SelectFolder( "Select a folder to export to." );
+                var directory = UserDialogs.Current.SelectFolder( "Select a folder to export to." );
                 if ( directory == null )
                     return;
 
@@ -53,14 +51,11 @@ namespace GFDStudio.GUI.DataViewNodes
 
         private void ConvertAllToMaterialPreset()
         {
-            using (var dialog = new ModelConversionOptionsDialog(null, null))
-            {
-                if (dialog.ShowDialog() != DialogResult.OK)
-                    return;
+            var options = UserDialogs.Current.AskModelConversionOptions( null, null );
+            if ( options == null )
+                return;
 
-                var options = dialog.GetModelConversionOptions();
-                Replace(MaterialDictionary.ConvertAllToMaterialPreset(Data, options));
-            }
+            Replace( MaterialDictionary.ConvertAllToMaterialPreset( Data, options ) );
         }
 
         protected override void InitializeViewCore()

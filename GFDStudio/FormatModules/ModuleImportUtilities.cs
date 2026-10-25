@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Windows.Forms;
+using GFDStudio.GUI;
 
 namespace GFDStudio.FormatModules
 {
@@ -89,20 +89,13 @@ namespace GFDStudio.FormatModules
         /// <returns></returns>
         public static T SelectImportFile<T>( string title = "Select file to import" ) where T : class
         {
-            using ( var dialog = new OpenFileDialog() )
+            var result = UserDialogs.Current.OpenFile( new FileDialogRequest
             {
-                dialog.Filter             = ModuleFilterGenerator.GenerateFilter( new[] { FormatModuleUsageFlags.Import }, typeof( T ) ).Filter;
-                dialog.AutoUpgradeEnabled = true;
-                dialog.CheckPathExists    = true;
-                dialog.Title              = title;
-                dialog.ValidateNames      = true;
-                dialog.AddExtension       = true;
+                Title = title,
+                Filter = ModuleFilterGenerator.GenerateFilter( new[] { FormatModuleUsageFlags.Import }, typeof( T ) ).Filter,
+            } );
 
-                if ( dialog.ShowDialog() != DialogResult.OK )
-                    return null;
-
-                return ImportFile<T>( dialog.FileName );
-            }
+            return result == null ? null : ImportFile<T>( result.FileName );
         }
     }
 }

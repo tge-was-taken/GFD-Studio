@@ -49,7 +49,7 @@ namespace GFDStudio.GUI.DataViewNodes
 
             RegisterCustomHandler( "Export", "All", () =>
             {
-                var directory = DataViewNodeDialogs.Current.SelectFolder( "Select a folder to export to." );
+                var directory = UserDialogs.Current.SelectFolder( "Select a folder to export to." );
                 if ( directory == null )
                     return;
 
@@ -60,7 +60,7 @@ namespace GFDStudio.GUI.DataViewNodes
 
         private void ConvertToFieldTextureArchive( bool usePs4Format )
         {
-            var result = DataViewNodeDialogs.Current.SaveFile( new FileDialogRequest
+            var result = UserDialogs.Current.SaveFile( new FileDialogRequest
             {
                 Title = "Select a file to export to.",
                 Filter = "Field Texture Archive (*.bin)|*.bin",

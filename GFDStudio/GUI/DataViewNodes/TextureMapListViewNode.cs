@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.ComponentModel;
-using System.Windows.Forms;
 using GFDLibrary.Models;
 using GFDStudio.GUI.Forms;
 
@@ -59,12 +58,11 @@ namespace GFDStudio.GUI.DataViewNodes
         {
             RegisterCustomHandler( "Add", "New texture map", () =>
             {
-                var dialog = new CreateTextureMapDialog();
-                if ( dialog.ShowDialog() != DialogResult.OK || dialog.Result.Name.Length == 0 || dialog.Result.Type == -1 )
+                var result = UserDialogs.Current.AskNewTextureMap();
+                if ( result == null || result.Name.Length == 0 || result.Type == -1 )
                     return;
 
-                var textureMap = new TextureMap( dialog.Result.Name );
-                Data[dialog.Result.Type] = textureMap;
+                Data[result.Type] = new TextureMap( result.Name );
                 InitializeView( true );
 
             }, DataViewNodeMenuShortcut.Control( DataViewNodeMenuKey.A ) );
