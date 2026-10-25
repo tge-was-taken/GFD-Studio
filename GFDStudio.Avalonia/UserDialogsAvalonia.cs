@@ -71,6 +71,12 @@ namespace GFDStudio.Avalonia
         public ModelConverterOptions AskModelConversionOptions( Assimp.Scene scene, ModelPack originalModel )
             => Wait( ModelConversionOptionsWindow.Show( mOwner, scene, originalModel ) );
 
+        public TransformRequest AskTransform( string title )
+            => Wait( TransformWindow.Ask( mOwner, title ) );
+
+        public void RunWithProgress( string title, Func<IProgressReport, Task> work )
+            => Wait( ProgressWindow.Run( mOwner, title, work ) );
+
         public NewTextureMap AskNewTextureMap()
             => Wait( NewTextureMapWindow.Ask( mOwner ) );
 
@@ -82,6 +88,18 @@ namespace GFDStudio.Avalonia
         /// synchronous callers in the view nodes expect of a modal dialog. The nested dispatcher
         /// frame keeps the window responsive in the meantime, the same way a modal loop does.
         /// </summary>
+        private static void Wait( Task task )
+        {
+            if ( !task.IsCompleted )
+            {
+                var frame = new DispatcherFrame();
+                task.ContinueWith( _ => frame.Continue = false, TaskScheduler.FromCurrentSynchronizationContext() );
+                Dispatcher.UIThread.PushFrame( frame );
+            }
+
+            task.GetAwaiter().GetResult();
+        }
+
         private static T Wait<T>( Task<T> task )
         {
             if ( !task.IsCompleted )

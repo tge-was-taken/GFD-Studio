@@ -1,4 +1,6 @@
 using System;
+using System.Numerics;
+using System.Threading.Tasks;
 using GFDLibrary.Conversion;
 using GFDLibrary;
 
@@ -43,6 +45,21 @@ namespace GFDStudio.GUI
     public sealed record NewTextureMap( string Name, int Type );
 
     /// <summary>
+    /// A transform the user typed in, or null when they cancelled.
+    /// </summary>
+    public sealed record TransformRequest( Vector3 Scale, Vector3 Position, Quaternion Rotation );
+
+    /// <summary>
+    /// What a long running job reports back to whatever is showing its progress.
+    /// </summary>
+    public interface IProgressReport
+    {
+        bool CancellationPending { get; }
+
+        void Report( int percentage, string message );
+    }
+
+    /// <summary>
     /// The prompts the application needs. Implemented once per UI framework so that the view
     /// nodes, format modules and converters do not open windows themselves.
     /// </summary>
@@ -68,6 +85,16 @@ namespace GFDStudio.GUI
         ModelConverterOptions AskModelConversionOptions( Assimp.Scene scene, ModelPack originalModel );
 
         NewTextureMap AskNewTextureMap();
+
+        /// <summary>
+        /// Asks for a scale, position and rotation, returning null when the user cancelled.
+        /// </summary>
+        TransformRequest AskTransform( string title );
+
+        /// <summary>
+        /// Runs a job that takes a while, showing its progress, and returns once it is done.
+        /// </summary>
+        void RunWithProgress( string title, Func<IProgressReport, Task> work );
     }
 
     /// <summary>

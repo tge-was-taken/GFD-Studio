@@ -3,22 +3,43 @@
         xmlns:local="clr-namespace:GFDStudio.Avalonia"
         xmlns:pg="clr-namespace:Avalonia.PropertyGrid.Controls;assembly=Avalonia.PropertyGrid"
         x:Class="GFDStudio.Avalonia.MainWindow"
-        Title="GFD Studio" Width="1100" Height="720">
+        Title="GFD Studio" Width="1280" Height="800">
 
   <DockPanel>
 
     <Menu DockPanel.Dock="Top">
       <MenuItem Header="_File">
+        <MenuItem Name="mNewModel" Header="_New model" />
         <MenuItem Name="mOpen" Header="_Open" InputGesture="Ctrl+O" />
+        <MenuItem Name="mRecent" Header="Open _recent" />
+        <Separator />
         <MenuItem Name="mSave" Header="_Save" InputGesture="Ctrl+S" />
         <MenuItem Name="mSaveAs" Header="Save _as" InputGesture="Ctrl+Shift+S" />
         <Separator />
         <MenuItem Name="mExit" Header="E_xit" />
       </MenuItem>
+
+      <MenuItem Header="_Animation">
+        <MenuItem Name="mLoadAnimation" Header="_Load external" />
+      </MenuItem>
+
+      <MenuItem Header="_Tools">
+        <MenuItem Name="mRetargetAnimations" Header="Retarget animation packs in directory" />
+        <MenuItem Name="mRescaleAnimations" Header="Rescale or reposition animation packs in directory" />
+        <MenuItem Name="mConvertAnimations" Header="Convert P5R animations to P5 in directory" />
+        <MenuItem Name="mConvertMaterials" Header="Convert model materials in directory" />
+        <MenuItem Name="mCopySplitGap" Header="Copy P5 split GAP to multiple models in directory" />
+        <Separator />
+        <MenuItem Name="mExportTextures" Header="Mass export textures from models" />
+        <MenuItem Name="mReplaceTextures" Header="Mass replace textures in models" />
+      </MenuItem>
+
       <MenuItem Header="_Options">
-        <MenuItem Name="mRetainTextureNames" Header="Retain texture names" ToggleType="CheckBox" />
-        <MenuItem Name="mRetainColorValues" Header="Retain material colours" ToggleType="CheckBox" />
+        <MenuItem Name="mRetainTextureNames" Header="Retain the original material's texture names when replacing" ToggleType="CheckBox" />
+        <MenuItem Name="mRetainColorValues" Header="Retain the original material's colour values when replacing" ToggleType="CheckBox" />
         <MenuItem Name="mSaveTexturesExternally" Header="(Metaphor) Save replaced textures externally" ToggleType="CheckBox" />
+        <Separator />
+        <MenuItem Name="mDarkTheme" Header="Use the dark theme" ToggleType="CheckBox" />
       </MenuItem>
     </Menu>
 
@@ -28,14 +49,34 @@
 
     <Grid ColumnDefinitions="2*,4,3*,4,3*">
 
-      <local:DataViewNodeTree Name="mTree" Grid.Column="0" />
+      <TabControl Grid.Column="0">
+        <TabItem Header="Model">
+          <local:DataViewNodeTree Name="mTree" />
+        </TabItem>
+        <TabItem Header="Animations">
+          <local:DataViewNodeTree Name="mAnimationTree" />
+        </TabItem>
+      </TabControl>
 
       <GridSplitter Grid.Column="1" ResizeDirection="Columns" />
 
-      <Panel Grid.Column="2">
-        <local:ModelView Name="mModelView" IsVisible="False" />
-        <Image Name="mImageView" IsVisible="False" Stretch="Uniform" />
-      </Panel>
+      <DockPanel Grid.Column="2">
+        <Border Name="mAnimationControls" DockPanel.Dock="Bottom" IsVisible="False"
+                BorderThickness="0,1,0,0" BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}">
+          <StackPanel Orientation="Horizontal" Margin="8" Spacing="8">
+            <Button Name="mPlayPause" Content="Play" MinWidth="70" />
+            <Button Name="mStop" Content="Stop" MinWidth="70" />
+            <Slider Name="mAnimationTime" Width="320" Minimum="0" Maximum="1000"
+                    VerticalAlignment="Center" />
+            <TextBlock Name="mAnimationLabel" VerticalAlignment="Center" />
+          </StackPanel>
+        </Border>
+
+        <Panel>
+          <local:ModelView Name="mModelView" IsVisible="False" />
+          <Image Name="mImageView" IsVisible="False" Stretch="Uniform" />
+        </Panel>
+      </DockPanel>
 
       <GridSplitter Grid.Column="3" ResizeDirection="Columns" />
 

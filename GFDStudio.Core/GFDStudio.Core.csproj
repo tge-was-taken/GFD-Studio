@@ -6,6 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\GFDLibrary.Conversion.AssimpNet\GFDLibrary.Conversion.AssimpNet.csproj" />
     <ProjectReference Include="..\GFDLibrary\GFDLibrary.csproj" />
   </ItemGroup>

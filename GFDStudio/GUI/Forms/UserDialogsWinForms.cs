@@ -1,3 +1,5 @@
+using System;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using GFDLibrary.Conversion;
 using GFDLibrary;
@@ -76,6 +78,37 @@ namespace GFDStudio.GUI.Forms
         {
             using var dialog = new ModelConversionOptionsDialog( scene, originalModel );
             return dialog.ShowDialog() != DialogResult.OK ? null : dialog.GetModelConversionOptions();
+        }
+
+        public TransformRequest AskTransform( string title )
+        {
+            using var dialog = new SetScaleValueDialog();
+            if ( dialog.ShowDialog() != DialogResult.OK )
+                return null;
+
+            return new TransformRequest( dialog.Result.Scale, dialog.Result.Position, dialog.Result.Rotation );
+        }
+
+        public void RunWithProgress( string title, Func<IProgressReport, Task> work )
+        {
+            using var dialog = new ProgressDialog { WindowTitle = title };
+            dialog.DoWork += async ( s, e ) => await work( new ProgressReport( dialog ) );
+            dialog.ShowDialog();
+        }
+
+        private sealed class ProgressReport : IProgressReport
+        {
+            private readonly ProgressDialog mDialog;
+
+            public ProgressReport( ProgressDialog dialog ) => mDialog = dialog;
+
+            public bool CancellationPending => mDialog.CancellationPending;
+
+            public void Report( int percentage, string message )
+            {
+                lock ( mDialog )
+                    mDialog.ReportProgress( percentage, message, null );
+            }
         }
 
         public NewTextureMap AskNewTextureMap()

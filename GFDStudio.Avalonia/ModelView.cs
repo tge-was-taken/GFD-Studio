@@ -52,6 +52,39 @@ namespace GFDStudio.Avalonia
             RequestNextFrameRendering();
         }
 
+        public Animation Animation => mScene?.Animation;
+
+        public bool IsAnimationLoaded => mScene?.IsAnimationLoaded ?? false;
+
+        public AnimationPlaybackState AnimationPlayback
+        {
+            get => mScene?.AnimationPlayback ?? AnimationPlaybackState.Stopped;
+            set
+            {
+                if ( mScene != null )
+                    mScene.AnimationPlayback = value;
+            }
+        }
+
+        public double AnimationTime
+        {
+            get => mScene?.AnimationTime ?? 0;
+            set
+            {
+                if ( mScene == null )
+                    return;
+
+                mScene.AnimationTime = value;
+                RequestNextFrameRendering();
+            }
+        }
+
+        public event EventHandler<Animation> AnimationLoaded;
+
+        public event EventHandler<AnimationPlaybackState> AnimationPlaybackStateChanged;
+
+        public event EventHandler<double> AnimationTimeChanged;
+
         public void ClearSelection() => mScene?.ClearSelection();
 
         public void SetSelection( Mesh data ) => mScene?.SetSelection( data );
@@ -68,6 +101,9 @@ namespace GFDStudio.Avalonia
             mScene.Initialize();
             mScene.RedrawRequested += ( s, e ) => Dispatcher.UIThread.Post( RequestNextFrameRendering );
             mScene.Resize( PixelWidth, PixelHeight );
+            mScene.AnimationLoaded += ( s, e ) => AnimationLoaded?.Invoke( this, e );
+            mScene.AnimationPlaybackStateChanged += ( s, e ) => AnimationPlaybackStateChanged?.Invoke( this, e );
+            mScene.AnimationTimeChanged += ( s, e ) => AnimationTimeChanged?.Invoke( this, e );
 
             mUpdateTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds( 1.0 / 60.0 ) };
             mUpdateTimer.Tick += ( s, e ) =>
