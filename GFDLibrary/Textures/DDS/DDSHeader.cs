@@ -133,7 +133,8 @@ namespace GFDLibrary.Textures.DDS
         internal void Write( BinaryWriter writer )
         {
             writer.Write( MAGIC );
-            writer.Write( Size );
+            // dwSize covers the base header only, even when the DX10 extension follows it.
+            writer.Write( SIZE_WITHOUT_MAGIC );
             writer.Write( ( int )Flags );
             writer.Write( Height );
             writer.Write( Width );
@@ -152,6 +153,15 @@ namespace GFDLibrary.Textures.DDS
             writer.Write( Caps3 );
             writer.Write( Caps4 );
             writer.Write( Reserved2 );
+
+            if ( PixelFormat.FourCC == DDSPixelFormatFourCC.DX10 )
+            {
+                writer.Write( ( uint )DxgiFormat );
+                writer.Write( ( uint )D3D10ResourceDimension );
+                writer.Write( MiscFlag );
+                writer.Write( ArraySize );
+                writer.Write( ( uint )MiscFlags2 );
+            }
         }
     }
 }
