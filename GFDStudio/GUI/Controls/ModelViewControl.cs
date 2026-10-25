@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
@@ -73,6 +74,7 @@ namespace GFDStudio.GUI.Controls
 
         public bool IsAnimationLoaded => Animation != null;
 
+        [DesignerSerializationVisibility( DesignerSerializationVisibility.Hidden )]
         public AnimationPlaybackState AnimationPlayback
         {
             get => mAnimationPlayback;
@@ -102,6 +104,7 @@ namespace GFDStudio.GUI.Controls
         }
 
 
+        [DesignerSerializationVisibility( DesignerSerializationVisibility.Hidden )]
         public double AnimationTime
         {
             get => mAnimationTime;

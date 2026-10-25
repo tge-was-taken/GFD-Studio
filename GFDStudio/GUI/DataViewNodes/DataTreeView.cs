@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System.ComponentModel;
+using System.Windows.Forms;
 
 namespace GFDStudio.GUI.DataViewNodes
 {
@@ -8,6 +9,7 @@ namespace GFDStudio.GUI.DataViewNodes
     {
         public event DataTreeNodeViewModelPropertyChangedEventHandler UserPropertyChanged;
 
+        [DesignerSerializationVisibility( DesignerSerializationVisibility.Hidden )]
         public new DataViewNode TopNode
         {
             get
