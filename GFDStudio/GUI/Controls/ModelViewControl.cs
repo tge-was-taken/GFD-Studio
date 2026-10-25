@@ -9,19 +9,18 @@ using System.Windows.Forms;
 using GFDLibrary;
 using GFDLibrary.Common;
 using GFDLibrary.Textures;
-using OpenTK;
-using OpenTK.Graphics.OpenGL;
+using OpenTK.GLControl;
+using OpenTK.Mathematics;
+using OpenTK.Graphics.OpenGL4;
 using GFDLibrary.Animations;
 using GFDLibrary.Models;
 using GFDLibrary.Rendering.OpenGL;
 using GFDStudio.DataManagement;
 using Color = System.Drawing.Color;
-using Quaternion = OpenTK.Quaternion;
-using Vector3 = OpenTK.Vector3;
-using Vector4 = OpenTK.Vector4;
-using OpenTK.Graphics;
-using OpenTK.Input;
-using Key = OpenTK.Input.Key;
+using Quaternion = OpenTK.Mathematics.Quaternion;
+using Vector3 = OpenTK.Mathematics.Vector3;
+using Vector4 = OpenTK.Mathematics.Vector4;
+using OpenTK.Windowing.Common;
 using GFDLibrary.Materials;
 using GFDLibrary.Shaders;
 
@@ -120,15 +119,18 @@ namespace GFDStudio.GUI.Controls
         public event EventHandler<AnimationPlaybackState> AnimationPlaybackStateChanged;
         public event EventHandler<double> AnimationTimeChanged;
 
-        private ModelViewControl() : base(
-            new GraphicsMode( 32, 24, 0, 4 ),
-            3,
-            3,
+        private ModelViewControl() : base( new GLControlSettings
+        {
+            APIVersion = new Version( 3, 3 ),
 #if GL_DEBUG
-            GraphicsContextFlags.Debug | GraphicsContextFlags.ForwardCompatible )
+            Flags = ContextFlags.Debug | ContextFlags.ForwardCompatible,
 #else
-            GraphicsContextFlags.ForwardCompatible )
+            Flags = ContextFlags.ForwardCompatible,
 #endif
+            DepthBits = 24,
+            StencilBits = 0,
+            NumberOfSamples = 4,
+        } )
         {
             InitializeComponent();
 
@@ -721,16 +723,12 @@ namespace GFDStudio.GUI.Controls
         protected internal float CalculateMultiplier( float baseValue = 0.5f )
         {
             float multiplier = baseValue;
-            var keyboardState = Keyboard.GetState();
 
-            if ( keyboardState.IsKeyDown( Key.ShiftLeft ) )
-            {
+            if ( ModifierKeys.HasFlag( Keys.Shift ) )
                 multiplier *= 10f;
-            }
-            else if ( keyboardState.IsKeyDown( Key.ControlLeft ) )
-            {
+            else if ( ModifierKeys.HasFlag( Keys.Control ) )
                 multiplier /= 2f;
-            }
+
             return multiplier;
         }
 

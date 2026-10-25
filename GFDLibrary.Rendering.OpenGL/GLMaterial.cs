@@ -2,8 +2,8 @@
 using System.Linq;
 using System.Reflection;
 using GFDLibrary.Materials;
-using OpenTK;
-using OpenTK.Graphics.OpenGL;
+using OpenTK.Mathematics;
+using OpenTK.Graphics.OpenGL4;
 
 namespace GFDLibrary.Rendering.OpenGL
 {

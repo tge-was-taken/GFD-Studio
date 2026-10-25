@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Numerics;
 using GFDLibrary.Models;
-using OpenTK.Graphics.OpenGL;
+using OpenTK.Graphics.OpenGL4;
 
 namespace GFDLibrary.Rendering.OpenGL
 {

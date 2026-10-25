@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Numerics;
 using GFDLibrary.Models;
-using OpenTK;
-using OpenTK.Graphics.OpenGL;
+using OpenTK.Mathematics;
+using OpenTK.Graphics.OpenGL4;
 using Vector3 = System.Numerics.Vector3;
 
 namespace GFDLibrary.Rendering.OpenGL

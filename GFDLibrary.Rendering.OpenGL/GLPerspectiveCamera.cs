@@ -1,5 +1,5 @@
 ﻿using GFDLibrary.Common;
-using OpenTK;
+using OpenTK.Mathematics;
 
 namespace GFDLibrary.Rendering.OpenGL
 {

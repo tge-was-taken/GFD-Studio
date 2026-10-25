@@ -6,8 +6,8 @@ using System.Numerics;
 using GFDLibrary.Animations;
 using GFDLibrary.Materials;
 using GFDLibrary.Models;
-using OpenTK;
-using OpenTK.Graphics.OpenGL;
+using OpenTK.Mathematics;
+using OpenTK.Graphics.OpenGL4;
 using Quaternion = System.Numerics.Quaternion;
 using Vector3 = System.Numerics.Vector3;
 
@@ -162,7 +162,7 @@ namespace GFDLibrary.Rendering.OpenGL
             GL.Enable( EnableCap.Blend );
 
             // Sort transparent objects based on their distance from the camera
-            transparentMeshes.Sort( ( a, b ) => OpenTK.Vector3.Distance( context.Camera.Translation, b.Item2.ExtractTranslation() ).CompareTo( OpenTK.Vector3.Distance( context.Camera.Translation, a.Item2.ExtractTranslation() ) ) );
+            transparentMeshes.Sort( ( a, b ) => OpenTK.Mathematics.Vector3.Distance( context.Camera.Translation, b.Item2.ExtractTranslation() ).CompareTo( OpenTK.Mathematics.Vector3.Distance( context.Camera.Translation, a.Item2.ExtractTranslation() ) ) );
 
             // Disable depth mask
             GL.DepthMask( false );

@@ -2,7 +2,7 @@
 using System.IO;
 using GFDLibrary.Textures;
 using GFDLibrary.Textures.DDS;
-using OpenTK.Graphics.OpenGL;
+using OpenTK.Graphics.OpenGL4;
 
 namespace GFDLibrary.Rendering.OpenGL
 {

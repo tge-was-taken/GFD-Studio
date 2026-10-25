@@ -6,8 +6,8 @@ using System.Numerics;
 using GFDLibrary.Rendering.OpenGL;
 using GFDLibrary.Utilities;
 using GFDStudio.DataManagement;
-using OpenTK.Graphics.OpenGL;
-using Vector4 = OpenTK.Vector4;
+using OpenTK.Graphics.OpenGL4;
+using Vector4 = OpenTK.Mathematics.Vector4;
 
 namespace GFDStudio.GUI.Controls
 {
