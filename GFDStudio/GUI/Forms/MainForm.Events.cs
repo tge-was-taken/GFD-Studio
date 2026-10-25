@@ -16,7 +16,6 @@ using GFDLibrary.Textures;
 using Ookii.Dialogs.Wpf;
 using System.Threading;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
-using System.Windows.Markup;
 using GFDLibrary.Conversion;
 
 namespace GFDStudio.GUI.Forms

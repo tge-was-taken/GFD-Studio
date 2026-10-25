@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>GFDStudio</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GFDLibrary.Conversion.AssimpNet\GFDLibrary.Conversion.AssimpNet.csproj" />
+    <ProjectReference Include="..\GFDLibrary\GFDLibrary.csproj" />
+  </ItemGroup>
+
+</Project>

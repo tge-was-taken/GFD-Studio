@@ -96,7 +96,10 @@ namespace GFDStudio.GUI.DataViewNodes
         public string SelectedImageKey { get; set; }
 
         [Browsable( false )]
-        public bool IsExpanded { get; internal set; }
+        /// <summary>
+        /// Whether the view is showing the children, which the view keeps current.
+        /// </summary>
+        public bool IsExpanded { get; set; }
 
         /// <summary>
         /// Gets the parent of the node.
@@ -191,7 +194,10 @@ namespace GFDStudio.GUI.DataViewNodes
 
         internal void SetParent( DataViewNode parent ) => Parent = parent;
 
-        internal void AttachView( IDataViewNodeView view ) => View = view;
+        /// <summary>
+        /// Called by a view taking this node on as its root.
+        /// </summary>
+        public void AttachView( IDataViewNodeView view ) => View = view;
 
         internal void NotifyChildrenChanged() => View?.OnChildrenChanged( this );
 
@@ -667,7 +673,7 @@ namespace GFDStudio.GUI.DataViewNodes
         /// <summary>
         /// Populates the view -- which is the current node's child nodes and/or any other properties
         /// </summary>
-        protected internal void InitializeView( bool force = false )
+        public void InitializeView( bool force = false )
         {
             if ( mIsInitializingView || ( !force && !HasPendingChanges && IsViewInitialized ) )
                 return;

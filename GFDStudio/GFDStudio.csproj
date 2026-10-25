@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GFDLibrary.Conversion.AssimpNet\GFDLibrary.Conversion.AssimpNet.csproj" />
+    <ProjectReference Include="..\GFDStudio.Core\GFDStudio.Core.csproj" />
     <ProjectReference Include="..\GFDLibrary.Rendering.OpenGL\GFDLibrary.Rendering.OpenGL.csproj" />
     <ProjectReference Include="..\GFDLibrary\GFDLibrary.csproj" />
   </ItemGroup>

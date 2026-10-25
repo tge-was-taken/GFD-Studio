@@ -6,7 +6,8 @@
       "GFDLibrary.Conversion.FbxSdk.Tests\\GFDLibrary.Conversion.FbxSdk.Tests.csproj",
       "GFDLibrary.Rendering.OpenGL\\GFDLibrary.Rendering.OpenGL.csproj",
       "GFDLibrary.Tests\\GFDLibrary.Tests.csproj",
-      "GFDLibrary\\GFDLibrary.csproj"
+      "GFDLibrary\\GFDLibrary.csproj",
+      "GFDStudio.Core\\GFDStudio.Core.csproj"
     ]
   }
 }

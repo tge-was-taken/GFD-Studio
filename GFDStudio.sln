@@ -24,6 +24,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GFDLibrary.Conversion.Assim
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GFDLibrary.Conversion.FbxSdk.Tests", "GFDLibrary.Conversion.FbxSdk.Tests\GFDLibrary.Conversion.FbxSdk.Tests.csproj", "{8FDFC60C-5CF0-4BFC-914D-E8992FC2468E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GFDStudio.Core", "GFDStudio.Core\GFDStudio.Core.csproj", "{6AC7C5C9-7AB9-46C6-A772-802B5FE27CBD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -106,6 +108,18 @@ Global
 		{8FDFC60C-5CF0-4BFC-914D-E8992FC2468E}.Release|x64.Build.0 = Release|Any CPU
 		{8FDFC60C-5CF0-4BFC-914D-E8992FC2468E}.Release|x86.ActiveCfg = Release|Any CPU
 		{8FDFC60C-5CF0-4BFC-914D-E8992FC2468E}.Release|x86.Build.0 = Release|Any CPU
+		{6AC7C5C9-7AB9-46C6-A772-802B5FE27CBD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6AC7C5C9-7AB9-46C6-A772-802B5FE27CBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6AC7C5C9-7AB9-46C6-A772-802B5FE27CBD}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6AC7C5C9-7AB9-46C6-A772-802B5FE27CBD}.Debug|x64.Build.0 = Debug|Any CPU
+		{6AC7C5C9-7AB9-46C6-A772-802B5FE27CBD}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6AC7C5C9-7AB9-46C6-A772-802B5FE27CBD}.Debug|x86.Build.0 = Debug|Any CPU
+		{6AC7C5C9-7AB9-46C6-A772-802B5FE27CBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6AC7C5C9-7AB9-46C6-A772-802B5FE27CBD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6AC7C5C9-7AB9-46C6-A772-802B5FE27CBD}.Release|x64.ActiveCfg = Release|Any CPU
+		{6AC7C5C9-7AB9-46C6-A772-802B5FE27CBD}.Release|x64.Build.0 = Release|Any CPU
+		{6AC7C5C9-7AB9-46C6-A772-802B5FE27CBD}.Release|x86.ActiveCfg = Release|Any CPU
+		{6AC7C5C9-7AB9-46C6-A772-802B5FE27CBD}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
