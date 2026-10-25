@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.CodeDom;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -230,9 +230,9 @@ namespace GFDStudio.GUI.Forms
 
             if ( FormatModuleRegistry.ModuleByType.TryGetValue( node.DataType, out var module ) )
             {
-                if ( module.UsageFlags.HasFlag( FormatModuleUsageFlags.Bitmap ) )
+                if ( module.UsageFlags.HasFlag( FormatModuleUsageFlags.Image ) )
                 {
-                    BitmapViewControl.Instance.LoadBitmap( module.GetBitmap( node.Data ) );
+                    BitmapViewControl.Instance.LoadBitmap( module.GetImage( node.Data ).ToBitmap() );
                     BitmapViewControl.Instance.Visible = false;
                     control = BitmapViewControl.Instance;
                 }

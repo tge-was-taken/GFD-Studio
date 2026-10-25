@@ -1,6 +1,6 @@
-﻿using System;
-using System.Drawing;
+using System;
 using System.IO;
+using GFDLibrary.Graphics;
 using GFDStudio.IO;
 
 namespace GFDStudio.FormatModules
@@ -158,18 +158,18 @@ namespace GFDStudio.FormatModules
         /// </summary>
         /// <param name="obj">The format object.</param>
         /// <returns>Image data.</returns>
-        public Bitmap GetBitmap( T obj )
+        public Image GetImage( T obj )
         {
-            if ( !UsageFlags.HasFlag( FormatModuleUsageFlags.Bitmap ) )
+            if ( !UsageFlags.HasFlag( FormatModuleUsageFlags.Image ) )
                 throw new NotSupportedException( "FormatModule does not provide image capabilities" );
 
             try
             {
-                return GetBitmapCore( obj );
+                return GetImageCore( obj );
             }
             catch ( Exception )
             {
-                return new Bitmap( 32, 32 );
+                return new Image( 32, 32 );
             }
         }
 
@@ -182,7 +182,7 @@ namespace GFDStudio.FormatModules
 
         protected abstract void ExportCore( T obj, Stream stream, string filename = null );
 
-        protected virtual Bitmap GetBitmapCore( T obj ) => throw new NotImplementedException();
+        protected virtual Image GetImageCore( T obj ) => throw new NotImplementedException();
 
         //
         // IModule implementation
@@ -206,7 +206,7 @@ namespace GFDStudio.FormatModules
         void IFormatModule.Export( object obj, out byte[] data, string filename ) 
             => Export( ( T )obj, out data, filename );
 
-        Bitmap IFormatModule.GetBitmap( object obj )
-            => GetBitmap( ( T )obj );
+        Image IFormatModule.GetImage( object obj )
+            => GetImage( ( T )obj );
     }
 }

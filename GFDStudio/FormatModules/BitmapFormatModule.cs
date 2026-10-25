@@ -2,7 +2,6 @@ using System.IO;
 using GFDLibrary.Graphics;
 using GFDLibrary.Textures;
 using GFDStudio.IO;
-using Bitmap = System.Drawing.Bitmap;
 
 namespace GFDStudio.FormatModules
 {
@@ -15,7 +14,7 @@ namespace GFDStudio.FormatModules
             new[] { "png" };
 
         public override FormatModuleUsageFlags UsageFlags =>
-             FormatModuleUsageFlags.ImportForEditing | FormatModuleUsageFlags.Export | FormatModuleUsageFlags.Bitmap;
+             FormatModuleUsageFlags.ImportForEditing | FormatModuleUsageFlags.Export | FormatModuleUsageFlags.Image;
 
         protected override bool CanImportCore( Stream stream, string filename = null )
         {
@@ -32,9 +31,9 @@ namespace GFDStudio.FormatModules
             return PngCodec.Load( stream );
         }
 
-        protected override Bitmap GetBitmapCore( Image obj )
+        protected override Image GetImageCore( Image obj )
         {
-            return obj.ToBitmap();
+            return obj;
         }
     }
 }

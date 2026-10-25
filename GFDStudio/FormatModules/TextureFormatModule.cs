@@ -1,5 +1,5 @@
-﻿using System.Drawing;
 using System.IO;
+using GFDLibrary.Graphics;
 using GFDLibrary;
 using GFDLibrary.Textures;
 
@@ -14,7 +14,7 @@ namespace GFDStudio.FormatModules
             => new[] { "gtx" };
 
         public override FormatModuleUsageFlags UsageFlags
-            => FormatModuleUsageFlags.Bitmap;
+            => FormatModuleUsageFlags.Image;
 
         protected override bool CanImportCore( Stream stream, string filename = null )
         {
@@ -31,9 +31,9 @@ namespace GFDStudio.FormatModules
             return Resource.Load<Texture>( stream, true );
         }
 
-        protected override Bitmap GetBitmapCore( Texture obj )
+        protected override Image GetImageCore( Texture obj )
         {
-            return TextureDecoder.Decode( obj ).ToBitmap();
+            return TextureDecoder.Decode( obj );
         }
     }
 }

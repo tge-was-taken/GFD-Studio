@@ -3,10 +3,10 @@ using Bitmap = System.Drawing.Bitmap;
 using ImageLockMode = System.Drawing.Imaging.ImageLockMode;
 using PixelFormat = System.Drawing.Imaging.PixelFormat;
 
-namespace GFDStudio.FormatModules
+namespace GFDStudio.GUI
 {
     /// <summary>
-    /// Bridges the library's images to the WinForms controls, which need a Bitmap.
+    /// Converts the library's images for the WinForms controls, which need a Bitmap.
     /// </summary>
     public static class ImageExtensions
     {

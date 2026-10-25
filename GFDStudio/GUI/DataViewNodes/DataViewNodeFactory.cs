@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -24,7 +24,7 @@ namespace GFDStudio.GUI.DataViewNodes
         {
             // generic view models
             Register<StreamViewNode>();
-            Register<BitmapViewNode>();
+            Register<ImageViewNode>();
             Register( typeof( ListViewNode<> ), typeof( List<> ) );
 
             // archive view models

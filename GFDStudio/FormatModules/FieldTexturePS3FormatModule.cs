@@ -1,6 +1,6 @@
-﻿using System.Drawing;
 using System.IO;
 using System.Text;
+using GFDLibrary.Graphics;
 using GFDLibrary.IO.Common;
 using GFDLibrary.Textures;
 
@@ -15,7 +15,7 @@ namespace GFDStudio.FormatModules
             => new[] { "dds" };
 
         public override FormatModuleUsageFlags UsageFlags
-            => FormatModuleUsageFlags.Bitmap | FormatModuleUsageFlags.Import | FormatModuleUsageFlags.Export;
+            => FormatModuleUsageFlags.Image | FormatModuleUsageFlags.Import | FormatModuleUsageFlags.Export;
 
         protected override bool CanImportCore( Stream stream, string filename = null )
         {
@@ -37,9 +37,9 @@ namespace GFDStudio.FormatModules
             return new FieldTexturePS3( stream );
         }
 
-        protected override Bitmap GetBitmapCore( FieldTexturePS3 obj )
+        protected override Image GetImageCore( FieldTexturePS3 obj )
         {
-            return TextureDecoder.Decode( obj ).ToBitmap();
+            return TextureDecoder.Decode( obj );
         }
     }
 }

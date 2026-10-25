@@ -1,6 +1,6 @@
-﻿using System.Drawing;
 using System.IO;
 using System.Text;
+using GFDLibrary.Graphics;
 using GFDLibrary.IO.Common;
 using GFDLibrary.Textures.DDS;
 
@@ -17,7 +17,7 @@ namespace GFDStudio.FormatModules
             => new[] { "dds" };
 
         public override FormatModuleUsageFlags UsageFlags
-            => FormatModuleUsageFlags.Bitmap | FormatModuleUsageFlags.ImportForEditing | FormatModuleUsageFlags.Export;
+            => FormatModuleUsageFlags.Image | FormatModuleUsageFlags.ImportForEditing | FormatModuleUsageFlags.Export;
 
         protected override bool CanImportCore( Stream stream, string filename = null )
         {
@@ -39,9 +39,9 @@ namespace GFDStudio.FormatModules
             return new DDSStream( stream );
         }
 
-        protected override Bitmap GetBitmapCore( DDSStream obj )
+        protected override Image GetImageCore( DDSStream obj )
         {
-            return DDSCodec.DecompressImage( obj ).ToBitmap();
+            return DDSCodec.DecompressImage( obj );
         }
     }
 }

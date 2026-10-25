@@ -1,6 +1,6 @@
-﻿using System;
-using System.Drawing;
+using System;
 using System.IO;
+using GFDLibrary.Graphics;
 
 namespace GFDStudio.FormatModules
 {
@@ -94,7 +94,7 @@ namespace GFDStudio.FormatModules
         /// </summary>
         /// <param name="obj">The format object.</param>
         /// <returns>Image data.</returns>
-        Bitmap GetBitmap( object obj );
+        Image GetImage( object obj );
     }
 
     [Flags]
@@ -103,6 +103,6 @@ namespace GFDStudio.FormatModules
         Import           = 0b0001,
         Export           = 0b0010,
         ImportForEditing = 0b0100, 
-        Bitmap           = 0b1000,
+        Image            = 0b1000,
     }
 }

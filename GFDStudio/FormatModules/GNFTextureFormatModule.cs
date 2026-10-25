@@ -1,6 +1,6 @@
-﻿using System.Drawing;
 using System.IO;
 using System.Text;
+using GFDLibrary.Graphics;
 using GFDLibrary.IO.Common;
 using GFDLibrary.Textures;
 using GFDLibrary.Textures.GNF;
@@ -16,7 +16,7 @@ namespace GFDStudio.FormatModules
             => new[] { "dds", "gnf" };
 
         public override FormatModuleUsageFlags UsageFlags
-            => FormatModuleUsageFlags.Bitmap | FormatModuleUsageFlags.Import | FormatModuleUsageFlags.Export;
+            => FormatModuleUsageFlags.Image | FormatModuleUsageFlags.Import | FormatModuleUsageFlags.Export;
 
         protected override bool CanImportCore( Stream stream, string filename = null )
         {
@@ -38,9 +38,9 @@ namespace GFDStudio.FormatModules
             return new GNFTexture( stream );
         }
 
-        protected override Bitmap GetBitmapCore( GNFTexture obj )
+        protected override Image GetImageCore( GNFTexture obj )
         {
-            return TextureDecoder.Decode( obj ).ToBitmap();
+            return TextureDecoder.Decode( obj );
         }
     }
 }
