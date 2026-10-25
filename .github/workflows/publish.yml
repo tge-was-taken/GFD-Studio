@@ -14,10 +14,6 @@ on:
         required: false
         default: false
 
-env:
-  FBXSDK_VERSION: '2020.3.7'
-  FBXSDK_INSTALLER: fbx202037_fbxsdk_vs2019_win.exe
-
 jobs:
   publish:
     strategy:
@@ -31,27 +27,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-        with:
-          submodules: recursive
 
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
 
-      # The FBX exporter is a C++/CLI project built against the Autodesk FBX SDK, which is not on
-      # the runner image. Released builds install it so they keep FBX export.
-      - name: Install the FBX SDK
-        shell: pwsh
-        run: |
-          $ErrorActionPreference = 'Stop'
-          $url = "https://damassets.autodesk.net/content/dam/autodesk/www/files/$env:FBXSDK_INSTALLER"
-          Invoke-WebRequest $url -OutFile $env:FBXSDK_INSTALLER
-          Start-Process ".\$env:FBXSDK_INSTALLER" -ArgumentList '/S' -Wait
-          $root = "C:\Program Files\Autodesk\FBX\FBX SDK\$env:FBXSDK_VERSION"
-          if (-not (Test-Path "$root\include\fbxsdk.h")) {
-            throw "the FBX SDK did not install to $root"
-          }
-          "FBXSDK_ROOT=$root" >> $env:GITHUB_ENV
+      # The shared libraries the texture codecs and the FBX exporter load at runtime. They are
+      # built here rather than taken from the CI artifacts, so a release is self contained.
+      - uses: ./.github/actions/build-native
 
       - name: Publish the executable
         shell: bash
@@ -89,25 +72,14 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-        with:
-          submodules: recursive
 
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
 
-      - name: Install the FBX SDK
-        shell: pwsh
-        run: |
-          $ErrorActionPreference = 'Stop'
-          $url = "https://damassets.autodesk.net/content/dam/autodesk/www/files/$env:FBXSDK_INSTALLER"
-          Invoke-WebRequest $url -OutFile $env:FBXSDK_INSTALLER
-          Start-Process ".\$env:FBXSDK_INSTALLER" -ArgumentList '/S' -Wait
-          $root = "C:\Program Files\Autodesk\FBX\FBX SDK\$env:FBXSDK_VERSION"
-          if (-not (Test-Path "$root\include\fbxsdk.h")) {
-            throw "the FBX SDK did not install to $root"
-          }
-          "FBXSDK_ROOT=$root" >> $env:GITHUB_ENV
+      # The shared libraries the texture codecs and the FBX exporter load at runtime. They are
+      # built here rather than taken from the CI artifacts, so a release is self contained.
+      - uses: ./.github/actions/build-native
 
       - name: Publish the executable
         shell: bash

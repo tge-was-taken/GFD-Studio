@@ -1,0 +1,63 @@
+name: Build the native libraries
+description: >
+  Builds DirectXTexC and FbxSdkC with CMake, into each project's out directory. DirectXTex fetches
+  its own dependencies; the FBX SDK is a licensed download, so it is installed first.
+
+inputs:
+  fbx-sdk:
+    description: Build FbxSdkC as well, which means downloading and installing the FBX SDK.
+    required: false
+    default: 'true'
+
+runs:
+  using: composite
+  steps:
+    - name: Build DirectXTexC
+      shell: bash
+      run: |
+        set -eu
+        cmake -S GFDLibrary.Native.DirectXTex -B GFDLibrary.Native.DirectXTex/out \
+          -DCMAKE_BUILD_TYPE=Release
+        cmake --build GFDLibrary.Native.DirectXTex/out --config Release
+
+    # The installers are the same downloads Autodesk serves from its own site, one per platform.
+    - name: Install the FBX SDK
+      if: inputs.fbx-sdk == 'true'
+      shell: bash
+      env:
+        FBXSDK_BASE_URL: https://damassets.autodesk.net/content/dam/autodesk/www/files
+      run: |
+        set -eu
+        case "$RUNNER_OS" in
+          Linux)
+            curl -fsSL "$FBXSDK_BASE_URL/fbx202037_fbxsdk_gcc_linux.tar.gz" -o fbxsdk.tar.gz
+            mkdir -p fbxsdk-installer "$HOME/fbxsdk"
+            tar xzf fbxsdk.tar.gz -C fbxsdk-installer
+            chmod +x ./fbxsdk-installer/fbx202037_fbxsdk_linux
+            # The installer pages its licence and then asks to agree; it reads both from stdin.
+            printf 'yes\nn\n' | ./fbxsdk-installer/fbx202037_fbxsdk_linux "$HOME/fbxsdk" >/dev/null
+            echo "FBXSDK_ROOT=$HOME/fbxsdk" >> "$GITHUB_ENV"
+            ;;
+          macOS)
+            curl -fsSL "$FBXSDK_BASE_URL/fbx202037_fbxsdk_clang_mac.pkg.tgz" -o fbxsdk.pkg.tgz
+            mkdir -p fbxsdk-installer
+            tar xzf fbxsdk.pkg.tgz -C fbxsdk-installer
+            sudo installer -pkg "$(find fbxsdk-installer -name '*.pkg' | head -1)" -target /
+            echo "FBXSDK_ROOT=/Applications/Autodesk/FBX SDK/2020.3.7" >> "$GITHUB_ENV"
+            ;;
+          Windows)
+            curl -fsSL "$FBXSDK_BASE_URL/fbx202037_fbxsdk_vs2019_win.exe" -o fbxsdk.exe
+            ./fbxsdk.exe //S
+            echo 'FBXSDK_ROOT=C:\Program Files\Autodesk\FBX\FBX SDK\2020.3.7' >> "$GITHUB_ENV"
+            ;;
+        esac
+
+    - name: Build FbxSdkC
+      if: inputs.fbx-sdk == 'true'
+      shell: bash
+      run: |
+        set -eu
+        test -f "$FBXSDK_ROOT/include/fbxsdk.h" || { echo "::error::the FBX SDK is not at $FBXSDK_ROOT"; exit 1; }
+        cmake -S GFDLibrary.Native.FbxSdk -B GFDLibrary.Native.FbxSdk/out \
+          -DCMAKE_BUILD_TYPE=Release -DFbxSdkRoot="$FBXSDK_ROOT"
+        cmake --build GFDLibrary.Native.FbxSdk/out --config Release

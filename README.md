@@ -18,23 +18,34 @@ installed, `GFDStudio-dotnet.zip` is smaller but needs the .NET 10 desktop runti
 (This is required for compiling shaders)
 ## Building
 
-Requires the [.NET 10 SDK](https://dotnet.microsoft.com/download) and, for the FBX exporter, the
-Autodesk FBX SDK 2020.3.7 and the MSVC C++ toolset.
+Requires the [.NET 10 SDK](https://dotnet.microsoft.com/download) and CMake 3.24 or newer.
 
-- Install FBX SDK 2020.3.7 to the standard path (C:\Program Files\Autodesk\FBX\FBX SDK\2020.3.7),
-  or point `FbxSdkRoot` at wherever you installed it
 - Clone with `git clone https://github.com/tge-was-taken/GFD-Studio`
-- Navigate to the repo, and clone submodules with `git submodule update --init --recursive`
 - Open the solution in Visual Studio, or `dotnet build GFDStudio.sln -c Release`
 
-Without the FBX SDK installed, build the `GFDStudio.NoFbx.slnf` filter instead, which leaves the
-exporter out:
+### Native libraries
+
+Texture and FBX handling run through two small C libraries, built with CMake and loaded by
+`GFDLibrary` at runtime. The managed build does not depend on either, so it succeeds without them;
+the feature each one backs fails at runtime instead.
+
+`GFDLibrary.Native.DirectXTex` fetches its own dependencies, so it needs nothing installed:
 
 ```
-dotnet build GFDStudio.NoFbx.slnf -c Release -p:EnableFbxSdk=false
+cmake -S GFDLibrary.Native.DirectXTex -B GFDLibrary.Native.DirectXTex/out -DCMAKE_BUILD_TYPE=Release
+cmake --build GFDLibrary.Native.DirectXTex/out --config Release
 ```
 
-FBX export then goes through assimp instead of the FBX SDK exporter.
+`GFDLibrary.Native.FbxSdk` needs the Autodesk FBX SDK 2020.3.7, which is a licensed download.
+Install it to the standard path for your platform or pass `-DFbxSdkRoot=<path>`:
+
+```
+cmake -S GFDLibrary.Native.FbxSdk -B GFDLibrary.Native.FbxSdk/out -DCMAKE_BUILD_TYPE=Release
+cmake --build GFDLibrary.Native.FbxSdk/out --config Release
+```
+
+A build in each project's `out` directory is copied next to the application automatically. Without
+`FbxSdkC`, export a `.dae` to go through assimp instead.
 
 ### Platforms
 
@@ -44,8 +55,8 @@ FBX export then goes through assimp instead of the FBX SDK exporter.
 dotnet build GFDLibrary.slnf -c Release
 ```
 
-The application itself is Windows only, because the GUI is WinForms, the model viewer is an
-OpenTK `GLControl` and the FBX exporter is a C++/CLI project.
+The application itself is Windows only, because the GUI is WinForms and the model viewer is an
+OpenTK `GLControl`.
 
 ### Publishing
 
