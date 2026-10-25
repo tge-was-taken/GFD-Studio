@@ -128,10 +128,19 @@ namespace GFDLibrary.Conversion.FbxSdk
                 mNodeIndexToFbxNode.Add( i, fbxNode );
             }
 
-            // The root node is generated and always identity, so it is left out of the output.
             var fbxRootNode = FbxSdk.SceneGetRootNode( mScene );
-            foreach ( var node in mModel.RootNode.Children )
-                ConvertNode( fbxRootNode, node );
+
+            // The root node is usually generated and empty, so it is left out of the output. Some
+            // models hang a mesh or a camera straight off it, and dropping it loses that.
+            if ( mModel.RootNode.HasAttachments )
+            {
+                ConvertNode( fbxRootNode, mModel.RootNode );
+            }
+            else
+            {
+                foreach ( var node in mModel.RootNode.Children )
+                    ConvertNode( fbxRootNode, node );
+            }
         }
 
         private Dictionary<string, string> ExportTextures()
