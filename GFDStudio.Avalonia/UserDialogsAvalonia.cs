@@ -69,10 +69,10 @@ namespace GFDStudio.Avalonia
         }
 
         public ModelConverterOptions AskModelConversionOptions( Assimp.Scene scene, ModelPack originalModel )
-            => throw new NotImplementedException( "The model conversion options dialog has not been ported yet" );
+            => Wait( ModelConversionOptionsWindow.Show( mOwner, scene, originalModel ) );
 
         public NewTextureMap AskNewTextureMap()
-            => throw new NotImplementedException( "The new texture map dialog has not been ported yet" );
+            => Wait( NewTextureMapWindow.Show( mOwner ) );
 
         private static string[] LocalPaths( IEnumerable<IStorageItem> items )
             => items?.Select( x => x.TryGetLocalPath() ).Where( x => x != null ).ToArray() ?? [];
