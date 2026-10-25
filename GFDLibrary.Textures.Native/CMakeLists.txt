@@ -92,7 +92,8 @@ if(NOT TARGET PNG::PNG)
     add_library(PNG::PNG ALIAS png_static)
 endif()
 
-set(ENABLE_LIBPNG_SUPPORT ON CACHE BOOL "" FORCE)
+# DirectXTexC calls libpng directly, so DirectXTex's own PNG codec stays out.
+set(ENABLE_LIBPNG_SUPPORT OFF CACHE BOOL "" FORCE)
 
 # GFD Studio only needs the DDS, TGA, PNG and block codecs, so the Direct3D paths and the
 # command line tools stay out of the build.
@@ -116,9 +117,7 @@ endif()
 add_library(DirectXTexC SHARED src/DirectXTexC.cpp)
 
 target_include_directories(DirectXTexC PUBLIC include)
-# The PNG codec lives in DirectXTex's Auxiliary directory, which it does not export.
-target_include_directories(DirectXTexC PRIVATE ${directxtex_SOURCE_DIR}/Auxiliary)
-target_link_libraries(DirectXTexC PRIVATE DirectXTex)
+target_link_libraries(DirectXTexC PRIVATE DirectXTex PNG::PNG)
 
 # DllImport looks for the same file name on every platform.
 set_target_properties(DirectXTexC PROPERTIES

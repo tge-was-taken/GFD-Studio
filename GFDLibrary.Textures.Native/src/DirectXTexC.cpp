@@ -2,11 +2,12 @@
 
 #include <cstring>
 #include <memory>
-#include <string>
 #include <new>
 
 #include <DirectXTex.h>
-#include <DirectXTexPNG.h>
+
+#include <png.h>
+#include <cstdio>
 
 using namespace DirectX;
 
@@ -92,48 +93,103 @@ HRESULT DirectXTex_LoadFromBlocks( const void* source, size_t size, size_t width
     return Wrap( std::move( loaded ), image );
 }
 
-namespace
-{
-    /// DirectXTex takes wide paths; the managed side hands over UTF-8.
-    std::wstring ToWide( const char* path )
-    {
-        std::wstring wide;
-        if ( !path )
-            return wide;
-
-        // The paths here come from the host filesystem, so a plain widening of the UTF-8 code
-        // units is not enough; decode the sequences properly.
-        for ( const unsigned char* p = reinterpret_cast<const unsigned char*>( path ); *p; )
-        {
-            char32_t cp;
-            if ( *p < 0x80 ) { cp = *p++; }
-            else if ( ( *p & 0xE0 ) == 0xC0 ) { cp = ( *p & 0x1F ); cp = ( cp << 6 ) | ( p[1] & 0x3F ); p += 2; }
-            else if ( ( *p & 0xF0 ) == 0xE0 ) { cp = ( *p & 0x0F ); cp = ( cp << 6 ) | ( p[1] & 0x3F ); cp = ( cp << 6 ) | ( p[2] & 0x3F ); p += 3; }
-            else { cp = ( *p & 0x07 ); cp = ( cp << 6 ) | ( p[1] & 0x3F ); cp = ( cp << 6 ) | ( p[2] & 0x3F ); cp = ( cp << 6 ) | ( p[3] & 0x3F ); p += 4; }
-
-            if ( sizeof( wchar_t ) == 2 && cp > 0xFFFF )
-            {
-                cp -= 0x10000;
-                wide.push_back( static_cast<wchar_t>( 0xD800 + ( cp >> 10 ) ) );
-                wide.push_back( static_cast<wchar_t>( 0xDC00 + ( cp & 0x3FF ) ) );
-            }
-            else
-            {
-                wide.push_back( static_cast<wchar_t>( cp ) );
-            }
-        }
-
-        return wide;
-    }
-}
+// PNG goes straight to libpng rather than through DirectXTex's Auxiliary codec, which hardcodes
+// compression level 0 and runs png_set_alpha_mode on read, destroying the colour of fully
+// transparent pixels.
+//
+// Nothing with a destructor may be live across the setjmp error paths below, so the buffers here
+// are raw allocations freed by hand.
 
 HRESULT DirectXTex_LoadFromPNGFile( const char* path, DirectXTex_ScratchImage** image )
 {
     if ( !path || !image )
         return E_INVALIDARG;
 
+    FILE* file = fopen( path, "rb" );
+    if ( !file )
+        return E_FAIL;
+
+    png_structp png = png_create_read_struct( PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr );
+    if ( !png )
+    {
+        fclose( file );
+        return E_OUTOFMEMORY;
+    }
+
+    png_infop info = png_create_info_struct( png );
+    if ( !info )
+    {
+        png_destroy_read_struct( &png, nullptr, nullptr );
+        fclose( file );
+        return E_OUTOFMEMORY;
+    }
+
+    png_bytep pixels = nullptr;
+    png_bytepp rows = nullptr;
+    png_uint_32 width = 0, height = 0;
+
+    if ( setjmp( png_jmpbuf( png ) ) )
+    {
+        free( rows );
+        free( pixels );
+        png_destroy_read_struct( &png, &info, nullptr );
+        fclose( file );
+        return E_FAIL;
+    }
+
+    png_init_io( png, file );
+    png_read_info( png, info );
+
+    width = png_get_image_width( png, info );
+    height = png_get_image_height( png, info );
+    const png_byte colorType = png_get_color_type( png, info );
+    const png_byte bitDepth = png_get_bit_depth( png, info );
+
+    // Normalise everything to 8 bit RGBA.
+    if ( colorType == PNG_COLOR_TYPE_PALETTE )
+        png_set_palette_to_rgb( png );
+    if ( colorType == PNG_COLOR_TYPE_GRAY && bitDepth < 8 )
+        png_set_expand_gray_1_2_4_to_8( png );
+    if ( png_get_valid( png, info, PNG_INFO_tRNS ) )
+        png_set_tRNS_to_alpha( png );
+    if ( bitDepth == 16 )
+        png_set_scale_16( png );
+    if ( colorType == PNG_COLOR_TYPE_GRAY || colorType == PNG_COLOR_TYPE_GRAY_ALPHA )
+        png_set_gray_to_rgb( png );
+
+    png_set_filler( png, 0xFF, PNG_FILLER_AFTER );
+    png_set_interlace_handling( png );
+    png_read_update_info( png, info );
+
+    const size_t rowBytes = png_get_rowbytes( png, info );
+
+    pixels = static_cast<png_bytep>( malloc( rowBytes * height ) );
+    rows = static_cast<png_bytepp>( malloc( sizeof( png_bytep ) * height ) );
+    if ( !pixels || !rows )
+        png_error( png, "out of memory" );
+
+    for ( png_uint_32 y = 0; y < height; ++y )
+        rows[y] = pixels + ( rowBytes * y );
+
+    png_read_image( png, rows );
+    png_read_end( png, nullptr );
+
+    free( rows );
+    rows = nullptr;
+    png_destroy_read_struct( &png, &info, nullptr );
+    fclose( file );
+
     ScratchImage loaded;
-    HRESULT hr = LoadFromPNGFile( ToWide( path ).c_str(), PNG_FLAGS_NONE, nullptr, loaded );
+    HRESULT hr = loaded.Initialize2D( DXGI_FORMAT_R8G8B8A8_UNORM, width, height, 1, 1 );
+    if ( SUCCEEDED( hr ) )
+    {
+        const Image* target = loaded.GetImage( 0, 0, 0 );
+        for ( png_uint_32 y = 0; y < height; ++y )
+            memcpy( target->pixels + ( target->rowPitch * y ), pixels + ( rowBytes * y ), width * 4 );
+    }
+
+    free( pixels );
+
     if ( FAILED( hr ) )
         return hr;
 
@@ -150,7 +206,58 @@ HRESULT DirectXTex_SaveToPNGFile( const DirectXTex_ScratchImage* image, const ch
     if ( !top )
         return E_FAIL;
 
-    return SaveToPNGFile( *top, PNG_FLAGS_NONE, ToWide( path ).c_str() );
+    if ( top->format != DXGI_FORMAT_R8G8B8A8_UNORM && top->format != DXGI_FORMAT_R8G8B8A8_UNORM_SRGB )
+        return E_INVALIDARG;
+
+    FILE* file = fopen( path, "wb" );
+    if ( !file )
+        return E_FAIL;
+
+    png_structp png = png_create_write_struct( PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr );
+    if ( !png )
+    {
+        fclose( file );
+        return E_OUTOFMEMORY;
+    }
+
+    png_infop info = png_create_info_struct( png );
+    if ( !info )
+    {
+        png_destroy_write_struct( &png, nullptr );
+        fclose( file );
+        return E_OUTOFMEMORY;
+    }
+
+    png_bytepp rows = nullptr;
+
+    if ( setjmp( png_jmpbuf( png ) ) )
+    {
+        free( rows );
+        png_destroy_write_struct( &png, &info );
+        fclose( file );
+        return E_FAIL;
+    }
+
+    png_init_io( png, file );
+    png_set_IHDR( png, info, static_cast<png_uint_32>( top->width ), static_cast<png_uint_32>( top->height ),
+                  8, PNG_COLOR_TYPE_RGBA, PNG_INTERLACE_NONE,
+                  PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT );
+
+    rows = static_cast<png_bytepp>( malloc( sizeof( png_bytep ) * top->height ) );
+    if ( !rows )
+        png_error( png, "out of memory" );
+
+    for ( size_t y = 0; y < top->height; ++y )
+        rows[y] = top->pixels + ( top->rowPitch * y );
+
+    png_set_rows( png, info, rows );
+    png_write_png( png, info, PNG_TRANSFORM_IDENTITY, nullptr );
+
+    free( rows );
+    png_destroy_write_struct( &png, &info );
+    fclose( file );
+
+    return S_OK;
 }
 
 HRESULT DirectXTex_Initialize2D( const void* pixels, size_t width, size_t height, int format,
