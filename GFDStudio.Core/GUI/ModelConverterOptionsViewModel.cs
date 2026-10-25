@@ -13,7 +13,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 
-namespace GFDStudio.GUI.Forms;
+namespace GFDStudio.GUI;
 
 public class ModelConverterOptionsViewModel
 {
@@ -335,13 +335,11 @@ public class ModelConverterDefaultMeshOptionsViewModel
 
     [CustomSortedCategory( "Mesh settings", 1, 2 )]
     [DisplayName( "Geometry flags" )]
-    [Editor( "GFDStudio.GUI.Forms.FlagsEnumEditor, GFDStudio", "System.Drawing.Design.UITypeEditor, System.Drawing.Common" )]
     public GeometryFlags? GeometryFlags { get; set; }
         = DefaultGeometryFlags;
 
     [CustomSortedCategory( "Mesh settings", 1, 2 )]
     [DisplayName( "Vertex attribute flags" )]
-    [Editor( "GFDStudio.GUI.Forms.FlagsEnumEditor, GFDStudio", "System.Drawing.Design.UITypeEditor, System.Drawing.Common" )]
     public VertexAttributeFlags? VertexAttributeFlags { get; set; }
         = DefaultVertexAttributeFlags;
 

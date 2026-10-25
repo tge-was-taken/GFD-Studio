@@ -4,8 +4,13 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net10.0</TargetFramework>
     <RootNamespace>GFDStudio.Avalonia</RootNamespace>
+    <AssemblyName>GFDStudio</AssemblyName>
+    <Version>0.10.3</Version>
+    <Authors>TGE</Authors>
+    <Company>TGE</Company>
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>app_data\icons\main_icon.ico</ApplicationIcon>
     <AvaloniaUseCompiledBindingsByDefault>false</AvaloniaUseCompiledBindingsByDefault>
   </PropertyGroup>
 
@@ -22,9 +27,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- Icons, shaders and presets still live beside the WinForms app. -->
-    <Content Include="..\GFDStudio\app_data\**\*" Link="app_data\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="..\GFDStudio\Presets\**\*" Link="Presets\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="app_data\**\*" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Presets\**\*" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

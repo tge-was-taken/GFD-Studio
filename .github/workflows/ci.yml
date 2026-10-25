@@ -7,35 +7,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  # The WinForms front end only builds on Windows, so the whole solution does too. The native
-  # libraries are built separately, because the managed build does not depend on them.
+  # Everything builds on all three platforms now, so the whole solution is built on each.
   build:
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '10.0.x'
-
-      - run: dotnet build GFDStudio.sln -c Release
-
-      # The test data is not in the repository, so the tests only run where it is available.
-      - id: testdata
-        shell: bash
-        run: |
-          if [ -d Resources/TestData ]; then
-            echo "available=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "::warning::Resources/TestData is absent, skipping the tests"
-          fi
-
-      - if: steps.testdata.outputs.available
-        run: dotnet test GFDLibrary.Tests/GFDLibrary.Tests.csproj -c Release --no-build
-
-  # Everything but the WinForms front end runs on all three platforms, which is what this filter
-  # covers: the library, the renderer, the shared view model layer and the Avalonia front end.
-  library:
     strategy:
       fail-fast: false
       matrix:
@@ -50,7 +23,7 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
-      - run: dotnet build GFDLibrary.slnf -c Release
+      - run: dotnet build GFDStudio.sln -c Release
 
       # The test data is not in the repository, so the tests only run where it is available.
       - id: testdata
@@ -97,7 +70,7 @@ jobs:
   # A master build is released as the next 0.10 patch version, with the commit it was built from.
   # Other branches get artifacts but no tag.
   version:
-    needs: [build, library, native]
+    needs: [build, native]
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     outputs:
@@ -116,7 +89,7 @@ jobs:
             | sed -nE 's/^v?0\.10\.([0-9]+).*$/\1/p' | sort -n | tail -1)
           # No 0.10 tag yet, so the numbering continues from the version the projects declare.
           if [ -z "$patch" ]; then
-            patch=$(sed -nE 's|.*<Version>0\.10\.([0-9]+)</Version>.*|\1|p' GFDStudio/GFDStudio.csproj | head -1)
+            patch=$(sed -nE 's|.*<Version>0\.10\.([0-9]+)</Version>.*|\1|p'  GFDStudio.Avalonia/GFDStudio.Avalonia.csproj | head -1)
           fi
           echo "tag=v0.10.$((patch + 1))-$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
 

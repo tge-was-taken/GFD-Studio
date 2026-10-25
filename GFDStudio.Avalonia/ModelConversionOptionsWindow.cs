@@ -7,7 +7,7 @@ using Avalonia.Controls.Templates;
 using Avalonia.Layout;
 using GFDLibrary;
 using GFDLibrary.Conversion;
-using GFDStudio.GUI.Forms;
+using GFDStudio.GUI;
 using PropertyGridControl = Avalonia.PropertyGrid.Controls.PropertyGrid;
 
 namespace GFDStudio.Avalonia

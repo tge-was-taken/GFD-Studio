@@ -49,22 +49,21 @@ A build in each project's `out` directory is copied next to the application auto
 
 ### Platforms
 
-`GFDLibrary` and its tests build and run on Windows, Linux and macOS:
+Everything builds and runs on Windows, Linux and macOS. The GUI is Avalonia and the model viewer
+draws with OpenTK on the context Avalonia provides.
 
 ```
-dotnet build GFDLibrary.slnf -c Release
+dotnet build GFDStudio.sln -c Release
 ```
-
-The application itself is Windows only, because the GUI is WinForms and the model viewer is an
-OpenTK `GLControl`.
 
 ### Publishing
 
 Every push to master publishes a release tagged `v0.10.<patch>-<commit>`, numbering the patch from
-the tags already published, and pushing a `v*` tag publishes one under that tag.
+the tags already published, and pushing a `v*` tag publishes one under that tag. Archives are built
+for `win-x64`, `linux-x64` and `osx-arm64`.
 
 ```
-dotnet publish GFDStudio/GFDStudio.csproj -c Release -r win-x64 --self-contained -o out
+dotnet publish GFDStudio.Avalonia/GFDStudio.Avalonia.csproj -c Release -r win-x64 --self-contained -o out
 ```
 ## Usage
 ### Model Conversion

@@ -4,7 +4,7 @@ using GFDLibrary.Conversion;
 using GFDLibrary.Materials;
 using GFDLibrary.Models;
 
-namespace GFDStudio.GUI.Forms;
+namespace GFDStudio.GUI;
 
 /// <summary>
 /// Works out the conversion options to offer for an imported scene, taking what it can from the

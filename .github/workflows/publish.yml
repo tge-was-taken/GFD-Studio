@@ -78,48 +78,6 @@ jobs:
           prerelease: ${{ inputs.prerelease }}
           files: ${{ steps.archive.outputs.file }}
 
-  # The WinForms front end is still the one with every tool, and is Windows only.
-  winforms:
-    runs-on: windows-latest
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '10.0.x'
-
-      - uses: ./.github/actions/build-native
-
-      - name: Publish the executable
-        shell: bash
-        run: |
-          set -eu
-          out=publish/GFDStudio-winforms-win-x64
-          dotnet publish GFDStudio/GFDStudio.csproj -c Release \
-            -r win-x64 --self-contained -o "$out"
-          rm -rf "$out"/*.pdb
-
-      - name: Archive
-        shell: bash
-        run: |
-          set -eu
-          cd publish
-          7z a GFDStudio-winforms-win-x64.zip GFDStudio-winforms-win-x64
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: GFDStudio-winforms-win-x64
-          path: publish/GFDStudio-winforms-win-x64.zip
-
-      - name: Attach to the release
-        if: inputs.tag != ''
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ inputs.tag }}
-          prerelease: ${{ inputs.prerelease }}
-          files: publish/GFDStudio-winforms-win-x64.zip
-
   # The portable build is not self contained, so it needs an installed .NET runtime but is a
   # much smaller download.
   portable:
