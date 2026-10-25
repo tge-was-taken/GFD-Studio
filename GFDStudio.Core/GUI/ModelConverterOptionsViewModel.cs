@@ -1,4 +1,4 @@
-﻿using GFDLibrary;
+using GFDLibrary;
 using GFDLibrary.Conversion;
 using GFDLibrary.Graphics;
 using GFDLibrary.Materials;
@@ -8,13 +8,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Drawing.Design;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Windows.Forms;
-using System.Windows.Forms.Design;
 
 namespace GFDStudio.GUI.Forms;
 
@@ -177,8 +174,8 @@ public class ModelConverterMaterialPresetViewModel
 
 public static class MaterialPresetHelper
 {
-    private static readonly string _currentPath = System.IO.Path.GetDirectoryName( Application.ExecutablePath );
-    public static readonly string BasePresetLibraryPath = System.IO.Path.GetDirectoryName( Application.ExecutablePath ) + @"\Presets\";
+    private static readonly string _currentPath = AppContext.BaseDirectory;
+    public static readonly string BasePresetLibraryPath = System.IO.Path.Combine( AppContext.BaseDirectory, "Presets" ) + System.IO.Path.DirectorySeparatorChar;
     public static readonly string MetaphorPresetLibraryPath = BasePresetLibraryPath + @"Metaphor\";
     public static string GetDefaultMaterialPresetForVersion( uint version )
     {
@@ -338,13 +335,13 @@ public class ModelConverterDefaultMeshOptionsViewModel
 
     [CustomSortedCategory( "Mesh settings", 1, 2 )]
     [DisplayName( "Geometry flags" )]
-    [Editor( typeof( FlagsEnumEditor ), typeof( UITypeEditor ) )]
+    [Editor( "GFDStudio.GUI.Forms.FlagsEnumEditor, GFDStudio", "System.Drawing.Design.UITypeEditor, System.Drawing.Common" )]
     public GeometryFlags? GeometryFlags { get; set; }
         = DefaultGeometryFlags;
 
     [CustomSortedCategory( "Mesh settings", 1, 2 )]
     [DisplayName( "Vertex attribute flags" )]
-    [Editor( typeof( FlagsEnumEditor ), typeof( UITypeEditor ) )]
+    [Editor( "GFDStudio.GUI.Forms.FlagsEnumEditor, GFDStudio", "System.Drawing.Design.UITypeEditor, System.Drawing.Common" )]
     public VertexAttributeFlags? VertexAttributeFlags { get; set; }
         = DefaultVertexAttributeFlags;
 
@@ -431,59 +428,6 @@ public class VersionTypeConverter : TypeConverter
             return $"0x{uintValue:X8} ({versionName})";
         }
         return base.ConvertTo( context, culture, value, destinationType );
-    }
-}
-
-public class FlagsEnumEditor : UITypeEditor
-{
-    public override UITypeEditorEditStyle GetEditStyle( ITypeDescriptorContext context )
-    {
-        // Indicate this editor uses a dropdown
-        return UITypeEditorEditStyle.DropDown;
-    }
-
-    public override object EditValue( ITypeDescriptorContext context, IServiceProvider provider, object value )
-    {
-        if ( provider?.GetService( typeof( IWindowsFormsEditorService ) ) is IWindowsFormsEditorService editorService )
-        {
-            var enumType = context.PropertyDescriptor.PropertyType;
-            if ( enumType.IsConstructedGenericType )
-                enumType = enumType.GetGenericArguments()[0];
-
-            var enumValues = Enum.GetValues( enumType );
-
-            CheckedListBox listBox = new CheckedListBox
-            {
-                BorderStyle = BorderStyle.None,
-                CheckOnClick = true
-            };
-
-            // Populate the list with enum flags
-            foreach ( var enumValue in enumValues )
-            {
-                if ( Convert.ToInt64(enumValue) != 0 ) // Exclude "None" or default values if present
-                {
-                    listBox.Items.Add( enumValue, value is not null && ( (Enum)value ).HasFlag( (Enum)enumValue ) );
-                }
-            }
-
-            // Display the dropdown
-            editorService.DropDownControl( listBox );
-
-            // Combine the selected flags into a single value
-            long result = 0;
-            foreach ( object item in listBox.CheckedItems )
-            {
-                result |= Convert.ToInt64(item);
-            }
-
-            if ( result == 0 && value is null )
-                return null;
-            else
-                return Enum.ToObject( enumType, result );
-        }
-
-        return value;
     }
 }
 

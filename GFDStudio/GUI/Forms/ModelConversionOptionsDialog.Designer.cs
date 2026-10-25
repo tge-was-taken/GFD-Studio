@@ -128,7 +128,6 @@ namespace GFDStudio.GUI.Forms
             splitContainer1.Size = new System.Drawing.Size( 1094, 842 );
             splitContainer1.SplitterDistance = 386;
             splitContainer1.TabIndex = 1;
-            splitContainer1.SplitterMoved +=  splitContainer1_SplitterMoved ;
             // 
             // groupBox2
             // 
