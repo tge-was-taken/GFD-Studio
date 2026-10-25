@@ -1,17 +1,15 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Numerics;
-using GFDLibrary.Rendering.OpenGL;
 using GFDLibrary.Utilities;
-using GFDStudio.DataManagement;
 using OpenTK.Graphics.OpenGL4;
 using Vector4 = OpenTK.Mathematics.Vector4;
 
-namespace GFDStudio.GUI.Controls
+namespace GFDLibrary.Rendering.OpenGL
 {
-    internal class PrimitiveMesh
+    public class PrimitiveMesh
     {
         public static readonly Vector4 DefaultColor = new Vector4( 1.0f, 1.0f, 0.0f, 1.0f );
 
@@ -24,7 +22,7 @@ namespace GFDStudio.GUI.Controls
             var vertices = new List<System.Numerics.Vector3>();
             var indices  = new List<uint>();
 
-            using ( var reader = File.OpenText(DataStore.GetPath( filePath ) ) )
+            using ( var reader = File.OpenText( filePath ) )
             {
                 float ParseFloat( string str ) => float.Parse( str, CultureInfo.InvariantCulture );
 

@@ -1,4 +1,4 @@
-﻿namespace GFDStudio.GUI.Controls
+namespace GFDLibrary.Rendering.OpenGL
 {
     public enum AnimationPlaybackState
     {

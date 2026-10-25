@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using GFDLibrary;
 using GFDLibrary.Animations;
+using GFDLibrary.Rendering.OpenGL;
 using GFDLibrary.Materials;
 using GFDStudio.FormatModules;
 using GFDStudio.GUI.Controls;
