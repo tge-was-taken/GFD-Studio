@@ -41,4 +41,20 @@
           Link="DirectXTexC.dylib" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
+  <!-- The FBX exporter reaches the Autodesk FBX SDK through a native library built by
+       GFDLibrary.Native.FbxSdk. The SDK is a licensed download, so this one is often absent; the
+       exporter then fails at runtime instead of breaking the build. -->
+  <PropertyGroup>
+    <FbxSdkCNativeDir Condition="'$(FbxSdkCNativeDir)' == ''">$(MSBuildThisFileDirectory)..\GFDLibrary.Native.FbxSdk\out</FbxSdkCNativeDir>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="$(FbxSdkCNativeDir)\FbxSdkC.dll" Condition="Exists('$(FbxSdkCNativeDir)\FbxSdkC.dll')"
+          Link="FbxSdkC.dll" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="$(FbxSdkCNativeDir)\FbxSdkC.so" Condition="Exists('$(FbxSdkCNativeDir)\FbxSdkC.so')"
+          Link="FbxSdkC.so" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="$(FbxSdkCNativeDir)\FbxSdkC.dylib" Condition="Exists('$(FbxSdkCNativeDir)\FbxSdkC.dylib')"
+          Link="FbxSdkC.dylib" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

@@ -5,7 +5,7 @@ namespace GFDLibrary.Conversion.FbxSdk.Tests;
 [TestClass]
 public class FbxSdkConversionTests
 {
-    private const string TestDataRoot = "..\\..\\..\\..\\Resources\\TestData";
+    private static readonly string TestDataRoot = Path.Combine( "..", "..", "..", "..", "Resources", "TestData" );
 
     [TestMethod]
     public void CanExportWithoutException()

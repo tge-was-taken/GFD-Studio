@@ -12,23 +12,12 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <!-- The FBX exporter is a C++/CLI project that needs the Autodesk FBX SDK installed, so a
-         build can drop it and fall back to the Assimp exporter for .fbx. -->
-    <EnableFbxSdk Condition="'$(EnableFbxSdk)' == ''">true</EnableFbxSdk>
-    <DefineConstants Condition="'$(EnableFbxSdk)' == 'true'">$(DefineConstants);FBXSDK</DefineConstants>
-  </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="MetroSet_UI" Version="2.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Ookii.Dialogs.Wpf" Version="5.0.1" />
     <PackageReference Include="OpenTK" Version="3.1.0" />
     <PackageReference Include="OpenTK.GLControl" Version="3.1.0" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(EnableFbxSdk)' == 'true'">
-    <ProjectReference Include="..\GFDLibrary.Conversion.FbxSdk\GFDLibrary.Conversion.FbxSdk.vcxproj" />
   </ItemGroup>
 
   <ItemGroup>
