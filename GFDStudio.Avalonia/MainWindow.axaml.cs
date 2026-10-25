@@ -8,6 +8,8 @@ using Avalonia.Platform.Storage;
 using Avalonia.Styling;
 using GFDLibrary;
 using GFDLibrary.Animations;
+using GFDLibrary.Materials;
+using GFDLibrary.Models;
 using GFDLibrary.Rendering.OpenGL;
 using GFDStudio.FormatModules;
 using GFDStudio.GUI;
@@ -44,18 +46,9 @@ namespace GFDStudio.Avalonia
 
             mLoadAnimation.Click += ( s, e ) => LoadExternalAnimation();
 
-            mRetargetAnimations.Click += ( s, e ) => BatchTools.RetargetAnimationPacks();
-            mRescaleAnimations.Click += ( s, e ) => BatchTools.RescaleAnimationPacks();
-            mConvertAnimations.Click += ( s, e ) => BatchTools.ConvertAnimationPacksToP5();
-            mConvertMaterials.Click += ( s, e ) => BatchTools.ConvertModelMaterials();
-            mCopySplitGap.Click += ( s, e ) => BatchTools.CopySplitAnimationPackToModels();
-            mExportTextures.Click += ( s, e ) => BatchTools.ExportTexturesFromModels();
-            mReplaceTextures.Click += ( s, e ) => BatchTools.ReplaceTexturesInModels();
+            mTools.Click += ( s, e ) => new ToolsWindow().ShowDialog( this );
+            mOptions.Click += ( s, e ) => new OptionsWindow( Settings, ApplyTheme ).ShowDialog( this );
 
-            BindOption( mRetainTextureNames, x => Settings.RetainTextureNames = x, Settings.RetainTextureNames );
-            BindOption( mRetainColorValues, x => Settings.RetainMaterialColors = x, Settings.RetainMaterialColors );
-            BindOption( mSaveTexturesExternally, x => Settings.SaveReplacedTexturesExternally = x, Settings.SaveReplacedTexturesExternally );
-            BindOption( mDarkTheme, ApplyTheme, Settings.DarkMode );
             ApplyTheme( Settings.DarkMode );
 
             mPlayPause.Click += ( s, e ) => TogglePlayback();
@@ -75,6 +68,11 @@ namespace GFDStudio.Avalonia
                 mAnimationTime.Value = time * 1000d;
                 mUpdatingAnimationTime = false;
             };
+
+            foreach ( var toggle in new[] { mChannelR, mChannelG, mChannelB, mChannelA } )
+                toggle.IsCheckedChanged += ( s, e ) => UpdateTextureChannels();
+
+            mTextureReset.Click += ( s, e ) => mTextureView.ResetView();
 
             RebuildRecentFiles();
             Closing += ( s, e ) =>
@@ -265,12 +263,6 @@ namespace GFDStudio.Avalonia
                 OpenFile( file );
         }
 
-        private static void BindOption( MenuItem item, Action<bool> set, bool initial )
-        {
-            item.IsChecked = initial;
-            item.Click += ( s, e ) => set( item.IsChecked );
-        }
-
         private void ShowSelection( DataViewNode node )
         {
             mProperties.DataContext = node;
@@ -280,27 +272,72 @@ namespace GFDStudio.Avalonia
         }
 
         /// <summary>
-        /// Shows whichever preview suits the node, which is the model viewer for a model pack and
-        /// the image view for anything a format module can draw.
+        /// Shows whichever preview suits the node. A node with nothing of its own to show leaves
+        /// the model up, and picks itself out in it where it is part of one.
         /// </summary>
         private void ShowPreview( DataViewNode node )
         {
-            mModelView.IsVisible = false;
-            mImageView.IsVisible = false;
-
-            if ( node == null || !FormatModuleRegistry.ModuleByType.TryGetValue( node.DataType, out var module ) )
+            if ( node == null )
                 return;
 
-            if ( module.UsageFlags.HasFlag( FormatModuleUsageFlags.Image ) )
+            if ( FormatModuleRegistry.ModuleByType.TryGetValue( node.DataType, out var module ) )
             {
-                mImageView.Source = module.GetImage( node.Data ).ToAvaloniaBitmap();
-                mImageView.IsVisible = true;
+                if ( module.UsageFlags.HasFlag( FormatModuleUsageFlags.Image ) )
+                {
+                    var image = module.GetImage( node.Data );
+                    mTextureView.Show( image );
+                    mTextureSize.Text = $"{image.Width} x {image.Height}";
+                    mTexturePanel.IsVisible = true;
+                    mModelView.IsVisible = false;
+                    return;
+                }
+
+                if ( module.ModelType == typeof( ModelPack ) )
+                {
+                    mModelView.LoadModel( (ModelPack)node.Data );
+                    mModelView.IsVisible = true;
+                    mTexturePanel.IsVisible = false;
+                    return;
+                }
             }
-            else if ( module.ModelType == typeof( ModelPack ) )
+
+            HighlightInModel( node );
+        }
+
+        private void HighlightInModel( DataViewNode node )
+        {
+            if ( !mModelView.HasModel )
+                return;
+
+            switch ( node.Data )
             {
-                mModelView.LoadModel( (ModelPack)node.Data );
-                mModelView.IsVisible = true;
+                case Mesh mesh:
+                    mModelView.SetSelection( mesh );
+                    break;
+
+                case Material material:
+                    mModelView.SetSelection( material );
+                    break;
+
+                default:
+                    mModelView.ClearSelection();
+                    break;
             }
+
+            mModelView.IsVisible = true;
+            mTexturePanel.IsVisible = false;
+        }
+
+        private void UpdateTextureChannels()
+        {
+            var channels = TextureChannels.None;
+
+            if ( mChannelR.IsChecked == true ) channels |= TextureChannels.Red;
+            if ( mChannelG.IsChecked == true ) channels |= TextureChannels.Green;
+            if ( mChannelB.IsChecked == true ) channels |= TextureChannels.Blue;
+            if ( mChannelA.IsChecked == true ) channels |= TextureChannels.Alpha;
+
+            mTextureView.Channels = channels;
         }
     }
 }

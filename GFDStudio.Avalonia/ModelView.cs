@@ -53,6 +53,8 @@ namespace GFDStudio.Avalonia
             RequestNextFrameRendering();
         }
 
+        public bool HasModel => mLoadedModel != null || mPendingModel != null;
+
         public Animation Animation => mScene?.Animation;
 
         public bool IsAnimationLoaded => mScene?.IsAnimationLoaded ?? false;
@@ -86,11 +88,23 @@ namespace GFDStudio.Avalonia
 
         public event EventHandler<double> AnimationTimeChanged;
 
-        public void ClearSelection() => mScene?.ClearSelection();
+        public void ClearSelection()
+        {
+            mScene?.ClearSelection();
+            RequestNextFrameRendering();
+        }
 
-        public void SetSelection( Mesh data ) => mScene?.SetSelection( data );
+        public void SetSelection( Mesh data )
+        {
+            mScene?.SetSelection( data );
+            RequestNextFrameRendering();
+        }
 
-        public void SetSelection( Material data ) => mScene?.SetSelection( data );
+        public void SetSelection( Material data )
+        {
+            mScene?.SetSelection( data );
+            RequestNextFrameRendering();
+        }
 
         protected override void OnOpenGlInit( GlInterface gl )
         {
