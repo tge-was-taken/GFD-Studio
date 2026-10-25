@@ -232,7 +232,7 @@ namespace GFDStudio.GUI.DataViewNodes
         //
         public string Export()
         {
-            var formats = ExportFormats();
+            var formats = FileFormats();
             if ( formats.Count == 0 )
                 return null;
 
@@ -252,9 +252,9 @@ namespace GFDStudio.GUI.DataViewNodes
         /// Every way this node can be written out: one entry per extension each export module
         /// offers, plus YAML, which every node supports.
         /// </summary>
-        private List<ExportFormat> ExportFormats()
+        private List<FileFormat> FileFormats()
         {
-            var formats = new List<ExportFormat>();
+            var formats = new List<FileFormat>();
 
             foreach ( var type in mExportHandlers.Keys )
             {
@@ -264,13 +264,13 @@ namespace GFDStudio.GUI.DataViewNodes
 
                 foreach ( var extension in module.Extensions )
                 {
-                    var (name, description) = ExportFormatDescriptions.For( extension, module.Name );
-                    formats.Add( new ExportFormat( name, description, extension, type ) );
+                    var (name, description) = FileFormatDescriptions.For( extension, module.Name );
+                    formats.Add( new FileFormat( name, description, extension, type ) );
                 }
             }
 
-            var (yamlName, yamlDescription) = ExportFormatDescriptions.For( "yml", "YAML" );
-            formats.Add( new ExportFormat( yamlName, yamlDescription, "yml", null ) );
+            var (yamlName, yamlDescription) = FileFormatDescriptions.For( "yml", "YAML" );
+            formats.Add( new FileFormat( yamlName, yamlDescription, "yml", null ) );
             return formats;
         }
 
@@ -297,23 +297,56 @@ namespace GFDStudio.GUI.DataViewNodes
         //
         public void Replace()
         {
-            if ( mReplaceHandlers.Count == 0 )
+            var formats = ReplaceFormats();
+            if ( formats.Count == 0 )
                 return;
 
-            (var filter, var filterIndexToTypeMap) = ModuleFilterGenerator.GenerateFilter( new[] { FormatModuleUsageFlags.Import, FormatModuleUsageFlags.ImportForEditing },
-                                                                                          mReplaceHandlers.Keys.ToArray() );
-
-            var result = UserDialogs.Current.OpenFile( new FileDialogRequest
-            {
-                Title = "Select a replacement file.",
-                Filter = filter,
-                FileName = Text,
-            } );
+            var result = UserDialogs.Current.AskReplaceOptions( new ReplaceOptionsRequest(
+                formats,
+                DataType == typeof( GFDLibrary.Materials.Material ),
+                UserOptions.Current.RetainMaterialTextureNames,
+                UserOptions.Current.RetainMaterialColorValues ) );
 
             if ( result == null )
                 return;
 
-            ReplaceInternal( result.FileName, TypeForFilter( filterIndexToTypeMap, result.FilterIndex ) );
+            if ( result.Format.Type == null )
+            {
+                var data = YamlSerializer.LoadYamlFile( result.FilePath, DataType );
+                ReplaceProcessing( DataType, data, result.RetainTextureNames, result.RetainColorValues );
+                return;
+            }
+
+            ReplaceInternal( result.FilePath, result.Format.Type, result.RetainTextureNames, result.RetainColorValues );
+        }
+
+        /// <summary>
+        /// Every file a replacement can be read from: one entry per extension each import module
+        /// offers, plus YAML.
+        /// </summary>
+        private List<FileFormat> ReplaceFormats()
+        {
+            var formats = new List<FileFormat>();
+
+            foreach ( var type in mReplaceHandlers.Keys )
+            {
+                if ( !FormatModuleRegistry.ModuleByType.TryGetValue( type, out var module ) )
+                    continue;
+
+                if ( !module.UsageFlags.HasFlag( FormatModuleUsageFlags.Import ) &&
+                     !module.UsageFlags.HasFlag( FormatModuleUsageFlags.ImportForEditing ) )
+                    continue;
+
+                foreach ( var extension in module.Extensions )
+                {
+                    var (name, description) = FileFormatDescriptions.For( extension, module.Name );
+                    formats.Add( new FileFormat( name, description, extension, type ) );
+                }
+            }
+
+            var (yamlName, yamlDescription) = FileFormatDescriptions.For( "yml", "YAML" );
+            formats.Add( new FileFormat( yamlName, yamlDescription, "yml", null ) );
+            return formats;
         }
 
         public void Replace( string filepath )
@@ -321,7 +354,7 @@ namespace GFDStudio.GUI.DataViewNodes
             ReplaceInternal( filepath, null );
         }
 
-        private void ReplaceInternal( string filepath, Type selectedType )
+        private void ReplaceInternal( string filepath, Type selectedType, bool? retainTextureNames = null, bool? retainColorValues = null )
         {
             if ( mReplaceHandlers.Count == 0 )
                 return;
@@ -331,17 +364,21 @@ namespace GFDStudio.GUI.DataViewNodes
 
             Trace.TraceInformation( $"{nameof( DataViewNode )} [{Text}]: {nameof( ReplaceInternal )} {type} from {filepath}" );
 
-            ReplaceProcessing( type, replaceAction( filepath ) );
+            ReplaceProcessing( type, replaceAction( filepath ), retainTextureNames, retainColorValues );
         }
 
-        public void ReplaceProcessing( Type type, object replacement )
+        /// <summary>
+        /// Applies the replacement, keeping parts of the original where asked. The toggles fall
+        /// back to the remembered settings when the caller has no view on them.
+        /// </summary>
+        public void ReplaceProcessing( Type type, object replacement, bool? retainTextureNames = null, bool? retainColorValues = null )
         {
             if ( type == typeof( GFDLibrary.Materials.Material ) )
             {
                 GFDLibrary.Materials.Material OriginalMat = (GFDLibrary.Materials.Material)Data;
                 GFDLibrary.Materials.Material ReplacementMat = (GFDLibrary.Materials.Material)replacement;
 
-                if ( UserOptions.Current.RetainMaterialTextureNames )
+                if ( retainTextureNames ?? UserOptions.Current.RetainMaterialTextureNames )
                 {
                     // Retain original mat's texture names
                     ReplacementMat.Name = OriginalMat.Name;
@@ -356,7 +393,7 @@ namespace GFDStudio.GUI.DataViewNodes
                     if ( OriginalMat.ShadowMap != null && ReplacementMat.ShadowMap != null ) ReplacementMat.ShadowMap.Name = OriginalMat.ShadowMap.Name;
                 }
 
-                if ( UserOptions.Current.RetainMaterialColorValues )
+                if ( retainColorValues ?? UserOptions.Current.RetainMaterialColorValues )
                 {
                     // TODO: Fix for Metaphor!
                     ReplacementMat.LegacyParameters.AmbientColor = OriginalMat.LegacyParameters.AmbientColor;
@@ -634,22 +671,6 @@ namespace GFDStudio.GUI.DataViewNodes
                 throw new Exception( $"{nameof( Initialize )} was called twice" );
 
             // Register default handlers
-            RegisterCustomHandler( "Replace", "YAML", () =>
-            {
-                var result = UserDialogs.Current.OpenFile( new FileDialogRequest
-                {
-                    Title = "Select a file to replace from.",
-                    Filter = "YAML files (*.yml)|*.yml",
-                    FileName = Text,
-                } );
-
-                if ( result == null )
-                    return;
-
-                var data = YamlSerializer.LoadYamlFile( result.FileName, DataType );
-                ReplaceProcessing( DataType, data );
-            } );
-
             // initialize the derived view model
             InitializeCore();
 

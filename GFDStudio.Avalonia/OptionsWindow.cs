@@ -8,7 +8,8 @@ using GFDStudio.GUI;
 namespace GFDStudio.Avalonia
 {
     /// <summary>
-    /// The settings, with room to say what each one changes.
+    /// The settings that are not tied to one operation. The material retain toggles are asked
+    /// for on the replace dialog instead, where they apply.
     /// </summary>
     public sealed class OptionsWindow : Window
     {
@@ -20,17 +21,6 @@ namespace GFDStudio.Avalonia
             WindowStartupLocation = WindowStartupLocation.CenterOwner;
 
             var list = new StackPanel { Spacing = 10, Margin = new Thickness( 16 ) };
-
-            list.Children.Add( Toggle(
-                "Keep the original texture names when replacing a material",
-                "A replaced material takes its texture names from the material it replaces, rather " +
-                "than from the one being brought in.",
-                settings.RetainTextureNames, x => settings.RetainTextureNames = x ) );
-
-            list.Children.Add( Toggle(
-                "Keep the original colour values when replacing a material",
-                "A replaced material keeps its own ambient, diffuse, specular and emissive colours.",
-                settings.RetainMaterialColors, x => settings.RetainMaterialColors = x ) );
 
             list.Children.Add( Toggle(
                 "Save replaced textures outside the model (Metaphor)",

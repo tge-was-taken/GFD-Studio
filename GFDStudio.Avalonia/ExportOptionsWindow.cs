@@ -46,8 +46,8 @@ namespace GFDStudio.Avalonia
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 // Two lines in the list so the choice can be made at a glance, one in the closed
                 // box, where the description would crowd out the name.
-                ItemTemplate = new FuncDataTemplate<ExportFormat>( ( format, scope ) => Entry( format ), true ),
-                SelectionBoxItemTemplate = new FuncDataTemplate<ExportFormat>(
+                ItemTemplate = new FuncDataTemplate<FileFormat>( ( format, scope ) => Entry( format ), true ),
+                SelectionBoxItemTemplate = new FuncDataTemplate<FileFormat>(
                     ( format, scope ) => new TextBlock { Text = $"{format.Name}  (*.{format.Extension})" }, true ),
             };
 
@@ -112,7 +112,7 @@ namespace GFDStudio.Avalonia
         /// </summary>
         private static string LastDirectory { get; set; } = string.Empty;
 
-        private ExportFormat Selected => mFormat.SelectedItem as ExportFormat ?? mRequest.Formats[0];
+        private FileFormat Selected => mFormat.SelectedItem as FileFormat ?? mRequest.Formats[0];
 
         public static async Task<ExportOptionsResult> Ask( Window owner, ExportOptionsRequest request )
         {
@@ -169,7 +169,7 @@ namespace GFDStudio.Avalonia
         private static string Sanitize( string name )
             => string.Concat( ( name ?? "export" ).Split( Path.GetInvalidFileNameChars() ) );
 
-        private static Control Entry( ExportFormat format )
+        private static Control Entry( FileFormat format )
         {
             var entry = new StackPanel { Spacing = 1 };
             entry.Children.Add( new TextBlock { Text = $"{format.Name}  (*.{format.Extension})" } );

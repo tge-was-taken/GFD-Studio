@@ -49,17 +49,35 @@ namespace GFDStudio.GUI
     /// One way a node can be written out. A null <paramref name="Type"/> means YAML, which is
     /// handled by the view node itself rather than by a format module.
     /// </summary>
-    public sealed record ExportFormat( string Name, string Description, string Extension, Type Type )
+    public sealed record FileFormat( string Name, string Description, string Extension, Type Type )
     {
         public override string ToString() => $"{Name}  (*.{Extension})";
     }
 
-    public sealed record ExportOptionsRequest( string SuggestedName, IReadOnlyList<ExportFormat> Formats );
+    public sealed record ExportOptionsRequest( string SuggestedName, IReadOnlyList<FileFormat> Formats );
+
+    /// <param name="ShowMaterialOptions">
+    /// Whether to offer the retain toggles, which only do anything for a material.
+    /// </param>
+    public sealed record ReplaceOptionsRequest(
+        IReadOnlyList<FileFormat> Formats,
+        bool ShowMaterialOptions,
+        bool RetainTextureNames,
+        bool RetainColorValues );
+
+    /// <summary>
+    /// What to replace a node with, or null when the user cancelled.
+    /// </summary>
+    public sealed record ReplaceOptionsResult(
+        string FilePath,
+        FileFormat Format,
+        bool RetainTextureNames,
+        bool RetainColorValues );
 
     /// <summary>
     /// Where and how to write the node out, or null when the user cancelled.
     /// </summary>
-    public sealed record ExportOptionsResult( string FilePath, ExportFormat Format );
+    public sealed record ExportOptionsResult( string FilePath, FileFormat Format );
 
     /// <summary>
     /// A transform the user typed in, or null when they cancelled.
@@ -108,6 +126,12 @@ namespace GFDStudio.GUI
         /// cancelled.
         /// </summary>
         ExportOptionsResult AskExportOptions( ExportOptionsRequest request );
+
+        /// <summary>
+        /// Asks which file to replace a node from and how, returning null when the user
+        /// cancelled.
+        /// </summary>
+        ReplaceOptionsResult AskReplaceOptions( ReplaceOptionsRequest request );
 
         /// <summary>
         /// Asks for a scale, position and rotation, returning null when the user cancelled.

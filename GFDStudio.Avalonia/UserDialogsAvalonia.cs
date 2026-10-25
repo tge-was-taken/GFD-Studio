@@ -82,6 +82,9 @@ namespace GFDStudio.Avalonia
         public ExportOptionsResult AskExportOptions( ExportOptionsRequest request )
             => Wait( ExportOptionsWindow.Ask( mOwner, request ) );
 
+        public ReplaceOptionsResult AskReplaceOptions( ReplaceOptionsRequest request )
+            => Wait( ReplaceOptionsWindow.Ask( mOwner, request ) );
+
         public NewTextureMap AskNewTextureMap()
             => Wait( NewTextureMapWindow.Ask( mOwner ) );
 

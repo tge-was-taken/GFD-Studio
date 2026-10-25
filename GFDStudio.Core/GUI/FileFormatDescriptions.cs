@@ -3,10 +3,10 @@ using System.Collections.Generic;
 namespace GFDStudio.GUI
 {
     /// <summary>
-    /// What to call each export format. A module's own name has to serve every extension it
+    /// What to call each file format. A module's own name has to serve every extension it
     /// handles, so it cannot tell a Collada file from an FBX one.
     /// </summary>
-    public static class ExportFormatDescriptions
+    public static class FileFormatDescriptions
     {
         private static readonly Dictionary<string, string> NameByExtension = new()
         {
