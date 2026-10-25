@@ -220,6 +220,13 @@ namespace GFDStudio.GUI.DataViewNodes
             }
         }
 
+        /// <summary>
+        /// The type behind the filter the user chose. Not every picker can say which one that
+        /// was, in which case the file extension decides instead.
+        /// </summary>
+        private static Type TypeForFilter( Dictionary<int, Type> filterIndexToTypeMap, int filterIndex )
+            => filterIndexToTypeMap.TryGetValue( filterIndex, out var type ) ? type : null;
+
         //
         // Export methods
         //
@@ -240,7 +247,7 @@ namespace GFDStudio.GUI.DataViewNodes
             if ( result == null )
                 return null;
 
-            Export( result.FileName, filterIndexToTypeMap[ result.FilterIndex ] );
+            Export( result.FileName, TypeForFilter( filterIndexToTypeMap, result.FilterIndex ) );
             return result.FileName;
         }
 
@@ -283,7 +290,7 @@ namespace GFDStudio.GUI.DataViewNodes
             if ( result == null )
                 return;
 
-            ReplaceInternal( result.FileName, filterIndexToTypeMap[ result.FilterIndex ] );
+            ReplaceInternal( result.FileName, TypeForFilter( filterIndexToTypeMap, result.FilterIndex ) );
         }
 
         public void Replace( string filepath )
@@ -369,7 +376,7 @@ namespace GFDStudio.GUI.DataViewNodes
             if ( result == null )
                 return;
 
-            var selectedType = filterIndexToTypeMap[ result.FilterIndex ];
+            var selectedType = TypeForFilter( filterIndexToTypeMap, result.FilterIndex );
             foreach ( string fileName in result.FileNames )
                 AddInternal( fileName, selectedType );
 
@@ -786,10 +793,40 @@ namespace GFDStudio.GUI.DataViewNodes
             if ( ContextMenuFlags.HasFlag( DataViewNodeMenuFlags.Delete ) )
                 items.Add( Item( "Delete", "&Delete", Delete, DataViewNodeMenuKey.Delete ) );
 
+            foreach ( var item in items )
+                MoveActionIntoSubmenu( item );
+
             return items;
 
             static DataViewNodeMenuItem Item( string name, string text, Action action, DataViewNodeMenuKey key )
                 => new() { Name = name, Text = text, Action = action, Shortcut = DataViewNodeMenuShortcut.Control( key ) };
+        }
+
+        /// <summary>
+        /// An item that gained a submenu, such as Export once a YAML handler was registered under
+        /// it, keeps its own action as the first entry of that submenu. Clicking a parent that has
+        /// children opens them rather than running it, so the action is otherwise unreachable.
+        /// </summary>
+        private static void MoveActionIntoSubmenu( DataViewNodeMenuItem item )
+        {
+            if ( item.Items.Count == 0 )
+                return;
+
+            if ( item.Action != null )
+            {
+                item.Items.Insert( 0, new DataViewNodeMenuItem
+                {
+                    Name = item.Name,
+                    Text = $"{item.Text.Replace( "&", string.Empty )}...",
+                    Action = item.Action,
+                    Shortcut = item.Shortcut,
+                } );
+
+                item.Action = null;
+            }
+
+            foreach ( var child in item.Items )
+                MoveActionIntoSubmenu( child );
         }
 
         //

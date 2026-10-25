@@ -56,7 +56,7 @@ namespace GFDStudio.GUI.DataViewNodes
         /// <summary>
         /// What the item does, or null when it only holds a submenu.
         /// </summary>
-        public Action Action { get; init; }
+        public Action Action { get; internal set; }
 
         public DataViewNodeMenuShortcut Shortcut { get; init; }
 
