@@ -1,7 +1,7 @@
-
-#ignore thumbnails created by windows
+# Windows
 Thumbs.db
-#Ignore files build by Visual Studio
+
+# Visual Studio and MSBuild
 *.obj
 *.exe
 *.pdb
@@ -19,17 +19,30 @@ Thumbs.db
 *.cache
 *.ilk
 *.log
-[Bb]in
-[Dd]ebug*/
 *.lib
 *.sbr
+[Bb]in/
 obj/
+[Dd]ebug*/
 [Rr]elease*/
 _ReSharper*/
 [Tt]est[Rr]esult*
-#Ignore test project
-AtlusGfdLibTesting/
-/.vs/AtlusGfdEditor/v15
 /packages
 /.vs
+
+# CMake, for the native texture library. out/_deps holds the fetched upstream sources.
+out/
+[Bb]uild/
+CMakeCache.txt
+CMakeFiles/
+cmake-build-*/
+*.so
+*.dylib
+*.dll
+
+# Editors
+.vscode/
+.idea/
+
+# Game assets the tests read, which are not redistributable
 /Resources/TestData
