@@ -34,7 +34,9 @@ namespace GFDStudio.Avalonia
             {
                 Title = request.Title,
                 AllowMultiple = request.Multiselect,
-                FileTypeFilter = filters.Select( x => x.ToPickerType() ).ToList(),
+                FileTypeFilter = filters.Select( x => x.ToPickerType() )
+                                        .Append( FilePickerFileTypes.All )
+                                        .ToList(),
             } ) );
 
             var paths = LocalPaths( files );

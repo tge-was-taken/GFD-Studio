@@ -28,7 +28,18 @@ namespace GFDStudio.Avalonia
         }
 
         public FilePickerFileType ToPickerType()
-            => new( Description ) { Patterns = Patterns };
+            => new( Description ) { Patterns = BothCases( Patterns ) };
+
+        /// <summary>
+        /// Adds an upper case spelling of each glob. The format modules name extensions in lower
+        /// case while the game files are upper case, and the pickers outside Windows match case
+        /// exactly. Only plain wildcards are used, because the matcher behind the Linux picker
+        /// understands no others.
+        /// </summary>
+        private static string[] BothCases( IEnumerable<string> patterns )
+            => patterns.SelectMany( x => new[] { x.ToLowerInvariant(), x.ToUpperInvariant() } )
+                       .Distinct()
+                       .ToArray();
 
         public bool Matches( string path )
         {
