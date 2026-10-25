@@ -6,7 +6,7 @@ namespace GFDLibrary.Textures.Native
 {
     /// <summary>
     /// The DirectXTex codecs, reached through the DirectXTexC shared library. Mirrors the C++ API
-    /// in the DirectX namespace; see GFDLibrary.Textures.Native in the repository root for the
+    /// in the DirectX namespace; see GFDLibrary.Conversion.DirectXTex in the repository root for the
     /// native side and how to build it.
     /// </summary>
     internal static class DirectXTex
