@@ -46,3 +46,7 @@ cmake-build-*/
 
 # Game assets the tests read, which are not redistributable
 /Resources/TestData
+
+# Written by the application at runtime
+Config.json
+file_history.txt
