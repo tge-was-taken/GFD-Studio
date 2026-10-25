@@ -25,6 +25,7 @@ namespace GFDStudio.Avalonia
         private DispatcherTimer mUpdateTimer;
         private Point mLastPointerPosition;
         private ModelPack mPendingModel;
+        private ModelPack mLoadedModel;
 
         public ModelView()
         {
@@ -32,17 +33,17 @@ namespace GFDStudio.Avalonia
             ClipToBounds = true;
         }
 
+        /// <summary>
+        /// Queues a model to be shown. Building one creates textures and buffers, which is only
+        /// legal while the context is current, and Avalonia makes it current for the render
+        /// callbacks alone.
+        /// </summary>
         public void LoadModel( ModelPack modelPack )
         {
-            if ( mScene == null )
-            {
-                // The scene needs a context, so hold on to the model until there is one.
-                mPendingModel = modelPack;
-                RequestNextFrameRendering();
+            if ( ReferenceEquals( modelPack, mLoadedModel ) )
                 return;
-            }
 
-            mScene.LoadModel( modelPack );
+            mPendingModel = modelPack;
             RequestNextFrameRendering();
         }
 
@@ -113,11 +114,17 @@ namespace GFDStudio.Avalonia
             };
             mUpdateTimer.Start();
 
-            if ( mPendingModel != null )
-            {
-                mScene.LoadModel( mPendingModel );
-                mPendingModel = null;
-            }
+            LoadPendingModel();
+        }
+
+        private void LoadPendingModel()
+        {
+            if ( mPendingModel == null || mScene is not { CanRender: true } )
+                return;
+
+            mScene.LoadModel( mPendingModel );
+            mLoadedModel = mPendingModel;
+            mPendingModel = null;
         }
 
         protected override void OnOpenGlDeinit( GlInterface gl )
@@ -126,12 +133,18 @@ namespace GFDStudio.Avalonia
             mUpdateTimer = null;
             mScene?.Dispose();
             mScene = null;
+
+            // The scene's GL resources went with the context, so the model has to be rebuilt.
+            mPendingModel ??= mLoadedModel;
+            mLoadedModel = null;
         }
 
         protected override void OnOpenGlRender( GlInterface gl, int fb )
         {
             if ( mScene is not { CanRender: true } )
                 return;
+
+            LoadPendingModel();
 
             mScene.Resize( PixelWidth, PixelHeight );
             mScene.Render();

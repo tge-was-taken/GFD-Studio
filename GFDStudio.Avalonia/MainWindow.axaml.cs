@@ -127,6 +127,10 @@ namespace GFDStudio.Avalonia
             mTree.Load( node );
             mTree.Select( node );
             mStatus.Text = path;
+
+            // The tree does not always raise a selection change for the node it was just given,
+            // so the preview is asked for directly rather than waiting on one.
+            ShowSelection( node );
         }
 
         public void NewModel()
@@ -139,6 +143,7 @@ namespace GFDStudio.Avalonia
             mFilePath = null;
             mTree.Load( TopNode );
             mTree.Select( TopNode );
+            ShowSelection( TopNode );
         }
 
         /// <summary>
