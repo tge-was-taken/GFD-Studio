@@ -15,6 +15,9 @@ namespace GFDStudio.Avalonia
             if ( ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop )
             {
                 CellEditFactoryService.Default.AddFactory( new DrawingColorCellEditFactory() );
+                CellEditFactoryService.Default.AddFactory( new TypeConverterCellEditFactory() );
+                CellEditFactoryService.Default.AddFactory( new EnumCellEditFactory() );
+                CellEditFactoryService.Default.AddFactory( new FlagsCellEditFactory() );
 
                 UserOptions.Current = new UserOptionsAvalonia();
 
