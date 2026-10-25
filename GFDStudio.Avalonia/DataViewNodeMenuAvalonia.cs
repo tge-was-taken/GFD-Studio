@@ -47,22 +47,25 @@ namespace GFDStudio.Avalonia
             => text?.Replace( "_", "__" ).Replace( "&&", "\u0001" ).Replace( "&", "_" ).Replace( "\u0001", "&" );
 
         private static KeyGesture ToGesture( DataViewNodeMenuShortcut shortcut )
+            => new( ToKey( shortcut.Key ), ToModifiers( shortcut.Modifiers ) );
+
+        internal static KeyModifiers ToModifiers( DataViewNodeMenuModifiers modifiers )
         {
-            var modifiers = KeyModifiers.None;
+            var result = KeyModifiers.None;
 
-            if ( shortcut.Modifiers.HasFlag( DataViewNodeMenuModifiers.Control ) )
-                modifiers |= KeyModifiers.Control;
+            if ( modifiers.HasFlag( DataViewNodeMenuModifiers.Control ) )
+                result |= KeyModifiers.Control;
 
-            if ( shortcut.Modifiers.HasFlag( DataViewNodeMenuModifiers.Shift ) )
-                modifiers |= KeyModifiers.Shift;
+            if ( modifiers.HasFlag( DataViewNodeMenuModifiers.Shift ) )
+                result |= KeyModifiers.Shift;
 
-            if ( shortcut.Modifiers.HasFlag( DataViewNodeMenuModifiers.Alt ) )
-                modifiers |= KeyModifiers.Alt;
+            if ( modifiers.HasFlag( DataViewNodeMenuModifiers.Alt ) )
+                result |= KeyModifiers.Alt;
 
-            return new KeyGesture( ToKey( shortcut.Key ), modifiers );
+            return result;
         }
 
-        private static Key ToKey( DataViewNodeMenuKey key ) => key switch
+        internal static Key ToKey( DataViewNodeMenuKey key ) => key switch
         {
             DataViewNodeMenuKey.A => Key.A,
             DataViewNodeMenuKey.E => Key.E,

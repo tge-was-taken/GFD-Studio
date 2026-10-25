@@ -311,6 +311,10 @@ namespace GFDStudio.Avalonia
 
             switch ( node.Data )
             {
+                case Animation animation:
+                    mModelView.LoadAnimation( animation );
+                    break;
+
                 case Mesh mesh:
                     mModelView.SetSelection( mesh );
                     break;

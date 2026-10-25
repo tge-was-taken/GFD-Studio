@@ -5,6 +5,7 @@ using System.IO;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
+using Avalonia.Input;
 using Avalonia.Data;
 using Avalonia.Layout;
 using Avalonia.Media.Imaging;
@@ -39,6 +40,44 @@ namespace GFDStudio.Avalonia
         }
 
         protected override Type StyleKeyOverride => typeof( TreeView );
+
+        /// <summary>
+        /// A shortcut shown in a context menu is only a hint in Avalonia, so the keys are matched
+        /// against the selected node's menu here.
+        /// </summary>
+        protected override void OnKeyDown( KeyEventArgs e )
+        {
+            base.OnKeyDown( e );
+
+            if ( e.Handled || SelectedNode?.MenuItems == null )
+                return;
+
+            var action = FindShortcut( SelectedNode.MenuItems, e.Key, e.KeyModifiers );
+            if ( action == null )
+                return;
+
+            e.Handled = true;
+            action();
+        }
+
+        private static Action FindShortcut( IEnumerable<DataViewNodeMenuItem> items, Key key, KeyModifiers modifiers )
+        {
+            foreach ( var item in items )
+            {
+                if ( item.Action != null && !item.Shortcut.IsNone && Matches( item.Shortcut, key, modifiers ) )
+                    return item.Action;
+
+                var nested = FindShortcut( item.Items, key, modifiers );
+                if ( nested != null )
+                    return nested;
+            }
+
+            return null;
+        }
+
+        private static bool Matches( DataViewNodeMenuShortcut shortcut, Key key, KeyModifiers modifiers )
+            => DataViewNodeMenuAvalonia.ToKey( shortcut.Key ) == key &&
+               DataViewNodeMenuAvalonia.ToModifiers( shortcut.Modifiers ) == modifiers;
 
         public DataViewNode SelectedNode => SelectedItem as DataViewNode;
 
