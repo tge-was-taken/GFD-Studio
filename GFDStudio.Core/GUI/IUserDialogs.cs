@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Numerics;
 using System.Threading.Tasks;
 using GFDLibrary.Conversion;
@@ -45,6 +46,22 @@ namespace GFDStudio.GUI
     public sealed record NewTextureMap( string Name, int Type );
 
     /// <summary>
+    /// One way a node can be written out. A null <paramref name="Type"/> means YAML, which is
+    /// handled by the view node itself rather than by a format module.
+    /// </summary>
+    public sealed record ExportFormat( string Name, string Extension, Type Type )
+    {
+        public override string ToString() => $"{Name}  (*.{Extension})";
+    }
+
+    public sealed record ExportOptionsRequest( string SuggestedName, IReadOnlyList<ExportFormat> Formats );
+
+    /// <summary>
+    /// Where and how to write the node out, or null when the user cancelled.
+    /// </summary>
+    public sealed record ExportOptionsResult( string FilePath, ExportFormat Format );
+
+    /// <summary>
     /// A transform the user typed in, or null when they cancelled.
     /// </summary>
     public sealed record TransformRequest( Vector3 Scale, Vector3 Position, Quaternion Rotation );
@@ -85,6 +102,12 @@ namespace GFDStudio.GUI
         ModelConverterOptions AskModelConversionOptions( Assimp.Scene scene, ModelPack originalModel );
 
         NewTextureMap AskNewTextureMap();
+
+        /// <summary>
+        /// Asks where to write a node and in which format, returning null when the user
+        /// cancelled.
+        /// </summary>
+        ExportOptionsResult AskExportOptions( ExportOptionsRequest request );
 
         /// <summary>
         /// Asks for a scale, position and rotation, returning null when the user cancelled.

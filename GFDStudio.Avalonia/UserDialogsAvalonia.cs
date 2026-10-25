@@ -79,6 +79,9 @@ namespace GFDStudio.Avalonia
         public void RunWithProgress( string title, Func<IProgressReport, Task> work )
             => Wait( ProgressWindow.Run( mOwner, title, work ) );
 
+        public ExportOptionsResult AskExportOptions( ExportOptionsRequest request )
+            => Wait( ExportOptionsWindow.Ask( mOwner, request ) );
+
         public NewTextureMap AskNewTextureMap()
             => Wait( NewTextureMapWindow.Ask( mOwner ) );
 

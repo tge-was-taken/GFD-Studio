@@ -232,23 +232,42 @@ namespace GFDStudio.GUI.DataViewNodes
         //
         public string Export()
         {
-            if ( mExportHandlers.Count == 0 )
+            var formats = ExportFormats();
+            if ( formats.Count == 0 )
                 return null;
 
-            ( var filter, var filterIndexToTypeMap ) = ModuleFilterGenerator.GenerateFilter( FormatModuleUsageFlags.Export, mExportHandlers.Keys.ToArray() );
-
-            var result = UserDialogs.Current.SaveFile( new FileDialogRequest
-            {
-                Title = "Select a file to export to.",
-                Filter = filter,
-                FileName = Text,
-            } );
-
+            var result = UserDialogs.Current.AskExportOptions( new ExportOptionsRequest( Text, formats ) );
             if ( result == null )
                 return null;
 
-            Export( result.FileName, TypeForFilter( filterIndexToTypeMap, result.FilterIndex ) );
-            return result.FileName;
+            if ( result.Format.Type == null )
+                YamlSerializer.SaveYamlFile( Data, result.FilePath );
+            else
+                Export( result.FilePath, result.Format.Type );
+
+            return result.FilePath;
+        }
+
+        /// <summary>
+        /// Every way this node can be written out: one entry per extension each export module
+        /// offers, plus YAML, which every node supports.
+        /// </summary>
+        private List<ExportFormat> ExportFormats()
+        {
+            var formats = new List<ExportFormat>();
+
+            foreach ( var type in mExportHandlers.Keys )
+            {
+                if ( !FormatModuleRegistry.ModuleByType.TryGetValue( type, out var module ) ||
+                     !module.UsageFlags.HasFlag( FormatModuleUsageFlags.Export ) )
+                    continue;
+
+                foreach ( var extension in module.Extensions )
+                    formats.Add( new ExportFormat( module.Name, extension, type ) );
+            }
+
+            formats.Add( new ExportFormat( "YAML", "yml", null ) );
+            return formats;
         }
 
         public void Export( string filePath )
@@ -611,18 +630,6 @@ namespace GFDStudio.GUI.DataViewNodes
                 throw new Exception( $"{nameof( Initialize )} was called twice" );
 
             // Register default handlers
-            RegisterCustomHandler( "Export", "YAML", () =>
-            {
-                var result = UserDialogs.Current.SaveFile( new FileDialogRequest
-                {
-                    Title = "Select a file to export to.",
-                    Filter = "YAML files (*.yml)|*.yml",
-                    FileName = Text,
-                } );
-
-                if ( result != null )
-                    YamlSerializer.SaveYamlFile( Data, result.FileName );
-            } );
             RegisterCustomHandler( "Replace", "YAML", () =>
             {
                 var result = UserDialogs.Current.OpenFile( new FileDialogRequest
