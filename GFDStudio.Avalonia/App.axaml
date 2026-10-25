@@ -22,31 +22,26 @@
   <Application.Resources>
     <ResourceDictionary>
       <ResourceDictionary.ThemeDictionaries>
-        <!-- Fluent's dark is near black, which leaves too little contrast against dark
-             textures and model surfaces. These are the greys the old front end used. -->
+        <!-- The greys the WinForms front end used: a flat dark chrome with the lighter
+             viewport the renderer clears to. -->
         <ResourceDictionary x:Key="Dark">
-          <!-- Fluent builds its surfaces from these, so the grey has to start here rather than
-               on the window alone. -->
-          <Color x:Key="SystemAltHighColor">#2D2D30</Color>
-          <Color x:Key="SystemAltMediumHighColor">#333337</Color>
-          <Color x:Key="SystemChromeLowColor">#3E3E42</Color>
-          <Color x:Key="SystemChromeMediumLowColor">#37373B</Color>
-          <Color x:Key="SystemChromeMediumColor">#3E3E42</Color>
-          <Color x:Key="SystemListLowColor">#3A3A3E</Color>
-          <Color x:Key="SystemListMediumColor">#45454A</Color>
+          <Color x:Key="SystemAltHighColor">#1E1E1E</Color>
+          <Color x:Key="SystemAltMediumHighColor">#1E1E1E</Color>
+          <Color x:Key="SystemChromeLowColor">#2A2A2A</Color>
+          <Color x:Key="SystemChromeMediumLowColor">#252525</Color>
+          <Color x:Key="SystemChromeMediumColor">#2A2A2A</Color>
+          <Color x:Key="SystemListLowColor">#2A2A2A</Color>
+          <Color x:Key="SystemListMediumColor">#333333</Color>
+          <Color x:Key="SystemBaseHighColor">#DCDCDC</Color>
 
-          <Color x:Key="WindowBackground">#2D2D30</Color>
-          <Color x:Key="PanelBackground">#37373B</Color>
-          <SolidColorBrush x:Key="WindowBackgroundBrush" Color="#2D2D30" />
-          <SolidColorBrush x:Key="PanelBackgroundBrush" Color="#37373B" />
-          <SolidColorBrush x:Key="ViewportBackgroundBrush" Color="#2F3133" />
+          <SolidColorBrush x:Key="WindowBackgroundBrush" Color="#1E1E1E" />
+          <SolidColorBrush x:Key="PanelBackgroundBrush" Color="#252525" />
+          <SolidColorBrush x:Key="ViewportBackgroundBrush" Color="#3C3F41" />
         </ResourceDictionary>
         <ResourceDictionary x:Key="Light">
-          <Color x:Key="WindowBackground">#F3F3F3</Color>
-          <Color x:Key="PanelBackground">#FFFFFF</Color>
-          <SolidColorBrush x:Key="WindowBackgroundBrush" Color="#F3F3F3" />
+          <SolidColorBrush x:Key="WindowBackgroundBrush" Color="#F0F0F0" />
           <SolidColorBrush x:Key="PanelBackgroundBrush" Color="#FFFFFF" />
-          <SolidColorBrush x:Key="ViewportBackgroundBrush" Color="#D8D8D8" />
+          <SolidColorBrush x:Key="ViewportBackgroundBrush" Color="#3C3F41" />
         </ResourceDictionary>
       </ResourceDictionary.ThemeDictionaries>
     </ResourceDictionary>
