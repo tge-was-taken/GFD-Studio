@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 
 namespace GFDStudio.GUI.DataViewNodes
 {
@@ -8,12 +9,14 @@ namespace GFDStudio.GUI.DataViewNodes
     /// The child nodes of a <see cref="DataViewNode"/>. The surface mirrors the WinForms
     /// TreeNodeCollection this replaced, so the view nodes read the same as they did.
     /// </summary>
-    public sealed class DataViewNodeCollection : IList<DataViewNode>
+    public sealed class DataViewNodeCollection : IList<DataViewNode>, IList, INotifyCollectionChanged
     {
         private readonly List<DataViewNode> mNodes = new();
         private readonly DataViewNode mOwner;
 
         internal DataViewNodeCollection( DataViewNode owner ) => mOwner = owner;
+
+        public event NotifyCollectionChangedEventHandler CollectionChanged;
 
         public int Count => mNodes.Count;
 
@@ -24,16 +27,17 @@ namespace GFDStudio.GUI.DataViewNodes
             get => mNodes[index];
             set
             {
-                Detach( mNodes[index] );
+                var old = mNodes[index];
+                Detach( old );
                 mNodes[index] = Attach( value );
-                OnChanged();
+                OnChanged( new NotifyCollectionChangedEventArgs( NotifyCollectionChangedAction.Replace, value, old, index ) );
             }
         }
 
         public void Add( DataViewNode node )
         {
             mNodes.Add( Attach( node ) );
-            OnChanged();
+            OnChanged( new NotifyCollectionChangedEventArgs( NotifyCollectionChangedAction.Add, node, mNodes.Count - 1 ) );
         }
 
         public void AddRange( IEnumerable<DataViewNode> nodes )
@@ -41,30 +45,33 @@ namespace GFDStudio.GUI.DataViewNodes
             foreach ( var node in nodes )
                 mNodes.Add( Attach( node ) );
 
-            OnChanged();
+            OnChanged( Reset );
         }
 
         public void Insert( int index, DataViewNode node )
         {
             mNodes.Insert( index, Attach( node ) );
-            OnChanged();
+            OnChanged( new NotifyCollectionChangedEventArgs( NotifyCollectionChangedAction.Add, node, index ) );
         }
 
         public bool Remove( DataViewNode node )
         {
-            if ( !mNodes.Remove( node ) )
+            var index = mNodes.IndexOf( node );
+            if ( index < 0 )
                 return false;
 
+            mNodes.RemoveAt( index );
             Detach( node );
-            OnChanged();
+            OnChanged( new NotifyCollectionChangedEventArgs( NotifyCollectionChangedAction.Remove, node, index ) );
             return true;
         }
 
         public void RemoveAt( int index )
         {
-            Detach( mNodes[index] );
+            var node = mNodes[index];
+            Detach( node );
             mNodes.RemoveAt( index );
-            OnChanged();
+            OnChanged( new NotifyCollectionChangedEventArgs( NotifyCollectionChangedAction.Remove, node, index ) );
         }
 
         public void Clear()
@@ -73,7 +80,7 @@ namespace GFDStudio.GUI.DataViewNodes
                 Detach( node );
 
             mNodes.Clear();
-            OnChanged();
+            OnChanged( Reset );
         }
 
         public bool Contains( DataViewNode node ) => mNodes.Contains( node );
@@ -88,6 +95,42 @@ namespace GFDStudio.GUI.DataViewNodes
 
         IEnumerator IEnumerable.GetEnumerator() => mNodes.GetEnumerator();
 
+        //
+        // The non-generic IList, which a binding to an INotifyCollectionChanged source needs.
+        //
+
+        bool IList.IsFixedSize => false;
+
+        bool ICollection.IsSynchronized => false;
+
+        object ICollection.SyncRoot => this;
+
+        object IList.this[int index]
+        {
+            get => this[index];
+            set => this[index] = (DataViewNode)value;
+        }
+
+        int IList.Add( object value )
+        {
+            Add( (DataViewNode)value );
+            return Count - 1;
+        }
+
+        bool IList.Contains( object value ) => value is DataViewNode node && Contains( node );
+
+        int IList.IndexOf( object value ) => value is DataViewNode node ? IndexOf( node ) : -1;
+
+        void IList.Insert( int index, object value ) => Insert( index, (DataViewNode)value );
+
+        void IList.Remove( object value )
+        {
+            if ( value is DataViewNode node )
+                Remove( node );
+        }
+
+        void ICollection.CopyTo( Array array, int index ) => ( (ICollection)mNodes ).CopyTo( array, index );
+
         private DataViewNode Attach( DataViewNode node )
         {
             if ( node == null )
@@ -99,6 +142,13 @@ namespace GFDStudio.GUI.DataViewNodes
 
         private static void Detach( DataViewNode node ) => node?.SetParent( null );
 
-        private void OnChanged() => mOwner.NotifyChildrenChanged();
+        private static readonly NotifyCollectionChangedEventArgs Reset =
+            new( NotifyCollectionChangedAction.Reset );
+
+        private void OnChanged( NotifyCollectionChangedEventArgs args )
+        {
+            CollectionChanged?.Invoke( this, args );
+            mOwner.NotifyChildrenChanged();
+        }
     }
 }

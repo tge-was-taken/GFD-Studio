@@ -95,10 +95,10 @@ namespace GFDStudio.GUI.DataViewNodes
         [Browsable( false )]
         public string SelectedImageKey { get; set; }
 
-        [Browsable( false )]
         /// <summary>
         /// Whether the view is showing the children, which the view keeps current.
         /// </summary>
+        [Browsable( false )]
         public bool IsExpanded { get; set; }
 
         /// <summary>
