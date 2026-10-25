@@ -10,6 +10,7 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Scarlet.Platform.Sony;
+using SixLabors.ImageSharp;
 using GFDLibrary.Materials;
 using GFDLibrary.Animations;
 

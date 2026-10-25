@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using GFDLibrary.Textures.Swizzle;
 using GFDLibrary.Textures.Utilities;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace GFDLibrary.Textures.DDS
 {
@@ -21,7 +22,7 @@ namespace GFDLibrary.Textures.DDS
         /// </summary>
         /// <param name="filepath"></param>
         /// <returns></returns>
-        public static Bitmap DecompressImage( string filepath )
+        public static Image<Rgba32> DecompressImage( string filepath )
         {
             return DecompressImage( File.ReadAllBytes( filepath ) );
         }
@@ -31,7 +32,7 @@ namespace GFDLibrary.Textures.DDS
         /// </summary>
         /// <param name="stream"></param>
         /// <returns></returns>
-        public static Bitmap DecompressImage( Stream stream )
+        public static Image<Rgba32> DecompressImage( Stream stream )
         {
             // TODO: not make a copy
             var bytes = new byte[stream.Length];
@@ -44,11 +45,11 @@ namespace GFDLibrary.Textures.DDS
         /// </summary>
         /// <param name="image"></param>
         /// <returns></returns>
-        public static Bitmap DecompressImage( byte[] image )
+        public static Image<Rgba32> DecompressImage( byte[] image )
         {
             var header = new DDSHeader( image );
             var newData = DecompressImageData( image, header.Width, header.Height, header.PixelFormat.FourCC, true, SwizzleType.None );
-            return WriteRBGAToBitmap( header.Width, header.Height, newData );
+            return WriteRGBAToImage( header.Width, header.Height, newData );
         }
 
         /// <summary>
@@ -78,11 +79,11 @@ namespace GFDLibrary.Textures.DDS
         /// </summary>
         /// <param name="filepath"></param>
         /// <returns></returns>
-        public static Stream DecompressImageToStream( string filepath, ImageFormat format )
+        public static Stream DecompressImageToStream( string filepath, IImageEncoder encoder )
         {
-            var bitmap = DecompressImage( filepath );
             var outStream = new MemoryStream();
-            bitmap.Save( outStream, format );
+            using ( var image = DecompressImage( filepath ) )
+                image.Save( outStream, encoder );
             return outStream;
         }
 
@@ -91,11 +92,11 @@ namespace GFDLibrary.Textures.DDS
         /// </summary>
         /// <param name="stream"></param>
         /// <returns></returns>
-        public static Stream DecompressImageToStream( Stream stream, ImageFormat format )
+        public static Stream DecompressImageToStream( Stream stream, IImageEncoder encoder )
         {
-            var bitmap = DecompressImage( stream );
             var outStream = new MemoryStream();
-            bitmap.Save( outStream, format );
+            using ( var image = DecompressImage( stream ) )
+                image.Save( outStream, encoder );
             return outStream;
         }
 
@@ -119,10 +120,10 @@ namespace GFDLibrary.Textures.DDS
         /// <param name="height"></param>
         /// <param name="format"></param>
         /// <returns></returns>
-        public static Bitmap DecompressPixelData( byte[] data, int width, int height, DDSPixelFormatFourCC format )
+        public static Image<Rgba32> DecompressPixelData( byte[] data, int width, int height, DDSPixelFormatFourCC format )
         {
             var newData = DecompressImageData( data, width, height, format, false, SwizzleType.None );
-            return WriteRBGAToBitmap( width, height, newData );
+            return WriteRGBAToImage( width, height, newData );
         }
 
         /// <summary>
@@ -134,10 +135,10 @@ namespace GFDLibrary.Textures.DDS
         /// <param name="format"></param>
         /// <param name="swizzleType"></param>
         /// <returns></returns>
-        public static Bitmap DecompressPixelData( byte[] data, int width, int height, DDSPixelFormatFourCC format, SwizzleType swizzleType )
+        public static Image<Rgba32> DecompressPixelData( byte[] data, int width, int height, DDSPixelFormatFourCC format, SwizzleType swizzleType )
         {
             var newData = DecompressImageData( data, width, height, format, false, swizzleType );
-            return WriteRBGAToBitmap( width, height, newData );
+            return WriteRGBAToImage( width, height, newData );
         }
 
         /// <summary>
@@ -173,7 +174,7 @@ namespace GFDLibrary.Textures.DDS
         /// <param name="image"></param>
         /// <param name="format"></param>
         /// <returns></returns>
-        public static byte[] CompressImage( Bitmap image, DDSPixelFormatFourCC format )
+        public static byte[] CompressImage( Image<Rgba32> image, DDSPixelFormatFourCC format )
         {
             return CompressImage( image, format, true, SwizzleType.None );
         }
@@ -183,7 +184,7 @@ namespace GFDLibrary.Textures.DDS
         /// </summary>
         /// <param name="image"></param>
         /// <returns></returns>
-        public static byte[] CompressImage( Bitmap image )
+        public static byte[] CompressImage( Image<Rgba32> image )
         {
             return CompressImage( image, DetermineBestCompressedFormat( image ) );
         }
@@ -194,7 +195,7 @@ namespace GFDLibrary.Textures.DDS
         /// <param name="image"></param>
         /// <param name="format"></param>
         /// <param name="filepath"></param>
-        public static void CompressImageToFile( Bitmap image, DDSPixelFormatFourCC format, string filepath )
+        public static void CompressImageToFile( Image<Rgba32> image, DDSPixelFormatFourCC format, string filepath )
         {
             var bytes = CompressImage( image, format );
             File.WriteAllBytes( filepath, bytes );
@@ -207,7 +208,7 @@ namespace GFDLibrary.Textures.DDS
         /// <param name="image"></param>
         /// <param name="format"></param>
         /// <param name="filepath"></param>
-        public static void CompressImageToFile( Bitmap image, string filepath )
+        public static void CompressImageToFile( Image<Rgba32> image, string filepath )
         {
             var bytes = CompressImage( image, DetermineBestCompressedFormat( image ) );
             File.WriteAllBytes( filepath, bytes );
@@ -219,7 +220,7 @@ namespace GFDLibrary.Textures.DDS
         /// <param name="image"></param>
         /// <param name="format"></param>
         /// <returns></returns>
-        public static Stream CompressImageToStream( Bitmap image, DDSPixelFormatFourCC format )
+        public static Stream CompressImageToStream( Image<Rgba32> image, DDSPixelFormatFourCC format )
         {
             var stream = new MemoryStream();
             CompressImageToStream( image, format, stream );
@@ -232,7 +233,7 @@ namespace GFDLibrary.Textures.DDS
         /// <param name="image"></param>
         /// <param name="format"></param>
         /// <returns></returns>
-        public static Stream CompressImageToStream( Bitmap image )
+        public static Stream CompressImageToStream( Image<Rgba32> image )
         {
             var stream = new MemoryStream();
             CompressImageToStream( image, DetermineBestCompressedFormat( image ), stream );
@@ -245,7 +246,7 @@ namespace GFDLibrary.Textures.DDS
         /// <param name="image"></param>
         /// <param name="format"></param>
         /// <param name="outStream"></param>
-        public static void CompressImageToStream( Bitmap image, DDSPixelFormatFourCC format, Stream outStream )
+        public static void CompressImageToStream( Image<Rgba32> image, DDSPixelFormatFourCC format, Stream outStream )
         {
             var bytes = CompressImage( image, format );
             outStream.Write( bytes, 0, bytes.Length );
@@ -257,7 +258,7 @@ namespace GFDLibrary.Textures.DDS
         /// <param name="image"></param>
         /// <param name="format"></param>
         /// <param name="outStream"></param>
-        public static void CompressImageToStream( Bitmap image, Stream outStream )
+        public static void CompressImageToStream( Image<Rgba32> image, Stream outStream )
         {
             var bytes = CompressImage( image, DetermineBestCompressedFormat( image ) );
             outStream.Write( bytes, 0, bytes.Length );
@@ -269,7 +270,7 @@ namespace GFDLibrary.Textures.DDS
         /// <param name="image"></param>
         /// <param name="format"></param>
         /// <returns></returns>
-        public static byte[] CompressPixelData( Bitmap image, DDSPixelFormatFourCC format )
+        public static byte[] CompressPixelData( Image<Rgba32> image, DDSPixelFormatFourCC format )
         {
             return CompressImage( image, format, false, SwizzleType.None );
         }
@@ -281,7 +282,7 @@ namespace GFDLibrary.Textures.DDS
         /// <param name="format"></param>
         /// <param name="swizzleType"></param>
         /// <returns></returns>
-        public static byte[] CompressPixelData( Bitmap image, DDSPixelFormatFourCC format, SwizzleType swizzleType )
+        public static byte[] CompressPixelData( Image<Rgba32> image, DDSPixelFormatFourCC format, SwizzleType swizzleType )
         {
             return CompressImage( image, format, false, swizzleType );
         }
@@ -291,10 +292,10 @@ namespace GFDLibrary.Textures.DDS
         /// </summary>
         /// <param name="bitmap"></param>
         /// <returns></returns>
-        public static DDSPixelFormatFourCC DetermineBestCompressedFormat( Bitmap bitmap )
+        public static DDSPixelFormatFourCC DetermineBestCompressedFormat( Image<Rgba32> bitmap )
         {
             var ddsFormat = DDSPixelFormatFourCC.DXT1;
-            if ( BitmapHelper.HasTransparency( bitmap ) )
+            if ( ImageHelper.HasTransparency( bitmap ) )
             {
                 ddsFormat = DDSPixelFormatFourCC.DXT5;
             }
@@ -302,20 +303,9 @@ namespace GFDLibrary.Textures.DDS
             return ddsFormat;
         }
 
-        private static Bitmap WriteRBGAToBitmap( int width, int height, byte[] data )
+        private static Image<Rgba32> WriteRGBAToImage( int width, int height, byte[] data )
         {
-            var bitmap = new Bitmap( width, height, PixelFormat.Format32bppArgb );
-            var bitmapData = bitmap.LockBits( new Rectangle( 0, 0, bitmap.Width, bitmap.Height ), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb );
-
-            unsafe
-            {
-                fixed ( byte* pNewData = &data[0] )
-                    Unsafe.CopyBlock( ( byte* )bitmapData.Scan0.ToPointer(), pNewData, ( uint )data.Length );
-            }
-
-            bitmap.UnlockBits( bitmapData );
-
-            return bitmap;
+            return ImageHelper.FromBgra( data, width, height );
         }
 
         private static byte[] DecompressImageData( byte[] data, int width, int height, DDSPixelFormatFourCC format, bool hasHeader, SwizzleType swizzleType )
@@ -372,10 +362,9 @@ namespace GFDLibrary.Textures.DDS
             return newData;
         }
 
-        private static byte[] CompressImage(Bitmap image, DDSPixelFormatFourCC format, bool includeHeader, SwizzleType swizzleType )
+        private static byte[] CompressImage(Image<Rgba32> image, DDSPixelFormatFourCC format, bool includeHeader, SwizzleType swizzleType )
         {
-            var imageData = image.LockBits( new Rectangle( 0, 0, image.Width, image.Height ),
-                ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb );
+            var imageData = ImageHelper.ToBgra( image );
 
             Func<byte[], byte[]> compressor = null;
 
@@ -411,12 +400,10 @@ namespace GFDLibrary.Textures.DDS
             if ( includeHeader )
                 new DDSHeader( image.Width, image.Height, format ).Save( outStream );
 
-            unsafe
             {
-                using ( var mipmap = new UnmanagedMemoryStream( ( byte* )imageData.Scan0, imageData.Stride * image.Height ) )
+                using ( var mipmap = new MemoryStream( imageData ) )
                 using ( var compressed = WriteMipMap( outStream, mipmap, image.Width, image.Height, pixelWriter, true ) )
                 {
-                    image.UnlockBits( imageData );
                     var data = outStream.GetBuffer();
 
                     if ( swizzleType != SwizzleType.None )

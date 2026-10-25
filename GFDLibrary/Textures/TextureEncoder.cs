@@ -1,78 +1,41 @@
-﻿using System;
-using System.Drawing;
-using System.Drawing.Imaging;
+using System;
 using System.IO;
 using BCnEncoder.Encoder;
-using CSharpImageLibrary;
-using GFDLibrary.Textures.Utilities;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp;
-using BCnEncoder.Shared;
 using BCnEncoder.ImageSharp;
-using SixLabors.ImageSharp.Formats.Png;
+using BCnEncoder.Shared;
+using GFDLibrary.Textures.Utilities;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 
 namespace GFDLibrary.Textures
 {
     public static class TextureEncoder
     {
-        public static Texture Encode( string name, TextureFormat format, Bitmap bitmap )
+        public static Texture Encode( string name, TextureFormat format, Image<Rgba32> image )
         {
-            return Encode( name, format, 1, 1, 0, 0, bitmap );
+            return Encode( name, format, 1, 1, 0, 0, image );
         }
 
-        public static Texture Encode( string name, TextureFormat format, byte field1C, byte field1D, byte field1E, byte field1F, Bitmap bitmap )
+        public static Texture Encode( string name, TextureFormat format, byte field1C, byte field1D, byte field1E, byte field1F, Image<Rgba32> image )
         {
-            byte[] data = null;
-
-            if ( format == TextureFormat.DDS )
-            {
-                BcEncoder encoder = new BcEncoder
-                {
-                    OutputOptions =
-                    {
-                        GenerateMipMaps = true,
-                        Quality = CompressionQuality.BestQuality,
-                        Format = BitmapHelper.HasTransparency(bitmap) ? CompressionFormat.Bc3 : CompressionFormat.Bc1,
-                        FileFormat = OutputFileFormat.Dds
-                    }
-                };
-
-                using MemoryStream pngstream = new MemoryStream();
-                bitmap.Save( pngstream, ImageFormat.Png );
-                pngstream.Seek( 0, SeekOrigin.Begin );
-
-                using Image<Rgba32> image = SixLabors.ImageSharp.Image.Load<Rgba32>( pngstream );
-                using MemoryStream datastream = new MemoryStream();
-                encoder.EncodeToStream( image, datastream );
-                data = datastream.ToArray();
-            }
-            else
-            {
+            if ( format != TextureFormat.DDS )
                 throw new NotImplementedException();
-            }
 
-            return new Texture( name, format, data, field1C, field1D, field1E, field1F );
-        }
-
-        private static ImageEngineImage GetImageEngineImageFromBitmap( Bitmap bitmap )
-        {
-            // save bitmap to stream
-            var bitmapStream = new MemoryStream();
-            bitmap.Save( bitmapStream, ImageFormat.Png );
-
-            // create bitmap image
-            return new ImageEngineImage( bitmapStream );
-        }
-
-        private static ImageEngineFormat DetermineBestDDSFormat( Bitmap bitmap )
-        {
-            var ddsFormat = ImageEngineFormat.DDS_DXT1;
-            if ( BitmapHelper.HasTransparency( bitmap ) )
+            var encoder = new BcEncoder
             {
-                ddsFormat = ImageEngineFormat.DDS_DXT5;
-            }
+                OutputOptions =
+                {
+                    GenerateMipMaps = true,
+                    Quality = CompressionQuality.BestQuality,
+                    Format = ImageHelper.HasTransparency( image ) ? CompressionFormat.Bc3 : CompressionFormat.Bc1,
+                    FileFormat = OutputFileFormat.Dds
+                }
+            };
 
-            return ddsFormat;
+            using var stream = new MemoryStream();
+            encoder.EncodeToStream( image, stream );
+
+            return new Texture( name, format, stream.ToArray(), field1C, field1D, field1E, field1F );
         }
     }
 }

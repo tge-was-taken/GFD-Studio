@@ -1,5 +1,6 @@
-using System;
-using System.Drawing;
+﻿using System;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 using System.IO;
 using System.Text;
 using GFDLibrary.IO.Common;
@@ -394,7 +395,7 @@ namespace GFDLibrary.Textures.GNF
             Init( surfaceFormat, mipMapCount, width, height, data, isSwizzled );
         }
 
-        public GNFTexture( Bitmap bitmap )
+        public GNFTexture( Image<Rgba32> bitmap )
         {
             var ddsFormat = DDSCodec.DetermineBestCompressedFormat( bitmap );
             var dds = DDSCodec.CompressPixelData( bitmap, ddsFormat );
