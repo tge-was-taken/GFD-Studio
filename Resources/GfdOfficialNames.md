@@ -6,6 +6,13 @@ Hex-Rays type information for the whole `gfd` runtime.
 - IDB: `SW.ELF` (`E:\Projects\p5_2014\SW.ELF`), IDA MCP instance on port 13339.
 - All addresses below are from that image.
 
+## What has been applied
+
+The renames carried into the code so far are the ten texture slots and their flags, the
+material `constant`, `culling` and multi blend mode, and the toon attribute thresholds. Each
+one keeps its old name as a `[FormerName]` alias, so YAML written before the rename still
+loads. Everything else below is still named `Field*` or `Bit*` in the code.
+
 ## What the evidence is
 
 Two independent sources, used together:
@@ -161,7 +168,7 @@ writer `gfdMaterialStreamWrite_0` at `0x8CCA44`.
 | 10 | `blend.dstColor` | u8 (u16 pre-`0x1103040`) | `BlendDestinationColor` | high |
 | 11 | `blend.srcAlpha` | u8 (u16 pre-`0x1103040`) | `SourceAlpha` | high |
 | 12 | `blend.dstAlpha` | u8 (u16 pre-`0x1103040`) | `DestinationAlpha` | high |
-| 13 | `blend.multiple` | u8 (u16 pre-`0x1103040`, absent ≤ `0x108011B`) | `HighlightMapBlendMode` | high |
+| 13 | `blend.multiple` | u8 (u16 pre-`0x1103040`, absent ≤ `0x108011B`) | `MultiBlendMode` | high |
 | 14 | `alpha_test.ref` | u16 | `AlphaClip` | high |
 | 15 | `alpha_test.func` | `gfdAlphaFunc` = u16 | `AlphaClipMode` | high |
 | 16 | `flags2` | `gfdMaterialFlag2` = u16 (u32 `sort_priority` only, ≤ `0x1104800`) | `Flags2` / `Field94` | high |
@@ -169,18 +176,18 @@ writer `gfdMaterialStreamWrite_0` at `0x8CCA44`.
 | 18 | `shader.id.type` | u16 | `ShaderId` | high |
 | 19 | `shader.id.texcoord.in` | u32 | `TexCoordFlags0` | high |
 | 20 | `shader.id.texcoord.out` | u32 | `TexCoordFlags1` | high |
-| 21 | `culling` | `gfdCulling` = u16 | `DisableBackfaceCulling` | high |
-| 22 | `constant` | u32 (only > `0x1103040`) | `Field98` | high |
-| 23 | `textures[0..9]` | 10 × `gfdMaterialTexture`, present per flag bit `0x100000 << i` | `DiffuseMap` .. `TextureMap10` | high |
+| 21 | `culling` | `gfdCulling` = u16 | `Culling` | high |
+| 22 | `constant` | u32 (only > `0x1103040`) | `ConstantColor` | high |
+| 23 | `textures[0..9]` | 10 × `gfdMaterialTexture`, present per flag bit `0x100000 << i` | `DiffuseMap` .. `ReserveMap` | high |
 | 24 | `extension` | `gfdExtension`, present if `flags & 0x10000` | `Attributes` | high |
 
 Notes worth acting on:
 
-- `Field98` is `constant`, the material constant colour (there is a
+- `ConstantColor` (was `Field98`) is `constant`, the material constant colour (there is a
  `gfdMaterialSetConstantColor` setter). High confidence.
-- `HighlightMapBlendMode` is officially `blend.multiple`, the *multi-texture*
+- `MultiBlendMode` (was `HighlightMapBlendMode`) is officially `blend.multiple`, the *multi-texture*
  blend mode, matching `gfdMaterialSetMultipleBlendType`. High confidence.
-- `DisableBackfaceCulling` is officially just `culling` (a `gfdCulling` mode,
+- `Culling` (was `DisableBackfaceCulling`) is officially just `culling` (a `gfdCulling` mode,
  not a boolean); `gfdMaterialSetCulling` exists. High confidence.
 - `AlphaClip` / `AlphaClipMode` are officially `alpha_test.ref` /
  `alpha_test.func`, matching `gfdMaterialSetAlphaTestRef` /
@@ -218,14 +225,14 @@ Reader at **`0x9A4598`**, writer at `0x9A43D8`.
 | # | Official field | Type | C# member | Conf. |
 |---|---|---|---|---|
 | 0 | `lightColor` | `gfdRGBAFloat` = 4 × f32 | `Color` | high |
-| 1 | `lightThreshold` | f32 | `LightTreshold` | high |
+| 1 | `lightThreshold` | f32 | `LightThreshold` | high |
 | 2 | `lightFactor` | f32 | `LightFactor` | high |
-| 3 | `shadowBrightness` | f32 | `LightBrightness` | high |
-| 4 | `shadowThreshold` | f32 | `ShadowTreshold` | high |
+| 3 | `shadowBrightness` | f32 | `ShadowBrightness` | high |
+| 4 | `shadowThreshold` | f32 | `ShadowThreshold` | high |
 | 5 | `shadowFactor` | f32 | `ShadowFactor` | high |
 | 6 | `flags` | u32 (or 3-4 × u8 bools on older versions) | `Type0Flags` | high |
 
-Our `LightBrightness` is officially `shadowBrightness`. On versions
+Our `ShadowBrightness` (was `LightBrightness`) is officially `shadowBrightness`. On versions
 ≤ `0x1104220` the field is skipped entirely and defaulted to 0.25.
 
 ### `gfdExtensionShaderEdge` → `MaterialAttributeType1`
@@ -1752,7 +1759,7 @@ them.
 | `gfdMaterialFlag` | `0x1000` (12) | `gfdMaterialSetWire` | `RenderWireframe` | high |
 | `gfdMaterialFlag` | `0x2000` (13) | `gfdMaterialSetAlphaTestEnable` | `AlphaTest` | high |
 | `gfdMaterialFlag` | `0x10000` (16) | gates `extension` in the reader | `HasAttributes` | high |
-| `gfdMaterialFlag` | `0x100000 << i` (20-29) | gates `textures[i]` in the reader | `HasDiffuseMap` to `HasTextureMap10` | high |
+| `gfdMaterialFlag` | `0x100000 << i` (20-29) | gates `textures[i]` in the reader | `HasDiffuseMap` to `HasReserveMap` | high |
 | `gfdMaterialFlag2` | `0x80` (7) | `gfdMaterialSetColorOp(op == 1)`, i.e. a colour-op LERP select | `LerpVertexColor` | medium |
 | `gfdLightFlag` | `0x1` (0) | `gfdLightEnable` | `LightFlags` bit 0 | high |
 | `gfdLightFlag` | `0x2` (1) | set by `gfdLightSetAttenuationDistance`; selects the distance pair over the coefficient triple | `LightFlags.Bit2` in our reader | high |
@@ -1989,14 +1996,14 @@ strings at `0xF24520`. Ten entries, in slot order:
 |---|---|---|---|---|
 | 0 | `0x00100000` (20) | `diffuse` | `DiffuseMap` | high |
 | 1 | `0x00200000` (21) | `normal` | `NormalMap` | high |
-| 2 | `0x00400000` (22) | `gloss` | `SpecularMap` | high |
+| 2 | `0x00400000` (22) | `gloss` | `GlossMap` | high |
 | 3 | `0x00800000` (23) | `reflect` | `ReflectionMap` | high |
-| 4 | `0x01000000` (24) | `multi` | `HighlightMap` | high |
+| 4 | `0x01000000` (24) | `multi` | `MultiMap` | high |
 | 5 | `0x02000000` (25) | `glow` | `GlowMap` | high |
-| 6 | `0x04000000` (26) | `dark` | `NightMap` | high |
+| 6 | `0x04000000` (26) | `dark` | `DarkMap` | high |
 | 7 | `0x08000000` (27) | `detail` | `DetailMap` | high |
-| 8 | `0x10000000` (28) | `light` | `ShadowMap` | high |
-| 9 | `0x20000000` (29) | `reserve` | `TextureMap10` | high |
+| 8 | `0x10000000` (28) | `light` | `LightMap` | high |
+| 9 | `0x20000000` (29) | `reserve` | `ReserveMap` | high |
 
 High confidence: the symbol is named `texSlotName`, the table has exactly ten
 entries, and the printer indexes it with the same slot index the material
