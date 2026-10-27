@@ -126,10 +126,12 @@ namespace GFDLibrary.Materials
         public uint TexCoordFlags1 { get; set; }
 
         // 0x50
-        public short DisableBackfaceCulling { get; set; }
+        [FormerName( "DisableBackfaceCulling" )]
+        public short Culling { get; set; }
 
         // 0x98
-        public uint Field98 { get; set; }
+        [FormerName( "Field98" )]
+        public uint ConstantColor { get; set; }
 
         private TextureMap mDiffuseMap;
         public TextureMap DiffuseMap
@@ -324,7 +326,7 @@ namespace GFDLibrary.Materials
             Flags = MaterialFlags.HasAmbientColor | MaterialFlags.HasDiffuseColor;
             AlphaClipMode = ( AlphaClipMode)4;
             TexCoordFlags1 = 0xFFFFFFFF;
-            Field98 = 0xFFFFFFFF;
+            ConstantColor = 0xFFFFFFFF;
             TexCoordFlags0 = 0xFFFFFFFF;
             RuntimeMetadata = new();
         }
@@ -595,11 +597,11 @@ namespace GFDLibrary.Materials
             ShaderId = reader.ReadInt16();
             TexCoordFlags0 = reader.ReadUInt32();
             TexCoordFlags1 = reader.ReadUInt32();
-            DisableBackfaceCulling = reader.ReadInt16();
+            Culling = reader.ReadInt16();
 
             if ( Version > 0x1103040 )
             {
-                Field98 = reader.ReadUInt32();
+                ConstantColor = reader.ReadUInt32();
             }
             Field6C_2 = 0;
             if ( Version > 0x2110160 )
@@ -701,11 +703,11 @@ namespace GFDLibrary.Materials
             writer.WriteInt16( ShaderId );
             writer.WriteUInt32( TexCoordFlags0 );
             writer.WriteUInt32( TexCoordFlags1 );
-            writer.WriteInt16(DisableBackfaceCulling);
+            writer.WriteInt16(Culling);
 
             if ( Version > 0x1103040 )
             {
-                writer.WriteUInt32( Field98 );
+                writer.WriteUInt32( ConstantColor );
             }
             if ( Version > 0x2110160 )
                 writer.WriteSingle( Field6C_2 );

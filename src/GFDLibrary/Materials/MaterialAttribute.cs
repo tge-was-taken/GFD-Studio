@@ -138,16 +138,16 @@ namespace GFDLibrary.Materials
         public Vector4 Color { get; set; }
 
         // 1C
-        public float LightTreshold { get; set; }
+        public float LightThreshold { get; set; }
 
         // 20
         public float LightFactor { get; set; }
 
         // 24
-        public float LightBrightness { get; set; }
+        public float ShadowBrightness { get; set; }
 
         // 28
-        public float ShadowTreshold { get; set; }
+        public float ShadowThreshold { get; set; }
 
         // 2C
         public float ShadowFactor { get; set; }
@@ -168,20 +168,20 @@ namespace GFDLibrary.Materials
             if ( Version > 0x1104500 )
             {
                 Color = reader.ReadVector4();
-                LightTreshold = reader.ReadSingle();
+                LightThreshold = reader.ReadSingle();
                 LightFactor = reader.ReadSingle();
-                LightBrightness = reader.ReadSingle();
-                ShadowTreshold = reader.ReadSingle();
+                ShadowBrightness = reader.ReadSingle();
+                ShadowThreshold = reader.ReadSingle();
                 ShadowFactor = reader.ReadSingle();
                 Type0Flags = ( MaterialAttributeType0Flags )reader.ReadInt32();
             }
             else if ( Version > 0x1104220 )
             {
                 Color = reader.ReadVector4();
-                LightTreshold = reader.ReadSingle();
+                LightThreshold = reader.ReadSingle();
                 LightFactor = reader.ReadSingle();
-                LightBrightness = reader.ReadSingle();
-                ShadowTreshold = reader.ReadSingle();
+                ShadowBrightness = reader.ReadSingle();
+                ShadowThreshold = reader.ReadSingle();
                 ShadowFactor = reader.ReadSingle();
 
                 if ( reader.ReadBoolean() )
@@ -202,10 +202,10 @@ namespace GFDLibrary.Materials
             else
             {
                 Color = reader.ReadVector4();
-                LightTreshold = reader.ReadSingle();
+                LightThreshold = reader.ReadSingle();
                 LightFactor = reader.ReadSingle();
-                LightBrightness = 1.0f;
-                ShadowTreshold = reader.ReadSingle();
+                ShadowBrightness = 1.0f;
+                ShadowThreshold = reader.ReadSingle();
                 ShadowFactor = reader.ReadSingle();
             }
         }
@@ -215,20 +215,20 @@ namespace GFDLibrary.Materials
             if ( Version > 0x1104500 )
             {
                 writer.WriteVector4( Color );
-                writer.WriteSingle( LightTreshold );
+                writer.WriteSingle( LightThreshold );
                 writer.WriteSingle( LightFactor );
-                writer.WriteSingle( LightBrightness );
-                writer.WriteSingle( ShadowTreshold );
+                writer.WriteSingle( ShadowBrightness );
+                writer.WriteSingle( ShadowThreshold );
                 writer.WriteSingle( ShadowFactor );
                 writer.WriteInt32( ( int )Type0Flags );
             }
             else if ( Version > 0x1104220 )
             {
                 writer.WriteVector4( Color );
-                writer.WriteSingle( LightTreshold );
+                writer.WriteSingle( LightThreshold );
                 writer.WriteSingle( LightFactor );
-                writer.WriteSingle( LightBrightness );
-                writer.WriteSingle( ShadowTreshold );
+                writer.WriteSingle( ShadowBrightness );
+                writer.WriteSingle( ShadowThreshold );
                 writer.WriteSingle( ShadowFactor );
 
                 writer.WriteBoolean( Type0Flags.HasFlag( MaterialAttributeType0Flags.LightNormalMap ) );
@@ -243,9 +243,9 @@ namespace GFDLibrary.Materials
             else
             {
                 writer.WriteVector4( Color );
-                writer.WriteSingle( LightTreshold );
+                writer.WriteSingle( LightThreshold );
                 writer.WriteSingle( LightFactor );
-                writer.WriteSingle( ShadowTreshold );
+                writer.WriteSingle( ShadowThreshold );
                 writer.WriteSingle( ShadowFactor );
             }
         }
@@ -272,7 +272,7 @@ namespace GFDLibrary.Materials
         public Vector4 LightColor { get; set; }
 
         // 1C
-        public float LightTreshold { get; set; }
+        public float LightThreshold { get; set; }
 
         // 20
         public float LightFactor { get; set; }
@@ -300,7 +300,7 @@ namespace GFDLibrary.Materials
         protected override void ReadCore( ResourceReader reader )
         {
             LightColor = reader.ReadVector4();
-            LightTreshold = reader.ReadSingle();
+            LightThreshold = reader.ReadSingle();
             LightFactor = reader.ReadSingle();
             ShadowColor = reader.ReadVector4();
             ShadowThreshold = reader.ReadSingle();
@@ -338,7 +338,7 @@ namespace GFDLibrary.Materials
         protected override void WriteCore( ResourceWriter writer )
         {
             writer.WriteVector4( LightColor );
-            writer.WriteSingle( LightTreshold );
+            writer.WriteSingle( LightThreshold );
             writer.WriteSingle( LightFactor );
             writer.WriteVector4( ShadowColor );
             writer.WriteSingle( ShadowThreshold );

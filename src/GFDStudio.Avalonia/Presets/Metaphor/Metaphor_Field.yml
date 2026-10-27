@@ -28,8 +28,8 @@ SortPriority: 0
 ShaderId: 54
 TexCoordFlags0: 4294967232
 TexCoordFlags1: 4294967232
-DisableBackfaceCulling: 0
-Field98: 4294967295
+Culling: 0
+ConstantColor: 4294967295
 DiffuseMap: &o1 !TextureMap
   ResourceType: TextureMap
   Name: bg06_Old_Wood_01_m1_basecolor.tga

@@ -28,8 +28,8 @@ SortPriority: 0
 ShaderId: 3
 TexCoordFlags0: 4294966840
 TexCoordFlags1: 4294966840
-DisableBackfaceCulling: 0
-Field98: 4294967295
+Culling: 0
+ConstantColor: 4294967295
 DiffuseMap: &o1 !TextureMap
   ResourceType: TextureMap
   Name: c0006_001_face01.png

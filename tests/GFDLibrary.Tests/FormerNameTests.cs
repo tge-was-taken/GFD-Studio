@@ -94,6 +94,15 @@ namespace GFDLibrary.Tests
         }
 
         [TestMethod]
+        public void Former_names_outside_the_texture_slots_still_load()
+        {
+            var material = RoundtripYaml<Material>( "Name: test\nField98: 4278190080\nDisableBackfaceCulling: 1\n" );
+
+            Assert.AreEqual( 4278190080u, material.ConstantColor );
+            Assert.AreEqual( (short)1, material.Culling );
+        }
+
+        [TestMethod]
         public void Saving_uses_the_current_names()
         {
             var material = new Material( "test" ) { GlossMap = new TextureMap( "gloss.dds" ) };

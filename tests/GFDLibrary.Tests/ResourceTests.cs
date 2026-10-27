@@ -347,8 +347,8 @@ namespace GFDLibrary.Tests
             Assert.AreEqual( a.ShaderId, b.ShaderId );
             Assert.AreEqual( a.TexCoordFlags0, b.TexCoordFlags0 );
             Assert.AreEqual( a.TexCoordFlags1, b.TexCoordFlags1 );
-            Assert.AreEqual( a.DisableBackfaceCulling, b.DisableBackfaceCulling);
-            Assert.AreEqual( a.Field98, b.Field98 );
+            Assert.AreEqual( a.Culling, b.Culling);
+            Assert.AreEqual( a.ConstantColor, b.ConstantColor );
 
             CompareTextureMap( a.DiffuseMap, b.DiffuseMap );
             CompareTextureMap( a.NormalMap, b.NormalMap );
@@ -416,10 +416,10 @@ namespace GFDLibrary.Tests
                             var b2 = ( MaterialAttributeType0 )b[i];
 
                             Assert.AreEqual( a2.Color, b2.Color );
-                            Assert.AreEqual( a2.LightTreshold, b2.LightTreshold );
+                            Assert.AreEqual( a2.LightThreshold, b2.LightThreshold );
                             Assert.AreEqual( a2.LightFactor, b2.LightFactor );
-                            Assert.AreEqual( a2.LightBrightness, b2.LightBrightness );
-                            Assert.AreEqual( a2.ShadowTreshold, b2.ShadowTreshold );
+                            Assert.AreEqual( a2.ShadowBrightness, b2.ShadowBrightness );
+                            Assert.AreEqual( a2.ShadowThreshold, b2.ShadowThreshold );
                             Assert.AreEqual( a2.ShadowFactor, b2.ShadowFactor );
                             Assert.AreEqual( a2.Type0Flags, b2.Type0Flags );
                         }
@@ -430,7 +430,7 @@ namespace GFDLibrary.Tests
                             var b2 = ( MaterialAttributeType1 )b[i];
 
                             Assert.AreEqual( a2.Field0C, b2.Field0C);
-                            Assert.AreEqual( a2.LightTreshold, b2.LightTreshold );
+                            Assert.AreEqual( a2.LightThreshold, b2.LightThreshold );
                             Assert.AreEqual( a2.LightFactor, b2.LightFactor );
                             Assert.AreEqual( a2.ShadowColor, b2.ShadowColor );
                             Assert.AreEqual( a2.ShadowThreshold, b2.ShadowThreshold );

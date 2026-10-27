@@ -212,17 +212,17 @@ namespace GFDStudio.GUI.DataViewNodes
 
         [Browsable( true )]
         [DisplayName("Disable Backface Culling")]
-        public short DisableBackfaceCulling
+        public short Culling
         {
-            get => Data.DisableBackfaceCulling;
+            get => Data.Culling;
             set => SetDataProperty( value );
         }
 
         [Browsable( true )]
         [TypeConverter( typeof( UInt32HexTypeConverter ) )]
-        public uint Field98
+        public uint ConstantColor
         {
-            get => Data.Field98;
+            get => Data.ConstantColor;
             set => SetDataProperty( value );
         }
         public float Field6C_2

@@ -36,8 +36,8 @@ SortPriority: 0
 ShaderId: 104
 TexCoordFlags0: 4177526776
 TexCoordFlags1: 4177526776
-DisableBackfaceCulling: 0
-Field98: 4294967295
+Culling: 0
+ConstantColor: 4294967295
 DiffuseMap: &o1 !TextureMap
   ResourceType: TextureMap
   Name: dum_b.dds

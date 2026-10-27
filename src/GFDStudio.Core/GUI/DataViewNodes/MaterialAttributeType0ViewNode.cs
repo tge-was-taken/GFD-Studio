@@ -28,9 +28,9 @@ namespace GFDStudio.GUI.DataViewNodes
         // 1C
         [ Browsable( true ) ]
         [DisplayName( "Light threshold" )]
-        public float LightTreshold
+        public float LightThreshold
         {
-            get => Data.LightTreshold;
+            get => Data.LightThreshold;
             set => SetDataProperty( value );
         }
 
@@ -46,18 +46,18 @@ namespace GFDStudio.GUI.DataViewNodes
         // 24
         [Browsable( true )]
         [DisplayName( "Light brightness" )]
-        public float LightBrightness
+        public float ShadowBrightness
         {
-            get => Data.LightBrightness;
+            get => Data.ShadowBrightness;
             set => SetDataProperty( value );
         }
 
         // 28
         [Browsable( true )]
         [DisplayName( "Shadow threshold" )]
-        public float ShadowTreshold
+        public float ShadowThreshold
         {
-            get => Data.ShadowTreshold;
+            get => Data.ShadowThreshold;
             set => SetDataProperty( value );
         }
 

@@ -60,7 +60,7 @@ namespace GFDLibrary.Rendering.OpenGL
             AlphaClipMode = (int)material.AlphaClipMode;
             MatFlags2 = Convert.ToInt32( material.Flags2 );
             TexcoordsFlags = (int)( material.TexCoordFlags0 );
-            EnableBackfaceCulling = !( Convert.ToBoolean( material.DisableBackfaceCulling ) );
+            EnableBackfaceCulling = !( Convert.ToBoolean( material.Culling ) );
 
             if ( material.DiffuseMap != null )
             {
@@ -280,10 +280,10 @@ namespace GFDLibrary.Rendering.OpenGL
                 MaterialAttributeType0 type0 = (MaterialAttributeType0)material.Attributes.Single(
                     x => x.AttributeType == MaterialAttributeType.Type0 );
                 ToonLightColor = type0.Color.ToOpenTK();
-                ToonLightThreshold = type0.LightTreshold;
+                ToonLightThreshold = type0.LightThreshold;
                 ToonLightFactor = type0.LightFactor;
-                ToonShadowBrightness = type0.LightBrightness;
-                ToonShadowThreshold = type0.ShadowTreshold;
+                ToonShadowBrightness = type0.ShadowBrightness;
+                ToonShadowThreshold = type0.ShadowThreshold;
                 ToonShadowFactor = type0.ShadowFactor;
                 Type0Flags = ( (int)type0.Type0Flags );
             }
@@ -292,7 +292,7 @@ namespace GFDLibrary.Rendering.OpenGL
                 MaterialAttributeType1 type1 = (MaterialAttributeType1)material.Attributes.Single(
                     x => x.AttributeType == MaterialAttributeType.Type1 );
                 ToonLightColor = type1.LightColor.ToOpenTK();
-                ToonLightThreshold = type1.LightTreshold;
+                ToonLightThreshold = type1.LightThreshold;
                 ToonLightFactor = type1.LightFactor;
             }
             if ( HasType4 )
