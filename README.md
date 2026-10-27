@@ -12,6 +12,18 @@ installed, `GFDStudio-dotnet.zip` is smaller but needs the .NET 10 desktop runti
 - View, export, replace and add **Textures** (automatic conversion to and from PNG/DDS)
 - Export, replace and edit **Materials** and their maps & properties
 - Export and import models using assimp (automatic conversion to and from DAE/FBX)
+## Compatibility
+
+1.0.0-rc renames the material members that were named after a guess, to the names the game
+itself uses. The texture slots are the visible ones: `SpecularMap` is `GlossMap`,
+`HighlightMap` is `MultiMap`, `NightMap` is `DarkMap`, `ShadowMap` is `LightMap` and
+`TextureMap10` is `ReserveMap`, with their `Has*` flags renamed to match. `Field98` is
+`ConstantColor`, `DisableBackfaceCulling` is `Culling`, and the toon attribute's misspelled
+thresholds are fixed.
+
+Material presets and other YAML written before this still load: every renamed member keeps its
+old name as an alias. Saving writes the new name. Nothing about the binary formats changed.
+
 ## Requirements
 - .NET 10 desktop runtime installed, unless you use the self contained build
 - A videocard that supports at least OpenGL 3.3 to use the model viewer.
