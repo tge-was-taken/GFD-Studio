@@ -10,11 +10,8 @@ namespace GFDLibrary.IO
 {
     public class ResourceWriter : EndianBinaryWriter
     {
-#if NETCOREAPP1_0_OR_GREATER
-        private static readonly Encoding sSJISEncoding = CodePagesEncodingProvider.Instance.GetEncoding( 932 );
-#else
-        private static readonly Encoding sSJISEncoding = Encoding.GetEncoding( 932 );
-#endif
+        // Names are stored as UTF-8, and the hash beside them is taken over those same bytes.
+        private static readonly Encoding sNameEncoding = new UTF8Encoding( false );
 
         public ResourceWriter( Stream stream, bool leaveOpen ) : base( stream, Encoding.Default, leaveOpen, Endianness.BigEndian )
         {
@@ -78,11 +75,11 @@ namespace GFDLibrary.IO
             }
         }
 
-        public void WriteStringRaw( string value ) => WriteBytes( sSJISEncoding.GetBytes( value ) );
+        public void WriteStringRaw( string value ) => WriteBytes( sNameEncoding.GetBytes( value ) );
 
         public void WriteString( string value )
         {
-            WriteUInt16( ( ushort )sSJISEncoding.GetByteCount( value ) );
+            WriteUInt16( ( ushort )sNameEncoding.GetByteCount( value ) );
             WriteStringRaw( value );
         }
 

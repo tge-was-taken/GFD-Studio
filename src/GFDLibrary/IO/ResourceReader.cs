@@ -9,11 +9,8 @@ namespace GFDLibrary.IO
 {
     public class ResourceReader : EndianBinaryReader
     {
-#if NETCOREAPP1_0_OR_GREATER
-        private static readonly Encoding sSJISEncoding = CodePagesEncodingProvider.Instance.GetEncoding( 932 );
-#else
-        private static readonly Encoding sSJISEncoding = Encoding.GetEncoding( 932 );
-#endif
+        // Names are stored as UTF-8, and the hash beside them is taken over those same bytes.
+        private static readonly Encoding sNameEncoding = new UTF8Encoding( false );
 
         public bool EndOfStream => Position >= BaseStream.Length;
 
@@ -41,14 +38,14 @@ namespace GFDLibrary.IO
             var length = ReadUInt16();
             if ( length == 0 ) return "";
             var bytes = ReadBytes( ValidateCount( length ) );
-            return sSJISEncoding.GetString( bytes );
+            return sNameEncoding.GetString( bytes );
         }
 
         public string ReadString( int length )
         {
             if ( length == 0 ) return "";
             var bytes = ReadBytes( ValidateCount( length ) );
-            return sSJISEncoding.GetString( bytes );
+            return sNameEncoding.GetString( bytes );
         }
 
         public string ReadStringWithHash( uint version, bool withPadding = false, bool isCatherineFullBodyData = false )

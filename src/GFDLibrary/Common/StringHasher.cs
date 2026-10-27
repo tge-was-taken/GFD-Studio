@@ -1,4 +1,7 @@
-﻿namespace GFDLibrary.Common
+﻿using System;
+using System.Text;
+
+namespace GFDLibrary.Common
 {
     public static class StringHasher
     {
@@ -44,15 +47,22 @@
         }
 
         public static int GenerateStringHash( string value )
+            => string.IsNullOrEmpty( value ) ? 0 : GenerateStringHash( Encoding.UTF8.GetBytes( value ) );
+
+        /// <summary>
+        /// The game hashes the bytes it stored, so anything outside ASCII only comes out right
+        /// when the encoded form is hashed rather than the characters.
+        /// </summary>
+        public static int GenerateStringHash( ReadOnlySpan<byte> value )
         {
-            if ( string.IsNullOrEmpty( value ) )
+            if ( value.Length == 0 )
                 return 0;
 
             uint hash = ( uint )value.Length;
 
             for ( int i = 0; i < value.Length; i++ )
             {
-                uint tableIdx = hash ^ ( byte )( value[i] );
+                uint tableIdx = hash ^ value[i];
                 tableIdx = ( BitwiseRotateLeft( tableIdx, 2 ) & 0x000003FC ) / sizeof( uint );
                 hash = BitwiseRotateLeft( hash, 24 ) & 0x00FFFFFF;
                 hash ^= sHashTable[tableIdx];
