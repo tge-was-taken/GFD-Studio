@@ -119,14 +119,14 @@ namespace GFDLibrary.Materials
         {
             if ( Flags.HasFlag( Type0Flags.InfluencedBySky ) )
                 mat.MatFlags2 |= METAPHOR_MaterialFlags2.FLAG2_SKY;
-            if ( Flags.HasFlag( Type0Flags.MultiTextureMask ) && mat.Flags.HasFlag(MaterialFlags.HasHighlightMap) )
+            if ( Flags.HasFlag( Type0Flags.MultiTextureMask ) && mat.Flags.HasFlag(MaterialFlags.HasMultiMap) )
                 mat.MatFlags2 |= METAPHOR_MaterialFlags2.FLAG2_MULTITEXTURE_AS_MASK;
             if ( Flags.HasFlag( Type0Flags.RemoveDiffuseShadow ) )
                 mat.MatFlags2 |= METAPHOR_MaterialFlags2.FLAG2_HDR_STAR; // FLAG2_REMOVAL_DIFFUSESHADOW
             if ( Flags.HasFlag( Type0Flags.BillboardShadowMap ) )
                 mat.MatFlags2 |= METAPHOR_MaterialFlags2.FLAG2_SPECULAR_NORMALMAPALPHA; // FLAG2_BILLBOARD_SHADOWMAP
             
-            if ( Flags.HasFlag( Type0Flags.Transparency ) && mat.Flags.HasFlag( MaterialFlags.HasHighlightMap ) )
+            if ( Flags.HasFlag( Type0Flags.Transparency ) && mat.Flags.HasFlag( MaterialFlags.HasMultiMap ) )
                 if ( mat.DrawMethod == MaterialDrawMethod.Opaque )
                     mat.MatFlags2 |= METAPHOR_MaterialFlags2.FLAG2_PUNCHTHROUGH;
         }

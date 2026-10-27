@@ -1,7 +1,7 @@
 !Material
 ResourceType: Material
 Name: CFB_Character
-Flags: HasAmbientColor, HasDiffuseColor, ApplyFog, HasEmissiveColor, EnableLight, CastShadow, HasAttributes, HasDiffuseMap, HasShadowMap
+Flags: HasAmbientColor, HasDiffuseColor, ApplyFog, HasEmissiveColor, EnableLight, CastShadow, HasAttributes, HasDiffuseMap, HasLightMap
 DrawMethod: Opaque
 LegacyParameters: !MaterialLegacyParameters
   ResourceType: MaterialParameterSetLegacy
@@ -28,7 +28,7 @@ BlendSourceColor: 1
 BlendDestinationColor: 0
 SourceAlpha: 1
 DestinationAlpha: 0
-HighlightMapBlendMode: Lerp
+MultiBlendMode: Lerp
 AlphaClip: 0
 AlphaClipMode: Greater
 Flags2: Bloom, ShadowMapMultiply
@@ -64,13 +64,13 @@ DiffuseMap: &o1 !TextureMap
   Field88: 0
   Version: 17846384
 NormalMap: 
-SpecularMap: 
+GlossMap: 
 ReflectionMap: 
-HighlightMap: 
+MultiMap: 
 GlowMap: 
-NightMap: 
+DarkMap: 
 DetailMap: 
-ShadowMap: &o2 !TextureMap
+LightMap: &o2 !TextureMap
   ResourceType: TextureMap
   Name: dum_b.dds
   Flags: 0
@@ -95,7 +95,7 @@ ShadowMap: &o2 !TextureMap
   Field84: 0
   Field88: 0
   Version: 17846384
-TextureMap10: 
+ReserveMap: 
 TextureMaps:
 - *o1
 - 

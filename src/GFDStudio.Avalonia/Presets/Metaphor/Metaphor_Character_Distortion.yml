@@ -1,7 +1,7 @@
 !Material
 ResourceType: Material
 Name: Metaphor_Character_Distortion
-Flags: HasAmbientColor, HasDiffuseColor, ApplyFog, AlphaTest, HasDiffuseMap, HasHighlightMap
+Flags: HasAmbientColor, HasDiffuseColor, ApplyFog, AlphaTest, HasDiffuseMap, HasMultiMap
 DrawMethod: Transparent
 LegacyParameters: !MaterialLegacyParameters
   ResourceType: MaterialParameterSetLegacy
@@ -20,7 +20,7 @@ BlendSourceColor: 1
 BlendDestinationColor: 0
 SourceAlpha: 1
 DestinationAlpha: 0
-HighlightMapBlendMode: Lerp
+MultiBlendMode: Lerp
 AlphaClip: 0
 AlphaClipMode: GEqual
 Flags2: Bit15
@@ -56,9 +56,9 @@ DiffuseMap: &o1 !TextureMap
   Field88: 0
   Version: 34669089
 NormalMap: 
-SpecularMap: 
+GlossMap: 
 ReflectionMap: 
-HighlightMap: &o2 !TextureMap
+MultiMap: &o2 !TextureMap
   ResourceType: TextureMap
   Name: c0001_001_mebika.tga
   Flags: 0
@@ -84,10 +84,10 @@ HighlightMap: &o2 !TextureMap
   Field88: 0
   Version: 34669089
 GlowMap: 
-NightMap: 
+DarkMap: 
 DetailMap: 
-ShadowMap: 
-TextureMap10: 
+LightMap: 
+ReserveMap: 
 TextureMaps:
 - *o1
 - 

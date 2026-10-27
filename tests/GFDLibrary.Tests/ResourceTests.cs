@@ -339,7 +339,7 @@ namespace GFDLibrary.Tests
             Assert.AreEqual( a.BlendDestinationColor, b.BlendDestinationColor );
             Assert.AreEqual( a.SourceAlpha, b.SourceAlpha );
             Assert.AreEqual( a.DestinationAlpha, b.DestinationAlpha );
-            Assert.AreEqual( a.HighlightMapBlendMode, b.HighlightMapBlendMode );
+            Assert.AreEqual( a.MultiBlendMode, b.MultiBlendMode );
             Assert.AreEqual( a.AlphaClip, b.AlphaClip );
             Assert.AreEqual( a.AlphaClipMode, b.AlphaClipMode );
             Assert.AreEqual( a.Flags2,  b.Flags2 );
@@ -352,13 +352,13 @@ namespace GFDLibrary.Tests
 
             CompareTextureMap( a.DiffuseMap, b.DiffuseMap );
             CompareTextureMap( a.NormalMap, b.NormalMap );
-            CompareTextureMap( a.SpecularMap, b.SpecularMap );
+            CompareTextureMap( a.GlossMap, b.GlossMap );
             CompareTextureMap( a.ReflectionMap, b.ReflectionMap );
-            CompareTextureMap( a.HighlightMap, b.HighlightMap );
+            CompareTextureMap( a.MultiMap, b.MultiMap );
             CompareTextureMap( a.GlowMap, b.GlowMap );
-            CompareTextureMap( a.NightMap, b.NightMap );
+            CompareTextureMap( a.DarkMap, b.DarkMap );
             CompareTextureMap( a.DetailMap, b.DetailMap );
-            CompareTextureMap( a.ShadowMap, b.ShadowMap );
+            CompareTextureMap( a.LightMap, b.LightMap );
             CompareMaterialProperties( a.Attributes, b.Attributes );
         }
 

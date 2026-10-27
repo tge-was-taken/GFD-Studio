@@ -192,10 +192,10 @@ namespace GFDLibrary.Conversion.AssimpNet
                         Ai.TextureType.Normals, 1, Ai.TextureMapping.FromUV, 0, 0, Ai.TextureOperation.Add, Ai.TextureWrapMode.Wrap, Ai.TextureWrapMode.Wrap, 0 );
                 }
 
-                if ( material.Flags.HasFlag( MaterialFlags.HasSpecularMap ) )
+                if ( material.Flags.HasFlag( MaterialFlags.HasGlossMap ) )
                 {
                     aiMaterial.TextureSpecular = new Ai.TextureSlot( 
-                        Path.Combine( mTextureBaseRelativeDirectoryPath, AssimpConverterCommon.EscapeName(material.SpecularMap.Name) ), 
+                        Path.Combine( mTextureBaseRelativeDirectoryPath, AssimpConverterCommon.EscapeName(material.GlossMap.Name) ), 
                         Ai.TextureType.Specular, 2, Ai.TextureMapping.FromUV, 0, 0, Ai.TextureOperation.Add, Ai.TextureWrapMode.Wrap, Ai.TextureWrapMode.Wrap, 0 );
                 }
 

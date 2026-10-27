@@ -91,7 +91,8 @@ namespace GFDLibrary.Materials
         public byte DestinationAlpha { get; set; }
 
         // 0x4D
-        public HighlightMapMode HighlightMapBlendMode { get; set; }
+        [FormerName( "HighlightMapBlendMode" )]
+        public MultiBlendType MultiBlendMode { get; set; }
 
         // 0x90
         public short AlphaClip { get; set; }
@@ -152,13 +153,14 @@ namespace GFDLibrary.Materials
             }
         }
 
-        private TextureMap mSpecularMap;
-        public TextureMap SpecularMap
+        private TextureMap mGlossMap;
+        [FormerName( "SpecularMap" )]
+        public TextureMap GlossMap
         {
-            get => mSpecularMap;
+            get => mGlossMap;
             set
             {
-                mSpecularMap = value;
+                mGlossMap = value;
                 ValidateFlags();
             }
         }
@@ -174,13 +176,14 @@ namespace GFDLibrary.Materials
             }
         }
 
-        private TextureMap mHightlightMap;
-        public TextureMap HighlightMap
+        private TextureMap mMultiMap;
+        [FormerName( "HighlightMap" )]
+        public TextureMap MultiMap
         {
-            get => mHightlightMap;
+            get => mMultiMap;
             set
             {
-                mHightlightMap = value;
+                mMultiMap = value;
                 ValidateFlags();
             }
         }
@@ -196,13 +199,14 @@ namespace GFDLibrary.Materials
             }
         }
 
-        private TextureMap mNightMap;
-        public TextureMap NightMap
+        private TextureMap mDarkMap;
+        [FormerName( "NightMap" )]
+        public TextureMap DarkMap
         {
-            get => mNightMap;
+            get => mDarkMap;
             set
             {
-                mNightMap = value;
+                mDarkMap = value;
                 ValidateFlags();
             }
         }
@@ -218,24 +222,26 @@ namespace GFDLibrary.Materials
             }
         }
 
-        private TextureMap mShadowMap;
-        public TextureMap ShadowMap
+        private TextureMap mLightMap;
+        [FormerName( "ShadowMap" )]
+        public TextureMap LightMap
         {
-            get => mShadowMap;
+            get => mLightMap;
             set
             {
-                mShadowMap = value;
+                mLightMap = value;
                 ValidateFlags();
             }
         }
 
-        private TextureMap mTextureMap10;
-        public TextureMap TextureMap10
+        private TextureMap mReserveMap;
+        [FormerName( "TextureMap10" )]
+        public TextureMap ReserveMap
         {
-            get => mTextureMap10;
+            get => mReserveMap;
             set
             {
-                mTextureMap10 = value;
+                mReserveMap = value;
                 ValidateFlags();
             }
         }
@@ -246,14 +252,14 @@ namespace GFDLibrary.Materials
             {
                 yield return DiffuseMap;
                 yield return NormalMap;
-                yield return SpecularMap;
+                yield return GlossMap;
                 yield return ReflectionMap;
-                yield return HighlightMap;
+                yield return MultiMap;
                 yield return GlowMap;
-                yield return NightMap;
+                yield return DarkMap;
                 yield return DetailMap;
-                yield return ShadowMap;
-                yield return TextureMap10;
+                yield return LightMap;
+                yield return ReserveMap;
             }
         }
 
@@ -310,7 +316,7 @@ namespace GFDLibrary.Materials
             LegacyParameters = new();
             BlendSourceColor = 1;
             SourceAlpha = 1;
-            HighlightMapBlendMode = (HighlightMapMode)1;
+            MultiBlendMode = (MultiBlendType)1;
             DrawMethod = 0;
             BlendDestinationColor = 0;
             DestinationAlpha = 0;
@@ -327,14 +333,14 @@ namespace GFDLibrary.Materials
         {
             ValidateMapFlags( DiffuseMap,    MaterialFlags.HasDiffuseMap );
             ValidateMapFlags( NormalMap,     MaterialFlags.HasNormalMap );
-            ValidateMapFlags( SpecularMap,   MaterialFlags.HasSpecularMap );
+            ValidateMapFlags( GlossMap,   MaterialFlags.HasGlossMap );
             ValidateMapFlags( ReflectionMap, MaterialFlags.HasReflectionMap );
-            ValidateMapFlags( HighlightMap,  MaterialFlags.HasHighlightMap );
+            ValidateMapFlags( MultiMap,  MaterialFlags.HasMultiMap );
             ValidateMapFlags( GlowMap,       MaterialFlags.HasGlowMap );
-            ValidateMapFlags( NightMap,      MaterialFlags.HasNightMap );
+            ValidateMapFlags( DarkMap,      MaterialFlags.HasDarkMap );
             ValidateMapFlags( DetailMap,     MaterialFlags.HasDetailMap );
-            ValidateMapFlags( ShadowMap,     MaterialFlags.HasShadowMap );
-            ValidateMapFlags( TextureMap10,  MaterialFlags.HasTextureMap10 );
+            ValidateMapFlags( LightMap,     MaterialFlags.HasLightMap );
+            ValidateMapFlags( ReserveMap,  MaterialFlags.HasReserveMap );
 
             if ( Attributes == null )
             {
@@ -428,14 +434,14 @@ namespace GFDLibrary.Materials
             if ( Flags.HasFlag( MaterialFlags.ReceiveShadow ) ) // gfdGlobal graphics flag 1
                 MatFlags1 |= METAPHOR_MaterialFlags1.FLAG1_MATERIAL_SHADOW;
             // multiply material mode
-            if ( Flags.HasFlag( MaterialFlags.HasHighlightMap ) )
+            if ( Flags.HasFlag( MaterialFlags.HasMultiMap ) )
             {
-                switch ( HighlightMapBlendMode )
+                switch ( MultiBlendMode )
                 {
-                    case HighlightMapMode.Lerp: MatFlags2 |= METAPHOR_MaterialFlags2.FLAG2_MATERIAL_MULTIPLE_SEMI; break; // Lerp
-                    case HighlightMapMode.Add: MatFlags2 |= METAPHOR_MaterialFlags2.FLAG2_MATERIAL_MULTIPLE_ADD; break; // Add
-                    case HighlightMapMode.Subtract: MatFlags1 |= METAPHOR_MaterialFlags1.FLAG1_MATERIAL_MULTIPLE_MOD; break; // Modulate
-                    case (HighlightMapMode)5: MatFlags2 |= METAPHOR_MaterialFlags2.FLAG2_MATERIAL_MULTIPLE_SUB; break; // Subtract
+                    case MultiBlendType.Lerp: MatFlags2 |= METAPHOR_MaterialFlags2.FLAG2_MATERIAL_MULTIPLE_SEMI; break; // Lerp
+                    case MultiBlendType.Add: MatFlags2 |= METAPHOR_MaterialFlags2.FLAG2_MATERIAL_MULTIPLE_ADD; break; // Add
+                    case MultiBlendType.Subtract: MatFlags1 |= METAPHOR_MaterialFlags1.FLAG1_MATERIAL_MULTIPLE_MOD; break; // Modulate
+                    case (MultiBlendType)5: MatFlags2 |= METAPHOR_MaterialFlags2.FLAG2_MATERIAL_MULTIPLE_SUB; break; // Subtract
                 }
             }
             // texture flags
@@ -443,21 +449,21 @@ namespace GFDLibrary.Materials
                 MatFlags1 |= METAPHOR_MaterialFlags1.FLAG1_TEXTURE1;
             if ( Flags.HasFlag( MaterialFlags.HasNormalMap ) )
                 MatFlags1 |= METAPHOR_MaterialFlags1.FLAG1_TEXTURE2;
-            if ( Flags.HasFlag( MaterialFlags.HasSpecularMap ) )
+            if ( Flags.HasFlag( MaterialFlags.HasGlossMap ) )
                 MatFlags1 |= METAPHOR_MaterialFlags1.FLAG1_TEXTURE3;
             if ( Flags.HasFlag( MaterialFlags.HasReflectionMap ) )
                 MatFlags1 |= METAPHOR_MaterialFlags1.FLAG1_TEXTURE4;
-            if ( Flags.HasFlag( MaterialFlags.HasHighlightMap ) )
+            if ( Flags.HasFlag( MaterialFlags.HasMultiMap ) )
                 MatFlags1 |= METAPHOR_MaterialFlags1.FLAG1_TEXTURE5;
             if ( Flags.HasFlag( MaterialFlags.HasGlowMap ) )
                 MatFlags1 |= METAPHOR_MaterialFlags1.FLAG1_TEXTURE6;
-            if ( Flags.HasFlag( MaterialFlags.HasNightMap ) )
+            if ( Flags.HasFlag( MaterialFlags.HasDarkMap ) )
                 MatFlags1 |= METAPHOR_MaterialFlags1.FLAG1_TEXTURE7;
             if ( Flags.HasFlag( MaterialFlags.HasDetailMap ) )
                 MatFlags1 |= METAPHOR_MaterialFlags1.FLAG1_TEXTURE8;
-            if ( Flags.HasFlag( MaterialFlags.HasShadowMap ) )
+            if ( Flags.HasFlag( MaterialFlags.HasLightMap ) )
                 MatFlags1 |= METAPHOR_MaterialFlags1.FLAG1_TEXTURE9;
-            if ( Flags.HasFlag( MaterialFlags.HasTextureMap10 ) )
+            if ( Flags.HasFlag( MaterialFlags.HasReserveMap ) )
                 MatFlags1 |= METAPHOR_MaterialFlags1.FLAG1_TEXTURE10;
             // material parameter flags
             METAPHOR_MaterialParameterSet.SetShaderFlags( this );
@@ -559,7 +565,7 @@ namespace GFDLibrary.Materials
 
                 if ( Version > 0x108011b )
                 {
-                    HighlightMapBlendMode = (HighlightMapMode)reader.ReadInt16();
+                    MultiBlendMode = (MultiBlendType)reader.ReadInt16();
                 }
             }
             else
@@ -569,7 +575,7 @@ namespace GFDLibrary.Materials
                 BlendDestinationColor = reader.ReadByte();
                 SourceAlpha = reader.ReadByte();
                 DestinationAlpha = reader.ReadByte();
-                HighlightMapBlendMode = (HighlightMapMode)reader.ReadByte();
+                MultiBlendMode = (MultiBlendType)reader.ReadByte();
             }
 
             AlphaClip = reader.ReadInt16();
@@ -611,22 +617,22 @@ namespace GFDLibrary.Materials
                 DiffuseMap = ReadTextureMapResource();
             if ( flags.HasFlag( MaterialFlags.HasNormalMap ) )
                 NormalMap = ReadTextureMapResource();
-            if ( flags.HasFlag( MaterialFlags.HasSpecularMap ) )
-                SpecularMap = ReadTextureMapResource();
+            if ( flags.HasFlag( MaterialFlags.HasGlossMap ) )
+                GlossMap = ReadTextureMapResource();
             if ( flags.HasFlag( MaterialFlags.HasReflectionMap ) )
                 ReflectionMap = ReadTextureMapResource();
-            if ( flags.HasFlag( MaterialFlags.HasHighlightMap ) )
-                HighlightMap = ReadTextureMapResource();
+            if ( flags.HasFlag( MaterialFlags.HasMultiMap ) )
+                MultiMap = ReadTextureMapResource();
             if ( flags.HasFlag( MaterialFlags.HasGlowMap ) )
                 GlowMap = ReadTextureMapResource();
-            if ( flags.HasFlag( MaterialFlags.HasNightMap ) )
-                NightMap = ReadTextureMapResource();
+            if ( flags.HasFlag( MaterialFlags.HasDarkMap ) )
+                DarkMap = ReadTextureMapResource();
             if ( flags.HasFlag( MaterialFlags.HasDetailMap ) )
                 DetailMap = ReadTextureMapResource();
-            if ( flags.HasFlag( MaterialFlags.HasShadowMap ) )
-                ShadowMap = ReadTextureMapResource();
-            if ( flags.HasFlag( MaterialFlags.HasTextureMap10 ) )
-                ShadowMap = ReadTextureMapResource();
+            if ( flags.HasFlag( MaterialFlags.HasLightMap ) )
+                LightMap = ReadTextureMapResource();
+            if ( flags.HasFlag( MaterialFlags.HasReserveMap ) )
+                LightMap = ReadTextureMapResource();
 
             if ( flags.HasFlag( MaterialFlags.HasAttributes ) )
             {
@@ -666,7 +672,7 @@ namespace GFDLibrary.Materials
 
                 if ( Version > 0x108011b )
                 {
-                    writer.WriteInt16( (byte)HighlightMapBlendMode );
+                    writer.WriteInt16( (byte)MultiBlendMode );
                 }
             }
             else
@@ -676,7 +682,7 @@ namespace GFDLibrary.Materials
                 writer.WriteByte( BlendDestinationColor );
                 writer.WriteByte( SourceAlpha );
                 writer.WriteByte( DestinationAlpha );
-                writer.WriteByte( (byte)HighlightMapBlendMode );
+                writer.WriteByte( (byte)MultiBlendMode );
             }
 
             writer.WriteInt16( AlphaClip );
@@ -714,9 +720,9 @@ namespace GFDLibrary.Materials
                 writer.WriteResource(  NormalMap );
             }
 
-            if ( Flags.HasFlag( MaterialFlags.HasSpecularMap ) )
+            if ( Flags.HasFlag( MaterialFlags.HasGlossMap ) )
             {
-                writer.WriteResource(  SpecularMap );
+                writer.WriteResource(  GlossMap );
             }
 
             if ( Flags.HasFlag( MaterialFlags.HasReflectionMap ) )
@@ -724,9 +730,9 @@ namespace GFDLibrary.Materials
                 writer.WriteResource(  ReflectionMap );
             }
 
-            if ( Flags.HasFlag( MaterialFlags.HasHighlightMap ) )
+            if ( Flags.HasFlag( MaterialFlags.HasMultiMap ) )
             {
-                writer.WriteResource(  HighlightMap );
+                writer.WriteResource(  MultiMap );
             }
 
             if ( Flags.HasFlag( MaterialFlags.HasGlowMap ) )
@@ -734,9 +740,9 @@ namespace GFDLibrary.Materials
                 writer.WriteResource(  GlowMap );
             }
 
-            if ( Flags.HasFlag( MaterialFlags.HasNightMap ) )
+            if ( Flags.HasFlag( MaterialFlags.HasDarkMap ) )
             {
-                writer.WriteResource(  NightMap );
+                writer.WriteResource(  DarkMap );
             }
 
             if ( Flags.HasFlag( MaterialFlags.HasDetailMap ) )
@@ -744,14 +750,14 @@ namespace GFDLibrary.Materials
                 writer.WriteResource(  DetailMap );
             }
 
-            if ( Flags.HasFlag( MaterialFlags.HasShadowMap ) )
+            if ( Flags.HasFlag( MaterialFlags.HasLightMap ) )
             {
-                writer.WriteResource(  ShadowMap );
+                writer.WriteResource(  LightMap );
             }
 
-            if ( Flags.HasFlag( MaterialFlags.HasTextureMap10 ) )
+            if ( Flags.HasFlag( MaterialFlags.HasReserveMap ) )
             {
-                writer.WriteResource( TextureMap10 );
+                writer.WriteResource( ReserveMap );
             }
 
             if ( Flags.HasFlag( MaterialFlags.HasAttributes ) )
@@ -769,8 +775,8 @@ namespace GFDLibrary.Materials
 
             var materialName = material.Name;
             var diffuseTexture = material.DiffuseMap;
-            var shadowTexture = material.ShadowMap ?? diffuseTexture;
-            var specularTexture = material.SpecularMap ?? diffuseTexture;
+            var shadowTexture = material.LightMap ?? diffuseTexture;
+            var specularTexture = material.GlossMap ?? diffuseTexture;
             if ( diffuseTexture == null ) newMaterial = material;
             else newMaterial = MaterialFactory.CreateMaterial(
                 materialName,
@@ -785,12 +791,12 @@ namespace GFDLibrary.Materials
                 specularTexture?.Name,
                 material.ReflectionMap?.Name,
                 materialPreset,
-                material.HighlightMap?.Name,
+                material.MultiMap?.Name,
                 material.GlowMap?.Name,
-                material.NightMap?.Name,
+                material.DarkMap?.Name,
                 material.DetailMap?.Name,
                 shadowTexture?.Name,
-                material.TextureMap10?.Name );
+                material.ReserveMap?.Name );
             return newMaterial;
         }
     }
@@ -820,14 +826,19 @@ namespace GFDLibrary.Materials
         ReflectionCaster = 1 << 19,
         HasDiffuseMap = 1 << 20,
         HasNormalMap = 1 << 21,
-        HasSpecularMap = 1 << 22,
+        [FormerName( "HasSpecularMap" )]
+        HasGlossMap = 1 << 22,
         HasReflectionMap = 1 << 23,
-        HasHighlightMap = 1 << 24,
+        [FormerName( "HasHighlightMap" )]
+        HasMultiMap = 1 << 24,
         HasGlowMap = 1 << 25,
-        HasNightMap = 1 << 26,
+        [FormerName( "HasNightMap" )]
+        HasDarkMap = 1 << 26,
         HasDetailMap = 1 << 27,
-        HasShadowMap = 1 << 28,
-        HasTextureMap10 = 1 << 29,
+        [FormerName( "HasShadowMap" )]
+        HasLightMap = 1 << 28,
+        [FormerName( "HasTextureMap10" )]
+        HasReserveMap = 1 << 29,
         ExtraDistortion = 1 << 30,
         Bit31 = 1u << 31
     }
@@ -875,7 +886,7 @@ namespace GFDLibrary.Materials
         GEqual,
         Always
     }
-    public enum HighlightMapMode
+    public enum MultiBlendType
     {
         Lerp = 1,
         Add = 2,

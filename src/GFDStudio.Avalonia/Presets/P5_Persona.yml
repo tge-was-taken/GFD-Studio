@@ -1,7 +1,7 @@
 !Material
 ResourceType: Material
 Name: P5_Persona
-Flags: HasAmbientColor, HasDiffuseColor, HasSpecularColor, ApplyFog, Diffusitivity, EnableLight, CastShadow, HasAttributes, HasOutline, HasDiffuseMap, HasSpecularMap, HasShadowMap
+Flags: HasAmbientColor, HasDiffuseColor, HasSpecularColor, ApplyFog, Diffusitivity, EnableLight, CastShadow, HasAttributes, HasOutline, HasDiffuseMap, HasGlossMap, HasLightMap
 DrawMethod: Opaque
 LegacyParameters: !MaterialLegacyParameters
   ResourceType: MaterialParameterSetLegacy
@@ -32,7 +32,7 @@ BlendSourceColor: 1
 BlendDestinationColor: 0
 SourceAlpha: 1
 DestinationAlpha: 0
-HighlightMapBlendMode: Lerp
+MultiBlendMode: Lerp
 AlphaClip: 0
 AlphaClipMode: Greater
 Flags2: ShadowMapAdd
@@ -68,7 +68,7 @@ DiffuseMap: &o0 !TextureMap
   Field88: 0
   Version: 17846384
 NormalMap: 
-SpecularMap: &o1 !TextureMap
+GlossMap: &o1 !TextureMap
   ResourceType: TextureMap
   Name: dum_b.dds
   Flags: 0
@@ -94,11 +94,11 @@ SpecularMap: &o1 !TextureMap
   Field88: 0
   Version: 17846384
 ReflectionMap: 
-HighlightMap: 
+MultiMap: 
 GlowMap: 
-NightMap: 
+DarkMap: 
 DetailMap: 
-ShadowMap: &o2 !TextureMap
+LightMap: &o2 !TextureMap
   ResourceType: TextureMap
   Name: dum_b.dds
   Flags: 0
@@ -123,7 +123,7 @@ ShadowMap: &o2 !TextureMap
   Field84: 0
   Field88: 0
   Version: 17846384
-TextureMap10: 
+ReserveMap: 
 TextureMaps:
 - *o0
 - 

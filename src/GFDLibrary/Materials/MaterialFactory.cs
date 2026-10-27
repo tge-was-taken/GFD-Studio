@@ -19,7 +19,7 @@ namespace GFDLibrary.Materials
                 BlendDestinationColor = materialPreset.BlendDestinationColor,
                 SourceAlpha = materialPreset.SourceAlpha,
                 DestinationAlpha = materialPreset.DestinationAlpha,
-                HighlightMapBlendMode = materialPreset.HighlightMapBlendMode,
+                MultiBlendMode = materialPreset.MultiBlendMode,
                 DisableBackfaceCulling = materialPreset.DisableBackfaceCulling,
                 ShaderId = materialPreset.ShaderId,
                 TexCoordFlags0 = materialPreset.TexCoordFlags0,
@@ -31,12 +31,12 @@ namespace GFDLibrary.Materials
                 Field98 = materialPreset.Field98,
                 DiffuseMap = null,
                 GlowMap = null,
-                HighlightMap = null,
-                NightMap = null,
+                MultiMap = null,
+                DarkMap = null,
                 NormalMap = null,
                 ReflectionMap = null,
-                ShadowMap = null,
-                SpecularMap = null,
+                LightMap = null,
+                GlossMap = null,
                 Flags = materialPreset.Flags,
                 Attributes = materialPreset.Attributes,
                 RuntimeMetadata = materialPreset.RuntimeMetadata,
@@ -63,25 +63,25 @@ namespace GFDLibrary.Materials
             }
 
             if ( materialPreset.DiffuseMap != null ) material.DiffuseMap = NewTextureMapResource( diffuseMapName );
-            if ( materialPreset.HighlightMap != null ) material.HighlightMap = NewTextureMapResource( highlightMapName );
+            if ( materialPreset.MultiMap != null ) material.MultiMap = NewTextureMapResource( highlightMapName );
             if ( materialPreset.GlowMap != null ) material.GlowMap = NewTextureMapResource( glowMapName );
-            if ( materialPreset.NightMap != null ) material.NightMap = NewTextureMapResource( nightMapName );
+            if ( materialPreset.DarkMap != null ) material.DarkMap = NewTextureMapResource( nightMapName );
             if ( materialPreset.DetailMap != null ) material.DetailMap = NewTextureMapResource( detailMapName );
-            if ( materialPreset.ShadowMap != null ) material.ShadowMap = NewTextureMapResource( shadowMapName );
-            if ( materialPreset.TextureMap10 != null ) material.TextureMap10 = NewTextureMapResource( textureMap10Name );
+            if ( materialPreset.LightMap != null ) material.LightMap = NewTextureMapResource( shadowMapName );
+            if ( materialPreset.ReserveMap != null ) material.ReserveMap = NewTextureMapResource( textureMap10Name );
             if ( materialPreset.Version >= 0x2000000)
             {
                 // force adding toon shadow map to character models so that they don't crash by default
                 if ( material.METAPHOR_MaterialParameterSet.ResourceType == ResourceType.MaterialParameterSetType2_3_13)
-                    material.SpecularMap = NewTextureMapResource( diffuseMapName );
+                    material.GlossMap = NewTextureMapResource( diffuseMapName );
                 // distortion multiply map
                 if ( material.METAPHOR_MaterialParameterSet.ResourceType == ResourceType.MaterialParameterSetType4 )
-                    material.HighlightMap = NewTextureMapResource( diffuseMapName );
+                    material.MultiMap = NewTextureMapResource( diffuseMapName );
             } else
             {
                 if ( materialPreset.NormalMap != null ) material.NormalMap = NewTextureMapResource( normalMapName );
                 if ( materialPreset.ReflectionMap != null ) material.ReflectionMap = NewTextureMapResource( reflectionMapName );
-                if ( materialPreset.SpecularMap != null ) material.SpecularMap = NewTextureMapResource( specularMapName );
+                if ( materialPreset.GlossMap != null ) material.GlossMap = NewTextureMapResource( specularMapName );
             }
 
             material.RuntimeMetadata.IsCustomMaterial = false;

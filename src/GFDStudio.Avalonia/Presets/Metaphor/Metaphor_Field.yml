@@ -20,7 +20,7 @@ BlendSourceColor: 1
 BlendDestinationColor: 0
 SourceAlpha: 1
 DestinationAlpha: 0
-HighlightMapBlendMode: Lerp
+MultiBlendMode: Lerp
 AlphaClip: 0
 AlphaClipMode: GEqual
 Flags2: Bit15
@@ -80,14 +80,14 @@ NormalMap: &o2 !TextureMap
   Field84: 0
   Field88: 0
   Version: 34669089
-SpecularMap: 
+GlossMap: 
 ReflectionMap: 
-HighlightMap: 
+MultiMap: 
 GlowMap: 
-NightMap: 
+DarkMap: 
 DetailMap: 
-ShadowMap: 
-TextureMap10: 
+LightMap: 
+ReserveMap: 
 TextureMaps:
 - *o1
 - *o2

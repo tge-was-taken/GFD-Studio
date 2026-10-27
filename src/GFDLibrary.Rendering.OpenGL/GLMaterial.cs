@@ -26,9 +26,9 @@ namespace GFDLibrary.Rendering.OpenGL
         public GLTexture NightTexture { get; set; }
         public GLTexture DetailTexture { get; set; }
         public GLTexture ShadowTexture { get; set; }
-        public GLTexture TextureMap10 { get; set; }
+        public GLTexture ReserveMap { get; set; }
         public int DrawMethod { get; set; }
-        public int HighlightMapBlendMode { get; set; }
+        public int MultiBlendMode { get; set; }
         public int AlphaClip { get; set; }
         public int AlphaClipMode { get; set; }
         public int TexcoordsFlags { get; set; }
@@ -43,7 +43,7 @@ namespace GFDLibrary.Rendering.OpenGL
         public bool HasNightTexture => NightTexture != null;
         public bool HasDetailTexture => DetailTexture != null;
         public bool HasShadowTexture => ShadowTexture != null;
-        public bool HasTexture10 => TextureMap10 != null;
+        public bool HasTexture10 => ReserveMap != null;
         public bool RenderWireframe { get; set; }
         public bool EnableBackfaceCulling { get; set; }
 
@@ -55,7 +55,7 @@ namespace GFDLibrary.Rendering.OpenGL
         {
             MatFlags = Convert.ToInt32( material.Flags );
             DrawMethod = (int)material.DrawMethod;
-            HighlightMapBlendMode = (int)material.HighlightMapBlendMode;
+            MultiBlendMode = (int)material.MultiBlendMode;
             AlphaClip = (int)material.AlphaClip;
             AlphaClipMode = (int)material.AlphaClipMode;
             MatFlags2 = Convert.ToInt32( material.Flags2 );
@@ -70,37 +70,37 @@ namespace GFDLibrary.Rendering.OpenGL
             {
                 NormalTexture = textureCreator( material, material.NormalMap.Name );
             }
-            if ( material.SpecularMap != null )
+            if ( material.GlossMap != null )
             {
-                SpecularTexture = textureCreator( material, material.SpecularMap.Name );
+                SpecularTexture = textureCreator( material, material.GlossMap.Name );
             }
             if ( material.ReflectionMap != null )
             {
                 ReflectionTexture = textureCreator( material, material.ReflectionMap.Name );
             }
-            if ( material.HighlightMap != null )
+            if ( material.MultiMap != null )
             {
-                HighlightTexture = textureCreator( material, material.HighlightMap.Name );
+                HighlightTexture = textureCreator( material, material.MultiMap.Name );
             }
             if ( material.GlowMap != null )
             {
                 GlowTexture = textureCreator( material, material.GlowMap.Name );
             }
-            if ( material.NightMap != null )
+            if ( material.DarkMap != null )
             {
-                NightTexture = textureCreator( material, material.NightMap.Name );
+                NightTexture = textureCreator( material, material.DarkMap.Name );
             }
             if ( material.DetailMap != null )
             {
                 DetailTexture = textureCreator( material, material.DetailMap.Name );
             }
-            if ( material.ShadowMap != null )
+            if ( material.LightMap != null )
             {
-                ShadowTexture = textureCreator( material, material.ShadowMap.Name );
+                ShadowTexture = textureCreator( material, material.LightMap.Name );
             }
-            if ( material.TextureMap10 != null )
+            if ( material.ReserveMap != null )
             {
-                TextureMap10 = textureCreator( material, material.TextureMap10.Name );
+                ReserveMap = textureCreator( material, material.ReserveMap.Name );
             }
         }
 
@@ -119,7 +119,7 @@ namespace GFDLibrary.Rendering.OpenGL
             shaderProgram.SetUniform( "uMatHasDiffuse", HasDiffuseTexture );
 
             shaderProgram.SetUniform( "DrawMethod", DrawMethod );
-            shaderProgram.SetUniform( "HighlightMapBlendMode", HighlightMapBlendMode );
+            shaderProgram.SetUniform( "MultiBlendMode", MultiBlendMode );
             shaderProgram.SetUniform( "alphaClip", AlphaClip );
             shaderProgram.SetUniform( "alphaClipMode", AlphaClipMode );
             shaderProgram.SetUniform( "TexcoordFlags", TexcoordsFlags );
@@ -173,7 +173,7 @@ namespace GFDLibrary.Rendering.OpenGL
             if ( HasTexture10 )
             {
                 GL.ActiveTexture( TextureUnit.Texture9 );
-                TextureMap10.Bind();
+                ReserveMap.Bind();
             }
             if ( RenderWireframe )
             {

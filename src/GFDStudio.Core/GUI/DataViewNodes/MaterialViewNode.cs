@@ -142,11 +142,11 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         [Browsable( true )]
-        [TypeConverter( typeof( EnumTypeConverter<HighlightMapMode> ) )]
+        [TypeConverter( typeof( EnumTypeConverter<MultiBlendType> ) )]
         [DisplayName( "Highlight Map Blend Mode" )]
-        public HighlightMapMode HighlightMapBlendMode
+        public MultiBlendType MultiBlendMode
         {
-            get => Data.HighlightMapBlendMode;
+            get => Data.MultiBlendMode;
             set => SetDataProperty( value );
         }
 
@@ -251,14 +251,14 @@ namespace GFDStudio.GUI.DataViewNodes
             {
                 Data.DiffuseMap,
                 Data.NormalMap,
-                Data.SpecularMap,
+                Data.GlossMap,
                 Data.ReflectionMap,
-                Data.HighlightMap,
+                Data.MultiMap,
                 Data.GlowMap,
-                Data.NightMap,
+                Data.DarkMap,
                 Data.DetailMap,
-                Data.ShadowMap,
-                Data.TextureMap10,
+                Data.LightMap,
+                Data.ReserveMap,
             };
             return textureMapList;
         }
@@ -299,13 +299,13 @@ namespace GFDStudio.GUI.DataViewNodes
                 material.DetailMap = null;
                 material.DiffuseMap = null;
                 material.GlowMap = null;
-                material.HighlightMap = null;
-                material.NightMap = null;
+                material.MultiMap = null;
+                material.DarkMap = null;
                 material.NormalMap = null;
                 material.ReflectionMap = null;
-                material.ShadowMap = null;
-                material.SpecularMap = null;
-                material.TextureMap10 = null;
+                material.LightMap = null;
+                material.GlossMap = null;
+                material.ReserveMap = null;
 
                 //if ( material.METAPHOR_UseMaterialParameterSet )
                 //    material.METAPHOR_MaterialParameterSet = MaterialParameterSetViewNode.Data;
@@ -328,28 +328,28 @@ namespace GFDStudio.GUI.DataViewNodes
                             material.NormalMap = textureMap;
                             break;
                         case 2:
-                            material.SpecularMap = textureMap;
+                            material.GlossMap = textureMap;
                             break;
                         case 3:
                             material.ReflectionMap = textureMap;
                             break;
                         case 4:
-                            material.HighlightMap = textureMap;
+                            material.MultiMap = textureMap;
                             break;
                         case 5:
                             material.GlowMap = textureMap;
                             break;
                         case 6:
-                            material.NightMap = textureMap;
+                            material.DarkMap = textureMap;
                             break;
                         case 7:
                             material.DetailMap = textureMap;
                             break;
                         case 8:
-                            material.ShadowMap = textureMap;
+                            material.LightMap = textureMap;
                             break;
                         case 9:
-                            material.TextureMap10 = textureMap;
+                            material.ReserveMap = textureMap;
                             break;
                     }
                 }

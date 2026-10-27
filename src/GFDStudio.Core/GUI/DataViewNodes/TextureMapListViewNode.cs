@@ -27,27 +27,27 @@ namespace GFDStudio.GUI.DataViewNodes
         public TextureMapViewNode NormalMap { get; set; }
 
         [Browsable( false )]
-        public TextureMapViewNode SpecularMap { get; set; }
+        public TextureMapViewNode GlossMap { get; set; }
 
         [Browsable( false )]
         public TextureMapViewNode ReflectionMap { get; set; }
 
         [Browsable( false )]
-        public TextureMapViewNode HighlightMap { get; set; }
+        public TextureMapViewNode MultiMap { get; set; }
 
         [Browsable( false )]
         public TextureMapViewNode GlowMap { get; set; }
 
         [Browsable( false )]
-        public TextureMapViewNode NightMap { get; set; }
+        public TextureMapViewNode DarkMap { get; set; }
 
         [Browsable( false )]
         public TextureMapViewNode DetailMap { get; set; }
 
         [Browsable( false )]
-        public TextureMapViewNode ShadowMap { get; set; }
+        public TextureMapViewNode LightMap { get; set; }
         [Browsable( false )]
-        public TextureMapViewNode TextureMap10 { get; set; }
+        public TextureMapViewNode ReserveMap { get; set; }
 
         public TextureMapListViewNode( string text, List< TextureMap > data ) : base( text, data )
         {
@@ -71,14 +71,14 @@ namespace GFDStudio.GUI.DataViewNodes
                 var list = new List< TextureMap >( 10 );
                 list.Add( Nodes.Contains( DiffuseMap ) ? DiffuseMap.Data : null );
                 list.Add( Nodes.Contains( NormalMap ) ? NormalMap.Data : null );
-                list.Add( Nodes.Contains( SpecularMap ) ? SpecularMap.Data : null );
+                list.Add( Nodes.Contains( GlossMap ) ? GlossMap.Data : null );
                 list.Add( Nodes.Contains( ReflectionMap ) ? ReflectionMap.Data : null );
-                list.Add( Nodes.Contains( HighlightMap ) ? HighlightMap.Data : null );
+                list.Add( Nodes.Contains( MultiMap ) ? MultiMap.Data : null );
                 list.Add( Nodes.Contains( GlowMap ) ? GlowMap.Data : null );
-                list.Add( Nodes.Contains( NightMap ) ? NightMap.Data : null );
+                list.Add( Nodes.Contains( DarkMap ) ? DarkMap.Data : null );
                 list.Add( Nodes.Contains( DetailMap ) ? DetailMap.Data : null );
-                list.Add( Nodes.Contains( ShadowMap ) ? ShadowMap.Data : null );
-                list.Add( Nodes.Contains( TextureMap10 ) ? TextureMap10.Data : null );
+                list.Add( Nodes.Contains( LightMap ) ? LightMap.Data : null );
+                list.Add( Nodes.Contains( ReserveMap ) ? ReserveMap.Data : null );
                 return list;
             } );
         }
@@ -102,8 +102,8 @@ namespace GFDStudio.GUI.DataViewNodes
             if ( Data[2] != null )
             {
                 string TexName = Data[2].METAPHOR_ParentMaterialParameterSet != null ? Data[2].METAPHOR_ParentMaterialParameterSet.GetTextureMap3Name() : "Specular Map";
-                SpecularMap = ( TextureMapViewNode )DataViewNodeFactory.Create( TexName, Data[2] );
-                AddChildNode( SpecularMap );
+                GlossMap = ( TextureMapViewNode )DataViewNodeFactory.Create( TexName, Data[2] );
+                AddChildNode( GlossMap );
             }
 
             if ( Data[3] != null )
@@ -116,8 +116,8 @@ namespace GFDStudio.GUI.DataViewNodes
             if ( Data[4] != null )
             {
                 string TexName = Data[4].METAPHOR_ParentMaterialParameterSet != null ? Data[4].METAPHOR_ParentMaterialParameterSet.GetTextureMap5Name() : "Highlight Map";
-                HighlightMap = ( TextureMapViewNode )DataViewNodeFactory.Create( TexName, Data[4] );
-                AddChildNode( HighlightMap );
+                MultiMap = ( TextureMapViewNode )DataViewNodeFactory.Create( TexName, Data[4] );
+                AddChildNode( MultiMap );
             }
 
             if ( Data[5] != null )
@@ -130,8 +130,8 @@ namespace GFDStudio.GUI.DataViewNodes
             if ( Data[6] != null )
             {
                 string TexName = Data[6].METAPHOR_ParentMaterialParameterSet != null ? Data[6].METAPHOR_ParentMaterialParameterSet.GetTextureMap7Name() : "Night Map";
-                NightMap = ( TextureMapViewNode )DataViewNodeFactory.Create( TexName, Data[6] );
-                AddChildNode( NightMap );
+                DarkMap = ( TextureMapViewNode )DataViewNodeFactory.Create( TexName, Data[6] );
+                AddChildNode( DarkMap );
             }
 
             if ( Data[7] != null )
@@ -144,14 +144,14 @@ namespace GFDStudio.GUI.DataViewNodes
             if ( Data[8] != null )
             {
                 string TexName = Data[8].METAPHOR_ParentMaterialParameterSet != null ? Data[8].METAPHOR_ParentMaterialParameterSet.GetTextureMap9Name() : "Shadow Map";
-                ShadowMap = ( TextureMapViewNode )DataViewNodeFactory.Create( TexName, Data[8] );
-                AddChildNode( ShadowMap );
+                LightMap = ( TextureMapViewNode )DataViewNodeFactory.Create( TexName, Data[8] );
+                AddChildNode( LightMap );
             }
             if ( Data[9] != null )
             {
                 string TexName = Data[9].METAPHOR_ParentMaterialParameterSet != null ? Data[9].METAPHOR_ParentMaterialParameterSet.GetTextureMap10Name() : "Intensity Map";
-                TextureMap10 = (TextureMapViewNode)DataViewNodeFactory.Create( TexName, Data[9] );
-                AddChildNode( TextureMap10 );
+                ReserveMap = (TextureMapViewNode)DataViewNodeFactory.Create( TexName, Data[9] );
+                AddChildNode( ReserveMap );
             }
         }
 
@@ -166,25 +166,25 @@ namespace GFDStudio.GUI.DataViewNodes
                     NormalMap = ( TextureMapViewNode )DataViewNodeFactory.Create( "Normal Map", textureMap );
                     return;
                 case 2:
-                    SpecularMap = ( TextureMapViewNode )DataViewNodeFactory.Create( "Specular Map", textureMap );
+                    GlossMap = ( TextureMapViewNode )DataViewNodeFactory.Create( "Specular Map", textureMap );
                     return;
                 case 3:
                     ReflectionMap = ( TextureMapViewNode )DataViewNodeFactory.Create( "Reflection Map", textureMap );
                     return;
                 case 4:
-                    HighlightMap = ( TextureMapViewNode )DataViewNodeFactory.Create( "Hightlight Map", textureMap );
+                    MultiMap = ( TextureMapViewNode )DataViewNodeFactory.Create( "Hightlight Map", textureMap );
                     return;
                 case 5:
                     GlowMap = ( TextureMapViewNode )DataViewNodeFactory.Create( "Glow Map", textureMap );
                     return;
                 case 6:
-                    NightMap = ( TextureMapViewNode )DataViewNodeFactory.Create( "Night Map", textureMap );
+                    DarkMap = ( TextureMapViewNode )DataViewNodeFactory.Create( "Night Map", textureMap );
                     return;
                 case 7:
                     DetailMap = ( TextureMapViewNode )DataViewNodeFactory.Create( "Detail Map", textureMap );
                     return;
                 case 8:
-                    ShadowMap = ( TextureMapViewNode )DataViewNodeFactory.Create( "Shadow Map", textureMap );
+                    LightMap = ( TextureMapViewNode )DataViewNodeFactory.Create( "Shadow Map", textureMap );
                     return;
             }
         }

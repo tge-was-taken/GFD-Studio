@@ -37,8 +37,8 @@ namespace GFDLibrary.Materials
             foreach (var material in materialDictionary.Materials)
             {
                 var diffuseTexture = material.DiffuseMap;
-                var shadowTexture = material.ShadowMap ?? diffuseTexture;
-                var specularTexture = material.SpecularMap ?? diffuseTexture;
+                var shadowTexture = material.LightMap ?? diffuseTexture;
+                var specularTexture = material.GlossMap ?? diffuseTexture;
                 if (diffuseTexture == null) newMaterial = material;
 
                 else newMaterial = MaterialFactory.CreateMaterial(
@@ -54,12 +54,12 @@ namespace GFDLibrary.Materials
                     specularTexture?.Name,
                     material.ReflectionMap?.Name,
                     options.DefaultMaterial.Preset,
-                    material.HighlightMap?.Name,
+                    material.MultiMap?.Name,
                     material.GlowMap?.Name,
-                    material.NightMap?.Name,
+                    material.DarkMap?.Name,
                     material.DetailMap?.Name,
                     shadowTexture?.Name,
-                    material.TextureMap10?.Name );
+                    material.ReserveMap?.Name );
                 newMaterialDictionary.Add(newMaterial);
             }
 

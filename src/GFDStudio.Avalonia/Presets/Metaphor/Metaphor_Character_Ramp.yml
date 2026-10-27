@@ -1,7 +1,7 @@
 !Material
 ResourceType: Material
 Name: Metaphor_Character_Ramp
-Flags: HasAmbientColor, HasDiffuseColor, ApplyFog, EnableLight, ReceiveShadow, CastShadow, HasDiffuseMap, HasSpecularMap
+Flags: HasAmbientColor, HasDiffuseColor, ApplyFog, EnableLight, ReceiveShadow, CastShadow, HasDiffuseMap, HasGlossMap
 DrawMethod: Opaque
 LegacyParameters: !MaterialLegacyParameters
   ResourceType: MaterialParameterSetLegacy
@@ -20,7 +20,7 @@ BlendSourceColor: 1
 BlendDestinationColor: 0
 SourceAlpha: 1
 DestinationAlpha: 0
-HighlightMapBlendMode: Lerp
+MultiBlendMode: Lerp
 AlphaClip: 0
 AlphaClipMode: GEqual
 Flags2: Bit15
@@ -56,7 +56,7 @@ DiffuseMap: &o1 !TextureMap
   Field88: 0
   Version: 34669089
 NormalMap: 
-SpecularMap: &o2 !TextureMap
+GlossMap: &o2 !TextureMap
   ResourceType: TextureMap
   Name: c0006_001_body01_sc.png
   Flags: 0
@@ -82,12 +82,12 @@ SpecularMap: &o2 !TextureMap
   Field88: 0
   Version: 34669089
 ReflectionMap: 
-HighlightMap: 
+MultiMap: 
 GlowMap: 
-NightMap: 
+DarkMap: 
 DetailMap: 
-ShadowMap: 
-TextureMap10: 
+LightMap: 
+ReserveMap: 
 TextureMaps:
 - *o1
 - 

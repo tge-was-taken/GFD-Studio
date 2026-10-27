@@ -393,13 +393,13 @@ namespace GFDStudio.GUI.DataViewNodes
                     ReplacementMat.Name = OriginalMat.Name;
                     if ( OriginalMat.DiffuseMap != null && ReplacementMat.DiffuseMap != null ) ReplacementMat.DiffuseMap.Name = OriginalMat.DiffuseMap.Name;
                     if ( OriginalMat.NormalMap != null && ReplacementMat.NormalMap != null ) ReplacementMat.NormalMap.Name = OriginalMat.NormalMap.Name;
-                    if ( OriginalMat.SpecularMap != null && ReplacementMat.SpecularMap != null ) ReplacementMat.SpecularMap.Name = OriginalMat.SpecularMap.Name;
+                    if ( OriginalMat.GlossMap != null && ReplacementMat.GlossMap != null ) ReplacementMat.GlossMap.Name = OriginalMat.GlossMap.Name;
                     if ( OriginalMat.ReflectionMap != null && ReplacementMat.ReflectionMap != null ) ReplacementMat.ReflectionMap.Name = OriginalMat.ReflectionMap.Name;
-                    if ( OriginalMat.HighlightMap != null && ReplacementMat.HighlightMap != null ) ReplacementMat.HighlightMap.Name = OriginalMat.HighlightMap.Name;
+                    if ( OriginalMat.MultiMap != null && ReplacementMat.MultiMap != null ) ReplacementMat.MultiMap.Name = OriginalMat.MultiMap.Name;
                     if ( OriginalMat.GlowMap != null && ReplacementMat.GlowMap != null ) ReplacementMat.GlowMap.Name = OriginalMat.GlowMap.Name;
-                    if ( OriginalMat.NightMap != null && ReplacementMat.NightMap != null ) ReplacementMat.NightMap.Name = OriginalMat.NightMap.Name;
+                    if ( OriginalMat.DarkMap != null && ReplacementMat.DarkMap != null ) ReplacementMat.DarkMap.Name = OriginalMat.DarkMap.Name;
                     if ( OriginalMat.DetailMap != null && ReplacementMat.DetailMap != null ) ReplacementMat.DetailMap.Name = OriginalMat.DetailMap.Name;
-                    if ( OriginalMat.ShadowMap != null && ReplacementMat.ShadowMap != null ) ReplacementMat.ShadowMap.Name = OriginalMat.ShadowMap.Name;
+                    if ( OriginalMat.LightMap != null && ReplacementMat.LightMap != null ) ReplacementMat.LightMap.Name = OriginalMat.LightMap.Name;
                 }
 
                 if ( retainColorValues ?? UserOptions.Current.RetainMaterialColorValues )
