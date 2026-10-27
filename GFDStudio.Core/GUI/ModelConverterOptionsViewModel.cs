@@ -176,7 +176,7 @@ public static class MaterialPresetHelper
 {
     private static readonly string _currentPath = AppContext.BaseDirectory;
     public static readonly string BasePresetLibraryPath = System.IO.Path.Combine( AppContext.BaseDirectory, "Presets" ) + System.IO.Path.DirectorySeparatorChar;
-    public static readonly string MetaphorPresetLibraryPath = BasePresetLibraryPath + @"Metaphor\";
+    public static readonly string MetaphorPresetLibraryPath = Path.Combine( BasePresetLibraryPath, "Metaphor" ) + System.IO.Path.DirectorySeparatorChar;
     public static string GetDefaultMaterialPresetForVersion( uint version )
     {
         var presetLibraryPath = ResourceVersion.IsV2( version ) ? MetaphorPresetLibraryPath : BasePresetLibraryPath;
