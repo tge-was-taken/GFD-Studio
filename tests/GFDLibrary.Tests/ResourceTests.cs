@@ -314,10 +314,10 @@ namespace GFDLibrary.Tests
             Assert.AreEqual( a.Name, b.Name );
             Assert.AreEqual( a.Format, b.Format );
             CollectionAssert.AreEqual( a.Data, b.Data );
-            Assert.AreEqual( a.Field1C, b.Field1C );
-            Assert.AreEqual( a.Field1D, b.Field1D );
-            Assert.AreEqual( a.Field1E, b.Field1E);
-            Assert.AreEqual( a.Field1F, b.Field1F );
+            Assert.AreEqual( a.MinificationFilter, b.MinificationFilter );
+            Assert.AreEqual( a.MagnificationFilter, b.MagnificationFilter );
+            Assert.AreEqual( a.WrapModeU, b.WrapModeU );
+            Assert.AreEqual( a.WrapModeV, b.WrapModeV );
         }
 
         private void CompareMaterialDictionaries( MaterialDictionary a, MaterialDictionary b)

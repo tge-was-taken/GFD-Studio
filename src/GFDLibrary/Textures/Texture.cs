@@ -49,16 +49,20 @@ namespace GFDLibrary.Textures
         public byte[] Data { get; set; }
 
         // 1C
-        public byte Field1C { get; set; }
+        [FormerName( "Field1C" )]
+        public byte MinificationFilter { get; set; }
 
         // 1D
-        public byte Field1D { get; set; }
+        [FormerName( "Field1D" )]
+        public byte MagnificationFilter { get; set; }
 
         // 1E
-        public byte Field1E { get; set; }
+        [FormerName( "Field1E" )]
+        public byte WrapModeU { get; set; }
 
         // 1F
-        public byte Field1F { get; set; }
+        [FormerName( "Field1F" )]
+        public byte WrapModeV { get; set; }
 
         public bool IsDefaultTexture { get; private set; }
         public bool IsTexSourceExternal { get; set; } = false;
@@ -76,21 +80,21 @@ namespace GFDLibrary.Textures
             Name = name;
             Format = format;
             Data = data;
-            Field1C = 1;
-            Field1D = 1;
-            Field1E = 0;
-            Field1F = 0;
+            MinificationFilter = 1;
+            MagnificationFilter = 1;
+            WrapModeU = 0;
+            WrapModeV = 0;
         }
 
-        public Texture( string name, TextureFormat format, byte[] data, byte field1c, byte field1d, byte field1e, byte field1f ) : this()
+        public Texture( string name, TextureFormat format, byte[] data, byte minificationFilter, byte magnificationFilter, byte wrapModeU, byte wrapModeV ) : this()
         {
             Name = name;
             Format = format;
             Data = data;
-            Field1C = field1c;
-            Field1D = field1d;
-            Field1E = field1e;
-            Field1F = field1f;
+            MinificationFilter = minificationFilter;
+            MagnificationFilter = magnificationFilter;
+            WrapModeU = wrapModeU;
+            WrapModeV = wrapModeV;
         }
 
         public static Texture CreateDefaultTexture(string name)
@@ -110,10 +114,10 @@ namespace GFDLibrary.Textures
                 throw new InvalidDataException( $"Unknown texture format: {(int)Format}" );
             int size = reader.ReadInt32();
             Data = reader.ReadBytes( reader.ValidateCount( size ) );
-            Field1C = reader.ReadByte();
-            Field1D = reader.ReadByte();
-            Field1E = reader.ReadByte();
-            Field1F = reader.ReadByte();
+            MinificationFilter = reader.ReadByte();
+            MagnificationFilter = reader.ReadByte();
+            WrapModeU = reader.ReadByte();
+            WrapModeV = reader.ReadByte();
         }
 
         protected override void WriteCore( ResourceWriter writer )
@@ -129,10 +133,10 @@ namespace GFDLibrary.Textures
                 writer.WriteInt32( Data.Length );
                 writer.WriteBytes( Data );
             }
-            writer.WriteByte( Field1C );
-            writer.WriteByte( Field1D );
-            writer.WriteByte( Field1E );
-            writer.WriteByte( Field1F );
+            writer.WriteByte( MinificationFilter );
+            writer.WriteByte( MagnificationFilter );
+            writer.WriteByte( WrapModeU );
+            writer.WriteByte( WrapModeV );
         }
 
         public override string ToString() => Name;
