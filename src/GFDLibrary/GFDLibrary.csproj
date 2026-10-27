@@ -1,9 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <Version>0.10.3</Version>
-    <Authors>TGE</Authors>
     <AssemblyName>GFDLibrary</AssemblyName>
     <RootNamespace>GFDLibrary</RootNamespace>
   </PropertyGroup>
@@ -18,7 +15,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="YamlDotNet" Version="15.1.2" />
+    <PackageReference Include="YamlDotNet" />
   </ItemGroup>
 
   <ItemGroup>

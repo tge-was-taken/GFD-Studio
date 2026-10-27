@@ -1,9 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
-  <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <Version>0.10.3</Version>
-  </PropertyGroup>
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -14,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="OpenTK" Version="4.9.4" />
+    <PackageReference Include="OpenTK" />
   </ItemGroup>
 
   <ItemGroup>

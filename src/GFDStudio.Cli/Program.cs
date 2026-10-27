@@ -17,11 +17,9 @@ namespace GFDStudio.Cli
         public static CliUserOptions Options { get; } = new();
 
         /// <summary>
-        /// What a command prints as its result. Standard output is kept for that alone, and
-        /// anything the library decides to write goes to standard error, so piping a command
-        /// into another program stays safe.
+        /// What a command prints as its result.
         /// </summary>
-        public static TextWriter Output { get; private set; } = Console.Out;
+        public static TextWriter Output { get; } = Console.Out;
 
         public static int Main( string[] args )
         {
@@ -29,9 +27,6 @@ namespace GFDStudio.Cli
             // missing, so they go in before anything else runs.
             UserDialogs.Current = Dialogs;
             UserOptions.Current = Options;
-
-            Output = Console.Out;
-            Console.SetOut( Console.Error );
 
             var root = new RootCommand( "GFD Studio on the command line." )
             {
