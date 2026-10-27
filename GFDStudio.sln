@@ -24,6 +24,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GFDStudio.Core", "GFDStudio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GFDStudio.Avalonia", "GFDStudio.Avalonia\GFDStudio.Avalonia.csproj", "{964C8590-1F58-4A76-835B-38CDAE7CB20C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GFDStudio.Cli", "GFDStudio.Cli\GFDStudio.Cli.csproj", "{5FC4BD4F-F392-4D85-8458-7E6AE8105A76}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -118,6 +120,18 @@ Global
 		{964C8590-1F58-4A76-835B-38CDAE7CB20C}.Release|x64.Build.0 = Release|Any CPU
 		{964C8590-1F58-4A76-835B-38CDAE7CB20C}.Release|x86.ActiveCfg = Release|Any CPU
 		{964C8590-1F58-4A76-835B-38CDAE7CB20C}.Release|x86.Build.0 = Release|Any CPU
+		{5FC4BD4F-F392-4D85-8458-7E6AE8105A76}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5FC4BD4F-F392-4D85-8458-7E6AE8105A76}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5FC4BD4F-F392-4D85-8458-7E6AE8105A76}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{5FC4BD4F-F392-4D85-8458-7E6AE8105A76}.Debug|x64.Build.0 = Debug|Any CPU
+		{5FC4BD4F-F392-4D85-8458-7E6AE8105A76}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5FC4BD4F-F392-4D85-8458-7E6AE8105A76}.Debug|x86.Build.0 = Debug|Any CPU
+		{5FC4BD4F-F392-4D85-8458-7E6AE8105A76}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5FC4BD4F-F392-4D85-8458-7E6AE8105A76}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5FC4BD4F-F392-4D85-8458-7E6AE8105A76}.Release|x64.ActiveCfg = Release|Any CPU
+		{5FC4BD4F-F392-4D85-8458-7E6AE8105A76}.Release|x64.Build.0 = Release|Any CPU
+		{5FC4BD4F-F392-4D85-8458-7E6AE8105A76}.Release|x86.ActiveCfg = Release|Any CPU
+		{5FC4BD4F-F392-4D85-8458-7E6AE8105A76}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

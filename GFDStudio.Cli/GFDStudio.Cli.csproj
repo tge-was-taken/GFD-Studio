@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>GFDStudio.Cli</RootNamespace>
+    <AssemblyName>gfdstudio</AssemblyName>
+    <VersionPrefix>1.0.0</VersionPrefix>
+    <VersionSuffix>rc</VersionSuffix>
+    <Authors>TGE</Authors>
+    <Company>TGE</Company>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.CommandLine" Version="2.0.14" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GFDStudio.Core\GFDStudio.Core.csproj" />
+  </ItemGroup>
+
+  <!-- The material presets the model converter falls back on live with the GUI, and the
+       conversion commands need them just as much. -->
+  <ItemGroup>
+    <Content Include="..\GFDStudio.Avalonia\Presets\**\*"
+             Link="Presets\%(RecursiveDir)%(Filename)%(Extension)"
+             CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>
