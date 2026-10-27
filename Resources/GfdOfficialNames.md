@@ -389,23 +389,72 @@ material name, `0x4` triangles, `0x8` bounding box, `0x10` bounding sphere,
 
 ### `gfdVertexFormat` (`fvf`) bits
 
-Stride arithmetic in the same function, plus the two asserts in
-`gfdMorphTargetStreamRead` (`"fvf & GFDFVF_XYZ"`,
-`"(fvf & (~(GFDFVF_XYZ|GFDFVF_NORMAL))) == 0"` with mask `0xFFFFFFED`).
+**Corrected and upgraded.** The first pass derived most of these from stride
+arithmetic and marked them medium. They are now named outright by the game's
+own debug printer, `gfdThJobGeometryCreateJobData_0` at **`0x91D8D0`**, which
+prints an fvf as text with one explicit bit test per name:
+
+```
+if ( (fvf & 0x00000002) != 0 )  gfdPrintf_0("XYZ");
+if ( (fvf & 0x00000010) != 0 )  gfdPrintf_0(" | NORMAL");
+if ( (fvf & 0x00000040) != 0 )  gfdPrintf_0(" | DIFFUSE");
+if ( (fvf & 0x20000000) != 0 )  gfdPrintf_0(" | TANGENT");
+if ( (fvf & 0x10000000) != 0 )  gfdPrintf_0(" | BINORMAL");
+if ( (fvf & 0x00000100) != 0 )  gfdPrintf_0(" | TEXCOORD0");
+if ( (fvf & 0x00000200) != 0 )  gfdPrintf_0(" | TEXCOORD1");
+if ( (fvf & 0x00000400) != 0 )  gfdPrintf_0(" | TEXCOORD2");
+```
+
+That block appears twice in the function and both copies agree. A second,
+independent printer in `gfdEditorGeometry.c` carries the same set as the string
+run at `0xF23E78`: `|NORMAL`, `|DIFFUSE`, `|TANGENT`, `|BINORMAL`, `|TEX0`,
+`|TEX1`, `|TEX2`.
+
+**The first pass had tangent and binormal the wrong way round.** `0x20000000`
+is TANGENT and `0x10000000` is BINORMAL, not the reverse.
 
 | Bit | Size added | Official name | C# `VertexAttributeFlags` | Conf. |
 |---|---|---|---|---|
-| `0x00000002` | 12 | `GFDFVF_XYZ` | `Position` | high (named in assert) |
+| `0x00000002` | 12 | `XYZ` (`GFDFVF_XYZ`) | `Position` | high |
 | `0x00000004` | 16 | *(position4 / XYZW)* |  | medium |
-| `0x00000010` | 12 | `GFDFVF_NORMAL` | `Normal` | high (named in assert) |
-| `0x00000040` | 4 | *(diffuse colour)* | `Color0` | medium |
-| `0x00000100` | 8 | *(texcoord 0)* | `TexCoord0` | medium |
-| `0x00000200` | 8 | *(texcoord 1)* | `TexCoord1` | medium |
-| `0x00000400` | 8 | *(texcoord 2)* | `TexCoord2` | medium |
-| `0x10000000` | 12 | *(tangent)* | `Tangent` | medium |
-| `0x20000000` | 12 | *(binormal)* | `Binormal` | medium |
+| `0x00000010` | 12 | `NORMAL` (`GFDFVF_NORMAL`) | `Normal` | high |
+| `0x00000040` | 4 | `DIFFUSE` | `Color0` | high |
+| `0x00000100` | 8 | `TEXCOORD0` | `TexCoord0` | high |
+| `0x00000200` | 8 | `TEXCOORD1` | `TexCoord1` | high |
+| `0x00000400` | 8 | `TEXCOORD2` | `TexCoord2` | high |
+| `0x10000000` | 12 | `BINORMAL` | `Binormal` | high |
+| `0x20000000` | 12 | `TANGENT` | `Tangent` | high |
 | `0x40000000` | 4 | *(second colour)* | `Color2` | medium |
 | `0x80000000` | 20 | *(unknown 20-byte attribute)* |  | low |
+
+`0x2` and `0x10` keep their `GFDFVF_` spellings from the two asserts in
+`gfdMorphTargetStreamRead` (`"fvf & GFDFVF_XYZ"`,
+`"(fvf & (~(GFDFVF_XYZ|GFDFVF_NORMAL))) == 0"`, mask `0xFFFFFFED`); the printer
+agrees on the bits.
+
+#### Layout order is not print order
+
+The printer names the tangent before the binormal, but in the vertex the
+binormal comes first. The evidence for that is not the stride loop in
+`gfdGeometryStreamRead_0`, which only accumulates a total and so proves nothing
+about order. It is `gfdDeviceRenderTransferImDataToVertexBuffer_0` at
+**`0x833228`**, which builds the vertex element descriptors by testing the bits
+in sequence and assigning each a consecutive slot:
+
+```
+fvf & 0x2 -> fvf & 0x10 -> fvf & 0x10000000 -> fvf & 0x20000000
+  -> fvf & 0x40 -> fvf & 0x100 -> fvf & 0x200 -> fvf & 0x400
+  -> fvf & 0x40000000 -> fvf & 0x80000000
+```
+
+So the in-vertex order is position, normal, **binormal, tangent**, diffuse,
+texcoord0-2. High confidence: this is the function that defines the layout,
+not a side effect of how a size was summed.
+
+Note also that round-tripping a file byte for byte does **not** validate this
+ordering on its own. If the reader and the writer agree, any consistent order
+round trips. The transfer function is what settles it.
+
 
 Skinned geometry (`flags & 1`) adds 20 bytes per vertex on top of the stride:
 4 × f32 weights plus a packed u32 of four byte indices. This matches our
@@ -835,9 +884,10 @@ Everything below rests on position or on an inferred role, not a symbol:
 
 - Every "semantic" `KeyType` name (`CameraFieldOfView`, `MaterialSingle_4`,
  `Single5Alt`). Only the payload struct per value is certain.
-- `gfdVertexFormat` bit names other than `GFDFVF_XYZ` (`0x2`) and
- `GFDFVF_NORMAL` (`0x10`); and the meaning of the 20-byte `0x80000000`
- attribute entirely.
+- *(resolved in the third pass: every `gfdVertexFormat` bit except
+ `0x4`, `0x40000000` and `0x80000000` is now named by the debug printer at
+ `0x91D8D0`. The meaning of the 20-byte `0x80000000` attribute is still
+ unknown.)*
 - The light field triples at `+0x10`/`+0x20` (our `Field04`, `Field08`,
  `Field10`, `Field20`).
 - Physics particle `SphereRadius`, `Mass`, `RestoringForce`, `WindRate`, the
@@ -1898,3 +1948,130 @@ Dispatch tables used above: `gfdEPLPartsCategoryFuncTable` at `0x1470F34`,
 `gfdEPLPolygonBoardTypeTable` at `0x1082A5C`, `gfdEPLMeshTypeTable` at
 `0x10829A8`, `gfdEPLCameraTypeTable` at `0x1082960`, `gfdEPLLightTypeTable` at
 `0x1082918`.
+
+---
+---
+
+# Third pass: debug printers as a naming source
+
+Prompted by the `gfdVertexFormat` correction. Where a structure has a debug
+printer or a to-string helper, that beats stride arithmetic or any other
+inference, because the printer names the bits outright. This pass applies that
+idea systematically. The `gfdVertexFormat` table earlier in this document has
+been corrected and upgraded in place; what follows is the rest of the sweep.
+
+## What the sweep covered
+
+Every function in the image that calls `gfdPrintf`, filtered to the `gfd`
+layer. Thirty-six functions, the substantial ones being:
+
+| Calls | Address | Function |
+|---|---|---|
+| 97 | `0x8CBE94` | `gfdMaterialPrintf_0` |
+| 50 | `0x8E5958` | `gfdNodePrintf_0` |
+| 18 | `0x91D8D0` | `gfdThJobGeometryCreateJobData_0` |
+| 13 | `0x875178` | `gfdPropertyPrintf_0` |
+| 13 | `0x89E2C0` | `gfdPhotonGeometryArrayBuild_0` |
+| 12 | `0x8E1B24` | `gfdNodePrintfHierarchyRecursive_0` |
+| 10 | `0x880F1C` | `gfdTMXConvertToDDS_0` |
+| 8 | `0x886AB4` | `gfdTaskPrintfRecursive_0` |
+
+Plus a scan of every named global that looks like an array of string pointers.
+
+## The one real new recovery: `texSlotName`
+
+`gfdMaterialPrintf_0` walks the ten texture slots (stride `0x50`, the size of
+`gfdMaterialTexture`) and labels each from a global the symbol table names
+**`texSlotName`**, at **`0x1070D2C`**, pointing at a run of eight-byte padded
+strings at `0xF24520`. Ten entries, in slot order:
+
+| Slot | Flag bit | Official name | C# `Material` member | Conf. |
+|---|---|---|---|---|
+| 0 | `0x00100000` (20) | `diffuse` | `DiffuseMap` | high |
+| 1 | `0x00200000` (21) | `normal` | `NormalMap` | high |
+| 2 | `0x00400000` (22) | `gloss` | `SpecularMap` | high |
+| 3 | `0x00800000` (23) | `reflect` | `ReflectionMap` | high |
+| 4 | `0x01000000` (24) | `multi` | `HighlightMap` | high |
+| 5 | `0x02000000` (25) | `glow` | `GlowMap` | high |
+| 6 | `0x04000000` (26) | `dark` | `NightMap` | high |
+| 7 | `0x08000000` (27) | `detail` | `DetailMap` | high |
+| 8 | `0x10000000` (28) | `light` | `ShadowMap` | high |
+| 9 | `0x20000000` (29) | `reserve` | `TextureMap10` | high |
+
+High confidence: the symbol is named `texSlotName`, the table has exactly ten
+entries, and the printer indexes it with the same slot index the material
+reader uses for `textures[i]`.
+
+Three of our names are wrong, and two of the corrections are self-consistent
+with findings from the first pass:
+
+- Slot 2 is **`gloss`**, not specular. (`gfdMaterial` already has a separate
+  `specular` colour member, so "SpecularMap" conflates two different things.)
+- Slot 4 is **`multi`**, the multi-texture slot. This corroborates the first
+  pass's reading of `blend.multiple` as the multi-texture blend mode, which we
+  currently call `HighlightMapBlendMode`. The two should be renamed together.
+- Slot 8 is **`light`**, a light map, not a shadow map. This also lines up with
+  the later-generation `FLAG1_LIGHTMAP_MODULATE2` and `gfdEnvironmentLightMap`
+  names that already exist in our `MaterialFlags.cs`.
+- Slot 9 is **`reserve`**, which is to say the tenth slot was spare. Our
+  `TextureMap10` is as good a name as the original.
+
+## Enumerations confirmed by the same string block
+
+The block around `0xF244D8`, used by `gfdMaterialPrintf_0`, spells out the
+alpha-test functions in order. They match our `AlphaClipMode` exactly, which
+upgrades that enum from "matches by position" to named:
+
+| Value | Official | C# `AlphaClipMode` | Conf. |
+|---|---|---|---|
+| 0 | `NEVER` | `Never` | high |
+| 1 | `LESS` | `Less` | high |
+| 2 | `EQUAL` | `Equal` | high |
+| 3 | `LEQUAL` | `LEqual` | high |
+| 4 | `GREATER` | `Greater` | high |
+| 5 | `NOTEQUAL` | `NotEqual` | high |
+| 6 | `GEQUAL` | `GEqual` | high |
+| 7 | `ALWAYS` | `Always` | high |
+
+The same block holds `(BACK)` and `(NONE)` for `gfdCulling`, and `(ambient)`,
+`(diffuse)`, `(emissive)`, `(specular)` for the four colour vectors, which
+re-confirms the `gfdMaterial` colour order already documented in the first
+pass.
+
+## What the sweep did *not* yield
+
+This is the important half, and it does not change the Priority 2 conclusion.
+
+- **`gfdMaterialPrintf_0` does not print flag bit names.** It prints the
+  colours, the blend and alpha-test state, the shader id (unpacking
+  `texcoord.in` and `texcoord.out` three bits at a time, ten groups each), and
+  the ten texture slots. The flag words themselves are printed as raw hex. So
+  there is still no name for any `gfdMaterialFlag` or `gfdMaterialFlag2` bit
+  beyond the two with named setters (`0x1000` wire, `0x2000` alpha-test).
+- **No `gfd` printer names any Epl flag bit.** The eleven
+  `gfdEPL<Category>Flag` words have no printer at all.
+- **The named-global scan found nothing else in the `gfd` layer.**
+  `texSlotName` was the only string-pointer table belonging to the graphics
+  library; every other hit (`CAMERA_MODE_NAME`, `FLD_TABLE_FILE_NAME`,
+  `DagOpcodeNames`, the `btl::AuthenticCommand` tables, and so on) is game or
+  shader-compiler code.
+- `gfdNodePrintf_0` and `gfdPropertyPrintf_0` print values, not bit names, so
+  they add nothing to the flag problem. `gfdPropertyPrintf_0` does confirm the
+  nine `gfdPropertyType` cases already documented.
+
+## Method note
+
+Two things worth carrying forward:
+
+1. **Prefer a printer to arithmetic.** Stride accumulation tells you a size,
+   never an order and never a name. A debug printer or a `GetName` helper tells
+   you both. The same applies to the per-category `gfdEPL*TypeTable` entries
+   used in the second pass: `gfdEPLCameraTypeTable` and `gfdEPLLightTypeTable`
+   carry real name strings (`MESH`, `QUAKE`, `SCENE`) while the others carry
+   null name pointers, which is why those two variant tables are the only ones
+   named rather than inferred from the handler symbol.
+2. **Round-tripping is not an ordering proof.** A reader and writer that agree
+   with each other will round trip byte for byte whatever order they use. Only
+   a function that consumes the data for its real purpose, such as
+   `gfdDeviceRenderTransferImDataToVertexBuffer_0` building vertex element
+   descriptors, can settle a layout question.
