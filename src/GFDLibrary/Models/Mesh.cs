@@ -226,7 +226,9 @@ namespace GFDLibrary.Models
             get => mMaterialName;
             set
             {
-                if ( !string.IsNullOrEmpty( value ) )
+                // An empty name is still a name: a mesh can carry the flag with a zero length
+                // string, and clearing the flag for it would drop the field on write.
+                if ( value != null )
                     Flags |= GeometryFlags.HasMaterial;
                 else
                     Flags &= ~GeometryFlags.HasMaterial;
