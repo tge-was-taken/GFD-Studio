@@ -105,6 +105,9 @@ namespace GFDStudio.Cli
             => throw new CliException( $"This asks what to replace from. Pass --with, and --format with one of " +
                                        $"{Describe( request.Formats )}." );
 
+        public global::System.Numerics.Vector3? AskDirection( string title, string prompt, global::System.Numerics.Vector3 initial )
+            => throw new CliException( $"{title} needs a direction, which this command cannot ask for." );
+
         public TransformRequest AskTransform( string title )
             => Transform ?? throw new CliException( $"This asks for a transform ({Describe( title )}). Pass --scale, --position and --rotation." );
 

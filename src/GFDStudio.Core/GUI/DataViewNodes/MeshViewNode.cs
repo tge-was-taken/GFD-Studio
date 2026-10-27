@@ -1,11 +1,18 @@
 using System.ComponentModel;
 using GFDLibrary;
+using System.Numerics;
 using GFDLibrary.Models;
 
 namespace GFDStudio.GUI.DataViewNodes
 {
     public class MeshViewNode : DataViewNode<Mesh>
     {
+        private void NotifyGeometryChanged()
+        {
+            HasPendingChanges = true;
+            InitializeView( true );
+        }
+
         public override DataViewNodeMenuFlags ContextMenuFlags
             => DataViewNodeMenuFlags.Delete | DataViewNodeMenuFlags.Move | DataViewNodeMenuFlags.Export | DataViewNodeMenuFlags.Replace;
 
@@ -72,6 +79,28 @@ namespace GFDStudio.GUI.DataViewNodes
 
         protected override void InitializeCore()
         {
+            RegisterCustomHandler( "Regenerate", "Normals", () =>
+            {
+                MeshVertexGeometry.RegenerateNormals( Data );
+                NotifyGeometryChanged();
+            } );
+            RegisterCustomHandler( "Regenerate", "Tangents and binormals", () =>
+            {
+                MeshVertexGeometry.RegenerateTangentSpace( Data );
+                NotifyGeometryChanged();
+            } );
+            RegisterCustomHandler( "Regenerate", "Set binormals to a direction", () =>
+            {
+                var direction = UserDialogs.Current.AskDirection(
+                    "Set binormals", "Every binormal in this mesh is set to this direction.", Vector3.UnitZ );
+
+                if ( direction == null )
+                    return;
+
+                MeshVertexGeometry.SetBinormals( Data, direction.Value );
+                NotifyGeometryChanged();
+            } );
+
             RegisterExportHandler<Mesh>( path => Data.Save( path ) );
             RegisterReplaceHandler<Mesh>( Resource.Load<Mesh> );
             RegisterModelUpdateHandler( () =>

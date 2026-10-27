@@ -76,6 +76,9 @@ namespace GFDStudio.Avalonia
         public TransformRequest AskTransform( string title )
             => Wait( TransformWindow.Ask( mOwner, title ) );
 
+        public global::System.Numerics.Vector3? AskDirection( string title, string prompt, global::System.Numerics.Vector3 initial )
+            => Wait( DirectionWindow.Ask( mOwner, title, prompt, initial ) );
+
         public void RunWithProgress( string title, Func<IProgressReport, Task> work )
             => Wait( ProgressWindow.Run( mOwner, title, work ) );
 

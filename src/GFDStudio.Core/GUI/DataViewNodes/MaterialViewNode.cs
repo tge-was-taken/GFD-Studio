@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using System;
 using System.ComponentModel;
 using System.Numerics;
 using System.Reflection;
@@ -271,6 +273,25 @@ namespace GFDStudio.GUI.DataViewNodes
                 return temp;
             } );
             RegisterCustomHandler("Convert to", "Material preset", () => { ConvertToMaterialPreset(); });
+
+            RegisterCustomHandler( "Meshes using this material", "Set binormals to a direction", () =>
+            {
+                var direction = UserDialogs.Current.AskDirection(
+                    "Set binormals",
+                    "Every binormal of every mesh using this material is set to this direction. A shader " +
+                    "that reads the binormal as a forward vector, rather than as part of a tangent basis, " +
+                    "wants this.",
+                    Vector3.UnitZ );
+
+                if ( direction != null )
+                    ApplyToMeshesUsingThisMaterial( mesh => MeshVertexGeometry.SetBinormals( mesh, direction.Value ) );
+            } );
+
+            RegisterCustomHandler( "Meshes using this material", "Regenerate normals", () =>
+                ApplyToMeshesUsingThisMaterial( MeshVertexGeometry.RegenerateNormals ) );
+
+            RegisterCustomHandler( "Meshes using this material", "Regenerate tangents and binormals", () =>
+                ApplyToMeshesUsingThisMaterial( MeshVertexGeometry.RegenerateTangentSpace ) );
             RegisterModelUpdateHandler( () =>
             {
                 var material = Data;
@@ -371,6 +392,52 @@ namespace GFDStudio.GUI.DataViewNodes
                     Data.Attributes == null ? new List< MaterialAttribute >() : Data.Attributes,
                     new object[] { new ListItemNameProvider< MaterialAttribute >( ( value, index ) => value.AttributeType.ToString() ) } );
             AddChildNode( AttributesViewNode );
+        }
+
+        /// <summary>
+        /// Runs something over every mesh in the model that names this material. The meshes live
+        /// under the model rather than under the material, so the pack has to be found first.
+        /// </summary>
+        private void ApplyToMeshesUsingThisMaterial( Action<Mesh> apply )
+        {
+            var model = FindModel();
+            if ( model == null )
+            {
+                UserDialogs.Current.ShowMessage(
+                    "This material is not part of a model, so there are no meshes to change.",
+                    "Nothing to do", UserMessageKind.Information );
+                return;
+            }
+
+            var changed = 0;
+            foreach ( var mesh in model.Meshes.Where( x => x.MaterialName == Data.Name ) )
+            {
+                apply( mesh );
+                changed++;
+            }
+
+            UserDialogs.Current.ShowMessage(
+                changed == 0
+                    ? $"No mesh uses \"{Data.Name}\"."
+                    : $"Changed {changed} mesh{( changed == 1 ? string.Empty : "es" )} using \"{Data.Name}\".",
+                "Done", UserMessageKind.Information );
+        }
+
+        /// <summary>
+        /// The model this material belongs to, found by walking up past the material dictionary.
+        /// </summary>
+        private Model FindModel()
+        {
+            for ( var node = Parent; node != null; node = node.Parent )
+            {
+                if ( node.Data is ModelPack pack )
+                    return pack.Model;
+
+                if ( node.Data is Model model )
+                    return model;
+            }
+
+            return null;
         }
 
         private void ConvertToMaterialPreset()

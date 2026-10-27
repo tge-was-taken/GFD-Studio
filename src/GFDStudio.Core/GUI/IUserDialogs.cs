@@ -139,6 +139,11 @@ namespace GFDStudio.GUI
         TransformRequest AskTransform( string title );
 
         /// <summary>
+        /// Asks for a direction, returning null when the user cancelled.
+        /// </summary>
+        Vector3? AskDirection( string title, string prompt, Vector3 initial );
+
+        /// <summary>
         /// Runs a job that takes a while, showing its progress, and returns once it is done.
         /// </summary>
         void RunWithProgress( string title, Func<IProgressReport, Task> work );
