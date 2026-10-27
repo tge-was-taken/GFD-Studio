@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -322,12 +322,6 @@ namespace GFDLibrary.Models
                 if ( hasProperties )
                 {
                     Properties = reader.ReadResource<UserPropertyDictionary>( Version );
-
-                    Console.WriteLine( Name );
-                    foreach ( var item in Properties.Values )
-                    {
-                        Console.WriteLine( "\t" + item.ToUserPropertyString() );
-                    }
                 }
             }
 
