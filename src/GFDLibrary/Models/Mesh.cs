@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -56,21 +56,6 @@ namespace GFDLibrary.Models
             }
         }
 
-        private Vector3[] mTangents;
-        public Vector3[] Tangents
-        {
-            get => mTangents;
-            set
-            {
-                if ( value != null )
-                    VertexAttributeFlags |= VertexAttributeFlags.Tangent;
-                else
-                    VertexAttributeFlags &= ~VertexAttributeFlags.Tangent;
-
-                mTangents = value;
-            }
-        }
-
         private Vector3[] mBinormals;
         public Vector3[] Binormals
         {
@@ -83,6 +68,21 @@ namespace GFDLibrary.Models
                     VertexAttributeFlags &= ~VertexAttributeFlags.Binormal;
 
                 mBinormals = value;
+            }
+        }
+
+        private Vector3[] mTangents;
+        public Vector3[] Tangents
+        {
+            get => mTangents;
+            set
+            {
+                if ( value != null )
+                    VertexAttributeFlags |= VertexAttributeFlags.Tangent;
+                else
+                    VertexAttributeFlags &= ~VertexAttributeFlags.Tangent;
+
+                mTangents = value;
             }
         }
 
@@ -430,11 +430,11 @@ namespace GFDLibrary.Models
                     if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Normal ) )
                         Normals[i] = reader.ReadVector3();
 
-                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Tangent ) )
-                        Tangents[i] = reader.ReadVector3();
-
                     if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Binormal ) )
                         Binormals[i] = reader.ReadVector3();
+
+                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Tangent ) )
+                        Tangents[i] = reader.ReadVector3();
 
                     if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color0 ) )
                         ColorChannel0[i] = new Color() { ABGR = reader.ReadUInt32() };
@@ -456,7 +456,7 @@ namespace GFDLibrary.Models
                 {
                     const VertexAttributeFlags knownFlags = VertexAttributeFlags.Position |
                         VertexAttributeFlags.Normal |
-                        VertexAttributeFlags.Tangent |
+                        VertexAttributeFlags.Binormal |
                         VertexAttributeFlags.TexCoord0 |
                         VertexAttributeFlags.TexCoord1 |
                         VertexAttributeFlags.TexCoord2 |
@@ -475,8 +475,8 @@ namespace GFDLibrary.Models
                     if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Normal ) )
                         Normals[i] = reader.ReadVector3();
 
-                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Tangent ) )
-                        Tangents[i] = reader.ReadVector3();
+                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Binormal ) )
+                        Binormals[i] = reader.ReadVector3();
 
                     if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord1 ) )
                         TexCoordsChannel1[i] = reader.ReadVector2Half();
@@ -583,14 +583,14 @@ namespace GFDLibrary.Models
                 Normals = new Vector3[vertexCount];
             }
 
-            if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Tangent ) )
-            {
-                Tangents = new Vector3[vertexCount];
-            }
-
             if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Binormal ) )
             {
                 Binormals = new Vector3[vertexCount];
+            }
+
+            if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Tangent ) )
+            {
+                Tangents = new Vector3[vertexCount];
             }
 
             if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color0 ) )
@@ -661,11 +661,11 @@ namespace GFDLibrary.Models
                     if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Normal ) )
                         writer.WriteVector3( Normals[i] );
 
-                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Tangent ) )
-                        writer.WriteVector3( Tangents[i] );
-
                     if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Binormal ) )
                         writer.WriteVector3( Binormals[i] );
+
+                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Tangent ) )
+                        writer.WriteVector3( Tangents[i] );
 
                     if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color0 ) )
                         writer.WriteUInt32( ColorChannel0[i].ABGR );
@@ -692,8 +692,8 @@ namespace GFDLibrary.Models
                     if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Normal ) )
                         writer.WriteVector3( Normals[i] );
 
-                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Tangent ) )
-                        writer.WriteVector3( Tangents[i] );
+                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Binormal ) )
+                        writer.WriteVector3( Binormals[i] );
 
                     if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord1 ) )
                         writer.WriteVector2Half( TexCoordsChannel1[i] );
@@ -857,8 +857,10 @@ namespace GFDLibrary.Models
         Bit25 = 1 << 25,
         Bit26 = 1 << 26,
         Bit27 = 1 << 27,
-        Tangent = 1 << 28,
-        Binormal = 1 << 29, // 12 bytes, after tangent -- binormal?
+        // The game's own vertex format printer names 0x10000000 BINORMAL and
+        // 0x20000000 TANGENT, and the layout puts the binormal first.
+        Binormal = 1 << 28,
+        Tangent = 1 << 29,
         Color2 = 1 << 30, // 4 bytes, after tex coord 2
         Bit31 = 1u << 31, // 20 bytes, after HasBoundingBox
     }
