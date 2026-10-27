@@ -25,18 +25,9 @@ jobs:
 
       - run: dotnet build GFDStudio.slnx -c Release
 
-      # The test data is not in the repository, so the tests only run where it is available.
-      - id: testdata
-        shell: bash
-        run: |
-          if [ -d Resources/TestData ]; then
-            echo "available=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "::warning::Resources/TestData is absent, skipping the tests"
-          fi
-
-      - if: steps.testdata.outputs.available
-        run: dotnet test tests/GFDLibrary.Tests/GFDLibrary.Tests.csproj -c Release --no-build
+      # The tests that read game files report themselves inconclusive when the data is not
+      # there, so the run is worth doing either way.
+      - run: dotnet test tests/GFDLibrary.Tests/GFDLibrary.Tests.csproj -c Release --no-build
 
   # The native libraries are built on every platform GFDLibrary runs on, so a break in either
   # shim shows up here rather than at release time.

@@ -19,6 +19,26 @@ namespace GFDLibrary.Tests
     public class ResourceTests
     {
         public const string PATH_RESOURCE_BASE = "resources/";
+
+        /// <summary>
+        /// These read game files that are not in the repository. Without them there is nothing
+        /// to assert, which is not the same as a failure.
+        /// </summary>
+        [TestInitialize]
+        public void RequireTestData()
+        {
+            var missing = typeof( ResourceTests )
+                          .GetFields( System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static )
+                          .Where( x => x.IsLiteral && x.FieldType == typeof( string ) )
+                          .Select( x => (string)x.GetRawConstantValue() )
+                          .Where( x => x.StartsWith( PATH_RESOURCE_BASE ) && x.Length > PATH_RESOURCE_BASE.Length )
+                          .Where( x => !File.Exists( x ) )
+                          .ToList();
+
+            if ( missing.Count > 0 )
+                Assert.Inconclusive( $"{missing.Count} test files are not in {PATH_RESOURCE_BASE}, starting with \"{missing[0]}\"." );
+        }
+
         public const string Model_P5PlayerModel_Path            = PATH_RESOURCE_BASE + "c0001_051_00.GMD";
         public const string Model_P4DFaceModel_Path             = PATH_RESOURCE_BASE + "pc001_f1.GMD";
         public const string Model_P5FieldLevelModel_Path        = PATH_RESOURCE_BASE + "f013_014_0.GFS";
