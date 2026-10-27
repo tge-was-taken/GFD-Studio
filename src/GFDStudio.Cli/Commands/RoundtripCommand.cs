@@ -5,6 +5,7 @@ using System.CommandLine;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using GFDLibrary;
 
@@ -28,29 +29,41 @@ namespace GFDStudio.Cli.Commands
             var sample = new Option<int>( "--sample" ) { Description = "Take every Nth file.", DefaultValueFactory = _ => 1 };
             var offset = new Option<int>( "--offset" ) { Description = "Which of the N slices to take.", DefaultValueFactory = _ => 0 };
             var workers = new Option<int>( "--workers" ) { Description = "How many files to do at once.", DefaultValueFactory = _ => Environment.ProcessorCount };
+            var budget = new Option<int>( "--memory-budget" )
+            {
+                Description = "Megabytes of loaded files to hold at once. 0 lifts the limit.",
+                DefaultValueFactory = _ => DefaultBudgetMegabytes(),
+            };
 
             var command = new Command( "roundtrip", "Load and save files unchanged, and report any that do not come back identical." )
             {
-                path, results, games, sample, offset, workers,
+                path, results, games, sample, offset, workers, budget,
             };
 
             command.SetAction( parse => CommandHelpers.Guard( () => Run(
                 parse.GetValue( path ), parse.GetValue( results ), parse.GetValue( games ),
-                parse.GetValue( sample ), parse.GetValue( offset ), parse.GetValue( workers ) ) ) );
+                parse.GetValue( sample ), parse.GetValue( offset ), parse.GetValue( workers ),
+                parse.GetValue( budget ) ) ) );
 
             return command;
         }
 
-        private static int Run( string path, string resultsPath, string games, int sample, int offset, int workers )
+        private static int Run( string path, string resultsPath, string games, int sample, int offset, int workers,
+                                int budgetMegabytes )
         {
             var entries = Collect( path, games, Math.Max( sample, 1 ), offset );
 
             if ( entries.Count == 0 )
                 throw new CliException( $"Nothing to round trip under \"{path}\"." );
 
+            // Biggest first, so the files that need most of the budget get it while the run is
+            // young rather than queueing behind a tail of small ones.
+            var queue = entries.OrderByDescending( Size ).ToList();
+            var budget = new MemoryBudget( (long)Math.Max( budgetMegabytes, 0 ) * 1024 * 1024 );
+
             var done = new ConcurrentBag<Result>();
-            Parallel.ForEach( entries, new ParallelOptions { MaxDegreeOfParallelism = Math.Max( workers, 1 ) },
-                              entry => done.Add( One( entry ) ) );
+            Parallel.ForEach( queue, new ParallelOptions { MaxDegreeOfParallelism = Math.Max( workers, 1 ) },
+                              entry => done.Add( One( entry, budget ) ) );
 
             var ordered = done.OrderBy( x => x.Name, StringComparer.Ordinal ).ToList();
 
@@ -64,8 +77,10 @@ namespace GFDStudio.Cli.Commands
             return ordered.Any( x => x.Status is not ("MATCH" or "KNOWN_BAD") ) ? 1 : 0;
         }
 
-        private static Result One( Entry entry )
+        private static Result One( Entry entry, MemoryBudget budget )
         {
+            using var reservation = budget.Reserve( Size( entry ) );
+
             byte[] before;
 
             try
@@ -108,8 +123,12 @@ namespace GFDStudio.Cli.Commands
             if ( before.AsSpan().SequenceEqual( after ) )
                 return new Result( "MATCH", entry.Name, "" );
 
-            var differing = before.Zip( after ).Count( pair => pair.First != pair.Second )
-                            + Math.Abs( before.Length - after.Length );
+            var shared = Math.Min( before.Length, after.Length );
+            var differing = Math.Abs( before.Length - after.Length );
+
+            for ( var i = 0; i < shared; i++ )
+                if ( before[i] != after[i] )
+                    differing++;
 
             return new Result( "DIFF", entry.Name, $"size {before.Length} vs {after.Length}, {differing} bytes differ" );
         }
@@ -193,6 +212,99 @@ namespace GFDStudio.Cli.Commands
         {
             ".gmd", ".gfs", ".gap", ".gmdl", ".gac", ".ganm", ".gnf", ".epl",
         };
+
+        private static long Size( Entry entry )
+        {
+            try
+            {
+                return new FileInfo( entry.Path ).Length;
+            }
+            catch
+            {
+                return 0;
+            }
+        }
+
+        /// <summary>
+        /// A quarter of what the machine has, and never more than 4 GB. Loading a model costs
+        /// several times the file on disk, so the budget is deliberately well under the total.
+        /// </summary>
+        private static int DefaultBudgetMegabytes()
+        {
+            var total = GC.GetGCMemoryInfo().TotalAvailableMemoryBytes;
+            var quarter = total > 0 ? total / 4 : 2L * 1024 * 1024 * 1024;
+
+            return (int)( Math.Min( quarter, 4L * 1024 * 1024 * 1024 ) / ( 1024 * 1024 ) );
+        }
+
+        /// <summary>
+        /// Keeps the loaded files from piling up. A model expands well beyond its size on disk,
+        /// so each file is charged a multiple of that and waits for room before it is read. One
+        /// file always gets through, however large, so a single outsized file cannot deadlock.
+        /// </summary>
+        private sealed class MemoryBudget
+        {
+            /// <summary>
+            /// What a file costs in memory against its size on disk. Measured on model packs,
+            /// where the vertex and key arrays become objects.
+            /// </summary>
+            private const long Expansion = 12;
+
+            private readonly long mLimit;
+            private long mInFlight;
+
+            public MemoryBudget( long limit ) => mLimit = limit;
+
+            public IDisposable Reserve( long size )
+            {
+                if ( mLimit <= 0 )
+                    return new Reservation( this, 0 );
+
+                var cost = Math.Max( size, 1 ) * Expansion;
+
+                lock ( this )
+                {
+                    while ( mInFlight > 0 && mInFlight + cost > mLimit )
+                        Monitor.Wait( this );
+
+                    mInFlight += cost;
+                }
+
+                return new Reservation( this, cost );
+            }
+
+            private void Release( long cost )
+            {
+                lock ( this )
+                {
+                    mInFlight -= cost;
+                    Monitor.PulseAll( this );
+                }
+            }
+
+            private sealed class Reservation : IDisposable
+            {
+                private readonly MemoryBudget mBudget;
+                private readonly long mCost;
+
+                public Reservation( MemoryBudget budget, long cost )
+                {
+                    mBudget = budget;
+                    mCost = cost;
+                }
+
+                public void Dispose()
+                {
+                    if ( mCost == 0 )
+                        return;
+
+                    // The reservation covers the loaded object graph, which is only actually
+                    // gone once it has been collected.
+                    GC.Collect();
+                    mBudget.Release( mCost );
+                }
+            }
+        }
 
         private sealed record Entry( string Path, string Name, string KnownBad );
 
