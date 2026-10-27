@@ -28,7 +28,7 @@ namespace GFDStudio.Avalonia
         {
             InitializeComponent();
 
-            Title = $"GFD Studio {typeof( MainWindow ).Assembly.GetName().Version?.ToString( 3 )}";
+            Title = $"GFD Studio {Release.Version}";
 
             mTree.SelectionChanged += ( s, e ) => ShowSelection( mTree.SelectedNode );
             mTree.NodeSelected += ( s, node ) => ShowSelection( node );

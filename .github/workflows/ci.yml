@@ -85,13 +85,11 @@ jobs:
         shell: bash
         run: |
           set -eu
-          patch=$(git tag --list 'v0.10.*' '0.10.*' \
-            | sed -nE 's/^v?0\.10\.([0-9]+).*$/\1/p' | sort -n | tail -1)
-          # No 0.10 tag yet, so the numbering continues from the version the projects declare.
-          if [ -z "$patch" ]; then
-            patch=$(sed -nE 's|.*<Version>0\.10\.([0-9]+)</Version>.*|\1|p'  GFDStudio.Avalonia/GFDStudio.Avalonia.csproj | head -1)
-          fi
-          echo "tag=v0.10.$((patch + 1))-$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+          # Release candidates for 1.0.0, numbered from the ones already published.
+          rc=$(git tag --list 'v1.0.0-rc*' \
+            | sed -nE 's/^v1\.0\.0-rc\.?([0-9]+).*$/\1/p' | sort -n | tail -1)
+          rc=$((${rc:-0} + 1))
+          echo "tag=v1.0.0-rc.$rc-$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
 
   # Downloadable per commit builds, as the AppVeyor builds used to be.
   binaries:
