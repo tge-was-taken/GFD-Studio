@@ -232,7 +232,7 @@ namespace GFDStudio.GUI.DataViewNodes
         //
         public string Export()
         {
-            var formats = FileFormats();
+            var formats = ExportFormats();
             if ( formats.Count == 0 )
                 return null;
 
@@ -252,7 +252,7 @@ namespace GFDStudio.GUI.DataViewNodes
         /// Every way this node can be written out: one entry per extension each export module
         /// offers, plus YAML, which every node supports.
         /// </summary>
-        private List<FileFormat> FileFormats()
+        public List<FileFormat> ExportFormats()
         {
             var formats = new List<FileFormat>();
 
@@ -324,7 +324,7 @@ namespace GFDStudio.GUI.DataViewNodes
         /// Every file a replacement can be read from: one entry per extension each import module
         /// offers, plus YAML.
         /// </summary>
-        private List<FileFormat> ReplaceFormats()
+        public List<FileFormat> ReplaceFormats()
         {
             var formats = new List<FileFormat>();
 
@@ -352,6 +352,15 @@ namespace GFDStudio.GUI.DataViewNodes
         public void Replace( string filepath )
         {
             ReplaceInternal( filepath, null );
+        }
+
+        /// <summary>
+        /// Replaces from a file in a known format, saying outright which parts of the original to
+        /// keep rather than falling back to the remembered settings.
+        /// </summary>
+        public void Replace( string filepath, Type selectedType, bool? retainTextureNames, bool? retainColorValues )
+        {
+            ReplaceInternal( filepath, selectedType, retainTextureNames, retainColorValues );
         }
 
         private void ReplaceInternal( string filepath, Type selectedType, bool? retainTextureNames = null, bool? retainColorValues = null )
