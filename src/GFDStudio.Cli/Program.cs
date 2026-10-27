@@ -36,6 +36,7 @@ namespace GFDStudio.Cli
                 ReplaceCommand.Create(),
                 TexturesCommand.Create(),
                 BatchCommand.Create(),
+                RoundtripCommand.Create(),
             };
 
             return CommandHelpers.Guard( () => root.Parse( args ).Invoke() );
