@@ -110,6 +110,67 @@ namespace GFDLibrary.Rendering.OpenGL
             return shaderRegistry.mDefaultShader;
         }
 
+        /// <summary>
+        /// Matches MAX_BONES in the vertex shaders. The widest single mesh seen across the test
+        /// corpus uses 83 bones, so this leaves room without overrunning the uniform space.
+        /// </summary>
+        private const int MaxPaletteBones = 96;
+
+        private float[] mBonePalette = new float[0];
+        private readonly HashSet<string> mReportedOversizedMeshes = new();
+
+        /// <summary>
+        /// Fills the shader's bone palette for one mesh. Each bone goes up as the top three rows
+        /// of its matrix, the fourth being constant for an affine transform, which is a quarter
+        /// less to upload and keeps the array inside the smallest guaranteed uniform space.
+        /// </summary>
+        private void UploadBonePalette( GLMesh glMesh, GLShaderProgram shader )
+        {
+            if ( !glMesh.IsSkinned )
+                return;
+
+            var palette = glMesh.PaletteBones;
+
+            if ( palette.Length > MaxPaletteBones )
+            {
+                if ( mReportedOversizedMeshes.Add( glMesh.Mesh?.MaterialName ?? "?" ) )
+                    Trace.TraceWarning( $"Mesh uses {palette.Length} bones, more than the {MaxPaletteBones} the shader holds" );
+
+                return;
+            }
+
+            var needed = palette.Length * 3 * 4;
+
+            if ( mBonePalette.Length < needed )
+                mBonePalette = new float[needed];
+
+            for ( var i = 0; i < palette.Length; i++ )
+            {
+                var bone = ModelPack.Model.Bones[palette[i]];
+                var matrix = bone.InverseBindMatrix * Nodes[bone.NodeIndex].WorldTransform;
+                var at = i * 12;
+
+                // The shader multiplies column vectors, so each row here is a column of the
+                // matrix as System.Numerics lays it out.
+                mBonePalette[at + 0] = matrix.M11;
+                mBonePalette[at + 1] = matrix.M21;
+                mBonePalette[at + 2] = matrix.M31;
+                mBonePalette[at + 3] = matrix.M41;
+
+                mBonePalette[at + 4] = matrix.M12;
+                mBonePalette[at + 5] = matrix.M22;
+                mBonePalette[at + 6] = matrix.M32;
+                mBonePalette[at + 7] = matrix.M42;
+
+                mBonePalette[at + 8] = matrix.M13;
+                mBonePalette[at + 9] = matrix.M23;
+                mBonePalette[at + 10] = matrix.M33;
+                mBonePalette[at + 11] = matrix.M43;
+            }
+
+            shader.SetUniform( "uBones", mBonePalette, palette.Length * 3 );
+        }
+
         private bool ShouldMeshShowAsSelected( DrawContext context, GLMesh glMesh )
         {
             return context.SelectedMesh == glMesh.Mesh || context.SelectedMaterial?.Name == glMesh.Mesh.MaterialName;
@@ -138,13 +199,13 @@ namespace GFDLibrary.Rendering.OpenGL
                 {
                     var glMesh = glNode.Meshes[i];
 
-                    if ( Animation != null && glMesh.Mesh != null )
-                        glMesh.Reskin( glNode.WorldTransform, ModelPack.Model.Bones, Nodes );
+
                     GLShaderProgram targetShader = GetTargetShader( context.ShaderRegistry, glMesh, context.Camera.View, context.Camera.Projection, shaderProgramsInUse );
                     if ( !glMesh.Material.IsMaterialTransparent() ) // If opaque
                     {
                         if ( glMesh.Mesh != null )
                             targetShader.SetUniform( "uIsSelected", ShouldMeshShowAsSelected(context, glMesh ) );
+                        UploadBonePalette( glMesh, targetShader );
                         glMesh.Draw( glNode.WorldTransform.ToOpenTK(), targetShader );
                     }
                     else // If transparent
@@ -182,6 +243,7 @@ namespace GFDLibrary.Rendering.OpenGL
 
                 if ( glMesh.Mesh != null )
                     shaderProgram.SetUniform( "uIsSelected", ShouldMeshShowAsSelected( context, glMesh ) );
+                UploadBonePalette( glMesh, shaderProgram );
                 glMesh.Draw( worldTransform, shaderProgram );
             }
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -131,6 +131,16 @@ namespace GFDLibrary.Rendering.OpenGL
 
             fixed ( Matrix4* pValue = value )
                 GL.UniformMatrix4( uniform.Location, value.Length, false, ( float* ) pValue );
+        }
+
+        /// <summary>
+        /// Uploads an array of vec4, which is how the bone palette is packed.
+        /// </summary>
+        public void SetUniform( string name, float[] vectors, int count )
+        {
+            var location = GL.GetUniformLocation( Id, name );
+            if ( location != -1 )
+                GL.Uniform4( location, count, vectors );
         }
 
         public void SetUniform( string name, int value )

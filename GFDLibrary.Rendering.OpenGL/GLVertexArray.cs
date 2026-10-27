@@ -17,6 +17,10 @@ namespace GFDLibrary.Rendering.OpenGL
 
         public GLVertexAttributeBuffer<Vector2>[] TextureCoordinateChannelBuffers { get; } = new GLVertexAttributeBuffer<Vector2>[3];
 
+        public GLVertexAttributeBuffer<Vector4> BoneWeightBuffer { get; }
+
+        public GLVertexAttributeBuffer<Vector4> BoneIndexBuffer { get; }
+
         public GLBuffer<uint> ElementBuffer { get; }
 
         public PrimitiveType PrimitiveType { get; }
@@ -24,7 +28,8 @@ namespace GFDLibrary.Rendering.OpenGL
         public GLVertexArray( Vector3[] positions, Vector3[] normals, 
             Vector2[][] texCoordChannels,
             Graphics.Color[][] vertColorChannels, 
-            uint[] indices, PrimitiveType primitiveType )
+            uint[] indices, PrimitiveType primitiveType,
+            Vector4[] boneWeights = null, Vector4[] boneIndices = null )
         {
             // vertex array
             Id = GL.GenVertexArray();
@@ -62,6 +67,14 @@ namespace GFDLibrary.Rendering.OpenGL
                         ColorChannelBuffers[channelIndex] = new GLVertexAttributeBuffer<Vector4>( vertColorVector4, 7 + channelIndex, 4, VertexAttribPointerType.Float );
                     }
                 }
+            }
+
+            // Bone indices go up as floats rather than integers, so that one attribute kind
+            // serves every driver without a separate integer pointer call.
+            if ( boneWeights != null && boneIndices != null )
+            {
+                BoneWeightBuffer = new GLVertexAttributeBuffer<Vector4>( boneWeights, 3, 4, VertexAttribPointerType.Float );
+                BoneIndexBuffer = new GLVertexAttributeBuffer<Vector4>( boneIndices, 4, 4, VertexAttribPointerType.Float );
             }
 
             // element index buffer

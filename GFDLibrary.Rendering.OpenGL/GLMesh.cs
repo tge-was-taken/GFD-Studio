@@ -6,6 +6,7 @@ using GFDLibrary.Models;
 using OpenTK.Mathematics;
 using OpenTK.Graphics.OpenGL4;
 using Vector3 = System.Numerics.Vector3;
+using Vector4 = System.Numerics.Vector4;
 
 namespace GFDLibrary.Rendering.OpenGL
 {
@@ -25,8 +26,11 @@ namespace GFDLibrary.Rendering.OpenGL
         /// </summary>
         public bool IsSkinned { get; }
 
-        private readonly Vector3[] mSkinnedVertices;
-        private readonly Vector3[] mSkinnedNormals;
+        /// <summary>
+        /// The model bones this mesh actually uses. The vertices index into this rather than
+        /// the model's whole list, which keeps the palette small enough for a uniform array.
+        /// </summary>
+        public int[] PaletteBones { get; private set; }
 
         public GLMesh( GLVertexArray vertexArray, GLBaseMaterial material, bool isVisible )
         {
@@ -41,24 +45,11 @@ namespace GFDLibrary.Rendering.OpenGL
             Mesh = mesh;
             IsSkinned = mesh.VertexWeights != null;
 
-            Vector3[] vertices;
-            Vector3[] normals;
+            Vector4[] boneWeights = null;
+            Vector4[] boneIndices = null;
 
             if ( IsSkinned )
-            {
-                mSkinnedVertices = new Vector3[mesh.VertexCount];
-                mSkinnedNormals = mesh.Normals == null ? null : new Vector3[mesh.VertexCount];
-
-                Skin( modelMatrix, bones, nodes );
-
-                vertices = mSkinnedVertices;
-                normals = mSkinnedNormals;
-            }
-            else
-            {
-                vertices = mesh.Vertices;
-                normals = mesh.Normals;
-            }
+                BuildSkinningData( mesh, out boneWeights, out boneIndices );
 
             var indices = new uint[mesh.Triangles.Length * 3];
             for ( int i = 0; i < mesh.Triangles.Length; i++ )
@@ -68,10 +59,10 @@ namespace GFDLibrary.Rendering.OpenGL
                 indices[( i * 3 ) + 2] = mesh.Triangles[i].C;
             }
 
-            VertexArray = new GLVertexArray( vertices, normals, 
+            VertexArray = new GLVertexArray( mesh.Vertices, mesh.Normals,
                 new[] { mesh.TexCoordsChannel0, mesh.TexCoordsChannel1, mesh.TexCoordsChannel2 }, 
                 new[] { mesh.ColorChannel0, mesh.ColorChannel1, mesh.ColorChannel2 },
-                indices, PrimitiveType.Triangles );
+                indices, PrimitiveType.Triangles, boneWeights, boneIndices );
 
             // material
             if ( mesh.MaterialName != null && materials != null )
@@ -95,64 +86,53 @@ namespace GFDLibrary.Rendering.OpenGL
         }
 
         /// <summary>
-        /// Works the vertices out for the pose the bones are in and hands them to the buffers
-        /// that are already there. Rebuilding the mesh instead costs an allocation a frame.
+        /// Collects the bones this mesh uses and rewrites each vertex's indices to point into
+        /// that short list, so the palette uploaded per frame stays small.
         /// </summary>
-        public void Reskin( Matrix4x4 modelMatrix, List<Bone> bones, List<GLNode> nodes )
+        private void BuildSkinningData( Mesh mesh, out Vector4[] weights, out Vector4[] indices )
         {
-            if ( !IsSkinned )
-                return;
+            var slotByBone = new Dictionary<ushort, int>();
+            var palette = new List<int>();
 
-            Skin( modelMatrix, bones, nodes );
-            VertexArray.UpdateGeometry( mSkinnedVertices, mSkinnedNormals );
-        }
+            weights = new Vector4[mesh.VertexCount];
+            indices = new Vector4[mesh.VertexCount];
 
-        private void Skin( Matrix4x4 modelMatrix, List<Bone> bones, List<GLNode> nodes )
-        {
-            Matrix4x4.Invert( modelMatrix, out var modelMatrixInv );
-
-            for ( var i = 0; i < Mesh.VertexCount; i++ )
+            for ( var i = 0; i < mesh.VertexCount; i++ )
             {
-                var position = Mesh.Vertices[i];
-                var normal = Mesh.Normals?[i] ?? Vector3.Zero;
+                var vertex = mesh.VertexWeights[i];
+                var w = new float[4];
+                var s = new float[4];
 
-                var newPosition = Vector3.Zero;
-                var newNormal = Vector3.Zero;
-
-                for ( var j = 0; j < Mesh.VertexWeights[i].Weights.Length; j++ )
+                for ( var j = 0; j < 4 && j < vertex.Weights.Length; j++ )
                 {
-                    var weight = Mesh.VertexWeights[i].Weights[j];
-                    if ( weight == 0 )
+                    if ( vertex.Weights[j] == 0 )
                         continue;
 
-                    TransformVertex( bones, nodes, position, normal, ref newPosition, ref newNormal,
-                                     weight, Mesh.VertexWeights[i].Indices[j] );
+                    var bone = vertex.Indices[j];
+                    if ( !slotByBone.TryGetValue( bone, out var slot ) )
+                    {
+                        slot = palette.Count;
+                        slotByBone.Add( bone, slot );
+                        palette.Add( bone );
+                    }
+
+                    w[j] = vertex.Weights[j];
+                    s[j] = slot;
                 }
 
-                mSkinnedVertices[i] = Vector3.Transform( newPosition, modelMatrixInv );
-
-                if ( mSkinnedNormals != null )
-                    mSkinnedNormals[i] = Vector3.Normalize( Vector3.TransformNormal( newNormal, modelMatrixInv ) );
+                weights[i] = new Vector4( w[0], w[1], w[2], w[3] );
+                indices[i] = new Vector4( s[0], s[1], s[2], s[3] );
             }
-        }
 
-        private static void TransformVertex( List<Bone> bones, List<GLNode> nodes, Vector3 position, Vector3 normal, ref Vector3 newPosition, ref Vector3 newNormal, float weight, ushort boneIndex )
-        {
-            var bone = bones[boneIndex];
-            var boneNode = nodes[bone.NodeIndex];
-            var bindMatrix = boneNode.WorldTransform;
-            newPosition += Vector3.Transform( Vector3.Transform( position, bone.InverseBindMatrix ),
-                                                              bindMatrix * weight );
-
-            newNormal += Vector3.TransformNormal( Vector3.TransformNormal( normal, bone.InverseBindMatrix ),
-                                                                 bindMatrix * weight );
+            PaletteBones = palette.ToArray();
         }
 
         public void Draw( Matrix4 modelMatrix, GLShaderProgram shaderProgram )
         {
-            //if ( Material.METAPHOR_DistortionMaterialTest )
-            //    return;
-            shaderProgram.SetUniform( "uModel", modelMatrix);
+            // A skinned mesh is placed by its bones, so its node transform must not be applied
+            // on top. The palette already puts it in world space.
+            shaderProgram.SetUniform( "uModel", IsSkinned ? Matrix4.Identity : modelMatrix );
+            shaderProgram.SetUniform( "uIsSkinned", IsSkinned );
             Material.Bind( shaderProgram );
             shaderProgram.Check();
             VertexArray.Draw();
