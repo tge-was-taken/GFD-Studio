@@ -1,4 +1,4 @@
-﻿using GFDLibrary.IO;
+using GFDLibrary.IO;
 
 namespace GFDLibrary.Models
 {
@@ -6,9 +6,13 @@ namespace GFDLibrary.Models
     {
         public override ResourceType ResourceType => ResourceType.Morph;
 
-        public int TargetCount => TargetInts.Length;
+        public int TargetCount => Weights.Length;
 
-        public int[] TargetInts { get; set; }
+        /// <summary>
+        /// One weight per morph target. The game reads these with its float array reader, so
+        /// they were only ever integers here by mistake.
+        /// </summary>
+        public float[] Weights { get; set; }
 
         public string NodeName { get; set; }
 
@@ -26,9 +30,9 @@ namespace GFDLibrary.Models
         {
             int morphTargetCount = reader.ReadInt32();
 
-            TargetInts = new int[morphTargetCount];
-            for ( int i = 0; i < TargetInts.Length; i++ )
-                TargetInts[i] = reader.ReadInt32();
+            Weights = new float[morphTargetCount];
+            for ( int i = 0; i < Weights.Length; i++ )
+                Weights[i] = reader.ReadSingle();
 
             NodeName = reader.ReadStringWithHash( Version );
         }
@@ -37,8 +41,8 @@ namespace GFDLibrary.Models
         {
             writer.WriteInt32( TargetCount );
 
-            foreach ( int t in TargetInts )
-                writer.WriteInt32( t );
+            foreach ( var weight in Weights )
+                writer.WriteSingle( weight );
 
             writer.WriteStringWithHash( Version, NodeName );
         }

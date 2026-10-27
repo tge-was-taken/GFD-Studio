@@ -1,4 +1,4 @@
-﻿using GFDLibrary.Animations;
+using GFDLibrary.Animations;
 using GFDLibrary.Cameras;
 using GFDLibrary.Common;
 using GFDLibrary.Effects;
@@ -658,7 +658,7 @@ namespace GFDLibrary.Tests
             }
 
             Assert.AreEqual( a.TargetCount, b.TargetCount );
-            CollectionAssert.AreEqual( a.TargetInts, b.TargetInts );
+            CollectionAssert.AreEqual( a.Weights, b.Weights );
             Assert.AreEqual( a.NodeName, b.NodeName );
         }
 

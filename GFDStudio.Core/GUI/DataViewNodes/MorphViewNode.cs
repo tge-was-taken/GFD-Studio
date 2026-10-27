@@ -14,10 +14,10 @@ namespace GFDStudio.GUI.DataViewNodes
 
         public int TargetCount => Data.TargetCount;
 
-        [DisplayName( "Target ints" )]
-        public int[] TargetInts
+        [DisplayName( "Weights" )]
+        public float[] Weights
         {
-            get => Data.TargetInts;
+            get => Data.Weights;
             set => SetDataProperty( value );
         }
 
