@@ -209,43 +209,59 @@ namespace GFDStudio.IO
 
             var replacements = Directory.EnumerateFiles( replacementPath, "*.dds", SearchOption.AllDirectories ).ToList();
 
-            // From Metaphor onwards a texture is named without its extension, on both sides.
-            static string MatchName( uint version, string path )
-                => version >= 0x2000000 ? Path.GetFileNameWithoutExtension( path ) : Path.GetFileName( path );
-
             var failures = ForEachFile( "Replacing textures", ModelFiles( directoryPath ), filePath =>
             {
                 var targetModel = ModuleImportUtilities.ImportFile<ModelPack>( filePath );
                 if ( targetModel?.Textures == null )
                     return;
 
-                var newTextures = new TextureDictionary( targetModel.Version );
-
-                foreach ( var texture in targetModel.Textures.Textures )
-                {
-                    var originalName = MatchName( targetModel.Version, texture.Name );
-                    var found = replacements.FirstOrDefault( x => MatchName( targetModel.Version, x ) == originalName );
-
-                    if ( found == null )
-                    {
-                        newTextures.Add( texture );
-                        continue;
-                    }
-
-                    Logger.Debug( $"Tex Replace: replacing {originalName} with {found}" );
-                    newTextures.Add( TextureReplacement.Prepare(
-                        targetModel.Version,
-                        new Texture( texture.Name, TextureFormat.DDS, File.ReadAllBytes( found ) ) ) );
-                }
-
-                targetModel.Textures.ReplaceWith( newTextures );
+                ReplaceTexturesInModel( targetModel, replacements );
                 targetModel.Save( filePath );
             } );
 
             Report( failures, "All textures successfully mass replaced in models!" );
         }
 
-        private static void SaveTexture( Texture texture, string outputPath )
+        /// <summary>
+        /// Swaps in whichever of the given DDS files share a name with a texture in the model,
+        /// leaving the rest as they are.
+        /// </summary>
+        public static void ReplaceTexturesInModel( ModelPack model, IReadOnlyList<string> replacements )
+        {
+            if ( model?.Textures == null )
+                return;
+
+            // From Metaphor onwards a texture is named without its extension, on both sides.
+            static string MatchName( uint version, string path )
+                => version >= 0x2000000 ? Path.GetFileNameWithoutExtension( path ) : Path.GetFileName( path );
+
+            var newTextures = new TextureDictionary( model.Version );
+
+            foreach ( var texture in model.Textures.Textures )
+            {
+                var originalName = MatchName( model.Version, texture.Name );
+                var found = replacements.FirstOrDefault( x => MatchName( model.Version, x ) == originalName );
+
+                if ( found == null )
+                {
+                    newTextures.Add( texture );
+                    continue;
+                }
+
+                Logger.Debug( $"Tex Replace: replacing {originalName} with {found}" );
+                newTextures.Add( TextureReplacement.Prepare(
+                    model.Version,
+                    new Texture( texture.Name, TextureFormat.DDS, File.ReadAllBytes( found ) ) ) );
+            }
+
+            model.Textures.ReplaceWith( newTextures );
+        }
+
+        /// <summary>
+        /// Writes a texture into a directory, keeping its own format where it has one and falling
+        /// back to PNG where it does not.
+        /// </summary>
+        public static void SaveTexture( Texture texture, string outputPath )
         {
             switch ( texture.Format )
             {
