@@ -90,7 +90,7 @@ namespace GFDLibrary.Animations
         private List<Animation> ReadAnimations( ResourceReader reader )
         {
             var count = reader.ReadInt32();
-            var list = new List<Animation>( count );
+            var list = new List<Animation>( reader.ValidateCount( count ) );
             for ( int i = 0; i < count; i++ )
             {
                 // Animations are super broken at the moment

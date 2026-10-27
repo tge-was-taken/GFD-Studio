@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
+using System.IO;
 using System.Numerics;
 using GFDLibrary.IO;
 using GFDLibrary.IO.Common;
@@ -89,8 +89,7 @@ namespace GFDLibrary.Materials
                     break;
 
                 default:
-                    Trace.Assert( false, $"Unknown material attribute type: {flags:X8}" );
-                    break;
+                    throw new InvalidDataException( $"Unknown material attribute type: {flags:X8}" );
             }
 
             attribute.ReadCore( reader );

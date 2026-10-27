@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Numerics;
 using GFDLibrary.Common;
@@ -391,7 +390,7 @@ namespace GFDLibrary.Models
                 Triangles = new Triangle[triangleCount];
             }
 
-            int vertexCount = reader.ReadInt32();
+            int vertexCount = reader.ValidateCount( reader.ReadInt32(), 4 );
             if ( Version > 0x2110205 )
             {
                 Unk_StrideType = reader.ReadByte();
@@ -568,7 +567,8 @@ namespace GFDLibrary.Models
                 LodEnd = reader.ReadSingle();
             }
 
-            Trace.Assert( Flags == flags, "Mesh flags don't match flags in file" );
+            if ( Flags != flags )
+                throw new InvalidDataException( $"Mesh flags read back as {Flags} but the file says {flags}." );
         }
 
         private void AllocateBuffers( int vertexCount )

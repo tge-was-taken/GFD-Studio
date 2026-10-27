@@ -1,5 +1,4 @@
 using GFDLibrary.IO.Common;
-using System.Diagnostics;
 using System.IO;
 
 namespace GFDLibrary.IO
@@ -23,7 +22,8 @@ namespace GFDLibrary.IO
             }
             Version = reader.ReadUInt32();
             Type = ( ResourceType )reader.ReadInt32();
-            Trace.Assert( reader.ReadInt32() == 0 );
+            if ( reader.ReadInt32() != 0 )
+                throw new InvalidDataException( "Resource file header has a non zero reserved field." );
         }
 
         internal void Write( BinaryWriter writer )

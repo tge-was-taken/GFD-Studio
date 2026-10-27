@@ -40,14 +40,14 @@ namespace GFDLibrary.IO
         {
             var length = ReadUInt16();
             if ( length == 0 ) return "";
-            var bytes = ReadBytes( length );
+            var bytes = ReadBytes( ValidateCount( length ) );
             return sSJISEncoding.GetString( bytes );
         }
 
         public string ReadString( int length )
         {
             if ( length == 0 ) return "";
-            var bytes = ReadBytes( length );
+            var bytes = ReadBytes( ValidateCount( length ) );
             return sSJISEncoding.GetString( bytes );
         }
 
@@ -267,7 +267,7 @@ namespace GFDLibrary.IO
 
         public List<T> ReadResourceList<T>( uint version ) where T : Resource, new()
         {
-            var count = ReadInt32();
+            var count = ValidateCount( ReadInt32() );
             var list = new List<T>( count );
             for ( int i = 0; i < count; i++ )
             {

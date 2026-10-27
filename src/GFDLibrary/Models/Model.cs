@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Numerics;
 using GFDLibrary.Common;
@@ -98,7 +98,7 @@ namespace GFDLibrary.Models
                 int boneCount = reader.ReadInt32();
 
                 var inverseBindMatrices = new Matrix4x4[boneCount];
-                var boneToNodeIndices = new ushort[boneCount];
+                var boneToNodeIndices = new ushort[reader.ValidateCount( boneCount, 2 )];
                 for ( int i = 0; i < boneCount; i++ )
                     inverseBindMatrices[i] = reader.ReadMatrix4x4();
 
@@ -240,7 +240,8 @@ namespace GFDLibrary.Models
                                         {
                                             foreach ( var morphTarget in mesh.MorphTargets )
                                             {
-                                                Trace.Assert( morphTarget.VertexCount == mesh.VertexCount );
+                                                if ( morphTarget.VertexCount != mesh.VertexCount )
+                                                    throw new InvalidDataException( "A morph target has a different vertex count to its mesh." );
                                                 morphTarget.Vertices[ i ] = Vector3.Transform( ( position + morphTarget.Vertices[ i ] ), offsetMatrix ) - newPosition;
                                             }
                                         }
@@ -318,7 +319,8 @@ namespace GFDLibrary.Models
                         }
                     }
 
-                    Trace.Assert( lastUniqueNodeIndex != -1 );
+                    if ( lastUniqueNodeIndex == -1 )
+                        throw new InvalidDataException( "No node carries the bone the model refers to." );
 
                     if ( Bones == null )
                     {
@@ -416,7 +418,8 @@ namespace GFDLibrary.Models
                             //    boneTransform = otherBoneNode.WorldTransform;
 
                             var thisNodeIndex = nodes.IndexOf( thisBoneNode );
-                            Trace.Assert( thisNodeIndex != -1 );
+                            if ( thisNodeIndex == -1 )
+                                throw new InvalidDataException( "A bone names a node that is not in the model." );
                             var bindMatrix = boneTransform * nodeInvWorldTransform;
                             Matrix4x4.Invert( bindMatrix, out var inverseBindMatrix );
                             

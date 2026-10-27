@@ -30,7 +30,7 @@ namespace GFDLibrary.Models
         {
             int morphTargetCount = reader.ReadInt32();
 
-            Weights = new float[morphTargetCount];
+            Weights = new float[reader.ValidateCount( morphTargetCount, 4 )];
             for ( int i = 0; i < Weights.Length; i++ )
                 Weights[i] = reader.ReadSingle();
 

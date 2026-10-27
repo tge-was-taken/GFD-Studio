@@ -131,7 +131,7 @@ namespace GFDLibrary.Effects
             {
                 Field00 = reader.ReadUInt32();
                 var dataLength = reader.ReadInt32();
-                Data = reader.ReadBytes( dataLength );
+                Data = reader.ReadBytes( reader.ValidateCount( dataLength ) );
             }
         }
 

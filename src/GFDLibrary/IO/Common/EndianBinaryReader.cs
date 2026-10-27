@@ -161,9 +161,25 @@ namespace GFDLibrary.IO.Common
                 return base.ReadUInt16();
         }
 
+        /// <summary>
+        /// Rejects a count the rest of the stream cannot hold. A file the library cannot parse
+        /// otherwise reads a garbage count and allocates against it, which costs gigabytes
+        /// before anything notices.
+        /// </summary>
+        public int ValidateCount( int count, int itemSize = 1 )
+        {
+            var remaining = BaseStream.Length - BaseStream.Position;
+
+            if ( count < 0 || (long)count * Math.Max( itemSize, 1 ) > remaining )
+                throw new InvalidDataException(
+                    $"A count of {count} at offset {BaseStream.Position} needs more than the {remaining} bytes left in the stream." );
+
+            return count;
+        }
+
         public ushort[] ReadUInt16s(int count)
         {
-            ushort[] array = new ushort[count];
+            ushort[] array = new ushort[ValidateCount( count, 2 )];
             for (int i = 0; i < array.Length; i++)
             {
                 array[i] = ReadUInt16();
@@ -220,7 +236,7 @@ namespace GFDLibrary.IO.Common
 
         public int[] ReadInt32s(int count)
         {
-            int[] array = new int[count];
+            int[] array = new int[ValidateCount( count, 4 )];
             for (int i = 0; i < array.Length; i++)
             {
                 array[i] = ReadInt32();
@@ -258,7 +274,7 @@ namespace GFDLibrary.IO.Common
 
         public float[] ReadSingles(int count)
         {
-            float[] array = new float[count];
+            float[] array = new float[ValidateCount( count, 4 )];
             for (int i = 0; i < array.Length; i++)
             {
                 array[i] = ReadSingle();
@@ -277,7 +293,7 @@ namespace GFDLibrary.IO.Common
 
         public uint[] ReadUInt32s(int count)
         {
-            uint[] array = new uint[count];
+            uint[] array = new uint[ValidateCount( count, 4 )];
             for (int i = 0; i < array.Length; i++)
             {
                 array[i] = ReadUInt32();

@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
+using System.IO;
 using GFDLibrary.IO;
 
 namespace GFDLibrary.Textures
@@ -106,9 +106,10 @@ namespace GFDLibrary.Textures
         {
             Name = reader.ReadString();
             Format = ( TextureFormat )reader.ReadInt16();
-            Trace.Assert( Enum.IsDefined( typeof( TextureFormat ), Format ), "Unknown texture format" );
+            if ( !Enum.IsDefined( typeof( TextureFormat ), Format ) )
+                throw new InvalidDataException( $"Unknown texture format: {(int)Format}" );
             int size = reader.ReadInt32();
-            Data = reader.ReadBytes( size );
+            Data = reader.ReadBytes( reader.ValidateCount( size ) );
             Field1C = reader.ReadByte();
             Field1D = reader.ReadByte();
             Field1E = reader.ReadByte();

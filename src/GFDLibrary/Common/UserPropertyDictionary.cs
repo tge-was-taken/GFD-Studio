@@ -79,7 +79,7 @@ namespace GFDLibrary.Common
                         property = new UserVector4Property( name, reader.ReadVector4() );
                         break;
                     case UserPropertyValueType.ByteArray:
-                        property = new UserByteArrayProperty( name, reader.ReadBytes( size ) );
+                        property = new UserByteArrayProperty( name, reader.ReadBytes( reader.ValidateCount( size ) ) );
                         break;
                     default:
                         throw new InvalidDataException( $"Unknown node property type: {type}" );
