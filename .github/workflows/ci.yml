@@ -23,7 +23,7 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
-      - run: dotnet build GFDStudio.sln -c Release
+      - run: dotnet build GFDStudio.slnx -c Release
 
       # The test data is not in the repository, so the tests only run where it is available.
       - id: testdata

@@ -21,7 +21,7 @@ installed, `GFDStudio-dotnet.zip` is smaller but needs the .NET 10 desktop runti
 Requires the [.NET 10 SDK](https://dotnet.microsoft.com/download) and CMake 3.24 or newer.
 
 - Clone with `git clone https://github.com/tge-was-taken/GFD-Studio`
-- Open the solution in Visual Studio, or `dotnet build GFDStudio.sln -c Release`
+- Open the solution in Visual Studio, or `dotnet build GFDStudio.slnx -c Release`
 
 ### Native libraries
 
@@ -53,7 +53,7 @@ Everything builds and runs on Windows, Linux and macOS. The GUI is Avalonia and 
 draws with OpenTK on the context Avalonia provides.
 
 ```
-dotnet build GFDStudio.sln -c Release
+dotnet build GFDStudio.slnx -c Release
 ```
 
 ### Publishing

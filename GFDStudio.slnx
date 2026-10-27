@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/GFDLibrary.Conversion.AssimpNet/GFDLibrary.Conversion.AssimpNet.csproj" />
+    <Project Path="src/GFDLibrary.Conversion.Core/GFDLibrary.Conversion.Core.csproj" />
+    <Project Path="src/GFDLibrary.Rendering.OpenGL/GFDLibrary.Rendering.OpenGL.csproj" />
+    <Project Path="src/GFDLibrary/GFDLibrary.csproj" />
+    <Project Path="src/GFDStudio.Avalonia/GFDStudio.Avalonia.csproj" />
+    <Project Path="src/GFDStudio.Cli/GFDStudio.Cli.csproj" />
+    <Project Path="src/GFDStudio.Core/GFDStudio.Core.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/GFDLibrary.Conversion.FbxSdk.Tests/GFDLibrary.Conversion.FbxSdk.Tests.csproj" />
+    <Project Path="tests/GFDLibrary.Tests/GFDLibrary.Tests.csproj" />
+  </Folder>
+</Solution>
