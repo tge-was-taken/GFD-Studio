@@ -58,13 +58,40 @@ dotnet build GFDStudio.slnx -c Release
 
 ### Publishing
 
-Every push to master publishes a release tagged `v0.10.<patch>-<commit>`, numbering the patch from
-the tags already published, and pushing a `v*` tag publishes one under that tag. Archives are built
+Every push to master publishes a release tagged `v1.0.0-rc.<n>-<commit>`, numbering the candidate
+from the tags already published, and pushing a `v*` tag publishes one under that tag. Archives are built
 for `win-x64`, `linux-x64` and `osx-arm64`.
 
 ```
 dotnet publish src/GFDStudio.Avalonia/GFDStudio.Avalonia.csproj -c Release -r win-x64 --self-contained -o out
 ```
+## Command line
+
+`gfdstudio` does most of what the window does, for scripting and batch work.
+
+```
+gfdstudio info      model.GMD --formats      identify a file and say what is in it
+gfdstudio convert   model.GMD model.fbx      convert, taking the format from both extensions
+gfdstudio export    model.GMD --out out/     export a file in one of its export formats
+gfdstudio replace   model.GMD new.fbx        replace part of a file
+gfdstudio textures  export model.GMD out/    export every texture
+gfdstudio batch     <job> <directory>        the directory jobs from the Tools menu
+gfdstudio roundtrip <file|directory>         load and save unchanged, and report what differs
+```
+
+### Round trip testing
+
+`roundtrip` reads a file, writes it straight back and compares the bytes. Anything that is not
+byte identical means the library lost or changed something it did not understand, which makes it
+the cheapest regression test there is.
+
+Pointed at a directory it walks the tree; pointed at a checkout of the corpus repo it reads
+`manifest.json` and honours the `known_bad` entries. `--sample`/`--offset` take a slice,
+`--games` limits it to one game, and `--memory-budget` caps how much is held at once, since a
+model costs several times its size on disk once loaded.
+
+The corpus itself lives in a private repo, so CI skips the round trip on forks.
+
 ## Usage
 ### Model Conversion
 For best results, use the [GMD Maxscript](https://github.com/tge-was-taken/GFD-Studio/blob/master/Resources/GfdImporter/GfdImporter.ms) to import models directly into 3ds Max.
