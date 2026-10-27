@@ -32,16 +32,16 @@ the feature each one backs fails at runtime instead.
 `GFDLibrary.Native.DirectXTex` fetches its own dependencies, so it needs nothing installed:
 
 ```
-cmake -S GFDLibrary.Native.DirectXTex -B GFDLibrary.Native.DirectXTex/out -DCMAKE_BUILD_TYPE=Release
-cmake --build GFDLibrary.Native.DirectXTex/out --config Release
+cmake -S src/native/GFDLibrary.Native.DirectXTex -B src/native/GFDLibrary.Native.DirectXTex/out -DCMAKE_BUILD_TYPE=Release
+cmake --build src/native/GFDLibrary.Native.DirectXTex/out --config Release
 ```
 
 `GFDLibrary.Native.FbxSdk` needs the Autodesk FBX SDK 2020.3.7, which is a licensed download.
 Install it to the standard path for your platform or pass `-DFbxSdkRoot=<path>`:
 
 ```
-cmake -S GFDLibrary.Native.FbxSdk -B GFDLibrary.Native.FbxSdk/out -DCMAKE_BUILD_TYPE=Release
-cmake --build GFDLibrary.Native.FbxSdk/out --config Release
+cmake -S src/native/GFDLibrary.Native.FbxSdk -B src/native/GFDLibrary.Native.FbxSdk/out -DCMAKE_BUILD_TYPE=Release
+cmake --build src/native/GFDLibrary.Native.FbxSdk/out --config Release
 ```
 
 A build in each project's `out` directory is copied next to the application automatically. Without
@@ -63,7 +63,7 @@ the tags already published, and pushing a `v*` tag publishes one under that tag.
 for `win-x64`, `linux-x64` and `osx-arm64`.
 
 ```
-dotnet publish GFDStudio.Avalonia/GFDStudio.Avalonia.csproj -c Release -r win-x64 --self-contained -o out
+dotnet publish src/GFDStudio.Avalonia/GFDStudio.Avalonia.csproj -c Release -r win-x64 --self-contained -o out
 ```
 ## Usage
 ### Model Conversion

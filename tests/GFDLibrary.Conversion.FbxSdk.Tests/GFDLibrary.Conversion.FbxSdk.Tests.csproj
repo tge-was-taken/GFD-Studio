@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\GFDLibrary\GFDLibrary.csproj" />
+    <ProjectReference Include="..\..\src\GFDLibrary\GFDLibrary.csproj" />
   </ItemGroup>
 
   <ItemGroup>

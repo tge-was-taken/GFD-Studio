@@ -18,13 +18,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\GFDLibrary\GFDLibrary.csproj" />
+    <ProjectReference Include="..\..\src\GFDLibrary\GFDLibrary.csproj" />
   </ItemGroup>
 
   <!-- The tests read game assets that are not in the repository. Drop them in Resources/TestData
        and they land where the tests look for them. -->
   <ItemGroup>
-    <Content Include="..\Resources\TestData\**\*" LinkBase="resources" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\Resources\TestData\**\*" LinkBase="resources" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

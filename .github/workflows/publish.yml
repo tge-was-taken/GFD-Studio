@@ -46,7 +46,7 @@ jobs:
         run: |
           set -eu
           out="publish/GFDStudio-${{ matrix.rid }}"
-          dotnet publish GFDStudio.Avalonia/GFDStudio.Avalonia.csproj -c Release \
+          dotnet publish src/GFDStudio.Avalonia/GFDStudio.Avalonia.csproj -c Release \
             -r ${{ matrix.rid }} --self-contained -o "$out"
           rm -rf "$out"/*.pdb
 
@@ -97,7 +97,7 @@ jobs:
         run: |
           set -eu
           out=publish/GFDStudio-dotnet
-          dotnet publish GFDStudio.Avalonia/GFDStudio.Avalonia.csproj -c Release --no-self-contained -o "$out"
+          dotnet publish src/GFDStudio.Avalonia/GFDStudio.Avalonia.csproj -c Release --no-self-contained -o "$out"
           rm -rf "$out"/*.pdb
 
       - name: Archive

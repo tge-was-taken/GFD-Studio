@@ -16,9 +16,9 @@ runs:
       shell: bash
       run: |
         set -eu
-        cmake -S GFDLibrary.Native.DirectXTex -B GFDLibrary.Native.DirectXTex/out \
+        cmake -S src/native/GFDLibrary.Native.DirectXTex -B src/native/GFDLibrary.Native.DirectXTex/out \
           -DCMAKE_BUILD_TYPE=Release
-        cmake --build GFDLibrary.Native.DirectXTex/out --config Release
+        cmake --build src/native/GFDLibrary.Native.DirectXTex/out --config Release
 
     # The installers are the same downloads Autodesk serves from its own site, one per platform.
     - name: Install the FBX SDK
@@ -58,6 +58,6 @@ runs:
       run: |
         set -eu
         test -f "$FBXSDK_ROOT/include/fbxsdk.h" || { echo "::error::the FBX SDK is not at $FBXSDK_ROOT"; exit 1; }
-        cmake -S GFDLibrary.Native.FbxSdk -B GFDLibrary.Native.FbxSdk/out \
+        cmake -S src/native/GFDLibrary.Native.FbxSdk -B src/native/GFDLibrary.Native.FbxSdk/out \
           -DCMAKE_BUILD_TYPE=Release -DFbxSdkRoot="$FBXSDK_ROOT"
-        cmake --build GFDLibrary.Native.FbxSdk/out --config Release
+        cmake --build src/native/GFDLibrary.Native.FbxSdk/out --config Release

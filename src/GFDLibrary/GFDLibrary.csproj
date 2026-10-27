@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -29,7 +29,7 @@
        CMake build lands in its out directory; CI publishes per runtime binaries instead. Point
        DirectXTexCNativeDir elsewhere to use a build from another location. -->
   <PropertyGroup>
-    <DirectXTexCNativeDir Condition="'$(DirectXTexCNativeDir)' == ''">$(MSBuildThisFileDirectory)..\GFDLibrary.Native.DirectXTex\out</DirectXTexCNativeDir>
+    <DirectXTexCNativeDir Condition="'$(DirectXTexCNativeDir)' == ''">$(MSBuildThisFileDirectory)..\native\GFDLibrary.Native.DirectXTex\out</DirectXTexCNativeDir>
   </PropertyGroup>
 
   <ItemGroup>
@@ -45,7 +45,7 @@
        GFDLibrary.Native.FbxSdk. The SDK is a licensed download, so this one is often absent; the
        exporter then fails at runtime instead of breaking the build. -->
   <PropertyGroup>
-    <FbxSdkCNativeDir Condition="'$(FbxSdkCNativeDir)' == ''">$(MSBuildThisFileDirectory)..\GFDLibrary.Native.FbxSdk\out</FbxSdkCNativeDir>
+    <FbxSdkCNativeDir Condition="'$(FbxSdkCNativeDir)' == ''">$(MSBuildThisFileDirectory)..\native\GFDLibrary.Native.FbxSdk\out</FbxSdkCNativeDir>
   </PropertyGroup>
 
   <ItemGroup>
