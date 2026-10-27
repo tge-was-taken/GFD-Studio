@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Numerics;
+using YamlDotNet.Serialization;
 using GFDLibrary.Common;
 using GFDLibrary.Effects;
 using GFDLibrary.IO;
@@ -117,6 +118,8 @@ namespace GFDLibrary.Models
         public float FieldE0 { get; set; }
 
         private Node mParent;
+
+        [YamlIgnore]
         public Node Parent
         {
             get => mParent;
@@ -134,7 +137,29 @@ namespace GFDLibrary.Models
         public bool HasParent => Parent != null;
 
         private readonly List<Node> mChildren;
+
+        [YamlIgnore]
         public ReadOnlyCollection<Node> Children => mChildren.AsReadOnly();
+
+        /// <summary>
+        /// What the serializer reads and writes. <see cref="Children"/> stays read only for
+        /// everything else, because adding a child has to set its parent as well.
+        /// </summary>
+        [YamlMember( Alias = "Children" )]
+        public List<Node> SerializedChildren
+        {
+            get => mChildren;
+            set
+            {
+                mChildren.Clear();
+
+                if ( value == null )
+                    return;
+
+                foreach ( var child in value )
+                    AddChildNode( child );
+            }
+        }
 
         public bool HasChildren => Children != null && Children.Count > 0;
 

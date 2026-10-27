@@ -33,6 +33,8 @@ namespace GFDLibrary.Common
     {
         public int Value { get; set; }
 
+        public UserIntProperty() : this( null ) { }
+
         public UserIntProperty( string name ) : base(UserPropertyValueType.Int, name) { }
 
         public UserIntProperty( string name, int value ) : base(UserPropertyValueType.Int, name) => Value = value;
@@ -51,6 +53,8 @@ namespace GFDLibrary.Common
     public sealed class UserFloatProperty : UserProperty
     {
         public float Value { get; set; }
+
+        public UserFloatProperty() : this( null ) { }
 
         public UserFloatProperty( string name ) : base( UserPropertyValueType.Float, name ) { }
 
@@ -71,6 +75,8 @@ namespace GFDLibrary.Common
     {
         public bool Value { get; set; }
 
+        public UserBoolProperty() : this( null ) { }
+
         public UserBoolProperty( string name ) : base( UserPropertyValueType.Bool, name ) { }
 
         public UserBoolProperty( string name, bool value ) : base( UserPropertyValueType.Bool, name ) => Value = value;
@@ -89,6 +95,8 @@ namespace GFDLibrary.Common
     public sealed class UserStringProperty : UserProperty
     {
         public string Value { get; set; }
+
+        public UserStringProperty() : this( null ) { }
 
         public UserStringProperty( string name ) : base( UserPropertyValueType.String, name ) { }
 
@@ -109,6 +117,8 @@ namespace GFDLibrary.Common
     {
         public ByteVector3 Value { get; set; }
 
+        public UserByteVector3Property() : this( null ) { }
+
         public UserByteVector3Property( string name ) : base( UserPropertyValueType.ByteVector3, name ) { }
 
         public UserByteVector3Property( string name, ByteVector3 value ) : base( UserPropertyValueType.ByteVector3, name ) => Value = value;
@@ -127,6 +137,8 @@ namespace GFDLibrary.Common
     public sealed class UserByteVector4Property : UserProperty
     {
         public ByteVector4 Value { get; set; }
+
+        public UserByteVector4Property() : this( null ) { }
 
         public UserByteVector4Property( string name ) : base( UserPropertyValueType.ByteVector4, name ) { }
 
@@ -147,6 +159,8 @@ namespace GFDLibrary.Common
     {
         public Vector3 Value { get; set; }
 
+        public UserVector3Property() : this( null ) { }
+
         public UserVector3Property( string name ) : base( UserPropertyValueType.Vector3, name ) { }
 
         public UserVector3Property( string name, Vector3 value ) : base( UserPropertyValueType.Vector3, name ) => Value = value;
@@ -166,6 +180,8 @@ namespace GFDLibrary.Common
     {
         public Vector4 Value { get; set; }
 
+        public UserVector4Property() : this( null ) { }
+
         public UserVector4Property( string name ) : base( UserPropertyValueType.Vector4, name ) { }
 
         public UserVector4Property( string name, Vector4 value ) : base( UserPropertyValueType.Vector4, name ) => Value = value;
@@ -184,6 +200,8 @@ namespace GFDLibrary.Common
     public sealed class UserByteArrayProperty : UserProperty
     {
         public byte[] Value { get; set; }
+
+        public UserByteArrayProperty() : this( null ) { }
 
         public UserByteArrayProperty( string name ) : base( UserPropertyValueType.ByteArray, name ) { }
 
