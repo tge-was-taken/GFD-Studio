@@ -63,7 +63,13 @@ runs:
         # instantiated. Clang 17 and newer do, and the typo is then a hard error.
         tree="$FBXSDK_ROOT/include/fbxsdk/core/base/fbxredblacktree.h"
         if grep -q mLefttChild "$tree"; then
-          perl -pi -e 's/mLefttChild/mLeftChild/g' "$tree"
+          # The macOS installer puts the SDK under /Applications, owned by root. perl only
+          # warns when it cannot edit in place and still exits 0, so the write is checked.
+          if [ -w "$tree" ]; then
+            perl -pi -e 's/mLefttChild/mLeftChild/g' "$tree"
+          else
+            sudo perl -pi -e 's/mLefttChild/mLeftChild/g' "$tree"
+          fi
           if grep -n mLefttChild "$tree"; then
             echo "::error::the typo is still in $tree after patching it"
             exit 1
