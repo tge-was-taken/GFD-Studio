@@ -23,11 +23,22 @@ namespace GFDLibrary.Conversion.FbxSdk
 
         public void Export( AnimationPack pack )
         {
-            if ( pack?.Animations == null )
+            if ( pack == null )
                 return;
 
-            for ( var i = 0; i < pack.Animations.Count; i++ )
-                ExportAnimation( pack.Animations[i], $"Take {i + 1:D3}" );
+            // A pack can hold either kind, and some hold only blend animations, so both lists
+            // are walked rather than just the first.
+            Export( pack.Animations, "Take" );
+            Export( pack.BlendAnimations, "Blend" );
+        }
+
+        private void Export( List<Animation> animations, string prefix )
+        {
+            if ( animations == null )
+                return;
+
+            for ( var i = 0; i < animations.Count; i++ )
+                ExportAnimation( animations[i], $"{prefix} {i + 1:D3}" );
         }
 
         private void ExportAnimation( Animation animation, string name )

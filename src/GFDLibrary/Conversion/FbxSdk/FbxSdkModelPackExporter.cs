@@ -475,7 +475,9 @@ namespace GFDLibrary.Conversion.FbxSdk
         /// </summary>
         private void ExportAnimations( AnimationPack pack )
         {
-            if ( pack == null || pack.Animations == null || pack.Animations.Count == 0 )
+            var count = ( pack?.Animations?.Count ?? 0 ) + ( pack?.BlendAnimations?.Count ?? 0 );
+
+            if ( count == 0 )
                 return;
 
             var byName = new Dictionary<string, IntPtr>();
