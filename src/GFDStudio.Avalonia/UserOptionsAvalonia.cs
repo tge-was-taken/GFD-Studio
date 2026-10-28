@@ -1,3 +1,4 @@
+using GFDLibrary;
 using GFDStudio.GUI;
 
 namespace GFDStudio.Avalonia
@@ -8,7 +9,19 @@ namespace GFDStudio.Avalonia
     /// </summary>
     public sealed class UserOptionsAvalonia : IUserOptions
     {
-        public static Config Settings { get; } = new Config().LoadJson();
+        public static Config Settings { get; } = Load();
+
+        /// <summary>
+        /// Whether a file is Catherine Full Body cannot be read from the file, so the saved
+        /// answer has to reach the library before anything is opened.
+        /// </summary>
+        private static Config Load()
+        {
+            var settings = new Config().LoadJson();
+            ResourceVersion.TreatAsCatherineFullBody = settings.TreatAsCatherineFullBody;
+
+            return settings;
+        }
 
         public bool RetainMaterialTextureNames => Settings.RetainTextureNames;
 

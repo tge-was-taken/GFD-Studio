@@ -3,6 +3,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
+using GFDLibrary;
 using GFDStudio.GUI;
 
 namespace GFDStudio.Avalonia
@@ -27,6 +28,17 @@ namespace GFDStudio.Avalonia
                 "From Metaphor onwards a texture can live in a file beside the model instead of " +
                 "inside it. Has no effect on earlier games.",
                 settings.SaveReplacedTexturesExternally, x => settings.SaveReplacedTexturesExternally = x ) );
+
+            list.Children.Add( Toggle(
+                "Read files as Catherine Full Body",
+                "Catherine Full Body shares its version numbers with Persona 3 Dancing and Persona 5 " +
+                "Royal, so which one a file is cannot be read from the file. Turn this on to open " +
+                "Catherine Full Body models and animations.",
+                settings.TreatAsCatherineFullBody, x =>
+                {
+                    settings.TreatAsCatherineFullBody = x;
+                    ResourceVersion.TreatAsCatherineFullBody = x;
+                } ) );
 
             list.Children.Add( Toggle(
                 "Use the dark theme",
