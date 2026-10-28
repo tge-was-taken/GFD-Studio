@@ -10,23 +10,13 @@ namespace GFDStudio.GUI.DataViewNodes
 
     public abstract class DataViewNode<T> : DataViewNode
     {
-        private bool mIsUpdatingData;
         private DataViewNodeUpdateHandler<T> mDataUpdateHandler;
 
         [Browsable( false )]
         public new T Data
         {
-            get
-            {
-                if ( IsInitialized && !mIsUpdatingData && HasPendingChanges )
-                    UpdateData();
-
-                return ( T )base.Data;
-            }
-            protected set
-            {
-                base.Data = value;
-            }
+            get => ( T )base.Data;
+            protected set => base.Data = value;
         }
 
         [Browsable( false )]
@@ -57,20 +47,22 @@ namespace GFDStudio.GUI.DataViewNodes
 
         protected override void UpdateData()
         {
-            if ( mDataUpdateHandler == null || !IsViewInitialized )
+            if ( mDataUpdateHandler == null || !HasBuiltChildNodes )
                 return;
 
             Trace.TraceInformation( $"{nameof( DataViewNode<T> )} [{Text}]: {nameof( UpdateData )}" );
 
-            // enter update state
-            mIsUpdatingData = true;
+            IsUpdatingData = true;
 
-            // update data
-            Data = mDataUpdateHandler();
-            NotifyDataPropertyChanged();
-
-            // exit update state
-            mIsUpdatingData = false;
+            try
+            {
+                Data = mDataUpdateHandler();
+                NotifyDataPropertyChanged();
+            }
+            finally
+            {
+                IsUpdatingData = false;
+            }
         }
     }
 }

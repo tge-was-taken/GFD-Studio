@@ -43,10 +43,22 @@ namespace GFDStudio.GUI.DataViewNodes
         private readonly Dictionary<Type, DataViewNodeAddHandler> mAddHandlers;
 
         /// <summary>
-        /// Gets or sets the resource held by the view model.
+        /// Gets or sets the resource held by the view model. Reading it rebuilds the resource
+        /// first if the node or anything under it changed, so a caller holding the node by its
+        /// base type gets current data just like one holding the derived type does.
         /// </summary>
         [Browsable( false )]
-        public object Data { get; protected set; }
+        public object Data
+        {
+            get
+            {
+                if ( IsInitialized && !IsUpdatingData && HasPendingChanges )
+                    UpdateData();
+
+                return mData;
+            }
+            protected set => mData = value;
+        }
 
         /// <summary>
         /// Gets the resource type.
@@ -160,6 +172,20 @@ namespace GFDStudio.GUI.DataViewNodes
         /// </summary>
         protected bool IsViewInitialized { get; private set; }
 
+        /// <summary>
+        /// Whether the child nodes have been built from the data at least once. A rebuild reads
+        /// the children, so it has nothing to read before this is set, and must be skipped.
+        /// Unlike <see cref="IsViewInitialized"/> this never goes back to false.
+        /// </summary>
+        protected bool HasBuiltChildNodes { get; private set; }
+
+        /// <summary>
+        /// Set while a rebuild runs, so the handler can read the current data without starting
+        /// another one.
+        /// </summary>
+        protected bool IsUpdatingData { get; set; }
+
+        private object mData;
         private bool mHasPendingChanges;
         private bool mIsInitializingView;
         private string mText;
@@ -488,6 +514,7 @@ namespace GFDStudio.GUI.DataViewNodes
                 {
                     parent.Nodes.RemoveAt( index );
                     parent.Nodes.Insert( index - 1, this );
+                    parent.HasPendingChanges = true;
                 }
             }
 
@@ -504,6 +531,7 @@ namespace GFDStudio.GUI.DataViewNodes
                 {
                     parent.Nodes.RemoveAt( index );
                     parent.Nodes.Insert( index + 1, this );
+                    parent.HasPendingChanges = true;
                 }
             }
 
@@ -752,6 +780,7 @@ namespace GFDStudio.GUI.DataViewNodes
 
             mIsInitializingView = false;
             IsViewInitialized = true;
+            HasBuiltChildNodes = true;
         }
 
         /// <summary>
