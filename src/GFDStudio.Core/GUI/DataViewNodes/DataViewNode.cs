@@ -6,6 +6,9 @@ using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using GFDLibrary;
+using GFDLibrary.Models;
+using GFDLibrary.Textures;
+using GFDLibrary.Materials;
 using GFDStudio.DataManagement;
 using GFDStudio.FormatModules;
 
@@ -546,10 +549,37 @@ namespace GFDStudio.GUI.DataViewNodes
                     return;
             }
 
+            var renamedFrom = propertyName == "Name" ? property.GetValue( instance, null ) as string : null;
+
             property.SetValue( instance, value );
+
+            if ( renamedFrom != null )
+                PropagateRename( renamedFrom, value as string );
 
             // ReSharper disable once ExplicitCallerInfoArgument
             NotifyPropertyChanged( propertyName );
+        }
+
+        /// <summary>
+        /// A mesh names its material and a material names its textures, so renaming one of those
+        /// in a model pack has to follow through or the references go dangling.
+        /// </summary>
+        private void PropagateRename( string oldName, string newName )
+        {
+            if ( string.IsNullOrEmpty( oldName ) || string.IsNullOrEmpty( newName ) || oldName == newName )
+                return;
+
+            var root = this;
+            while ( root.Parent != null )
+                root = root.Parent;
+
+            if ( root.Data is not ModelPack pack )
+                return;
+
+            if ( DataType == typeof( Material ) )
+                pack.RenameMaterialReferences( oldName, newName );
+            else if ( DataType == typeof( Texture ) )
+                pack.RenameTextureReferences( oldName, newName );
         }
 
         protected void SetDataProperty<T>( T value, [CallerMemberName] string propertyName = null )

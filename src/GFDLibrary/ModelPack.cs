@@ -22,6 +22,35 @@ namespace GFDLibrary
 
         public Model Model { get; set; }
 
+        /// <summary>
+        /// Points every mesh that named the old material at the new name. A mesh names its
+        /// material by string, so a rename that does not follow through leaves it dangling.
+        /// </summary>
+        public void RenameMaterialReferences( string oldName, string newName )
+        {
+            if ( !Renameable( oldName, newName ) || Model == null )
+                return;
+
+            foreach ( var mesh in Model.Meshes.Where( x => x.MaterialName == oldName ) )
+                mesh.MaterialName = newName;
+        }
+
+        /// <summary>
+        /// The same for a texture, which every material's texture maps name by string.
+        /// </summary>
+        public void RenameTextureReferences( string oldName, string newName )
+        {
+            if ( !Renameable( oldName, newName ) || Materials == null )
+                return;
+
+            foreach ( var map in Materials.Materials.SelectMany( x => x.TextureMaps )
+                                          .Where( x => x != null && x.Name == oldName ) )
+                map.Name = newName;
+        }
+
+        private static bool Renameable( string oldName, string newName )
+            => !string.IsNullOrEmpty( oldName ) && !string.IsNullOrEmpty( newName ) && oldName != newName;
+
         public AnimationPack AnimationPack { get; set; }
 
         public ChunkType000100F8 ChunkType000100F8 { get; set; }
