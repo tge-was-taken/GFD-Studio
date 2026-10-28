@@ -9,6 +9,10 @@
 #include <stdint.h>
 
 #if defined(_WIN32)
+  // HRESULT comes from the Windows headers, and this one is included before DirectXTex.h
+  // pulls them in.
+  #define WIN32_LEAN_AND_MEAN
+  #include <windows.h>
   #define DIRECTXTEX_C_API __declspec(dllexport)
 #else
   #define DIRECTXTEX_C_API __attribute__((visibility("default")))

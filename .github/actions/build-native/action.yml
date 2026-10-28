@@ -58,6 +58,15 @@ runs:
       run: |
         set -eu
         test -f "$FBXSDK_ROOT/include/fbxsdk.h" || { echo "::error::the FBX SDK is not at $FBXSDK_ROOT"; exit 1; }
+
+        # fbxredblacktree.h misspells mLeftChild in a member that older compilers never
+        # instantiated. Clang 17 and newer do, and the typo is then a hard error.
+        tree="$FBXSDK_ROOT/include/fbxsdk/core/base/fbxredblacktree.h"
+        if grep -q mLefttChild "$tree"; then
+          perl -pi -e 's/\bmLefttChild\b/mLeftChild/g' "$tree"
+          echo "patched the mLeftChild typo in the FBX SDK"
+        fi
+
         cmake -S src/native/GFDLibrary.Native.FbxSdk -B src/native/GFDLibrary.Native.FbxSdk/out \
           -DCMAKE_BUILD_TYPE=Release -DFbxSdkRoot="$FBXSDK_ROOT"
         cmake --build src/native/GFDLibrary.Native.FbxSdk/out --config Release
