@@ -11,5 +11,6 @@
   <Folder Name="/tests/">
     <Project Path="tests/GFDLibrary.Conversion.FbxSdk.Tests/GFDLibrary.Conversion.FbxSdk.Tests.csproj" />
     <Project Path="tests/GFDLibrary.Tests/GFDLibrary.Tests.csproj" />
+    <Project Path="tests/GFDStudio.Core.Tests/GFDStudio.Core.Tests.csproj" />
   </Folder>
 </Solution>
