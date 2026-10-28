@@ -1,4 +1,5 @@
 using Avalonia;
+using Avalonia.OpenGL;
 
 namespace GFDStudio.Avalonia
 {
@@ -20,6 +21,13 @@ namespace GFDStudio.Avalonia
                                  Win32RenderingMode.Wgl,
                                  Win32RenderingMode.AngleEgl,
                                  Win32RenderingMode.Software,
+                             },
+                             // The shaders are "#version 330 core", so ask for a context that
+                             // can compile them rather than taking whatever the default is.
+                             WglProfiles = new[]
+                             {
+                                 new GlVersion( GlProfileType.OpenGL, 4, 1 ),
+                                 new GlVersion( GlProfileType.OpenGL, 3, 3 ),
                              },
                          } )
                          .LogToTrace();

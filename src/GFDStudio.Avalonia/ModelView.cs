@@ -22,7 +22,6 @@ namespace GFDStudio.Avalonia
     public sealed class ModelView : OpenGlControlBase
     {
         private ModelScene mScene;
-        private DispatcherTimer mUpdateTimer;
         private Point mLastPointerPosition;
         private ModelPack mPendingModel;
         private ModelPack mLoadedModel;
@@ -120,14 +119,6 @@ namespace GFDStudio.Avalonia
             mScene.AnimationPlaybackStateChanged += ( s, e ) => AnimationPlaybackStateChanged?.Invoke( this, e );
             mScene.AnimationTimeChanged += ( s, e ) => AnimationTimeChanged?.Invoke( this, e );
 
-            mUpdateTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds( 1.0 / 60.0 ) };
-            mUpdateTimer.Tick += ( s, e ) =>
-            {
-                if ( mScene is { CanRender: true } && mScene.Advance() )
-                    RequestNextFrameRendering();
-            };
-            mUpdateTimer.Start();
-
             LoadPendingModel();
         }
 
@@ -143,8 +134,6 @@ namespace GFDStudio.Avalonia
 
         protected override void OnOpenGlDeinit( GlInterface gl )
         {
-            mUpdateTimer?.Stop();
-            mUpdateTimer = null;
             mScene?.Dispose();
             mScene = null;
 
@@ -161,10 +150,15 @@ namespace GFDStudio.Avalonia
             LoadPendingModel();
 
             mScene.Resize( PixelWidth, PixelHeight );
+            mScene.Advance();
             mScene.Render();
 
             // Avalonia composites its own framebuffer, which the scene unbinds as it draws.
             GL.BindFramebuffer( FramebufferTarget.Framebuffer, fb );
+
+            // Drawing the next frame as soon as this one is up leaves the rate to the driver
+            // rather than to a timer.
+            RequestNextFrameRendering();
         }
 
         /// <summary>

@@ -30,6 +30,18 @@ namespace GFDLibrary.Rendering.OpenGL
         private readonly Func<string, string> mResolveAppData;
         private int mWidth = 1;
         private int mHeight = 1;
+
+        private int mMsaaFramebuffer;
+        private int mMsaaColour;
+        private int mMsaaDepth;
+        private int mMsaaWidth;
+        private int mMsaaHeight;
+
+        /// <summary>
+        /// Samples the scene is drawn with before it is resolved to the host's framebuffer.
+        /// Two is enough to take the stairs off the edges without costing much fill rate.
+        /// </summary>
+        public int Samples { get; set; } = 2;
         private bool mCanRender;
         private ShaderRegistry mShaderRegistry;
         private GLPerspectiveCamera mCamera;
@@ -124,6 +136,11 @@ namespace GFDLibrary.Rendering.OpenGL
 
         public bool CanRender => mCanRender;
 
+        /// <summary>
+        /// Why the viewer cannot draw, when it cannot. Null while all is well.
+        /// </summary>
+        public string InitializationError { get; private set; }
+
         public bool IsModelLoaded => mIsModelLoaded;
 
         /// <summary>
@@ -134,8 +151,20 @@ namespace GFDLibrary.Rendering.OpenGL
             LogGLInfo();
 
             mCanRender = InitializeShaders();
+
             if ( !mCanRender )
+            {
+                // Silence here is a blank viewport and nothing to go on, which is how an ANGLE
+                // context on Windows hid itself, so say it where someone will see it.
+                InitializationError =
+                    $"The model viewer's shaders did not compile. It needs an OpenGL 3.3 or newer " +
+                    $"desktop context; this one reports \"{GL.GetString( StringName.Version )}\" " +
+                    $"with GLSL \"{GL.GetString( StringName.ShadingLanguageVersion )}\".";
+
+                Trace.TraceError( InitializationError );
+                Console.Error.WriteLine( InitializationError );
                 return;
+            }
 
             InitializeGLRenderState();
             CreateGrid();
@@ -481,6 +510,8 @@ namespace GFDLibrary.Rendering.OpenGL
         {
             mShaderRegistry?.mDefaultShader?.Dispose();
 
+            DeleteMultisampleTarget();
+
             if ( mIsModelLoaded )
                 UnloadModel();
         }
@@ -510,6 +541,13 @@ namespace GFDLibrary.Rendering.OpenGL
         {
             if ( !mCanRender || mCamera == null )
                 return;
+
+            // Whatever the host had bound is where the finished frame has to end up.
+            var hostFramebuffer = GL.GetInteger( GetPName.DrawFramebufferBinding );
+            var multisampled = EnsureMultisampleTarget();
+
+            if ( multisampled )
+                GL.BindFramebuffer( FramebufferTarget.Framebuffer, mMsaaFramebuffer );
 
             ExecuteTimedCallback( () =>
             {
@@ -546,6 +584,77 @@ namespace GFDLibrary.Rendering.OpenGL
 
                 //DrawLine( mRaypickStart, mRaypickEnd, new Vector4( 1, 0, 0, 1 ) );
             } );
+
+            if ( multisampled )
+                ResolveTo( hostFramebuffer );
+        }
+
+        /// <summary>
+        /// Keeps a multisampled colour and depth target the size of the viewport. Returns false
+        /// when the driver will not give us one, in which case the scene draws straight to the
+        /// host and simply has no anti aliasing.
+        /// </summary>
+        private bool EnsureMultisampleTarget()
+        {
+            if ( Samples < 2 )
+                return false;
+
+            if ( mMsaaFramebuffer != 0 && mMsaaWidth == mWidth && mMsaaHeight == mHeight )
+                return true;
+
+            DeleteMultisampleTarget();
+
+            var samples = Math.Min( Samples, GL.GetInteger( GetPName.MaxSamples ) );
+            if ( samples < 2 )
+                return false;
+
+            mMsaaFramebuffer = GL.GenFramebuffer();
+            GL.BindFramebuffer( FramebufferTarget.Framebuffer, mMsaaFramebuffer );
+
+            mMsaaColour = GL.GenRenderbuffer();
+            GL.BindRenderbuffer( RenderbufferTarget.Renderbuffer, mMsaaColour );
+            GL.RenderbufferStorageMultisample( RenderbufferTarget.Renderbuffer, samples,
+                                               RenderbufferStorage.Rgba8, mWidth, mHeight );
+            GL.FramebufferRenderbuffer( FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0,
+                                        RenderbufferTarget.Renderbuffer, mMsaaColour );
+
+            mMsaaDepth = GL.GenRenderbuffer();
+            GL.BindRenderbuffer( RenderbufferTarget.Renderbuffer, mMsaaDepth );
+            GL.RenderbufferStorageMultisample( RenderbufferTarget.Renderbuffer, samples,
+                                               RenderbufferStorage.Depth24Stencil8, mWidth, mHeight );
+            GL.FramebufferRenderbuffer( FramebufferTarget.Framebuffer, FramebufferAttachment.DepthStencilAttachment,
+                                        RenderbufferTarget.Renderbuffer, mMsaaDepth );
+
+            var complete = GL.CheckFramebufferStatus( FramebufferTarget.Framebuffer ) == FramebufferErrorCode.FramebufferComplete;
+
+            if ( !complete )
+            {
+                DeleteMultisampleTarget();
+                return false;
+            }
+
+            mMsaaWidth = mWidth;
+            mMsaaHeight = mHeight;
+
+            return true;
+        }
+
+        private void ResolveTo( int hostFramebuffer )
+        {
+            GL.BindFramebuffer( FramebufferTarget.ReadFramebuffer, mMsaaFramebuffer );
+            GL.BindFramebuffer( FramebufferTarget.DrawFramebuffer, hostFramebuffer );
+            GL.BlitFramebuffer( 0, 0, mWidth, mHeight, 0, 0, mWidth, mHeight,
+                                ClearBufferMask.ColorBufferBit, BlitFramebufferFilter.Nearest );
+            GL.BindFramebuffer( FramebufferTarget.Framebuffer, hostFramebuffer );
+        }
+
+        private void DeleteMultisampleTarget()
+        {
+            if ( mMsaaColour != 0 ) { GL.DeleteRenderbuffer( mMsaaColour ); mMsaaColour = 0; }
+            if ( mMsaaDepth != 0 ) { GL.DeleteRenderbuffer( mMsaaDepth ); mMsaaDepth = 0; }
+            if ( mMsaaFramebuffer != 0 ) { GL.DeleteFramebuffer( mMsaaFramebuffer ); mMsaaFramebuffer = 0; }
+
+            mMsaaWidth = mMsaaHeight = 0;
         }
 
         /// <summary>
