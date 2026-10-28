@@ -2,6 +2,7 @@ using System;
 using System.CommandLine;
 using System.IO;
 using GFDStudio.Cli.Commands;
+using GFDLibrary;
 using GFDStudio.GUI;
 
 namespace GFDStudio.Cli
@@ -39,7 +40,20 @@ namespace GFDStudio.Cli
                 RoundtripCommand.Create(),
             };
 
-            return CommandHelpers.Guard( () => root.Parse( args ).Invoke() );
+            // Catherine Full Body shares its version numbers with P3D and P5R, so which one a
+            // file is has to be said rather than read. It applies to every command.
+            var catherine = new Option<bool>( "--catherine-full-body" )
+            {
+                Description = "Read files as Catherine Full Body, which shares its version numbers with P3D and P5R.",
+                Recursive = true,
+            };
+
+            root.Options.Add( catherine );
+
+            var parse = root.Parse( args );
+            ResourceVersion.TreatAsCatherineFullBody = parse.GetValue( catherine );
+
+            return CommandHelpers.Guard( () => parse.Invoke() );
         }
     }
 }

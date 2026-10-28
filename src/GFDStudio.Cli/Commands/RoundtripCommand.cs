@@ -29,8 +29,6 @@ namespace GFDStudio.Cli.Commands
             var sample = new Option<int>( "--sample" ) { Description = "Take every Nth file.", DefaultValueFactory = _ => 1 };
             var offset = new Option<int>( "--offset" ) { Description = "Which of the N slices to take.", DefaultValueFactory = _ => 0 };
             var workers = new Option<int>( "--workers" ) { Description = "How many files to do at once.", DefaultValueFactory = _ => Environment.ProcessorCount };
-            var catherine = CommandHelpers.Switch( "--catherine-full-body",
-                "Read the files as Catherine Full Body, which shares its version numbers with P3D and P5R." );
             var budget = new Option<int>( "--memory-budget" )
             {
                 Description = "Megabytes of loaded files to hold at once. 0 lifts the limit.",
@@ -39,19 +37,19 @@ namespace GFDStudio.Cli.Commands
 
             var command = new Command( "roundtrip", "Load and save files unchanged, and report any that do not come back identical." )
             {
-                path, results, games, sample, offset, workers, budget, catherine,
+                path, results, games, sample, offset, workers, budget,
             };
 
             command.SetAction( parse => CommandHelpers.Guard( () => Run(
                 parse.GetValue( path ), parse.GetValue( results ), parse.GetValue( games ),
                 parse.GetValue( sample ), parse.GetValue( offset ), parse.GetValue( workers ),
-                parse.GetValue( budget ), parse.GetValue( catherine ) ) ) );
+                parse.GetValue( budget ) ) ) );
 
             return command;
         }
 
         private static int Run( string path, string resultsPath, string games, int sample, int offset, int workers,
-                                int budgetMegabytes, bool catherineFullBody )
+                                int budgetMegabytes )
         {
             var entries = Collect( path, games, Math.Max( sample, 1 ), offset );
 
@@ -67,7 +65,9 @@ namespace GFDStudio.Cli.Commands
 
             // Whether a file is Catherine Full Body cannot be read from the file, so it is a
             // setting rather than an argument. Its entries therefore run as their own pass.
-            foreach ( var pass in queue.GroupBy( x => catherineFullBody || x.CatherineFullBody ) )
+            var always = ResourceVersion.TreatAsCatherineFullBody;
+
+            foreach ( var pass in queue.GroupBy( x => always || x.CatherineFullBody ) )
             {
                 ResourceVersion.TreatAsCatherineFullBody = pass.Key;
 
@@ -75,7 +75,7 @@ namespace GFDStudio.Cli.Commands
                                   entry => done.Add( One( entry, budget ) ) );
             }
 
-            ResourceVersion.TreatAsCatherineFullBody = false;
+            ResourceVersion.TreatAsCatherineFullBody = always;
 
             var ordered = done.OrderBy( x => x.Name, StringComparer.Ordinal ).ToList();
 
