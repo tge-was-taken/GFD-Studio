@@ -22,10 +22,10 @@ namespace GFDStudio.GUI.DataViewNodes
         [ Browsable( true ) ]
         public new string Name
         {
-            get => GetDataProperty< string >();
+            get => Data.Name;
             set
             {
-                SetDataProperty( value );
+                Set( x => x.Name, value );
                 base.Name = Text = value;
             }
         }
@@ -34,24 +34,24 @@ namespace GFDStudio.GUI.DataViewNodes
         [ TypeConverter( typeof( Vector3TypeConverter ) ) ]
         public Vector3 Translation
         {
-            get => GetDataProperty< Vector3 >();
-            set => SetDataProperty( value );
+            get => Data.Translation;
+            set => Set( x => x.Translation, value );
         }
 
         [Browsable( true )]
         [TypeConverter( typeof( QuaternionTypeConverter ) )]
         public Quaternion Rotation
         {
-            get => GetDataProperty<Quaternion>();
-            set => SetDataProperty( value );
+            get => Data.Rotation;
+            set => Set( x => x.Rotation, value );
         }
 
         [Browsable( true )]
         [TypeConverter( typeof( Vector3TypeConverter ) )]
         public Vector3 Scale
         {
-            get => GetDataProperty<Vector3>();
-            set => SetDataProperty( value );
+            get => Data.Scale;
+            set => Set( x => x.Scale, value );
         }
 
         [Browsable(false)]
@@ -72,8 +72,8 @@ namespace GFDStudio.GUI.DataViewNodes
         [ Browsable( true ) ]
         public float FieldE0
         {
-            get => GetDataProperty< float >();
-            set => SetDataProperty( value );
+            get => Data.FieldE0;
+            set => Set( x => x.FieldE0, value );
         }
 
         [Browsable(false)]

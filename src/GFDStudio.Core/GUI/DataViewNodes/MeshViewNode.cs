@@ -22,14 +22,14 @@ namespace GFDStudio.GUI.DataViewNodes
         public GeometryFlags Flags
         {
             get => Data.Flags;
-            set => SetDataProperty( value );
+            set => Set( x => x.Flags, value );
         }
 
         [DisplayName( "Vertex attribute flags" )]
         public VertexAttributeFlags VertexAttributeFlags
         {
             get => Data.VertexAttributeFlags;
-            set => SetDataProperty( value );
+            set => Set( x => x.VertexAttributeFlags, value );
         }
 
         [DisplayName( "Triangle count" )]
@@ -39,7 +39,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public TriangleIndexFormat TriangleIndexFormat
         {
             get => Data.TriangleIndexFormat;
-            set => SetDataProperty( value );
+            set => Set( x => x.TriangleIndexFormat, value );
         }
 
         [DisplayName( "Vertex count" )]
@@ -48,26 +48,26 @@ namespace GFDStudio.GUI.DataViewNodes
         public int Field14
         {
             get => Data.Field14;
-            set => SetDataProperty( value );
+            set => Set( x => x.Field14, value );
         }
 
         [DisplayName( "Material name" )]
         public string MaterialName
         {
             get => Data.MaterialName;
-            set => SetDataProperty( value );
+            set => Set( x => x.MaterialName, value );
         }
         [DisplayName( "LOD Start" )]
         public float LodStart
         {
             get => Data.LodStart;
-            set => SetDataProperty( value );
+            set => Set( x => x.LodStart, value );
         }
         [DisplayName( "LOD End" )]
         public float LodEnd
         {
             get => Data.LodEnd;
-            set => SetDataProperty( value );
+            set => Set( x => x.LodEnd, value );
         }
 
         [Browsable(false)]

@@ -21,8 +21,8 @@ namespace GFDStudio.GUI.DataViewNodes
 
         public int Field00
         {
-            get => GetDataProperty<int>();
-            set => SetDataProperty( value );
+            get => Data.Field00;
+            set => Set( x => x.Field00, value );
         }
 
         [DisplayName( "Data length" )]
@@ -30,63 +30,63 @@ namespace GFDStudio.GUI.DataViewNodes
 
         public int Field08
         {
-            get => GetDataProperty<int>();
-            set => SetDataProperty( value );
+            get => Data.Field08;
+            set => Set( x => x.Field08, value );
         }
 
         public int Field0C
         {
-            get => GetDataProperty<int>();
-            set => SetDataProperty( value );
+            get => Data.Field0C;
+            set => Set( x => x.Field0C, value );
         }
 
         public FieldTextureFlags Flags
         {
-            get => GetDataProperty<FieldTextureFlags>();
-            set => SetDataProperty( value );
+            get => Data.Flags;
+            set => Set( x => x.Flags, value );
         }
 
         [DisplayName( "Mip map count" )]
         public byte MipMapCount
         {
-            get => GetDataProperty<byte>();
-            set => SetDataProperty( value );
+            get => Data.MipMapCount;
+            set => Set( x => x.MipMapCount, value );
         }
 
         public byte Field1A
         {
-            get => GetDataProperty<byte>();
-            set => SetDataProperty( value );
+            get => Data.Field1A;
+            set => Set( x => x.Field1A, value );
         }
 
         public byte Field1B
         {
-            get => GetDataProperty<byte>();
-            set => SetDataProperty( value );
+            get => Data.Field1B;
+            set => Set( x => x.Field1B, value );
         }
 
         public int Field1C
         {
-            get => GetDataProperty<int>();
-            set => SetDataProperty( value );
+            get => Data.Field1C;
+            set => Set( x => x.Field1C, value );
         }
 
         public short Width
         {
-            get => GetDataProperty<short>();
-            set => SetDataProperty( value );
+            get => Data.Width;
+            set => Set( x => x.Width, value );
         }
 
         public short Height
         {
-            get => GetDataProperty<short>();
-            set => SetDataProperty( value );
+            get => Data.Height;
+            set => Set( x => x.Height, value );
         }
 
         public short Field24
         {
-            get => GetDataProperty<short>();
-            set => SetDataProperty( value );
+            get => Data.Field24;
+            set => Set( x => x.Field24, value );
         }
 
         public FieldTexturePS3ViewNode( string text, FieldTexturePS3 data ) : base( text, data )

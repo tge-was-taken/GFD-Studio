@@ -12,21 +12,21 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         public Vector4 P10_0 { 
-            get => GetDataProperty<Vector4>(); 
-            set => SetDataProperty(value); 
+            get => Data.P10_0; 
+            set => Set( x => x.P10_0, value ); 
         } // 0x90
         public float P10_1 { 
-            get => GetDataProperty<float>(); 
-            set => SetDataProperty(value); 
+            get => Data.P10_1; 
+            set => Set( x => x.P10_1, value ); 
         } // 0xa0
         public float P10_2 { 
-            get => GetDataProperty<float>(); 
-            set => SetDataProperty(value); 
+            get => Data.P10_2; 
+            set => Set( x => x.P10_2, value ); 
         } // 0xa4
         [TypeConverter( typeof( EnumTypeConverter<MaterialParameterSetType10.Type10Flags> ) )]
         public MaterialParameterSetType10.Type10Flags Flags { 
-            get => GetDataProperty<MaterialParameterSetType10.Type10Flags>(); 
-            set => SetDataProperty(value); 
+            get => Data.Flags; 
+            set => Set( x => x.Flags, value ); 
         } // 0xa8
 
         public override DataViewNodeMenuFlags ContextMenuFlags => 0;

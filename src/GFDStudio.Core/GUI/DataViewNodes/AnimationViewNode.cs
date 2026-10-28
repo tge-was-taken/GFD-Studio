@@ -23,13 +23,13 @@ namespace GFDStudio.GUI.DataViewNodes
         public AnimationFlags Flags
         {
             get => Data.Flags;
-            set => SetDataProperty( value );
+            set => Set( x => x.Flags, value );
         }
 
         public float Duration
         {
             get => Data.Duration;
-            set => SetDataProperty( value );
+            set => Set( x => x.Duration, value );
         }
 
         [DisplayName( "Controller count" )]
@@ -54,7 +54,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public BoundingBox? BoundingBox
         {
             get => Data.BoundingBox;
-            set => SetDataProperty( value );
+            set => Set( x => x.BoundingBox, value );
         }
 
         //public AnimationFlag80000000Data Field1C
@@ -78,7 +78,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public float? Speed
         {
             get => Data.Speed;
-            set => SetDataProperty( value );
+            set => Set( x => x.Speed, value );
         }
 
         protected internal AnimationViewNode( string text, Animation data ) : base( text, data )

@@ -18,87 +18,87 @@ namespace GFDStudio.GUI.DataViewNodes
         [Browsable( true )]
         public int Field0C
         {
-            get => GetDataProperty<int>();
-            set => SetDataProperty( value );
+            get => Data.Field0C;
+            set => Set( x => x.Field0C, value );
         }
 
         [Browsable( true )]
         public int Field10
         {
-            get => GetDataProperty<int>();
-            set => SetDataProperty( value );
+            get => Data.Field10;
+            set => Set( x => x.Field10, value );
         }
 
         [Browsable( true )]
         public float Field14
         {
-            get => GetDataProperty<float>();
-            set => SetDataProperty( value );
+            get => Data.Field14;
+            set => Set( x => x.Field14, value );
         }
 
         [Browsable( true )]
         public float Field18
         {
-            get => GetDataProperty<float>();
-            set => SetDataProperty( value );
+            get => Data.Field18;
+            set => Set( x => x.Field18, value );
         }
 
         [Browsable( true )]
         [TypeConverter( typeof( Vector4TypeConverter ) )]
         public Vector4 Field1C
         {
-            get => GetDataProperty<Vector4>();
-            set => SetDataProperty( value );
+            get => Data.Field1C;
+            set => Set( x => x.Field1C, value );
         }
 
         [Browsable( true )]
         public float Field2C
         {
-            get => GetDataProperty<float>();
-            set => SetDataProperty( value );
+            get => Data.Field2C;
+            set => Set( x => x.Field2C, value );
         }
 
         [Browsable( true )]
         public float Field30
         {
-            get => GetDataProperty<float>();
-            set => SetDataProperty( value );
+            get => Data.Field30;
+            set => Set( x => x.Field30, value );
         }
 
         [Browsable( true )]
         public float Field34
         {
-            get => GetDataProperty<float>();
-            set => SetDataProperty( value );
+            get => Data.Field34;
+            set => Set( x => x.Field34, value );
         }
 
         [Browsable( true )]
         public float Field38
         {
-            get => GetDataProperty<float>();
-            set => SetDataProperty( value );
+            get => Data.Field38;
+            set => Set( x => x.Field38, value );
         }
 
         [Browsable( true )]
         public float Field3C
         {
-            get => GetDataProperty<float>();
-            set => SetDataProperty( value );
+            get => Data.Field3C;
+            set => Set( x => x.Field3C, value );
         }
 
         [Browsable( true )]
         public float Field40
         {
-            get => GetDataProperty<float>();
-            set => SetDataProperty( value );
+            get => Data.Field40;
+            set => Set( x => x.Field40, value );
         }
 
         [Browsable( true )]
         [TypeConverter( typeof( Vector4TypeConverter ) )]
         public Vector4 Field48
         {
-            get => GetDataProperty<Vector4>();
-            set => SetDataProperty( value );
+            get => Data.Field48;
+            set => Set( x => x.Field48, value );
         }
 
         public MaterialAttributeType5ViewNode( string text, MaterialAttributeType5 data ) : base( text, data )

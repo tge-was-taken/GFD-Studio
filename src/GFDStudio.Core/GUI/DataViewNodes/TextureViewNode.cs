@@ -19,10 +19,10 @@ namespace GFDStudio.GUI.DataViewNodes
         [Browsable( true )]
         public new string Name
         {
-            get => GetDataProperty<string>();
+            get => Data.Name;
             set
             {
-                SetDataProperty( value );
+                Set( x => x.Name, value );
                 Text = value;
             }
         }
@@ -31,7 +31,7 @@ namespace GFDStudio.GUI.DataViewNodes
         [TypeConverter( typeof( EnumTypeConverter<TextureFormat> ) )]
         public TextureFormat Format
         {
-            get => GetDataProperty<TextureFormat>();
+            get => Data.Format;
         }
 
         [Browsable( true )]
@@ -45,29 +45,29 @@ namespace GFDStudio.GUI.DataViewNodes
         [Browsable( true )]
         public byte MinificationFilter
         {
-            get => GetDataProperty<byte>();
-            set => SetDataProperty( value );
+            get => Data.MinificationFilter;
+            set => Set( x => x.MinificationFilter, value );
         }
 
         [Browsable( true )]
         public byte MagnificationFilter
         {
-            get => GetDataProperty<byte>();
-            set => SetDataProperty( value );
+            get => Data.MagnificationFilter;
+            set => Set( x => x.MagnificationFilter, value );
         }
 
         [Browsable( true )]
         public byte WrapModeU
         {
-            get => GetDataProperty<byte>();
-            set => SetDataProperty( value );
+            get => Data.WrapModeU;
+            set => Set( x => x.WrapModeU, value );
         }
 
         [Browsable( true )]
         public byte WrapModeV
         {
-            get => GetDataProperty<byte>();
-            set => SetDataProperty( value );
+            get => Data.WrapModeV;
+            set => Set( x => x.WrapModeV, value );
         }
 
         protected internal TextureViewNode( string text, Texture data ) : base( text, data )

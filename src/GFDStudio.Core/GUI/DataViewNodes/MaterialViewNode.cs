@@ -20,7 +20,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public Vector4 AmbientColor
         {
             get => Data.AmbientColor;
-            set => SetDataProperty( value );
+            set => Set( x => x.AmbientColor, value );
         }
 
         [TypeConverter( typeof( Vector4TypeConverter ) )]
@@ -28,7 +28,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public Vector4 DiffuseColor
         {
             get => Data.DiffuseColor;
-            set => SetDataProperty( value );
+            set => Set( x => x.DiffuseColor, value );
         }
 
         [TypeConverter( typeof( Vector4TypeConverter ) )]
@@ -36,7 +36,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public Vector4 EmissiveColor
         {
             get => Data.EmissiveColor;
-            set => SetDataProperty( value );
+            set => Set( x => x.EmissiveColor, value );
         }
 
         [Browsable( true )]
@@ -45,7 +45,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public Vector4 SpecularColor
         {
             get => Data.SpecularColor;
-            set => SetDataProperty( value );
+            set => Set( x => x.SpecularColor, value );
         }
 
         [Browsable( true )]
@@ -53,7 +53,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public float Reflectivity
         {
             get => Data.Reflectivity;
-            set => SetDataProperty( value );
+            set => Set( x => x.Reflectivity, value );
         }
 
         [Browsable( true )]
@@ -61,7 +61,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public float Diffusivity
         {
             get => Data.Diffusivity;
-            set => SetDataProperty( value );
+            set => Set( x => x.Diffusivity, value );
         }
 
         public MaterialLegacyParametersViewNode( string text, MaterialLegacyParameters data ) : base( text, data )
@@ -87,16 +87,16 @@ namespace GFDStudio.GUI.DataViewNodes
         [Browsable( true )]
         public new string Name
         {
-            get => GetDataProperty< string >();
-            set => SetDataProperty( value );
+            get => Data.Name;
+            set => Set( x => x.Name, value );
         }
 
         [Browsable( true )]
         [TypeConverter( typeof( EnumTypeConverter<MaterialFlags> ) )]
         public MaterialFlags Flags
         {
-            get => GetDataProperty< MaterialFlags >();
-            set => SetDataProperty( value );
+            get => Data.Flags;
+            set => Set( x => x.Flags, value );
         }
         
 
@@ -105,8 +105,8 @@ namespace GFDStudio.GUI.DataViewNodes
         [DisplayName( "Draw method" )]
         public MaterialDrawMethod DrawMethod
         {
-            get => GetDataProperty<MaterialDrawMethod>();
-            set => SetDataProperty( value );
+            get => Data.DrawMethod;
+            set => Set( x => x.DrawMethod, value );
         }
 
         [Browsable( true )]
@@ -114,7 +114,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public byte BlendSourceColor
         {
             get => Data.BlendSourceColor;
-            set => SetDataProperty( value );
+            set => Set( x => x.BlendSourceColor, value );
         }
 
         [Browsable( true )]
@@ -122,7 +122,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public byte BlendDestinationColor
         {
             get => Data.BlendDestinationColor;
-            set => SetDataProperty( value );
+            set => Set( x => x.BlendDestinationColor, value );
         }
 
         [Browsable( true )]
@@ -130,7 +130,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public byte SourceAlpha
         {
             get => Data.SourceAlpha;
-            set => SetDataProperty( value );
+            set => Set( x => x.SourceAlpha, value );
         }
 
         [Browsable( true )]
@@ -138,7 +138,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public byte DestinationAlpha
         {
             get => Data.DestinationAlpha;
-            set => SetDataProperty( value );
+            set => Set( x => x.DestinationAlpha, value );
         }
 
         [Browsable( true )]
@@ -147,7 +147,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public MultiBlendType MultiBlendMode
         {
             get => Data.MultiBlendMode;
-            set => SetDataProperty( value );
+            set => Set( x => x.MultiBlendMode, value );
         }
 
         [Browsable( true )]
@@ -155,7 +155,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public short AlphaClip
         {
             get => Data.AlphaClip;
-            set => SetDataProperty( value );
+            set => Set( x => x.AlphaClip, value );
         }
 
         [Browsable( true )]
@@ -164,7 +164,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public AlphaClipMode AlphaClipMode
         {
             get => Data.AlphaClipMode;
-            set => SetDataProperty( value );
+            set => Set( x => x.AlphaClipMode, value );
         }
 
         [Browsable( true )]
@@ -173,7 +173,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public MaterialFlags2 Flags2
         {
             get => Data.Flags2;
-            set => SetDataProperty( value );
+            set => Set( x => x.Flags2, value );
         }
 
         [Browsable( true )]
@@ -181,7 +181,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public short SortPriority
         {
             get => Data.SortPriority;
-            set => SetDataProperty( value );
+            set => Set( x => x.SortPriority, value );
         }
 
         [Browsable( true )]
@@ -189,7 +189,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public short ShaderId
         {
             get => Data.ShaderId;
-            set => SetDataProperty( value );
+            set => Set( x => x.ShaderId, value );
         }
 
         [Browsable( true )]
@@ -198,7 +198,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public uint TexCoordFlags0
         {
             get => Data.TexCoordFlags0;
-            set => SetDataProperty( value );
+            set => Set( x => x.TexCoordFlags0, value );
         }
 
         [Browsable( true )]
@@ -207,7 +207,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public uint TexCoordFlags1
         {
             get => Data.TexCoordFlags1;
-            set => SetDataProperty( value );
+            set => Set( x => x.TexCoordFlags1, value );
         }
 
         [Browsable( true )]
@@ -215,7 +215,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public short Culling
         {
             get => Data.Culling;
-            set => SetDataProperty( value );
+            set => Set( x => x.Culling, value );
         }
 
         [Browsable( true )]
@@ -223,12 +223,12 @@ namespace GFDStudio.GUI.DataViewNodes
         public uint ConstantColor
         {
             get => Data.ConstantColor;
-            set => SetDataProperty( value );
+            set => Set( x => x.ConstantColor, value );
         }
         public float Field6C_2
         {
             get => Data.Field6C_2;
-            set => SetDataProperty( value );
+            set => Set( x => x.Field6C_2, value );
         }
 
         [Browsable( false )]

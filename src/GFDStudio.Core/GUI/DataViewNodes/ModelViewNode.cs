@@ -22,8 +22,8 @@ namespace GFDStudio.GUI.DataViewNodes
         [TypeConverter(typeof(EnumTypeConverter<ModelFlags>))]
         public ModelFlags Flags
         {
-            get => GetDataProperty< ModelFlags >();
-            set => SetDataProperty( value );
+            get => Data.Flags;
+            set => Set( x => x.Flags, value );
         }
 
         [ Browsable( false ) ]
@@ -33,14 +33,14 @@ namespace GFDStudio.GUI.DataViewNodes
         [ DisplayName( "Bounding box" )]
         public BoundingBox? BoundingBox
         {
-            get => GetDataProperty< BoundingBox? >();
+            get => Data.BoundingBox;
         }
 
         [Browsable( true )]
         [DisplayName( "Bounding sphere" )]
         public BoundingSphere? BoundingSphere
         {
-            get => GetDataProperty<BoundingSphere?>();
+            get => Data.BoundingSphere;
         }
 
         [ Browsable( false ) ]

@@ -16,7 +16,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public float SphereRadius
         {
             get => Data.SphereRadius;
-            set => SetDataProperty( value );
+            set => Set( x => x.SphereRadius, value );
         }
 
 
@@ -25,7 +25,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public float Mass
         {
             get => Data.Mass;
-            set => SetDataProperty( value );
+            set => Set( x => x.Mass, value );
         }
 
         [ Browsable( true ) ]
@@ -33,7 +33,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public float RestoringForce
         {
             get => Data.RestoringForce;
-            set => SetDataProperty( value );
+            set => Set( x => x.RestoringForce, value );
         }
 
         [Browsable( true )]
@@ -41,17 +41,17 @@ namespace GFDStudio.GUI.DataViewNodes
         public float WindRate
         {
             get => Data.WindRate;
-            set => SetDataProperty( value );
+            set => Set( x => x.WindRate, value );
         }
 
         [Browsable( true )]
         [DisplayName( "Node name" )]
         public string NodeName
         {
-            get => GetDataProperty<string>();
+            get => Data.NodeName;
             set
             {
-                SetDataProperty( value );
+                Set( x => x.NodeName, value );
                 Text = value;
             }
         }
@@ -59,23 +59,23 @@ namespace GFDStudio.GUI.DataViewNodes
         [Browsable( true )]
         public float Field04
         {
-            get => GetDataProperty<float>();
-            set => SetDataProperty( value );
+            get => Data.Field04;
+            set => Set( x => x.Field04, value );
         }
 
 
         [Browsable( true )]
         public float Field08
         {
-            get => GetDataProperty<float>();
-            set => SetDataProperty( value );
+            get => Data.Field08;
+            set => Set( x => x.Field08, value );
         }
 
         [Browsable( true )]
         public float Field10
         {
-            get => GetDataProperty<float>();
-            set => SetDataProperty( value );
+            get => Data.Field10;
+            set => Set( x => x.Field10, value );
         }
 
         public ChunkType000100F9Entry1ViewNode( string text, ChunkType000100F9Entry1 data ) : base( text, data )

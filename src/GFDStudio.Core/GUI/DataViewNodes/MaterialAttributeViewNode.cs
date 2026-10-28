@@ -10,8 +10,8 @@ namespace GFDStudio.GUI.DataViewNodes
         [TypeConverter(typeof(EnumTypeConverter<MaterialAttributeFlags>))]
         public MaterialAttributeFlags Flags
         {
-            get => GetDataProperty<MaterialAttributeFlags>();
-            set => SetDataProperty( value );
+            get => Data.Flags;
+            set => Set( x => x.Flags, value );
         }
 
         [Browsable(true)]
@@ -19,7 +19,7 @@ namespace GFDStudio.GUI.DataViewNodes
         [DisplayName( "Attribute type" )]
         public MaterialAttributeType AttributeType
         {
-            get => GetDataProperty<MaterialAttributeType>();
+            get => Data.AttributeType;
         }
 
         protected MaterialAttributeViewNode( string text, T data ) : base( text, data )

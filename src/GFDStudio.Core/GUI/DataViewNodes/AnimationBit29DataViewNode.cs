@@ -17,7 +17,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public float Field10
         {
             get => Data.Field10;
-            set => SetDataProperty( value );
+            set => Set( x => x.Field10, value );
         }
 
         [Browsable( false )]
@@ -26,7 +26,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public float Field14
         {
             get => Data.Field14;
-            set => SetDataProperty( value );
+            set => Set( x => x.Field14, value );
         }
 
         [Browsable( false )]
@@ -35,7 +35,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public float Field18
         {
             get => Data.Field18;
-            set => SetDataProperty( value );
+            set => Set( x => x.Field18, value );
         }
 
         [Browsable( false )]
@@ -44,7 +44,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public float Field1C
         {
             get => Data.Field1C;
-            set => SetDataProperty( value );
+            set => Set( x => x.Field1C, value );
         }
 
         protected internal AnimationBit29DataViewNode( string text, AnimationBit29Data data ) : base( text, data )

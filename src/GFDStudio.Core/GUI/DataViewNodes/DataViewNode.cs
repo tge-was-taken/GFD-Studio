@@ -582,38 +582,6 @@ namespace GFDStudio.GUI.DataViewNodes
                 pack.RenameTextureReferences( oldName, newName );
         }
 
-        protected void SetDataProperty<T>( T value, [CallerMemberName] string propertyName = null )
-        {
-            // ReSharper disable once ExplicitCallerInfoArgument
-            SetProperty( Data, value, propertyName );
-        }
-
-        protected T GetDataProperty<T>( [CallerMemberName] string propertyName = null )
-        {
-            if ( propertyName == null )
-                throw new ArgumentNullException( nameof( propertyName ) );
-
-            var prop = DataType
-                                .GetProperties(  )
-                                .Where( x => x.Name == propertyName )
-                                .FirstOrDefault(x => x.PropertyType == typeof( T ));
-
-            if ( prop == null )
-            {
-                var field = DataType
-                                    .GetFields()
-                                    .Where( x => x.Name == propertyName )
-                                    .FirstOrDefault( x => x.FieldType == typeof( T ) );
-
-                if ( field == null )
-                    throw new Exception($"No field or property with name '{propertyName}' found in Data type '{DataType}'" );
-
-                return ( T )field.GetValue( Data );
-            }
-
-            return ( T )prop.GetValue( Data );
-        }
-
         protected void NotifyPropertyChanged( [CallerMemberName]string propertyName = null )
         {
             // dont bother if instance is not initialized

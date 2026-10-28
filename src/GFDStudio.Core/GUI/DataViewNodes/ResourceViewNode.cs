@@ -12,8 +12,8 @@ namespace GFDStudio.GUI.DataViewNodes
         [TypeConverter( typeof( UInt32HexTypeConverter ) )]
         public uint Version
         {
-            get => GetDataProperty< uint >();
-            set => SetDataProperty( value );
+            get => Data.Version;
+            set => Set( x => x.Version, value );
         }
 
         protected internal ResourceViewNode( string text, T data ) : base( text, data )

@@ -17,7 +17,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public AnimationPackFlags Flags
         {
             get => Data.Flags;
-            set => SetDataProperty( value );
+            set => Set( x => x.Flags, value );
         }
 
         [Browsable(false)]

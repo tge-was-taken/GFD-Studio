@@ -18,7 +18,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public float CapsuleHeight
         {
             get => Data.CapsuleHeight;
-            set => SetDataProperty( value );
+            set => Set( x => x.CapsuleHeight, value );
         }
 
         [Browsable( true )]
@@ -26,7 +26,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public float CapsuleRadius
         {
             get => Data.CapsuleRadius;
-            set => SetDataProperty( value );
+            set => Set( x => x.CapsuleRadius, value );
         }
 
         [Browsable( true )]
@@ -34,7 +34,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public Matrix4x4 Matrix
         {
             get => Data.Matrix;
-            set => SetDataProperty( value );
+            set => Set( x => x.Matrix, value );
         }
 
         [Browsable( true )]
@@ -42,17 +42,17 @@ namespace GFDStudio.GUI.DataViewNodes
         public short CapsuleType
         {
             get => Data.CapsuleType;
-            set => SetDataProperty( value );
+            set => Set( x => x.CapsuleType, value );
         }
 
         [Browsable( true )]
         [DisplayName( "Node name" )]
         public string NodeName
         {
-            get => GetDataProperty<string>();
+            get => Data.NodeName;
             set
             {
-                SetDataProperty( value );
+                Set( x => x.NodeName, value );
                 Text = value;
             }
         }

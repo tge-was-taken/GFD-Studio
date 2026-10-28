@@ -12,12 +12,12 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         public float P7_1 { 
-            get => GetDataProperty<float>(); 
-            set => SetDataProperty(value); 
+            get => Data.P7_1; 
+            set => Set( x => x.P7_1, value ); 
         } // 0xf0
-        public uint P7_2 { 
-            get => GetDataProperty<uint>(); 
-            set => SetDataProperty(value); 
+        public MaterialParameterSetType7.Type7Flags Flags { 
+            get => Data.Flags; 
+            set => Set( x => x.Flags, value ); 
         } // 0xf4
 
         [Browsable( false )]
@@ -41,28 +41,28 @@ namespace GFDStudio.GUI.DataViewNodes
         public MaterialParameterSetType7Field0ViewNode( string text, MaterialParameterSetType7.MaterialParameterSetType7_Field0 data ) : base( text, data ) { }
         public float Field0
         {
-            get => GetDataProperty<float>();
-            set => SetDataProperty( value );
+            get => Data.Field0;
+            set => Set( x => x.Field0, value );
         }
         public float Field1
         {
-            get => GetDataProperty<float>();
-            set => SetDataProperty( value );
+            get => Data.Field1;
+            set => Set( x => x.Field1, value );
         }
         public float Field2
         {
-            get => GetDataProperty<float>();
-            set => SetDataProperty( value );
+            get => Data.Field2;
+            set => Set( x => x.Field2, value );
         }
         public float Field3
         {
-            get => GetDataProperty<float>();
-            set => SetDataProperty( value );
+            get => Data.Field3;
+            set => Set( x => x.Field3, value );
         }
         public float Field4
         {
-            get => GetDataProperty<float>();
-            set => SetDataProperty( value );
+            get => Data.Field4;
+            set => Set( x => x.Field4, value );
         }
 
         public override DataViewNodeMenuFlags ContextMenuFlags => 0;

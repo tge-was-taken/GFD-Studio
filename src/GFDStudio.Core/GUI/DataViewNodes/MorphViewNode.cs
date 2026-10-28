@@ -18,14 +18,14 @@ namespace GFDStudio.GUI.DataViewNodes
         public float[] Weights
         {
             get => Data.Weights;
-            set => SetDataProperty( value );
+            set => Set( x => x.Weights, value );
         }
 
         [DisplayName( "Node name" )]
         public string NodeName
         {
             get => Data.NodeName;
-            set => SetDataProperty( value );
+            set => Set( x => x.NodeName, value );
         }
 
         public MorphViewNode( string text, Morph data ) : base( text, data )

@@ -17,8 +17,8 @@ namespace GFDStudio.GUI.DataViewNodes
         [Browsable( true )]
         public new string Name
         {
-            get => GetDataProperty< string >();
-            set => SetDataProperty( value );
+            get => Data.Name;
+            set => Set( x => x.Name, value );
         }
 
         [Browsable( true )]
@@ -26,7 +26,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public int Flags
         {
             get => Data.Flags;
-            set => SetDataProperty( value );
+            set => Set( x => x.Flags, value );
         }
 
         [Browsable( true )]
@@ -35,7 +35,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public TextureFilteringMethod MinificationFilter
         {
             get => Data.MinificationFilter;
-            set => SetDataProperty( value );
+            set => Set( x => x.MinificationFilter, value );
         }
 
         [Browsable( true )]
@@ -44,7 +44,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public TextureFilteringMethod MagnificationFilter
         {
             get => Data.MagnificationFilter;
-            set => SetDataProperty( value );
+            set => Set( x => x.MagnificationFilter, value );
         }
 
         [Browsable( true )]
@@ -53,7 +53,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public TextureWrapMethod WrapModeU
         {
             get => Data.WrapModeU;
-            set => SetDataProperty( value );
+            set => Set( x => x.WrapModeU, value );
         }
 
         [Browsable( true )]
@@ -62,119 +62,119 @@ namespace GFDStudio.GUI.DataViewNodes
         public TextureWrapMethod WrapModeV
         {
             get => Data.WrapModeV;
-            set => SetDataProperty( value );
+            set => Set( x => x.WrapModeV, value );
         }
 
         [Browsable( true )]
         public float Field4C
         {
             get => Data.Field4C;
-            set => SetDataProperty( value );
+            set => Set( x => x.Field4C, value );
         }
 
         [Browsable( true )]
         public float Field50
         {
             get => Data.Field50;
-            set => SetDataProperty( value );
+            set => Set( x => x.Field50, value );
         }
 
         [Browsable( true )]
         public float Field54
         {
             get => Data.Field54;
-            set => SetDataProperty( value );
+            set => Set( x => x.Field54, value );
         }
 
         [Browsable( true )]
         public float Field58
         {
             get => Data.Field58;
-            set => SetDataProperty( value );
+            set => Set( x => x.Field58, value );
         }
 
         [Browsable( true )]
         public float Field5C
         {
             get => Data.Field5C;
-            set => SetDataProperty( value );
+            set => Set( x => x.Field5C, value );
         }
 
         [Browsable( true )]
         public float Field60
         {
             get => Data.Field60;
-            set => SetDataProperty( value );
+            set => Set( x => x.Field60, value );
         }
 
         [Browsable( true )]
         public float Field64
         {
             get => Data.Field64;
-            set => SetDataProperty( value );
+            set => Set( x => x.Field64, value );
         }
 
         [Browsable( true )]
         public float Field68
         {
             get => Data.Field68;
-            set => SetDataProperty( value );
+            set => Set( x => x.Field68, value );
         }
 
         [Browsable( true )]
         public float Field6C
         {
             get => Data.Field6C;
-            set => SetDataProperty( value );
+            set => Set( x => x.Field6C, value );
         }
 
         [Browsable( true )]
         public float Field70
         {
             get => Data.Field70;
-            set => SetDataProperty( value );
+            set => Set( x => x.Field70, value );
         }
 
         [Browsable( true )]
         public float Field74
         {
             get => Data.Field74;
-            set => SetDataProperty( value );
+            set => Set( x => x.Field74, value );
         }
 
         [Browsable( true )]
         public float Field78
         {
             get => Data.Field78;
-            set => SetDataProperty( value );
+            set => Set( x => x.Field78, value );
         }
 
         [Browsable( true )]
         public float Field7C
         {
             get => Data.Field7C;
-            set => SetDataProperty( value );
+            set => Set( x => x.Field7C, value );
         }
 
         [Browsable( true )]
         public float Field80
         {
             get => Data.Field80;
-            set => SetDataProperty( value );
+            set => Set( x => x.Field80, value );
         }
 
         [Browsable( true )]
         public float Field84
         {
             get => Data.Field84;
-            set => SetDataProperty( value );
+            set => Set( x => x.Field84, value );
         }
 
         [Browsable( true )]
         public float Field88
         {
             get => Data.Field88;
-            set => SetDataProperty( value );
+            set => Set( x => x.Field88, value );
         }
 
         public TextureMapViewNode( string text, TextureMap data ) : base( text, data )

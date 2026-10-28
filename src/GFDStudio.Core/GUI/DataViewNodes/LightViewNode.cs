@@ -18,7 +18,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public LightFlags Flags
         {
             get => Data.Flags;
-            set => SetDataProperty( value );
+            set => Set( x => x.Flags, value );
         }
 
         [TypeConverter( typeof( Vector4TypeConverter ) )]
@@ -26,7 +26,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public Vector4 AmbientColor
         {
             get => Data.AmbientColor;
-            set => SetDataProperty( value );
+            set => Set( x => x.AmbientColor, value );
         }
 
         [DisplayName( "Ambient color (RGBA)" )]
@@ -41,7 +41,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public Vector4 DiffuseColor
         {
             get => Data.DiffuseColor;
-            set => SetDataProperty( value );
+            set => Set( x => x.DiffuseColor, value );
         }
 
         [DisplayName( "Diffuse color (RGBA)" )]
@@ -56,7 +56,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public Vector4 SpecularColor
         {
             get => Data.SpecularColor;
-            set => SetDataProperty( value );
+            set => Set( x => x.SpecularColor, value );
         }
 
         [DisplayName( "Specular color (RGBA)" )]
@@ -69,77 +69,77 @@ namespace GFDStudio.GUI.DataViewNodes
         public LightType Type
         {
             get => Data.Type;
-            set => SetDataProperty( value );
+            set => Set( x => x.Type, value );
         }
 
         public float Field20
         {
             get => Data.Field20;
-            set => SetDataProperty( value );
+            set => Set( x => x.Field20, value );
         }
 
         public float Field14
         {
             get => Data.Field14;
-            set => SetDataProperty( value );
+            set => Set( x => x.Field14, value );
         }
 
         public float Field18
         {
             get => Data.Field18;
-            set => SetDataProperty( value );
+            set => Set( x => x.Field18, value );
         }
 
         public float Field10
         {
             get => Data.Field10;
-            set => SetDataProperty( value );
+            set => Set( x => x.Field10, value );
         }
 
         [DisplayName( "Attenuation start" )]
         public float AttenuationStart
         {
             get => Data.AttenuationStart;
-            set => SetDataProperty( value );
+            set => Set( x => x.AttenuationStart, value );
         }
 
         [DisplayName( "Attenuation end" )]
         public float AttenuationEnd
         {
             get => Data.AttenuationEnd;
-            set => SetDataProperty( value );
+            set => Set( x => x.AttenuationEnd, value );
         }
 
         public float Field60
         {
             get => Data.Field60;
-            set => SetDataProperty( value );
+            set => Set( x => x.Field60, value );
         }
 
         public float Field64
         {
             get => Data.Field64;
-            set => SetDataProperty( value );
+            set => Set( x => x.Field64, value );
         }
 
         public float Field68
         {
             get => Data.Field68;
-            set => SetDataProperty( value );
+            set => Set( x => x.Field68, value );
         }
 
         [DisplayName( "Angle inner cone" )]
         public float AngleInnerCone
         {
             get => Data.AngleInnerCone;
-            set => SetDataProperty( value );
+            set => Set( x => x.AngleInnerCone, value );
         }
 
         [DisplayName( "Angle outer cone" )]
         public float AngleOuterCone
         {
             get => Data.AngleOuterCone;
-            set => SetDataProperty( value );
+            set => Set( x => x.AngleOuterCone, value );
         }
 
         public LightViewNode( string text, Light data ) : base( text, data )

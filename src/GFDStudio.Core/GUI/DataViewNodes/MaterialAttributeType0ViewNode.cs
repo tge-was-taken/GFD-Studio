@@ -21,8 +21,8 @@ namespace GFDStudio.GUI.DataViewNodes
         [DisplayName("Color (float)")]
         public Vector4 Color
         {
-            get => GetDataProperty< Vector4 >();
-            set => SetDataProperty( value );
+            get => Data.Color;
+            set => Set( x => x.Color, value );
         }
 
         // 1C
@@ -31,7 +31,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public float LightThreshold
         {
             get => Data.LightThreshold;
-            set => SetDataProperty( value );
+            set => Set( x => x.LightThreshold, value );
         }
 
         // 20
@@ -40,7 +40,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public float LightFactor
         {
             get => Data.LightFactor;
-            set => SetDataProperty( value );
+            set => Set( x => x.LightFactor, value );
         }
 
         // 24
@@ -49,7 +49,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public float ShadowBrightness
         {
             get => Data.ShadowBrightness;
-            set => SetDataProperty( value );
+            set => Set( x => x.ShadowBrightness, value );
         }
 
         // 28
@@ -58,7 +58,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public float ShadowThreshold
         {
             get => Data.ShadowThreshold;
-            set => SetDataProperty( value );
+            set => Set( x => x.ShadowThreshold, value );
         }
 
         // 2C
@@ -67,7 +67,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public float ShadowFactor
         {
             get => Data.ShadowFactor;
-            set => SetDataProperty( value );
+            set => Set( x => x.ShadowFactor, value );
         }
 
         // 30
@@ -76,7 +76,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public MaterialAttributeType0Flags Type0Flags
         {
             get => Data.Type0Flags;
-            set => SetDataProperty( value );
+            set => Set( x => x.Type0Flags, value );
         }
 
         public MaterialAttributeType0ViewNode( string text, MaterialAttributeType0 data ) : base( text, data )

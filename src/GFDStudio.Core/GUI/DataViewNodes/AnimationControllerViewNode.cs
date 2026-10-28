@@ -13,22 +13,22 @@ namespace GFDStudio.GUI.DataViewNodes
         [DisplayName( "Target kind" )]
         public TargetKind TargetKind
         {
-            get => GetDataProperty<TargetKind>();
-            set => SetDataProperty( value );
+            get => Data.TargetKind;
+            set => Set( x => x.TargetKind, value );
         }
 
         [DisplayName( "Target ID" )]
         public int TargetId
         {
-            get => GetDataProperty<int>();
-            set => SetDataProperty( value );
+            get => Data.TargetId;
+            set => Set( x => x.TargetId, value );
         }
 
         [DisplayName( "Target name" )]
         public string TargetName
         {
-            get => GetDataProperty<string>();
-            set => SetDataProperty( value );
+            get => Data.TargetName;
+            set => Set( x => x.TargetName, value );
         }
 
         public AnimationControllerViewNode( string text, AnimationController data ) : base( text, data )

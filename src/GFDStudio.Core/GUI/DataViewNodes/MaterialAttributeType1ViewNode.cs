@@ -22,7 +22,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public Vector4 LightColor
         {
             get => Data.LightColor;
-            set => SetDataProperty( value );
+            set => Set( x => x.LightColor, value );
         }
 
         // 1C
@@ -31,7 +31,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public float LightThreshold
         {
             get => Data.LightThreshold;
-            set => SetDataProperty( value );
+            set => Set( x => x.LightThreshold, value );
         }
 
         // 20
@@ -40,7 +40,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public float LightFactor
         {
             get => Data.LightFactor;
-            set => SetDataProperty( value );
+            set => Set( x => x.LightFactor, value );
         }
 
         // 24
@@ -50,7 +50,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public Vector4 ShadowColor
         {
             get => Data.ShadowColor;
-            set => SetDataProperty( value );
+            set => Set( x => x.ShadowColor, value );
         }
 
         // 34
@@ -59,7 +59,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public float ShadowThreshold
         {
             get => Data.ShadowThreshold;
-            set => SetDataProperty( value );
+            set => Set( x => x.ShadowThreshold, value );
         }
 
         // 38
@@ -68,15 +68,15 @@ namespace GFDStudio.GUI.DataViewNodes
         public float ShadowFactor
         {
             get => Data.ShadowFactor;
-            set => SetDataProperty( value );
+            set => Set( x => x.ShadowFactor, value );
         }
 
         // 3C
         [ Browsable( true ) ]
         public MaterialAttributeType1Flags Type1Flags
         {
-            get => GetDataProperty< MaterialAttributeType1Flags >();
-            set => SetDataProperty( value );
+            get => Data.Type1Flags;
+            set => Set( x => x.Type1Flags, value );
         }
 
         public MaterialAttributeType1ViewNode( string text, MaterialAttributeType1 data ) : base( text, data )

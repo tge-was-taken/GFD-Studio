@@ -12,16 +12,16 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         public uint P15_LayerCount { 
-            get => GetDataProperty<uint>(); 
-            set => SetDataProperty(value); 
+            get => Data.P15_LayerCount; 
+            set => Set( x => x.P15_LayerCount, value ); 
         } // 0x2d0
         public float P15_TriPlanarScale { 
-            get => GetDataProperty<float>(); 
-            set => SetDataProperty(value); 
+            get => Data.P15_TriPlanarScale; 
+            set => Set( x => x.P15_TriPlanarScale, value ); 
         } // 0x2d4
-        public uint P15_LerpBlendRate { 
-            get => GetDataProperty<uint>(); 
-            set => SetDataProperty(value); 
+        public MaterialParameterSetType15.Type15Flags Flags { 
+            get => Data.Flags; 
+            set => Set( x => x.Flags, value ); 
         } // 0x2d8
 
         [Browsable( false )]
@@ -45,38 +45,38 @@ namespace GFDStudio.GUI.DataViewNodes
         public MaterialParameterSetType15Field0ViewNode( string text, MaterialParameterSetType15.MaterialParameterSetType15Layer data ) : base( text, data ) { }
         public float Field0
         {
-            get => GetDataProperty<float>();
-            set => SetDataProperty( value );
+            get => Data.Field0;
+            set => Set( x => x.Field0, value );
         }
         public float Field1
         {
-            get => GetDataProperty<float>();
-            set => SetDataProperty( value );
+            get => Data.Field1;
+            set => Set( x => x.Field1, value );
         }
         public float Field2
         {
-            get => GetDataProperty<float>();
-            set => SetDataProperty( value );
+            get => Data.Field2;
+            set => Set( x => x.Field2, value );
         }
         public float Field3
         {
-            get => GetDataProperty<float>();
-            set => SetDataProperty( value );
+            get => Data.Field3;
+            set => Set( x => x.Field3, value );
         }
         public float Field4
         {
-            get => GetDataProperty<float>();
-            set => SetDataProperty( value );
+            get => Data.Field4;
+            set => Set( x => x.Field4, value );
         }
         public float Field5
         {
-            get => GetDataProperty<float>();
-            set => SetDataProperty( value );
+            get => Data.Field5;
+            set => Set( x => x.Field5, value );
         }
         public Vector3 Field6
         {
-            get => GetDataProperty<Vector3>();
-            set => SetDataProperty( value );
+            get => Data.Field6;
+            set => Set( x => x.Field6, value );
         }
 
         public override DataViewNodeMenuFlags ContextMenuFlags => 0;

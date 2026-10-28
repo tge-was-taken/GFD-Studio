@@ -14,15 +14,15 @@ namespace GFDStudio.GUI.DataViewNodes
         [DisplayName( "Node index" )]
         public ushort NodeIndex
         {
-            get => GetDataProperty<ushort>();
-            set => SetDataProperty( value );
+            get => Data.NodeIndex;
+            set => Set( x => x.NodeIndex, value );
         }
 
         [DisplayName( "Inverse bind matrix" )]
         public Matrix4x4 InverseBindMatrix
         {
-            get => GetDataProperty<Matrix4x4>();
-            set => SetDataProperty( value );
+            get => Data.InverseBindMatrix;
+            set => Set( x => x.InverseBindMatrix, value );
         }
 
         public BoneViewNode( string text, Bone data ) : base( text, data )

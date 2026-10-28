@@ -22,7 +22,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public new MaterialAttributeType2Flags Flags2
         {
             get => Data.Flags2;
-            set => SetDataProperty( value );
+            set => Set( x => x.Flags2, value );
         }
 
         // 10
@@ -31,7 +31,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public int Color
         {
             get => Data.Color;
-            set => SetDataProperty( value );
+            set => Set( x => x.Color, value );
         }
 
         public MaterialAttributeType2ViewNode( string text, MaterialAttributeType2 data ) : base( text, data )

@@ -20,40 +20,40 @@ namespace GFDStudio.GUI.DataViewNodes
         [TypeConverter( typeof( Vector3TypeConverter ) )]
         public Vector3 Field00
         {
-            get => GetDataProperty<Vector3>();
-            set => SetDataProperty( value );
+            get => Data.Field00;
+            set => Set( x => x.Field00, value );
         }
 
         // 0C
         [Browsable( true )]
         public float Field0C
         {
-            get => GetDataProperty<float>();
-            set => SetDataProperty( value );
+            get => Data.Field0C;
+            set => Set( x => x.Field0C, value );
         }
 
         // 10
         [Browsable( true )]
         public float Field10
         {
-            get => GetDataProperty<float>();
-            set => SetDataProperty( value );
+            get => Data.Field10;
+            set => Set( x => x.Field10, value );
         }
 
         // 14
         [Browsable( true )]
         public float Field14
         {
-            get => GetDataProperty<float>();
-            set => SetDataProperty( value );
+            get => Data.Field14;
+            set => Set( x => x.Field14, value );
         }
 
         // 18
         [Browsable( true )]
         public float Field18
         {
-            get => GetDataProperty<float>();
-            set => SetDataProperty( value );
+            get => Data.Field18;
+            set => Set( x => x.Field18, value );
         }
 
         // 1C
@@ -61,24 +61,24 @@ namespace GFDStudio.GUI.DataViewNodes
         [TypeConverter( typeof( Vector3TypeConverter ) )]
         public Vector3 Field1C
         {
-            get => GetDataProperty<Vector3>();
-            set => SetDataProperty( value );
+            get => Data.Field1C;
+            set => Set( x => x.Field1C, value );
         }
 
         // 28
         [Browsable( true )]
         public float Field28
         {
-            get => GetDataProperty<float>();
-            set => SetDataProperty( value );
+            get => Data.Field28;
+            set => Set( x => x.Field28, value );
         }
 
         // 2C
         [Browsable( true )]
         public float Field2C
         {
-            get => GetDataProperty<float>();
-            set => SetDataProperty( value );
+            get => Data.Field2C;
+            set => Set( x => x.Field2C, value );
         }
 
 
@@ -86,24 +86,24 @@ namespace GFDStudio.GUI.DataViewNodes
         [Browsable( true )]
         public int Field30
         {
-            get => GetDataProperty<int>();
-            set => SetDataProperty( value );
+            get => Data.Field30;
+            set => Set( x => x.Field30, value );
         }
 
         // 34
         [Browsable( true )]
         public int Field34
         {
-            get => GetDataProperty<int>();
-            set => SetDataProperty( value );
+            get => Data.Field34;
+            set => Set( x => x.Field34, value );
         }
 
         // 38
         [Browsable( true )]
         public int Field38
         {
-            get => GetDataProperty<int>();
-            set => SetDataProperty( value );
+            get => Data.Field38;
+            set => Set( x => x.Field38, value );
         }
 
         // 3C
@@ -111,8 +111,8 @@ namespace GFDStudio.GUI.DataViewNodes
         [TypeConverter( typeof( EnumTypeConverter<MaterialAttributeType8Flags> ) )]
         public MaterialAttributeType8Flags Type8Flags
         {
-            get => GetDataProperty<MaterialAttributeType8Flags>();
-            set => SetDataProperty( value );
+            get => Data.Type8Flags;
+            set => Set( x => x.Type8Flags, value );
         }
 
         public MaterialAttributeType8ViewNode( string text, MaterialAttributeType8 data ) : base( text, data )

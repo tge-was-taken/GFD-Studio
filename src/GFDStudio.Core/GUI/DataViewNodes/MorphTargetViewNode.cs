@@ -16,7 +16,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public int Flags
         {
             get => Data.Flags;
-            set => SetDataProperty( value );
+            set => Set( x => x.Flags, value );
         }
 
         [DisplayName( "Vertex count" )]
@@ -25,7 +25,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public List<Vector3> Vertices
         {
             get => Data.Vertices;
-            set => SetDataProperty( value );
+            set => Set( x => x.Vertices, value );
         }
 
         public MorphTargetViewNode( string text, MorphTarget data ) : base( text, data )

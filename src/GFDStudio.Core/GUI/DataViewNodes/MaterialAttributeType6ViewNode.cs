@@ -16,22 +16,22 @@ namespace GFDStudio.GUI.DataViewNodes
         [ Browsable( true ) ]
         public int Field0C
         {
-            get => GetDataProperty<int>();
-            set => SetDataProperty( value );
+            get => Data.Field0C;
+            set => Set( x => x.Field0C, value );
         }
 
         [Browsable( true )]
         public int Field10
         {
-            get => GetDataProperty<int>();
-            set => SetDataProperty( value );
+            get => Data.Field10;
+            set => Set( x => x.Field10, value );
         }
 
         [Browsable( true )]
         public int Field14
         {
-            get => GetDataProperty<int>();
-            set => SetDataProperty( value );
+            get => Data.Field14;
+            set => Set( x => x.Field14, value );
         }
 
         public MaterialAttributeType6ViewNode( string text, MaterialAttributeType6 data ) : base( text, data )

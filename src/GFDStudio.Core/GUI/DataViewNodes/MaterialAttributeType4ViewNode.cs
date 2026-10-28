@@ -22,7 +22,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public Vector4 LightColor
         {
             get => Data.LightColor;
-            set => SetDataProperty( value );
+            set => Set( x => x.LightColor, value );
         }
 
         // 1C
@@ -31,7 +31,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public float LightThreshold
         {
             get => Data.LightThreshold;
-            set => SetDataProperty( value );
+            set => Set( x => x.LightThreshold, value );
         }
 
         // 20
@@ -40,7 +40,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public float LightFactor
         {
             get => Data.LightFactor;
-            set => SetDataProperty( value );
+            set => Set( x => x.LightFactor, value );
         }
 
         // 24
@@ -50,7 +50,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public Vector4 ShadowColor
         {
             get => Data.ShadowColor;
-            set => SetDataProperty( value );
+            set => Set( x => x.ShadowColor, value );
         }
 
         // 34
@@ -59,7 +59,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public float ShadowThreshold
         {
             get => Data.ShadowThreshold;
-            set => SetDataProperty( value );
+            set => Set( x => x.ShadowThreshold, value );
         }
 
         // 38
@@ -68,7 +68,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public float ShadowFactor
         {
             get => Data.ShadowFactor;
-            set => SetDataProperty( value );
+            set => Set( x => x.ShadowFactor, value );
         }
 
         // 3C
@@ -77,7 +77,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public float NightMapSpeed
         {
             get => Data.NightMapSpeed;
-            set => SetDataProperty( value );
+            set => Set( x => x.NightMapSpeed, value );
         }
 
         // 40
@@ -86,7 +86,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public float NightMapPower
         {
             get => Data.NightMapPower;
-            set => SetDataProperty( value );
+            set => Set( x => x.NightMapPower, value );
         }
 
         // 44
@@ -95,7 +95,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public float NightMapScale
         {
             get => Data.NightMapScale;
-            set => SetDataProperty( value );
+            set => Set( x => x.NightMapScale, value );
         }
 
         // 48
@@ -104,7 +104,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public float NightMapHeight
         {
             get => Data.NightMapHeight;
-            set => SetDataProperty( value );
+            set => Set( x => x.NightMapHeight, value );
         }
 
         // 4C
@@ -113,7 +113,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public float NightMapAlpha
         {
             get => Data.NightMapAlpha;
-            set => SetDataProperty( value );
+            set => Set( x => x.NightMapAlpha, value );
         }
 
         // 50
@@ -122,7 +122,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public byte NightMapDirection
         {
             get => Data.NightMapDirection;
-            set => SetDataProperty( value );
+            set => Set( x => x.NightMapDirection, value );
         }
 
         // 54
@@ -131,7 +131,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public float DarkGradientHeight
         {
             get => Data.DarkGradientHeight;
-            set => SetDataProperty( value );
+            set => Set( x => x.DarkGradientHeight, value );
         }
 
         // 58
@@ -140,7 +140,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public float DarkGradientAlpha
         {
             get => Data.DarkGradientAlpha;
-            set => SetDataProperty( value );
+            set => Set( x => x.DarkGradientAlpha, value );
         }
 
         // 5C
@@ -150,9 +150,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public MaterialAttributeType1Flags Field5C
         {
             get => Data.Flags2;
-            // The name this property is reached by is not the name it sets, so it has to be
-            // given rather than taken from the caller.
-            set => SetDataProperty( value, nameof( Data.Flags2 ) );
+            set => Set( x => x.Flags2, value );
         }
 
         public MaterialAttributeType4ViewNode( string text, MaterialAttributeType4 data ) : base( text, data )

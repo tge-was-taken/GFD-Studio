@@ -17,7 +17,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public int Iterations
         {
             get => Data.Iterations;
-            set => SetDataProperty( value );
+            set => Set( x => x.Iterations, value );
         }
 
         [Browsable( true )]
@@ -25,7 +25,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public float Deceleration
         {
             get => Data.Deceleration;
-            set => SetDataProperty( value );
+            set => Set( x => x.Deceleration, value );
         }
 
         [Browsable( true )]
@@ -33,7 +33,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public float MaxSteps
         {
             get => Data.MaxSteps;
-            set => SetDataProperty( value );
+            set => Set( x => x.MaxSteps, value );
         }
 
         [Browsable( true )]
@@ -41,7 +41,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public float TransferTolerance
         {
             get => Data.TransferTolerance;
-            set => SetDataProperty( value );
+            set => Set( x => x.TransferTolerance, value );
         }
 
         [Browsable( true )]
@@ -49,7 +49,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public float VelocityTolerance
         {
             get => Data.VelocityTolerance;
-            set => SetDataProperty( value );
+            set => Set( x => x.VelocityTolerance, value );
         }
 
         [Browsable( false )]

@@ -17,104 +17,104 @@ namespace GFDStudio.GUI.DataViewNodes
         [ Browsable( true ) ]
         public float Field0C
         {
-            get => GetDataProperty<float>();
-            set => SetDataProperty( value );
+            get => Data.Field0C;
+            set => Set( x => x.Field0C, value );
         }
 
         // 10
         [Browsable( true )]
         public float Field10
         {
-            get => GetDataProperty<float>();
-            set => SetDataProperty( value );
+            get => Data.Field10;
+            set => Set( x => x.Field10, value );
         }
 
         // 14
         [Browsable( true )]
         public float Field14
         {
-            get => GetDataProperty<float>();
-            set => SetDataProperty( value );
+            get => Data.Field14;
+            set => Set( x => x.Field14, value );
         }
 
         // 18
         [Browsable( true )]
         public float Field18
         {
-            get => GetDataProperty<float>();
-            set => SetDataProperty( value );
+            get => Data.Field18;
+            set => Set( x => x.Field18, value );
         }
 
         // 1C
         [Browsable( true )]
         public float Field1C
         {
-            get => GetDataProperty<float>();
-            set => SetDataProperty( value );
+            get => Data.Field1C;
+            set => Set( x => x.Field1C, value );
         }
 
         // 20
         [Browsable( true )]
         public float Field20
         {
-            get => GetDataProperty<float>();
-            set => SetDataProperty( value );
+            get => Data.Field20;
+            set => Set( x => x.Field20, value );
         }
 
         // 24
         [Browsable( true )]
         public float Field24
         {
-            get => GetDataProperty<float>();
-            set => SetDataProperty( value );
+            get => Data.Field24;
+            set => Set( x => x.Field24, value );
         }
 
         // 28
         [Browsable( true )]
         public float Field28
         {
-            get => GetDataProperty<float>();
-            set => SetDataProperty( value );
+            get => Data.Field28;
+            set => Set( x => x.Field28, value );
         }
 
         // 2C
         [Browsable( true )]
         public float Field2C
         {
-            get => GetDataProperty<float>();
-            set => SetDataProperty( value );
+            get => Data.Field2C;
+            set => Set( x => x.Field2C, value );
         }
 
         // 30
         [Browsable( true )]
         public float Field30
         {
-            get => GetDataProperty<float>();
-            set => SetDataProperty( value );
+            get => Data.Field30;
+            set => Set( x => x.Field30, value );
         }
 
         // 34
         [Browsable( true )]
         public float Field34
         {
-            get => GetDataProperty<float>();
-            set => SetDataProperty( value );
+            get => Data.Field34;
+            set => Set( x => x.Field34, value );
         }
 
         // 38
         [Browsable( true )]
         public float Field38
         {
-            get => GetDataProperty<float>();
-            set => SetDataProperty( value );
+            get => Data.Field38;
+            set => Set( x => x.Field38, value );
         }
 
         // 3C
         [Browsable( true )]
         public int Field3C
         {
-            get => GetDataProperty<int>();
-            set => SetDataProperty( value );
+            get => Data.Field3C;
+            set => Set( x => x.Field3C, value );
         }
 
 

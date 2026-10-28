@@ -14,47 +14,47 @@ namespace GFDStudio.GUI.DataViewNodes
         [DisplayName( "Base Color (float)" )]
         public Vector4 BaseColor {
             get => Data.BaseColor;
-            set => SetDataProperty(value); 
+            set => Set( x => x.BaseColor, value ); 
         } // 0x90
         [TypeConverter( typeof( Vector4TypeConverter ) )]
         [DisplayName( "Emissive Color (float)" )]
         public Vector4 EmissiveColor { 
-            get => GetDataProperty<Vector4>(); 
-            set => SetDataProperty(value); 
+            get => Data.EmissiveColor; 
+            set => Set( x => x.EmissiveColor, value ); 
         } // 0xa0
         [DisplayName( "Distortion Power" )]
         public float DistortionPower {
             get => Data.DistortionPower;
-            set => SetDataProperty(value); 
+            set => Set( x => x.DistortionPower, value ); 
         } // 0xb0
         [DisplayName( "Distortion Threshold" )]
         public float DistortionThreshold {
             get => Data.DistortionThreshold;
-            set => SetDataProperty(value); 
+            set => Set( x => x.DistortionThreshold, value ); 
         } // 0xb4
         public float P4_4 {
             get => Data.P4_4; 
-            set => SetDataProperty(value); 
+            set => Set( x => x.P4_4, value ); 
         } // 0xb8
         [TypeConverter( typeof( EnumTypeConverter<MaterialParameterSetType4.Type4Flags> ) )]
         public MaterialParameterSetType4.Type4Flags Flags {
             get => Data.Flags;
-            set => SetDataProperty(value); 
+            set => Set( x => x.Flags, value ); 
         } // 0xcc
         [DisplayName( "Mat Bloom Intensity" )]
         public float MatBloomIntensity {
             get => Data.MatBloomIntensity;
-            set => SetDataProperty(value); 
+            set => Set( x => x.MatBloomIntensity, value ); 
         } // 0xbc
         [DisplayName( "Fitting Tile" )]
         public float FittingTile {
             get => Data.FittingTile; 
-            set => SetDataProperty(value); 
+            set => Set( x => x.FittingTile, value ); 
         } // 0xc0
         [DisplayName( "Multi Fitting Tile" )]
         public float MultiFittingTile {
             get => Data.MultiFittingTile;
-            set => SetDataProperty(value); 
+            set => Set( x => x.MultiFittingTile, value ); 
         } // 0xc4
 
         

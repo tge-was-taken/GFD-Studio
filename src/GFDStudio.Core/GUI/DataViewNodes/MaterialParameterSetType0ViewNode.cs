@@ -15,37 +15,37 @@ namespace GFDStudio.GUI.DataViewNodes
         [DisplayName( "Base Color (float)" )]
         public Vector4 BaseColor {
             get => Data.BaseColor;
-            set => SetDataProperty(value); 
+            set => Set( x => x.BaseColor, value ); 
         } // 0x90
         [DisplayName( "Emissive Strength" )]
         public float EmissiveStrength {
             get => Data.EmissiveStrength;
-            set => SetDataProperty(value); 
+            set => Set( x => x.EmissiveStrength, value ); 
         } // 0xa0
         [DisplayName( "Roughness" )]
         public float Roughness {
             get => Data.Roughness;
-            set => SetDataProperty(value); 
+            set => Set( x => x.Roughness, value ); 
         } // 0xa4
         [DisplayName( "Metallic" )]
         public float Metallic {
             get => Data.Metallic;
-            set => SetDataProperty(value); 
+            set => Set( x => x.Metallic, value ); 
         } // 0xa8
         [DisplayName( "Multi Alpha" )]
         public float MultiAlpha {
             get => Data.MultiAlpha;
-            set => SetDataProperty(value); 
+            set => Set( x => x.MultiAlpha, value ); 
         } // 0xac
         [DisplayName( "Bloom Intensity" )]
         public float BloomIntensity {
             get => Data.BloomIntensity;
-            set => SetDataProperty(value); 
+            set => Set( x => x.BloomIntensity, value ); 
         } // 0xb0
         [TypeConverter( typeof( EnumTypeConverter<MaterialParameterSetType0.Type0Flags> ) )]
         public MaterialParameterSetType0.Type0Flags Flags { 
             get => Data.Flags;
-            set => SetDataProperty(value); 
+            set => Set( x => x.Flags, value ); 
         } // 0xb4
 
         public override DataViewNodeMenuFlags ContextMenuFlags => 0;

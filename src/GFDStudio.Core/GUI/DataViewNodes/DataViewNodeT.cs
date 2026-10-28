@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq.Expressions;
 using GFDStudio.DataManagement;
 
 namespace GFDStudio.GUI.DataViewNodes
@@ -34,6 +35,19 @@ namespace GFDStudio.GUI.DataViewNodes
         protected DataViewNode( string text, T data ) : base( text )
         {
             Data = data;
+        }
+
+        /// <summary>
+        /// Sets a property on the data and raises the change. The property is named by a lambda
+        /// rather than a string, so renaming it on the library type is a build error here
+        /// instead of something that only shows up when the property grid draws the node.
+        /// </summary>
+        protected void Set<TValue>( Expression<Func<T, TValue>> property, TValue value )
+        {
+            if ( property.Body is not MemberExpression member )
+                throw new ArgumentException( "Expected a property access.", nameof( property ) );
+
+            SetProperty( Data, value, member.Member.Name );
         }
 
         protected void RegisterModelUpdateHandler( DataViewNodeUpdateHandler<T> action )

@@ -13,7 +13,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public int Flags
         {
             get => Data.Flags;
-            set => SetDataProperty( value );
+            set => Set( x => x.Flags, value );
         }
 
         public MorphTargetListViewNode( string text, MorphTargetList data ) : base( text, data )

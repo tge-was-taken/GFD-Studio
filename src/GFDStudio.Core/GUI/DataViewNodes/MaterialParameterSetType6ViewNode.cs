@@ -15,25 +15,25 @@ namespace GFDStudio.GUI.DataViewNodes
         public ListViewNode<MaterialParameterSetType6Field0ViewNode> P6_0 { get; set; }
 
         public float P6_1 { 
-            get => GetDataProperty<float>(); 
-            set => SetDataProperty(value); 
+            get => Data.P6_1; 
+            set => Set( x => x.P6_1, value ); 
         } // 0xd0
         public float P6_2 { 
-            get => GetDataProperty<float>(); 
-            set => SetDataProperty(value); 
+            get => Data.P6_2; 
+            set => Set( x => x.P6_2, value ); 
         } // 0xd4
         public float P6_3 { 
-            get => GetDataProperty<float>(); 
-            set => SetDataProperty(value); 
+            get => Data.P6_3; 
+            set => Set( x => x.P6_3, value ); 
         } // 0xd8
         public float P6_4 { 
-            get => GetDataProperty<float>(); 
-            set => SetDataProperty(value); 
+            get => Data.P6_4; 
+            set => Set( x => x.P6_4, value ); 
         } // 0xdc
         [TypeConverter( typeof( EnumTypeConverter<MaterialParameterSetType6.Type6Flags> ) )]
         public MaterialParameterSetType6.Type6Flags Flags { 
-            get => GetDataProperty<MaterialParameterSetType6.Type6Flags>(); 
-            set => SetDataProperty(value); 
+            get => Data.Flags; 
+            set => Set( x => x.Flags, value ); 
         } // 0xe0
 
         [Browsable( false )]
@@ -66,23 +66,23 @@ namespace GFDStudio.GUI.DataViewNodes
         public Vector4 BaseColor
         {
             get => Data.BaseColor;
-            set => SetDataProperty( value );
+            set => Set( x => x.BaseColor, value );
         } // 0x90
         public float Field1 {
             get => Data.Field1;
-            set => SetDataProperty(value); 
+            set => Set( x => x.Field1, value ); 
         }
         public float Field2 {
             get => Data.Field2;
-            set => SetDataProperty(value); 
+            set => Set( x => x.Field2, value ); 
         }
         public float Field3 {
             get => Data.Field3;
-            set => SetDataProperty(value); 
+            set => Set( x => x.Field3, value ); 
         }
         public float Field4 {
             get => Data.Field4;
-            set => SetDataProperty(value); 
+            set => Set( x => x.Field4, value ); 
         }
 
         public override DataViewNodeMenuFlags ContextMenuFlags => 0;

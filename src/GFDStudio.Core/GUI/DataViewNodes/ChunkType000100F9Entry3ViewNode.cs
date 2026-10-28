@@ -16,7 +16,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public float LengthSq
         {
             get => Data.LengthSq;
-            set => SetDataProperty( value );
+            set => Set( x => x.LengthSq, value );
         }
 
         [Browsable( true )]
@@ -24,7 +24,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public float AngularLimit
         {
             get => Data.AngularLimit;
-            set => SetDataProperty( value );
+            set => Set( x => x.AngularLimit, value );
         }
 
         [Browsable( true )]
@@ -32,7 +32,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public float ChainThickness
         {
             get => Data.ChainThickness;
-            set => SetDataProperty( value );
+            set => Set( x => x.ChainThickness, value );
         }
 
         [Browsable( true )]
@@ -40,7 +40,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public short ParentBoneIndex
         {
             get => Data.ParentBoneIndex;
-            set => SetDataProperty( value );
+            set => Set( x => x.ParentBoneIndex, value );
         }
 
         [Browsable( true )]
@@ -48,7 +48,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public short ChildBoneIndex
         {
             get => Data.ChildBoneIndex;
-            set => SetDataProperty( value );
+            set => Set( x => x.ChildBoneIndex, value );
         }
 
         public ChunkType000100F9Entry3ViewNode( string text, ChunkType000100F9Entry3 data ) : base( text, data )

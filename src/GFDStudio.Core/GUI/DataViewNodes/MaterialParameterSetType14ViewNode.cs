@@ -9,12 +9,12 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         public Vector4 P14_0 { 
-            get => GetDataProperty<Vector4>(); 
-            set => SetDataProperty(value); 
+            get => Data.P14_0; 
+            set => Set( x => x.P14_0, value ); 
         } // 0x90
         public uint P14_1 { 
-            get => GetDataProperty<uint>(); 
-            set => SetDataProperty(value); 
+            get => Data.P14_1; 
+            set => Set( x => x.P14_1, value ); 
         } // 0xa0
 
         public override DataViewNodeMenuFlags ContextMenuFlags => 0;
