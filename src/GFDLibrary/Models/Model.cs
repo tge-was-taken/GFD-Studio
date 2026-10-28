@@ -719,9 +719,11 @@ namespace GFDLibrary.Models
                             DiffuseColor = src.DiffuseColor,
                             SpecularColor = src.SpecularColor,
                             Field20 = src.Field20,
-                            Field04 = src.Field04,
-                            Field08 = src.Field08,
+                            Field24 = src.Field24,
+                            Field28 = src.Field28,
                             Field10 = src.Field10,
+                            Field14 = src.Field14,
+                            Field18 = src.Field18,
                             AttenuationStart = src.AttenuationStart,
                             AttenuationEnd = src.AttenuationEnd,
                             Field60 = src.Field60,
@@ -740,7 +742,7 @@ namespace GFDLibrary.Models
                         var morph = new Morph(version)
                         {
                             NodeName = src.NodeName,
-                            TargetInts = src.TargetInts?.ToArray()
+                            Weights = src.Weights?.ToArray()
                         };
                         return new NodeMorphAttachment(morph);
                     }
