@@ -91,6 +91,10 @@ gfdstudio batch     <job> <directory>        the directory jobs from the Tools m
 gfdstudio roundtrip <file|directory>         load and save unchanged, and report what differs
 ```
 
+`--catherine-full-body` applies to any of them. Catherine Full Body shares its version numbers
+with Persona 3 Dancing and Persona 5 Royal, so which game a file belongs to cannot be read from
+the file; the same switch is in the Options window for the GUI.
+
 ### Round trip testing
 
 `roundtrip` reads a file, writes it straight back and compares the bytes. Anything that is not
