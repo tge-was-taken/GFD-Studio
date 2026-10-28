@@ -805,6 +805,11 @@ namespace GFDLibrary.Rendering.OpenGL
 
         public bool Raypick( int mouseX, int mouseY )
         {
+            // Nothing to pick against until a model and its camera exist, which is also the
+            // state the viewer sits in when the shaders did not compile.
+            if ( !mCanRender || mCamera == null || mModel == null )
+                return false;
+
             // Step 1: Convert mouse position to NDC
             var x = ( 2.0f * mouseX ) / mWidth - 1.0f;
             var y = 1.0f - ( 2.0f * mouseY ) / mHeight;
