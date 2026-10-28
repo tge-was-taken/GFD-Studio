@@ -150,7 +150,9 @@ namespace GFDStudio.GUI.DataViewNodes
         public MaterialAttributeType1Flags Field5C
         {
             get => Data.Flags2;
-            set => SetDataProperty( value );
+            // The name this property is reached by is not the name it sets, so it has to be
+            // given rather than taken from the caller.
+            set => SetDataProperty( value, nameof( Data.Flags2 ) );
         }
 
         public MaterialAttributeType4ViewNode( string text, MaterialAttributeType4 data ) : base( text, data )

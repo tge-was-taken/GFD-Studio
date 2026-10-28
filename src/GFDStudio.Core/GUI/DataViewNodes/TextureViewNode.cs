@@ -43,28 +43,28 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         [Browsable( true )]
-        public byte Field1C
+        public byte MinificationFilter
         {
             get => GetDataProperty<byte>();
             set => SetDataProperty( value );
         }
 
         [Browsable( true )]
-        public byte Field1D
+        public byte MagnificationFilter
         {
             get => GetDataProperty<byte>();
             set => SetDataProperty( value );
         }
 
         [Browsable( true )]
-        public byte Field1E
+        public byte WrapModeU
         {
             get => GetDataProperty<byte>();
             set => SetDataProperty( value );
         }
 
         [Browsable( true )]
-        public byte Field1F
+        public byte WrapModeV
         {
             get => GetDataProperty<byte>();
             set => SetDataProperty( value );
@@ -79,8 +79,8 @@ namespace GFDStudio.GUI.DataViewNodes
             RegisterExportHandler<GFDLibrary.Graphics.Image>( path => PngCodec.Save( TextureDecoder.Decode( Data ), path ) );
             RegisterExportHandler<DDSStream>( path => File.WriteAllBytes( path, Data.Data ) );
 
-            RegisterReplaceHandler<GFDLibrary.Graphics.Image>( path => TextureReplacement.Prepare( Data.Version, TextureEncoder.Encode( Name, Format, Field1C, Field1D, Field1E, Field1F, GFDLibrary.Textures.PngCodec.Load( path ) ) ) );
-            RegisterReplaceHandler<DDSStream>( path => TextureReplacement.Prepare( Data.Version, new Texture( Name, Format, File.ReadAllBytes( path ), Field1C, Field1D, Field1E, Field1F ) ) );
+            RegisterReplaceHandler<GFDLibrary.Graphics.Image>( path => TextureReplacement.Prepare( Data.Version, TextureEncoder.Encode( Name, Format, MinificationFilter, MagnificationFilter, WrapModeU, WrapModeV, GFDLibrary.Textures.PngCodec.Load( path ) ) ) );
+            RegisterReplaceHandler<DDSStream>( path => TextureReplacement.Prepare( Data.Version, new Texture( Name, Format, File.ReadAllBytes( path ), MinificationFilter, MagnificationFilter, WrapModeU, WrapModeV ) ) );
 
             TextChanged += ( s, o ) => Name = Text;
         }
