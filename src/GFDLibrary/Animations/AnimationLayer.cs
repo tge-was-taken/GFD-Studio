@@ -71,7 +71,7 @@ namespace GFDLibrary.Animations
                     case KeyType.Single:
                     case KeyType.Single_2:
                     case KeyType.Single_3:
-                    case KeyType.MaterialSingle_4:
+                    case KeyType.Opacity:
                     case KeyType.Single_5:
                     case KeyType.Single_6:
                     case KeyType.CameraFieldOfView:
@@ -126,10 +126,10 @@ namespace GFDLibrary.Animations
                         key = new PRSKey( KeyType );
                         break;
                     case KeyType.Vector3:
-                    case KeyType.Vector3_2:
-                    case KeyType.Vector3_3:
-                    case KeyType.Vector3_4:
-                    case KeyType.MaterialVector3_5:
+                    case KeyType.AmbientColor:
+                    case KeyType.DiffuseColor:
+                    case KeyType.SpecularColor:
+                    case KeyType.EmissiveColor:
                         key = new Vector3Key( KeyType );
                         break;
                     case KeyType.Quaternion:
@@ -139,7 +139,7 @@ namespace GFDLibrary.Animations
                     case KeyType.Single:
                     case KeyType.Single_2:
                     case KeyType.Single_3:
-                    case KeyType.MaterialSingle_4:
+                    case KeyType.Opacity:
                     case KeyType.Single_5:
                     case KeyType.Single_6:
                     case KeyType.CameraFieldOfView:
@@ -149,16 +149,16 @@ namespace GFDLibrary.Animations
                     case KeyType.SingleAlt_3:
                         key = new SingleKey( KeyType );
                         break;
-                    case KeyType.Single5:
-                    case KeyType.Single5_2:
-                    case KeyType.Single5Alt:
-                    case KeyType.Type36_P5R:
+                    case KeyType.UV0Transform:
+                    case KeyType.UV1Transform:
+                    case KeyType.UV0TransformNoInterp:
+                    case KeyType.UV1TransformNoInterp:
                         key = new Single5Key( KeyType );
                         break;
                     case KeyType.NodePRSByte:
                         key = new PRSByteKey();
                         break;
-                    case KeyType.Single4Byte:
+                    case KeyType.MeshColor:
                         if ( ResourceVersion.TreatAsCatherineFullBody )
                             key = new Single4ByteKey();
                         else

@@ -118,6 +118,11 @@ enum (`CameraFieldOfView`, `MaterialSingle_4`) are not confirmed by it.
 
 Types 31+ in our enum do not exist in this build (the table ends at 30).
 
+The semantic names now in the enum for 6, 7, 8, 12, 13, 14, 18, 20, 21 and 36 come from
+DeathChaos25's `100_release_candidate` branch, not from this build. The table cannot confirm
+them, but each agrees with the payload it names: 6, 7 and 8 are `gfdKeyRGB`, 13, 20 and 21 are
+`gfdKeyUV` or `gfdKeyUVStep`, and 18 is `gfdKeyCOLOR`. The former names are kept as aliases.
+
 Only types 26, 27 and 28 have a non-null `decompBlend`, which is exactly the
 condition `gfdKeyListStreamRead` uses to read the trailing 6 floats. This
 confirms our `AnimationLayer.UsesScaleVectors` set for pre-Metaphor versions

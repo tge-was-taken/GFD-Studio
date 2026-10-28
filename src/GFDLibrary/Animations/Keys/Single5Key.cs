@@ -14,7 +14,7 @@ namespace GFDLibrary.Animations
 
         public float Field10 { get; set; }
 
-        public Single5Key() : this( KeyType.Single5 ) { }
+        public Single5Key() : this( KeyType.UV0Transform ) { }
 
         public Single5Key( KeyType type ) : base( type )
         {

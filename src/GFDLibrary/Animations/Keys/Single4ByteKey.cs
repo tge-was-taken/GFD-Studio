@@ -14,7 +14,7 @@ namespace GFDLibrary.Animations
 
         public byte Byte { get; set; }
 
-        public Single4ByteKey() : base( KeyType.Single4Byte )
+        public Single4ByteKey() : base( KeyType.MeshColor )
         {
 
         }
