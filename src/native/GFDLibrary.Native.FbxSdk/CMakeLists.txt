@@ -23,11 +23,20 @@ if(NOT DEFINED FbxSdkRoot)
 endif()
 
 find_path(FBXSDK_INCLUDE_DIR fbxsdk.h PATHS "${FbxSdkRoot}/include" NO_DEFAULT_PATH)
-find_library(FBXSDK_LIBRARY NAMES fbxsdk libfbxsdk
-             PATHS "${FbxSdkRoot}/lib/release" "${FbxSdkRoot}/lib/gcc/x64/release"
-                   "${FbxSdkRoot}/lib/clang/release" "${FbxSdkRoot}/lib/vs2019/x64/release"
-                   "${FbxSdkRoot}/lib/x64/release"
-             NO_DEFAULT_PATH)
+set(FBXSDK_LIB_PATHS "${FbxSdkRoot}/lib/release" "${FbxSdkRoot}/lib/gcc/x64/release"
+                     "${FbxSdkRoot}/lib/clang/release" "${FbxSdkRoot}/lib/vs2019/x64/release"
+                     "${FbxSdkRoot}/lib/x64/release")
+
+# The Windows SDK ships both an import library for its DLL and a static one. Taking the
+# static library keeps FbxSdkC self contained, as it already is on the other platforms, and
+# avoids the FBXSDK_SHARED declspec dance the import library needs for its data symbols.
+if(WIN32)
+    find_library(FBXSDK_LIBRARY NAMES libfbxsdk-md PATHS ${FBXSDK_LIB_PATHS} NO_DEFAULT_PATH)
+    find_library(FBXSDK_XML2 NAMES libxml2-md PATHS ${FBXSDK_LIB_PATHS} NO_DEFAULT_PATH)
+    find_library(FBXSDK_ZLIB NAMES zlib-md PATHS ${FBXSDK_LIB_PATHS} NO_DEFAULT_PATH)
+else()
+    find_library(FBXSDK_LIBRARY NAMES fbxsdk libfbxsdk PATHS ${FBXSDK_LIB_PATHS} NO_DEFAULT_PATH)
+endif()
 
 if(NOT FBXSDK_INCLUDE_DIR OR NOT FBXSDK_LIBRARY)
     message(FATAL_ERROR "FBX SDK not found under ${FbxSdkRoot}. Set -DFbxSdkRoot=<path>.")
@@ -37,6 +46,10 @@ add_library(FbxSdkC SHARED src/FbxSdkC.cpp)
 
 target_include_directories(FbxSdkC PUBLIC include PRIVATE ${FBXSDK_INCLUDE_DIR})
 target_link_libraries(FbxSdkC PRIVATE ${FBXSDK_LIBRARY})
+
+if(WIN32)
+    target_link_libraries(FbxSdkC PRIVATE ${FBXSDK_XML2} ${FBXSDK_ZLIB})
+endif()
 
 if(UNIX)
     find_package(Threads REQUIRED)
