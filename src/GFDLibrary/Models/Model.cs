@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Numerics;
+using GFDLibrary.Cameras;
 using GFDLibrary.Common;
 using GFDLibrary.IO;
+using GFDLibrary.Lights;
 
 namespace GFDLibrary.Models
 {
@@ -451,6 +453,365 @@ namespace GFDLibrary.Models
                     foreach ( var geometryAttachment in node.Attachments.Where( x => x.Type == NodeAttachmentType.Mesh ).ToList() )
                         node.Attachments.Remove( geometryAttachment );
             }
+        }
+
+        public void MergeWith(Model other)
+        {
+            if (Version != other.Version)
+                throw new InvalidOperationException(
+                    $"Cannot merge models with different versions: {Version:X} vs {other.Version:X}");
+
+            var baseNodes = Nodes.ToList();
+            var baseNodeNames = new HashSet<string>(baseNodes.Select(n => n.Name));
+            var otherNodes = other.Nodes.ToList();
+            var processedOtherNodes = new HashSet<Node>();
+            var clonedMeshes = new List<Mesh>();
+
+            // handle nodes that share a name with a base model.
+            // These must be processed before cloning so their meshes/attachments
+            // are transferred to the existing model's nodes with matching names
+            foreach (var otherNode in otherNodes)
+            {
+                if (otherNode.Name == "RootNode" ||
+                    (otherNode.Parent != null && otherNode.Parent == otherNodes[0] && otherNode.Name.EndsWith("_root")))
+                    continue;
+
+                if (!baseNodeNames.Contains(otherNode.Name))
+                    continue;
+
+                if (RootNode.FindNodeBreadthFirst(otherNode.Name, out var existingNode))
+                {
+                    foreach (var attachment in otherNode.Attachments)
+                    {
+                        if (attachment.Type == NodeAttachmentType.Mesh)
+                        {
+                            var clonedMesh = DeepCloneMesh(attachment.GetValue<Mesh>(), Version);
+                            clonedMeshes.Add(clonedMesh);
+                            existingNode.Attachments.Add(new NodeMeshAttachment(clonedMesh));
+                        }
+                        else if (attachment.Type != NodeAttachmentType.Epl &&
+                                 attachment.Type != NodeAttachmentType.EplLeaf)
+                        {
+                            existingNode.Attachments.Add(DeepCloneAttachment(attachment, Version));
+                        }
+                    }
+
+                    if (otherNode.HasProperties)
+                    {
+                        foreach (var kvp in otherNode.Properties)
+                            existingNode.Properties[kvp.Key] = kvp.Value;
+                    }
+                }
+
+                processedOtherNodes.Add(otherNode);
+            }
+
+            // Second pass: clone subtrees for nodes that are new,
+            // deleting any children already handled in the first pass.
+            foreach (var otherNode in otherNodes)
+            {
+                if (otherNode.Name == "RootNode" ||
+                    (otherNode.Parent != null && otherNode.Parent == otherNodes[0] && otherNode.Name.EndsWith("_root")))
+                    continue;
+
+                if (processedOtherNodes.Contains(otherNode))
+                    continue;
+
+                var subtreeRoot = FindNewSubtreeRoot(otherNode, other, baseNodeNames);
+
+                if (!processedOtherNodes.Contains(subtreeRoot))
+                {
+                    var clonedSubtree = DeepCloneNode(subtreeRoot, processedOtherNodes);
+                    CollectMeshes(clonedSubtree, clonedMeshes);
+
+                    Node baseParent = null;
+                    if (subtreeRoot.Parent != null &&
+                        subtreeRoot.Parent.Name != "RootNode" &&
+                        baseNodeNames.Contains(subtreeRoot.Parent.Name))
+                    {
+                        RootNode.FindNodeBreadthFirst(subtreeRoot.Parent.Name, out baseParent);
+                    }
+
+                    (baseParent ?? RootNode).AddChildNode(clonedSubtree);
+                    MarkSubtreeProcessed(subtreeRoot, processedOtherNodes, processedOtherNodes);
+                }
+            }
+
+            // After the node tree has been merged, capture the new order.
+            var postMergeNodes = Nodes.ToList();
+
+            // Build a name-based old-index -> new-index reindex for base bones.
+            // merging models shifts bone indices and they must be updated
+            // Must run even when other model has no bones (face models can have 0 "new" bones when merged into body).
+            if (Bones != null && Bones.Count > 0)
+            {
+                var nameToNewIndex = new Dictionary<string, int>();
+                for (int n = 0; n < postMergeNodes.Count; n++)
+                    nameToNewIndex[postMergeNodes[n].Name] = n;
+
+                var oldIndexToName = new Dictionary<int, string>();
+                for (int n = 0; n < baseNodes.Count; n++)
+                    oldIndexToName[n] = baseNodes[n].Name;
+
+                for (int b = 0; b < Bones.Count; b++)
+                {
+                    var oldIdx = Bones[b].NodeIndex;
+                    if (oldIndexToName.TryGetValue(oldIdx, out var name) &&
+                        nameToNewIndex.TryGetValue(name, out var newIdx))
+                    {
+                        Bones[b].NodeIndex = (ushort)newIdx;
+                    }
+                }
+            }
+
+            // No other bones to merge — just validate and return
+            if (other.Bones == null || other.Bones.Count == 0)
+            {
+                ValidateFlags();
+                return;
+            }
+
+            if (Bones == null)
+                Bones = new List<Bone>();
+
+            // Build bone remap table using post-merge node positions
+            var baseBoneNodeNameToIndex = new Dictionary<string, int>();
+            for (int i = 0; i < Bones.Count; i++)
+            {
+                var name = postMergeNodes[Bones[i].NodeIndex].Name;
+                if (!baseBoneNodeNameToIndex.ContainsKey(name))
+                    baseBoneNodeNameToIndex[name] = i;
+            }
+
+            var newBones = new List<Bone>();
+            var remapTable = new int[other.Bones.Count];
+
+            for (int i = 0; i < other.Bones.Count; i++)
+            {
+                var otherBone = other.Bones[i];
+                var otherNode = otherNodes[otherBone.NodeIndex];
+
+                if (baseBoneNodeNameToIndex.TryGetValue(otherNode.Name, out var baseIdx))
+                {
+                    remapTable[i] = baseIdx;
+                }
+                else
+                {
+                    var mergedNode = postMergeNodes.FirstOrDefault(n => n.Name == otherNode.Name);
+                    if (mergedNode == null)
+                    {
+                        remapTable[i] = 0;
+                        continue;
+                    }
+
+                    var mergedNodeIndex = (ushort)postMergeNodes.IndexOf(mergedNode);
+                    newBones.Add(new Bone(mergedNodeIndex, otherBone.InverseBindMatrix));
+                    remapTable[i] = Bones.Count + newBones.Count - 1;
+                }
+            }
+
+            // Remap vertex weights in all cloned meshes
+            foreach (var mesh in clonedMeshes)
+            {
+                if (mesh.VertexWeights == null)
+                    continue;
+
+                for (int v = 0; v < mesh.VertexWeights.Length; v++)
+                {
+                    for (int w = 0; w < mesh.VertexWeights[v].Indices.Length; w++)
+                    {
+                        if (mesh.VertexWeights[v].Weights[w] != 0)
+                            mesh.VertexWeights[v].Indices[w] = (ushort)remapTable[mesh.VertexWeights[v].Indices[w]];
+                    }
+                }
+            }
+
+            // Append new bones
+            Bones.AddRange(newBones);
+
+            ValidateFlags();
+        }
+
+        internal static Mesh DeepCloneMesh(Mesh source, uint version)
+        {
+            var clone = new Mesh(version);
+            clone.Vertices = source.Vertices?.ToArray();
+            clone.Normals = source.Normals?.ToArray();
+            clone.Tangents = source.Tangents?.ToArray();
+            clone.Binormals = source.Binormals?.ToArray();
+            clone.ColorChannel0 = source.ColorChannel0?.ToArray();
+            clone.ColorChannel1 = source.ColorChannel1?.ToArray();
+            clone.ColorChannel2 = source.ColorChannel2?.ToArray();
+            clone.TexCoordsChannel0 = source.TexCoordsChannel0?.ToArray();
+            clone.TexCoordsChannel1 = source.TexCoordsChannel1?.ToArray();
+            clone.TexCoordsChannel2 = source.TexCoordsChannel2?.ToArray();
+            clone.Triangles = source.Triangles?.ToArray();
+            clone.TriangleIndexFormat = source.TriangleIndexFormat;
+            clone.Field14 = source.Field14;
+            clone.Unk_StrideType = source.Unk_StrideType;
+            clone.Unk_VertexWeight = source.Unk_VertexWeight;
+            clone.LodStart = source.LodStart;
+            clone.LodEnd = source.LodEnd;
+
+            if (source.VertexWeights != null)
+            {
+                clone.VertexWeights = new VertexWeight[source.VertexWeights.Length];
+                for (int i = 0; i < source.VertexWeights.Length; i++)
+                {
+                    clone.VertexWeights[i] = new VertexWeight(
+                        source.VertexWeights[i].Weights?.ToArray(),
+                        source.VertexWeights[i].Indices?.ToArray());
+                }
+            }
+
+            if (source.MorphTargets != null)
+            {
+                clone.MorphTargets = new MorphTargetList(version) { Flags = source.MorphTargets.Flags };
+                foreach (var morphTarget in source.MorphTargets)
+                {
+                    var clonedTarget = new MorphTarget(version) { Flags = morphTarget.Flags };
+                    clonedTarget.Vertices.AddRange(morphTarget.Vertices);
+                    clone.MorphTargets.Add(clonedTarget);
+                }
+            }
+
+            clone.MaterialName = source.MaterialName;
+            clone.BoundingBox = source.BoundingBox;
+            clone.BoundingSphere = source.BoundingSphere;
+            clone.Flags = source.Flags;
+            clone.VertexAttributeFlags = source.VertexAttributeFlags;
+            return clone;
+        }
+
+        internal static NodeAttachment DeepCloneAttachment(NodeAttachment source, uint version)
+        {
+            switch (source.Type)
+            {
+                case NodeAttachmentType.Mesh:
+                    return new NodeMeshAttachment(DeepCloneMesh(source.GetValue<Mesh>(), version));
+                case NodeAttachmentType.Node:
+                    return new NodeNodeAttachment(DeepCloneNode(source.GetValue<Node>()));
+                case NodeAttachmentType.Camera:
+                    {
+                        var src = source.GetValue<Camera>();
+                        var cam = new Camera(version)
+                        {
+                            ViewMatrix = src.ViewMatrix,
+                            ClipPlaneNear = src.ClipPlaneNear,
+                            ClipPlaneFar = src.ClipPlaneFar,
+                            FieldOfView = src.FieldOfView,
+                            AspectRatio = src.AspectRatio,
+                            Field190 = src.Field190,
+                            Field198 = src.Field198,
+                            Field19C = src.Field19C,
+                            Field1A0 = src.Field1A0
+                        };
+                        return new NodeCameraAttachment(cam);
+                    }
+                case NodeAttachmentType.Light:
+                    {
+                        var src = source.GetValue<Light>();
+                        var light = new Light(version)
+                        {
+                            Flags = src.Flags,
+                            Type = src.Type,
+                            AmbientColor = src.AmbientColor,
+                            DiffuseColor = src.DiffuseColor,
+                            SpecularColor = src.SpecularColor,
+                            Field20 = src.Field20,
+                            Field04 = src.Field04,
+                            Field08 = src.Field08,
+                            Field10 = src.Field10,
+                            AttenuationStart = src.AttenuationStart,
+                            AttenuationEnd = src.AttenuationEnd,
+                            Field60 = src.Field60,
+                            Field64 = src.Field64,
+                            Field68 = src.Field68,
+                            AngleInnerCone = src.AngleInnerCone,
+                            AngleOuterCone = src.AngleOuterCone,
+                            Field98 = src.Field98,
+                            Field9C = src.Field9C
+                        };
+                        return new NodeLightAttachment(light);
+                    }
+                case NodeAttachmentType.Morph:
+                    {
+                        var src = source.GetValue<Morph>();
+                        var morph = new Morph(version)
+                        {
+                            NodeName = src.NodeName,
+                            TargetInts = src.TargetInts?.ToArray()
+                        };
+                        return new NodeMorphAttachment(morph);
+                    }
+                default:
+                    return null;
+            }
+        }
+
+        internal static Node DeepCloneNode(Node source, HashSet<Node> skipSourceNodes = null)
+        {
+            var clone = new Node(source.Name)
+            {
+                Translation = source.Translation,
+                Rotation = source.Rotation,
+                Scale = source.Scale,
+                FieldE0 = source.FieldE0
+            };
+
+            foreach (var attachment in source.Attachments)
+            {
+                var clonedAttachment = DeepCloneAttachment(attachment, source.Version);
+                if (clonedAttachment != null)
+                    clone.Attachments.Add(clonedAttachment);
+            }
+
+            if (source.HasProperties)
+            {
+                foreach (var kvp in source.Properties)
+                    clone.Properties[kvp.Key] = kvp.Value;
+            }
+
+            foreach (var child in source.Children)
+            {
+                if (skipSourceNodes != null && skipSourceNodes.Contains(child))
+                    continue;
+                clone.AddChildNode(DeepCloneNode(child, skipSourceNodes));
+            }
+
+            return clone;
+        }
+
+        private static void CollectMeshes(Node node, List<Mesh> meshes)
+        {
+            foreach (var attachment in node.Attachments)
+            {
+                if (attachment.Type == NodeAttachmentType.Mesh)
+                    meshes.Add(attachment.GetValue<Mesh>());
+            }
+            foreach (var child in node.Children)
+                CollectMeshes(child, meshes);
+        }
+
+        private static Node FindNewSubtreeRoot(Node node, Model otherModel, HashSet<string> baseNodeNames)
+        {
+            var current = node;
+            while (current.Parent != null &&
+                   current.Parent.Name != "RootNode" &&
+                   !baseNodeNames.Contains(current.Parent.Name))
+            {
+                current = current.Parent;
+            }
+            return current;
+        }
+
+        private static void MarkSubtreeProcessed(Node root, HashSet<Node> processed, HashSet<Node> skipNodes = null)
+        {
+            if (skipNodes != null && skipNodes.Contains(root))
+                return;
+            processed.Add(root);
+            foreach (var child in root.Children)
+                MarkSubtreeProcessed(child, processed, skipNodes);
         }
 
         private void ValidateFlags()

@@ -28,6 +28,11 @@ namespace GFDLibrary.Animations
         /// <summary>
         /// The target is a morph set.
         /// </summary>
-        Morph = 4
+        Morph = 4,
+
+        /// <summary>
+        /// The target is a morph set (indexed by controller order, used in Persona Dancing games).
+        /// </summary>
+        MorphIndexed = 5
     }
 }

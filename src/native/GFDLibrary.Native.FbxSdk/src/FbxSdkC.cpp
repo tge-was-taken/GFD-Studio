@@ -741,7 +741,8 @@ void FbxAnimStack_SetLocalTimeSpan( FbxAnimStackC* stack, double start, double s
     from.SetSecondDouble( start );
     to.SetSecondDouble( stop );
 
-    As<FbxAnimStack>( stack )->SetLocalTimeSpan( FbxTimeSpan( from, to ) );
+    FbxTimeSpan span( from, to );
+    As<FbxAnimStack>( stack )->SetLocalTimeSpan( span );
 }
 
 FbxAnimLayerC* FbxAnimLayer_Create( FbxSceneC* scene, const char* name )

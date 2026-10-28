@@ -253,6 +253,21 @@ namespace GFDLibrary.Animations
 
         internal void FixTargetIds( IEnumerable<Node> nodes )
         {
+            // MorphIndexed controllers: group by TargetName, assign sequential TargetIds within each group
+            var morphIndexedCounters = new Dictionary<string, int>();
+            foreach ( var controller in Controllers )
+            {
+                if ( controller.TargetKind == TargetKind.MorphIndexed )
+                {
+                    if ( !morphIndexedCounters.ContainsKey( controller.TargetName ) )
+                        morphIndexedCounters[controller.TargetName] = 0;
+                    else
+                        morphIndexedCounters[controller.TargetName]++;
+
+                    controller.TargetId = morphIndexedCounters[controller.TargetName];
+                }
+            }
+
             foreach ( var controller in Controllers.ToList() )
             {
                 if ( !controller.FixTargetIds( nodes ) )
@@ -263,6 +278,12 @@ namespace GFDLibrary.Animations
         public void ConvertToP5()
         {
             Controllers.ForEach( c => c.ConvertToP5() );
+        }
+
+        public void MergeWith(Animation other)
+        {
+            if (other.Controllers != null)
+                Controllers.AddRange(other.Controllers);
         }
 
         public void Retarget( Model originalModel, Model newModel, bool fixArms )

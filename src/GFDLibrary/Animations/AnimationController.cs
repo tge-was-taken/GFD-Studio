@@ -73,6 +73,12 @@ namespace GFDLibrary.Animations
 
         internal bool FixTargetIds( IEnumerable<Node> nodes )
         {
+            if ( TargetKind == TargetKind.Morph )
+                return true;
+
+            if ( TargetKind == TargetKind.MorphIndexed )
+                return true;
+
             if ( TargetKind != TargetKind.Node )
                 return true;
 

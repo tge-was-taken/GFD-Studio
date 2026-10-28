@@ -119,6 +119,71 @@ namespace GFDLibrary
             }
         }
 
+        public void MergeWith(ModelPack other)
+        {
+            if (Version != other.Version)
+                throw new InvalidOperationException(
+                    $"Cannot merge model packs with different versions: {Version:X} vs {other.Version:X}");
+
+            // Textures: add new by name only
+            if (other.Textures != null)
+            {
+                if (Textures == null)
+                {
+                    Textures = new TextureDictionary();
+                }
+
+                foreach (var texture in other.Textures)
+                {
+                    if (!Textures.ContainsTexture(texture.Key))
+                        Textures.Add(texture.Value);
+                }
+            }
+
+            // Materials: add new by name only
+            if (other.Materials != null)
+            {
+                if (Materials == null)
+                {
+                    Materials = new MaterialDictionary();
+                }
+
+                foreach (var material in other.Materials)
+                {
+                    if (!Materials.ContainsKey(material.Key))
+                        Materials.Add(material.Value);
+                }
+            }
+
+            // Model: delegate to Model.MergeWith
+            if (other.Model != null)
+            {
+                if (Model == null)
+                {
+                    Model = other.Model;
+                }
+                else
+                {
+                    Model.MergeWith(other.Model);
+                }
+            }
+
+            // AnimationPack: merge by index
+            if (other.AnimationPack != null)
+            {
+                if (AnimationPack == null)
+                {
+                    AnimationPack = other.AnimationPack;
+                }
+                else
+                {
+                    AnimationPack.MergeWith(other.AnimationPack);
+                }
+            }
+
+            // Chunks: keep base versions
+        }
+
         protected override void ReadCore( ResourceReader reader )
         {
             while ( ( reader.Position + ResourceChunkHeader.SIZE ) < reader.BaseStream.Length )

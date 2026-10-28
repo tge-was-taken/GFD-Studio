@@ -266,5 +266,28 @@ namespace GFDLibrary.Animations
 
             return true;
         }
+
+        public void MergeWith(AnimationPack other)
+        {
+            if (RawData != null || other.RawData != null)
+                return;
+
+            MergeAnimationLists(Animations, other.Animations);
+            MergeAnimationLists(BlendAnimations, other.BlendAnimations);
+        }
+
+        private static void MergeAnimationLists(List<Animation> baseList, List<Animation> otherList)
+        {
+            if (otherList == null)
+                return;
+
+            for (int i = 0; i < otherList.Count; i++)
+            {
+                if (i < baseList.Count)
+                    baseList[i].MergeWith(otherList[i]);
+                else
+                    baseList.Add(otherList[i]);
+            }
+        }
     }
 }
