@@ -74,6 +74,13 @@ if(NOT TARGET ZLIB::ZLIB)
 endif()
 set(ZLIB_LIBRARY zlibstatic CACHE STRING "" FORCE)
 set(ZLIB_INCLUDE_DIR "${zlib_SOURCE_DIR};${zlib_BINARY_DIR}" CACHE STRING "" FORCE)
+set(ZLIB_INCLUDE_DIRS "${zlib_SOURCE_DIR};${zlib_BINARY_DIR}" CACHE STRING "" FORCE)
+
+# libpng bakes the zlib version into pnglibconf.h from whichever zlib.h the generating
+# preprocessor sees, then refuses to compile if that differs from the one on the include
+# path. Carrying the fetched directories on the target keeps both steps on the same header
+# instead of letting a system zlib answer one of them.
+target_include_directories(zlibstatic PUBLIC "${zlib_SOURCE_DIR}" "${zlib_BINARY_DIR}")
 
 FetchContent_Declare(PNG
     GIT_REPOSITORY https://github.com/pnggroup/libpng.git
