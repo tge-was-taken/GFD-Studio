@@ -538,6 +538,12 @@ When a texture of the same name is already in the texture list, the reader
 *skips* the record instead of re-reading it; that is also where the "skip 2,
 read size, skip size, skip 4" shape confirms the field widths.
 
+Shipped files do contain such duplicates, and our `TextureDictionary` is keyed
+by name, so it collapses them the same way the game does. A model like
+`m013_207.GMD` declares two textures and holds one, which is why saving it back
+comes out around 220 bytes shorter. Measured over a sample of the Persona 5
+files that change size on a round trip, 48 of 60 are this and nothing else.
+
 ---
 
 ## `gfdAnimation` → `GFDLibrary.Animations.Animation`

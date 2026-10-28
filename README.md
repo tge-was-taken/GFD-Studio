@@ -108,6 +108,12 @@ model costs several times its size on disk once loaded.
 
 The corpus itself lives in a private repo, so CI skips the round trip on forks.
 
+Not every file can come back byte for byte, and a difference is not automatically a defect. The
+common case is a model whose texture dictionary stores the same name twice: the game keeps the
+first and skips the rest, and so does the library, so saving writes one record where the file
+had two and the output is a couple of hundred bytes shorter. Those entries are tagged
+`known_bad` in the manifest with the reason.
+
 ## Usage
 ### Model Conversion
 For best results, use the [GMD Maxscript](https://github.com/tge-was-taken/GFD-Studio/blob/master/Resources/GfdImporter/GfdImporter.ms) to import models directly into 3ds Max.
