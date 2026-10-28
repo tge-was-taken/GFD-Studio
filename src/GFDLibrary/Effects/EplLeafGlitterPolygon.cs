@@ -5,6 +5,8 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
+using GFDLibrary;
+
 namespace GFDLibrary.Effects
 {
     public class EplGlitterPolygon2 : EplGlitterPolygon
@@ -18,21 +20,31 @@ namespace GFDLibrary.Effects
 
         public EplLeafDataHeader Header { get; set; }
         public uint Type { get; set; }
-        public uint Field00 { get; set; }
-        public float Field04 { get; set; }
-        public uint Field08 { get; set; }
-        public uint Field20 { get; set; }
-        public uint Field150 { get; set; }
+        [FormerName( "Field00" )]
+        public uint Flags { get; set; }
+        [FormerName( "Field04" )]
+        public float Life { get; set; }
+        [FormerName( "Field08" )]
+        public uint Number { get; set; }
+        [FormerName( "Field20" )]
+        public uint Blend { get; set; }
+        [FormerName( "Field150" )]
+        public uint Seed { get; set; }
         public Vector2 Field08_ { get; set; }
         public Vector2 Field14 { get; set; }
         public EplLeafCommonData FieldEC { get; set; }
-        public float Field1C { get; set; }
+        [FormerName( "Field1C" )]
+        public float Random { get; set; }
         public EplLeafCommonData2 Field24 { get; set; }
         public EplLeafCommonData2 Field88 { get; set; }
-        public float Field140 { get; set; }
-        public float Field144 { get; set; }
-        public float Field148 { get; set; }
-        public float Field14C { get; set; }
+        [FormerName( "Field140" )]
+        public float RepeatTexV { get; set; }
+        [FormerName( "Field144" )]
+        public float MoveTexV { get; set; }
+        [FormerName( "Field148" )]
+        public float AdjustScale { get; set; }
+        [FormerName( "Field14C" )]
+        public float AdjustSpeed { get; set; }
         public Resource Polygon { get; set; }
         public bool Field70 { get; set; }
         public EplEmbeddedFile EmbeddedFile { get; set; }
@@ -46,21 +58,21 @@ namespace GFDLibrary.Effects
             //     SetRandomBackColor();
             Header = reader.ReadResource<EplLeafDataHeader>( Version );
             Type = reader.ReadUInt32();
-            Field00 = reader.ReadUInt32();
-            Field04 = reader.ReadSingle();
-            Field08 = reader.ReadUInt32();
-            Field20 = reader.ReadUInt32();
-            Field150 = reader.ReadUInt32();
+            Flags = reader.ReadUInt32();
+            Life = reader.ReadSingle();
+            Number = reader.ReadUInt32();
+            Blend = reader.ReadUInt32();
+            Seed = reader.ReadUInt32();
             Field08_ = reader.ReadVector2();
             Field14 = reader.ReadVector2();
             FieldEC = reader.ReadResource<EplLeafCommonData>( Version );
-            Field1C = reader.ReadSingle();
+            Random = reader.ReadSingle();
             Field24 = reader.ReadResource<EplLeafCommonData2>( Version );
             Field88 = reader.ReadResource<EplLeafCommonData2>( Version );
-            Field140 = reader.ReadSingle();
-            Field144 = reader.ReadSingle();
-            Field148 = reader.ReadSingle();
-            Field14C = reader.ReadSingle();
+            RepeatTexV = reader.ReadSingle();
+            MoveTexV = reader.ReadSingle();
+            AdjustScale = reader.ReadSingle();
+            AdjustSpeed = reader.ReadSingle();
             switch ( Type )
             {
                 case 0: break;
@@ -82,21 +94,21 @@ namespace GFDLibrary.Effects
             //     SetRandomBackColor();
             writer.WriteResource( Header );
             writer.WriteUInt32( Type );
-            writer.WriteUInt32( Field00 );
-            writer.WriteSingle( Field04 );
-            writer.WriteUInt32( Field08 );
-            writer.WriteUInt32( Field20 );
-            writer.WriteUInt32( Field150 );
+            writer.WriteUInt32( Flags );
+            writer.WriteSingle( Life );
+            writer.WriteUInt32( Number );
+            writer.WriteUInt32( Blend );
+            writer.WriteUInt32( Seed );
             writer.WriteVector2( Field08_ );
             writer.WriteVector2( Field14 );
             writer.WriteResource( FieldEC );
-            writer.WriteSingle( Field1C );
+            writer.WriteSingle( Random );
             writer.WriteResource( Field24 );
             writer.WriteResource( Field88 );
-            writer.WriteSingle( Field140 );
-            writer.WriteSingle( Field144 );
-            writer.WriteSingle( Field148 );
-            writer.WriteSingle( Field14C );
+            writer.WriteSingle( RepeatTexV );
+            writer.WriteSingle( MoveTexV );
+            writer.WriteSingle( AdjustScale );
+            writer.WriteSingle( AdjustSpeed );
             if ( Polygon != null )
                 writer.WriteResource( Polygon );
             writer.WriteBoolean( Field70 );

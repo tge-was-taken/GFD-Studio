@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using GFDLibrary;
+
 namespace GFDLibrary.Effects
 {
     public sealed class EplTrajectoryPolygon : Resource
@@ -13,14 +15,22 @@ namespace GFDLibrary.Effects
 
         public EplLeafDataHeader Header { get; set; }
         public uint Type { get; set; }
-        public uint Field00 { get; set; }
-        public uint Field04 { get; set; }
-        public float Field08 { get; set; }
-        public float Field0C { get; set; }
-        public uint Field12C { get; set; }
-        public float Field130 { get; set; }
-        public float Field134 { get; set; }
-        public float Field138 { get; set; }
+        [FormerName( "Field00" )]
+        public uint Flags { get; set; }
+        [FormerName( "Field04" )]
+        public uint Number { get; set; }
+        [FormerName( "Field08" )]
+        public float ThickCore { get; set; }
+        [FormerName( "Field0C" )]
+        public float ThickOutside { get; set; }
+        [FormerName( "Field12C" )]
+        public uint Split { get; set; }
+        [FormerName( "Field130" )]
+        public float RepeatTexV { get; set; }
+        [FormerName( "Field134" )]
+        public float MoveTexV { get; set; }
+        [FormerName( "Field138" )]
+        public float Interval { get; set; }
         public EplLeafCommonData2 Field10 { get; set; }
         public EplLeafCommonData2 Field74 { get; set; }
         public EplLeafCommonData FieldD8 { get; set; }
@@ -39,15 +49,15 @@ namespace GFDLibrary.Effects
             Type = reader.ReadUInt32();
             if ( Version <= 0x1104170 )
                 reader.SeekCurrent( 4 );
-            Field00 = reader.ReadUInt32();
-            Field04 = reader.ReadUInt32();
-            Field08 = reader.ReadSingle();
-            Field0C = reader.ReadSingle();
-            Field12C = reader.ReadUInt32();
-            Field130 = reader.ReadSingle();
-            Field134 = reader.ReadSingle();
+            Flags = reader.ReadUInt32();
+            Number = reader.ReadUInt32();
+            ThickCore = reader.ReadSingle();
+            ThickOutside = reader.ReadSingle();
+            Split = reader.ReadUInt32();
+            RepeatTexV = reader.ReadSingle();
+            MoveTexV = reader.ReadSingle();
             if ( Version > 0x1104170 )
-                Field138 = reader.ReadSingle();
+                Interval = reader.ReadSingle();
             Field10 = reader.ReadResource<EplLeafCommonData2>( Version );
             Field74 = reader.ReadResource<EplLeafCommonData2>( Version );
             FieldD8 = reader.ReadResource<EplLeafCommonData>( Version );
@@ -64,15 +74,15 @@ namespace GFDLibrary.Effects
             writer.WriteUInt32( Type );
             if ( Version <= 0x1104170 )
                 writer.SeekCurrent( 4 );
-            writer.WriteUInt32( Field00 );
-            writer.WriteUInt32( Field04 );
-            writer.WriteSingle( Field08 );
-            writer.WriteSingle( Field0C );
-            writer.WriteUInt32( Field12C );
-            writer.WriteSingle( Field130 );
-            writer.WriteSingle( Field134 );
+            writer.WriteUInt32( Flags );
+            writer.WriteUInt32( Number );
+            writer.WriteSingle( ThickCore );
+            writer.WriteSingle( ThickOutside );
+            writer.WriteUInt32( Split );
+            writer.WriteSingle( RepeatTexV );
+            writer.WriteSingle( MoveTexV );
             if ( Version > 0x1104170 )
-                writer.WriteSingle( Field138 );
+                writer.WriteSingle( Interval );
             writer.WriteResource( Field10 );
             writer.WriteResource( Field74 );
             writer.WriteResource( FieldD8 );

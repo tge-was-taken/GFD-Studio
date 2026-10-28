@@ -1,5 +1,7 @@
 ﻿using GFDLibrary.IO;
 
+using GFDLibrary;
+
 namespace GFDLibrary.Effects
 {
     public sealed class EplHelper : Resource
@@ -8,10 +10,14 @@ namespace GFDLibrary.Effects
 
         public EplLeafDataHeader Header { get; set; }
         public uint Type { get; set; }
-        public uint Field00 { get; set; }
-        public float Field04 { get; set; }
-        public float Field08 { get; set; }
-        public float Field0C { get; set; }
+        [FormerName( "Field00" )]
+        public uint Flags { get; set; }
+        [FormerName( "Field04" )]
+        public float AdjustScale { get; set; }
+        [FormerName( "Field08" )]
+        public float AdjustSpeed { get; set; }
+        [FormerName( "Field0C" )]
+        public float Scale { get; set; }
         public bool Field84 { get; set; }
         public EplEmbeddedFile EmbeddedFile1 { get; set; }
         public bool Field88 { get; set; }
@@ -26,10 +32,10 @@ namespace GFDLibrary.Effects
             //     SetRandomBackColor();
             Header = reader.ReadResource<EplLeafDataHeader>( Version );
             Type = reader.ReadUInt32();
-            Field00 = reader.ReadUInt32();
-            Field04 = reader.ReadSingle();
-            Field08 = reader.ReadSingle();
-            Field0C = reader.ReadSingle();
+            Flags = reader.ReadUInt32();
+            AdjustScale = reader.ReadSingle();
+            AdjustSpeed = reader.ReadSingle();
+            Scale = reader.ReadSingle();
             Field84 = reader.ReadBoolean();
             if ( Field84 )
                 EmbeddedFile1 = reader.ReadResource<EplEmbeddedFile>( Version );
@@ -43,10 +49,10 @@ namespace GFDLibrary.Effects
             //     SetRandomBackColor();
             writer.WriteResource( Header );
             writer.WriteUInt32( Type );
-            writer.WriteUInt32( Field00 );
-            writer.WriteSingle( Field04 );
-            writer.WriteSingle( Field08 );
-            writer.WriteSingle( Field0C );
+            writer.WriteUInt32( Flags );
+            writer.WriteSingle( AdjustScale );
+            writer.WriteSingle( AdjustSpeed );
+            writer.WriteSingle( Scale );
             writer.WriteBoolean( Field84 );
             if ( Field84 )
                 writer.WriteResource( EmbeddedFile1 );

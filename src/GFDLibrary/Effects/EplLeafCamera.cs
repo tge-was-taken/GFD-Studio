@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using GFDLibrary;
+
 namespace GFDLibrary.Effects
 {
     public sealed class EplCamera : Resource
@@ -14,10 +16,14 @@ namespace GFDLibrary.Effects
 
         public EplLeafDataHeader Header { get; set; }
         public uint Type { get; set; }
-        public uint Field00 { get; set; }
-        public float Field04 { get; set; }
-        public float Field08 { get; set; }
-        public uint Field0C { get; set; }
+        [FormerName( "Field00" )]
+        public uint Flags { get; set; }
+        [FormerName( "Field04" )]
+        public float AdjustScale { get; set; }
+        [FormerName( "Field08" )]
+        public float AdjustSpeed { get; set; }
+        [FormerName( "Field0C" )]
+        public uint Seed { get; set; }
         public Resource Params { get; set; }
         public bool HasEmbeddedFile { get; set; }
         public EplEmbeddedFile EmbeddedFile { get; set; }
@@ -31,10 +37,10 @@ namespace GFDLibrary.Effects
             //     SetRandomBackColor();
             Header = reader.ReadResource<EplLeafDataHeader>( Version );
             Type = reader.ReadUInt32();
-            Field00 = reader.ReadUInt32();
-            Field04 = reader.ReadSingle();
-            Field08 = reader.ReadSingle();
-            Field0C = reader.ReadUInt32();
+            Flags = reader.ReadUInt32();
+            AdjustScale = reader.ReadSingle();
+            AdjustSpeed = reader.ReadSingle();
+            Seed = reader.ReadUInt32();
             switch ( Type )
             {
 
@@ -53,10 +59,10 @@ namespace GFDLibrary.Effects
             //     SetRandomBackColor();
             writer.WriteResource( Header );
             writer.WriteUInt32( Type );
-            writer.WriteUInt32( Field00 );
-            writer.WriteSingle( Field04 );
-            writer.WriteSingle( Field08 );
-            writer.WriteUInt32( Field0C );
+            writer.WriteUInt32( Flags );
+            writer.WriteSingle( AdjustScale );
+            writer.WriteSingle( AdjustSpeed );
+            writer.WriteUInt32( Seed );
             if ( Params != null ) writer.WriteResource( Params );
             writer.WriteBoolean( HasEmbeddedFile );
             if ( HasEmbeddedFile )

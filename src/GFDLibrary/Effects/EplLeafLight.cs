@@ -7,6 +7,8 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
+using GFDLibrary;
+
 namespace GFDLibrary.Effects
 {
     public sealed class EplLight : Resource
@@ -15,9 +17,12 @@ namespace GFDLibrary.Effects
 
         public EplLeafDataHeader Header { get; set; }
         public uint Type { get; set; }
-        public uint Field00 { get; set; }
-        public float Field04 { get; set; }
-        public float Field08 { get; set; }
+        [FormerName( "Field00" )]
+        public uint Flags { get; set; }
+        [FormerName( "Field04" )]
+        public float AdjustScale { get; set; }
+        [FormerName( "Field08" )]
+        public float AdjustSpeed { get; set; }
         public Resource Data { get; set; }
         public bool HasEmbeddedFile { get; set; }
         public EplEmbeddedFile EmbeddedFile { get; set; }
@@ -31,9 +36,9 @@ namespace GFDLibrary.Effects
             //     SetRandomBackColor();
             Header = reader.ReadResource<EplLeafDataHeader>( Version );
             Type = reader.ReadUInt32();
-            Field00 = reader.ReadUInt32();
-            Field04 = reader.ReadSingle();
-            Field08 = reader.ReadSingle();
+            Flags = reader.ReadUInt32();
+            AdjustScale = reader.ReadSingle();
+            AdjustSpeed = reader.ReadSingle();
             switch ( Type )
             {
                 case 0: break;
@@ -53,9 +58,9 @@ namespace GFDLibrary.Effects
             //     SetRandomBackColor();
             writer.WriteResource( Header );
             writer.WriteUInt32( Type );
-            writer.WriteUInt32( Field00 );
-            writer.WriteSingle( Field04 );
-            writer.WriteSingle( Field08 );
+            writer.WriteUInt32( Flags );
+            writer.WriteSingle( AdjustScale );
+            writer.WriteSingle( AdjustSpeed );
             if ( Data != null ) writer.WriteResource( Data );
             writer.WriteBoolean( HasEmbeddedFile );
             if ( HasEmbeddedFile )
@@ -87,11 +92,16 @@ namespace GFDLibrary.Effects
     {
         public override ResourceType ResourceType => ResourceType.EplLightSceneData;
 
-        public float Field0C { get; set; }
+        [FormerName( "Field0C" )]
+
+        public float Life { get; set; }
         public Vector2 Field10 { get; set; }
-        public uint Field18 { get; set; }
-        public uint Field1C { get; set; }
-        public uint Field20 { get; set; }
+        [FormerName( "Field18" )]
+        public uint Ambient { get; set; }
+        [FormerName( "Field1C" )]
+        public uint Diffuse { get; set; }
+        [FormerName( "Field20" )]
+        public uint Specular { get; set; }
         public float Field24 { get; set; }
         public float Field28 { get; set; }
         public float Field2C { get; set; }
@@ -102,11 +112,11 @@ namespace GFDLibrary.Effects
 
         protected override void ReadCore( ResourceReader reader )
         {
-            Field0C = reader.ReadSingle();
+            Life = reader.ReadSingle();
             Field10 = reader.ReadVector2();
-            Field18 = reader.ReadUInt32();
-            Field1C = reader.ReadUInt32();
-            Field20 = reader.ReadUInt32();
+            Ambient = reader.ReadUInt32();
+            Diffuse = reader.ReadUInt32();
+            Specular = reader.ReadUInt32();
             if ( Version > 0x1104910 )
             {
                 Field24 = reader.ReadSingle();
@@ -117,11 +127,11 @@ namespace GFDLibrary.Effects
 
         protected override void WriteCore( ResourceWriter writer )
         {
-            writer.WriteSingle( Field0C );
+            writer.WriteSingle( Life );
             writer.WriteVector2( Field10 );
-            writer.WriteUInt32( Field18 );
-            writer.WriteUInt32( Field1C );
-            writer.WriteUInt32( Field20 );
+            writer.WriteUInt32( Ambient );
+            writer.WriteUInt32( Diffuse );
+            writer.WriteUInt32( Specular );
             if ( Version > 0x1104910 )
             {
                 writer.WriteSingle( Field24 );

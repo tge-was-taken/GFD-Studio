@@ -2,6 +2,8 @@
 using System.Numerics;
 using System;
 
+using GFDLibrary;
+
 namespace GFDLibrary.Effects
 {
     public sealed class EplParticleEmitter : Resource
@@ -9,28 +11,47 @@ namespace GFDLibrary.Effects
         public override ResourceType ResourceType => ResourceType.EplParticleEmitter;
 
         internal uint Type { get; set; }
-        public uint Field15C { get; set; }
-        public float Field160 { get; set; }
-        public uint Field164 { get; set; }
-        public float Field040 { get; set; }
-        public Vector2 Field44 { get; set; }
-        public float FieldB4 { get; set; }
-        public uint FieldC4 { get; set; }
-        public Vector2 FieldB8 { get; set; }
-        public EplLeafCommonData2 Field50 { get; set; }
-        public float FieldC0 { get; set; }
-        public Resource FieldC8 { get; set; }
+        [FormerName( "Field15C" )]
+        public uint Flags { get; set; }
+        [FormerName( "Field160" )]
+        public float Life { get; set; }
+        [FormerName( "Field164" )]
+        public uint Seed { get; set; }
+        [FormerName( "Field040" )]
+        public float EmitterLife { get; set; }
+        [FormerName( "Field44" )]
+        public Vector2 EmitterCount { get; set; }
+        [FormerName( "FieldB4" )]
+        public float ColorAlpha { get; set; }
+        [FormerName( "FieldC4" )]
+        public uint ColorBlend { get; set; }
+        [FormerName( "FieldB8" )]
+        public Vector2 ColorFade { get; set; }
+        [FormerName( "Field50" )]
+        public EplLeafCommonData2 ColorCurve4 { get; set; }
+        [FormerName( "FieldC0" )]
+        public float ColorRandom { get; set; }
+        [FormerName( "FieldC8" )]
+        public Resource ScaleCurve4 { get; set; }
         public float Field12C { get; set; }
         public float Field130 { get; set; }
         public EplLeafCommonData Field134_Old { get; set; }
-        public Vector2 Field134 { get; set; }
-        public Vector2 Field13C { get; set; }
-        public float Field144 { get; set; }
-        public uint Field148 { get; set; }
-        public uint Field14C { get; set; }
-        public float Field150 { get; set; }
-        public float Field154 { get; set; }
-        public float Field158 { get; set; }
+        [FormerName( "Field134" )]
+        public Vector2 RotateStart { get; set; }
+        [FormerName( "Field13C" )]
+        public Vector2 RotateSpeed { get; set; }
+        [FormerName( "Field144" )]
+        public float RotateAccele { get; set; }
+        [FormerName( "Field148" )]
+        public uint RotateType { get; set; }
+        [FormerName( "Field14C" )]
+        public uint BlurLength { get; set; }
+        [FormerName( "Field150" )]
+        public float BlurInterval { get; set; }
+        [FormerName( "Field154" )]
+        public float AdjustScale { get; set; }
+        [FormerName( "Field158" )]
+        public float AdjustSpeed { get; set; }
         public Resource Params { get; set; }
 
         // METAPHOR
@@ -54,26 +75,26 @@ namespace GFDLibrary.Effects
             //     local u32 type = in_type;
 
             Logger.Debug( $"EplParticleEmitter: Reading type {Type}" );
-            Field15C = reader.ReadUInt32(); // randomSpawnDelay
-            Field160 = reader.ReadSingle(); // particleLifetime
-            Field164 = reader.ReadUInt32(); // angleSeed
-            Field040 = reader.ReadSingle(); // despawnTimer
-            Field44 = reader.ReadVector2(); // SpawnChoker
+            Flags = reader.ReadUInt32(); // randomSpawnDelay
+            Life = reader.ReadSingle(); // particleLifetime
+            Seed = reader.ReadUInt32(); // angleSeed
+            EmitterLife = reader.ReadSingle(); // despawnTimer
+            EmitterCount = reader.ReadVector2(); // SpawnChoker
             if ( Version > 0x2107001 )
                 Field4C = reader.ReadVector2();
             if ( Version > 0x2110193 )
                 Field54 = reader.ReadVector2();
-            FieldB4 = reader.ReadSingle(); // colorOverLifeOffset
-            FieldC4 = reader.ReadUInt32(); // drawQueueIndex
-            FieldB8 = reader.ReadVector2(); // OopacityOverLife
+            ColorAlpha = reader.ReadSingle(); // colorOverLifeOffset
+            ColorBlend = reader.ReadUInt32(); // drawQueueIndex
+            ColorFade = reader.ReadVector2(); // OopacityOverLife
             if ( Version >= 0x1104041 )
-                Field50 = reader.ReadResource<EplLeafCommonData2>( Version );
+                ColorCurve4 = reader.ReadResource<EplLeafCommonData2>( Version );
             if ( Version >= 0x1104701 )
-                FieldC0 = reader.ReadSingle();
+                ColorRandom = reader.ReadSingle();
             if ( Version < 0x1104041 )
-                FieldC8 = reader.ReadResource<EplLeafCommonData>( Version );
+                ScaleCurve4 = reader.ReadResource<EplLeafCommonData>( Version );
             else
-                FieldC8 = reader.ReadResource<EplLeafCommonData2>( Version );
+                ScaleCurve4 = reader.ReadResource<EplLeafCommonData2>( Version );
             if (Version > 0x1104041)
             {
                 Field12C = reader.ReadSingle();
@@ -86,20 +107,20 @@ namespace GFDLibrary.Effects
                 Field134_Old = reader.ReadResource<EplLeafCommonData>( Version );
             } else
             {
-                Field134 = reader.ReadVector2(); // spawner angles
-                Field13C = reader.ReadVector2(); // cycle rate from birth
+                RotateStart = reader.ReadVector2(); // spawner angles
+                RotateSpeed = reader.ReadVector2(); // cycle rate from birth
             }
-            Field144 = reader.ReadSingle();
-            Field148 = reader.ReadUInt32();
+            RotateAccele = reader.ReadSingle();
+            RotateType = reader.ReadUInt32();
             if ( Version > 0x1104171 )
             {
-                Field14C = reader.ReadUInt32(); // particleMultiplier
-                Field150 = reader.ReadSingle();
+                BlurLength = reader.ReadUInt32(); // particleMultiplier
+                BlurInterval = reader.ReadSingle();
             }
             if ( Version > 0x1104051 )
             {
-                Field154 = reader.ReadSingle(); // particleScale
-                Field158 = reader.ReadSingle(); // particleSpeed
+                AdjustScale = reader.ReadSingle(); // particleScale
+                AdjustSpeed = reader.ReadSingle(); // particleSpeed
             }
 
             switch ( Type )
@@ -120,23 +141,23 @@ namespace GFDLibrary.Effects
         {
             //     SetRandomBackColor();
             //     local u32 type = in_type;
-            writer.WriteUInt32( Field15C );
-            writer.WriteSingle( Field160 );
-            writer.WriteUInt32( Field164 );
-            writer.WriteSingle( Field040 );
-            writer.WriteVector2( Field44 );
+            writer.WriteUInt32( Flags );
+            writer.WriteSingle( Life );
+            writer.WriteUInt32( Seed );
+            writer.WriteSingle( EmitterLife );
+            writer.WriteVector2( EmitterCount );
             if ( Version > 0x2107001 )
                 writer.WriteVector2( Field4C );
             if ( Version > 0x2110193 )
                 writer.WriteVector2( Field54 );
-            writer.WriteSingle( FieldB4 );
-            writer.WriteUInt32( FieldC4 );
-            writer.WriteVector2( FieldB8 );
+            writer.WriteSingle( ColorAlpha );
+            writer.WriteUInt32( ColorBlend );
+            writer.WriteVector2( ColorFade );
             if ( Version >= 0x1104041 )
-                writer.WriteResource( Field50 );
+                writer.WriteResource( ColorCurve4 );
             if ( Version >= 0x1104701 )
-                writer.WriteSingle( FieldC0 );
-            writer.WriteResource( FieldC8 );
+                writer.WriteSingle( ColorRandom );
+            writer.WriteResource( ScaleCurve4 );
             if ( Version > 0x1104041 )
             {
                 writer.WriteSingle( Field12C );
@@ -149,20 +170,20 @@ namespace GFDLibrary.Effects
                 writer.WriteResource( Field134_Old );
             } else
             {
-                writer.WriteVector2( Field134 );
-                writer.WriteVector2( Field13C );
+                writer.WriteVector2( RotateStart );
+                writer.WriteVector2( RotateSpeed );
             }
-            writer.WriteSingle( Field144 );
-            writer.WriteUInt32( Field148 );
+            writer.WriteSingle( RotateAccele );
+            writer.WriteUInt32( RotateType );
             if ( Version > 0x1104171 )
             {
-                writer.WriteUInt32( Field14C );
-                writer.WriteSingle( Field150 );
+                writer.WriteUInt32( BlurLength );
+                writer.WriteSingle( BlurInterval );
             }
             if ( Version > 0x1104051 )
             {
-                writer.WriteSingle( Field154 );
-                writer.WriteSingle( Field158 );
+                writer.WriteSingle( AdjustScale );
+                writer.WriteSingle( AdjustSpeed );
             }
             if ( Params != null )
                 writer.WriteResource( Params );

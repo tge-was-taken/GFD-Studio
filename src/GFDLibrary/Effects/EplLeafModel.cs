@@ -2,6 +2,8 @@
 using System.Numerics;
 using System.Diagnostics;
 
+using GFDLibrary;
+
 namespace GFDLibrary.Effects
 {
     public sealed class EplModel : Resource
@@ -10,9 +12,12 @@ namespace GFDLibrary.Effects
 
         public EplLeafDataHeader Header { get; set; }
         public uint Type { get; set; }
-        public uint Field00 { get; set; }
-        public float Field04 { get; set; }
-        public float Field08 { get; set; }
+        [FormerName( "Field00" )]
+        public uint Flags { get; set; }
+        [FormerName( "Field04" )]
+        public float AdjustScale { get; set; }
+        [FormerName( "Field08" )]
+        public float AdjustSpeed { get; set; }
         public Resource Data { get; set; }
         public byte HasEmbeddedFile { get; set; }
         public EplEmbeddedFile EmbeddedFile { get; set; }
@@ -44,12 +49,12 @@ namespace GFDLibrary.Effects
             //     SetRandomBackColor();
             Header = reader.ReadResource<EplLeafDataHeader>( Version );
             Type = reader.ReadUInt32();
-            Field00 = reader.ReadUInt32();
+            Flags = reader.ReadUInt32();
             if ( Version > 0x1104050 )
             {
-                Field04 = reader.ReadSingle();
-                Field08 = reader.ReadSingle();
-                if ( (Field00 & 0x10000000) != 0 && Version > ResourceVersion.Persona5 && Version < 0x2000000 )
+                AdjustScale = reader.ReadSingle();
+                AdjustSpeed = reader.ReadSingle();
+                if ( (Flags & 0x10000000) != 0 && Version > ResourceVersion.Persona5 && Version < 0x2000000 )
                 {
                     Field0C_P5R = reader.ReadSingle();
                     Field10_P5R = reader.ReadSingle();
@@ -88,12 +93,12 @@ namespace GFDLibrary.Effects
             //     SetRandomBackColor();
             writer.WriteResource( Header );
             writer.WriteUInt32( Type );
-            writer.WriteUInt32( Field00 );
+            writer.WriteUInt32( Flags );
             if ( Version > 0x1104050 )
             {
-                writer.WriteSingle( Field04 );
-                writer.WriteSingle( Field08 );
-                if ( (Field00 & 0x10000000) != 0 && Version > ResourceVersion.Persona5 && Version < 0x2000000 )
+                writer.WriteSingle( AdjustScale );
+                writer.WriteSingle( AdjustSpeed );
+                if ( (Flags & 0x10000000) != 0 && Version > ResourceVersion.Persona5 && Version < 0x2000000 )
                 {
                     writer.WriteSingle( Field0C_P5R );
                     writer.WriteSingle( Field10_P5R );

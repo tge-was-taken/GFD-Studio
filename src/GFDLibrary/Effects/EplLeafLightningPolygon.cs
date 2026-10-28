@@ -6,6 +6,8 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
+using GFDLibrary;
+
 namespace GFDLibrary.Effects
 {
     public sealed class EplLightningPolygon : Resource
@@ -14,25 +16,37 @@ namespace GFDLibrary.Effects
 
         public EplLeafDataHeader Header { get; set; }
         public uint Type { get; set; }
-        public uint Field00 { get; set; }
-        public float Field04 { get; set; }
-        public uint Field08 { get; set; }
-        public uint Field1C { get; set; }
+        [FormerName( "Field00" )]
+        public uint Flags { get; set; }
+        [FormerName( "Field04" )]
+        public float Life { get; set; }
+        [FormerName( "Field08" )]
+        public uint Number { get; set; }
+        [FormerName( "Field1C" )]
+        public uint Blend { get; set; }
         public uint Feild20 { get; set; }
-        public float Field44 { get; set; }
-        public float Field48 { get; set; }
-        public uint Field4C { get; set; }
-        public uint Field50 { get; set; }
-        public uint Field54 { get; set; }
-        public uint Field60 { get; set; }
+        [FormerName( "Field44" )]
+        public float WidthCore { get; set; }
+        [FormerName( "Field48" )]
+        public float WidthEdge { get; set; }
+        [FormerName( "Field4C" )]
+        public uint RgbaCore { get; set; }
+        [FormerName( "Field50" )]
+        public uint RgbaBorder { get; set; }
+        [FormerName( "Field54" )]
+        public uint RgbaEdge { get; set; }
+        [FormerName( "Field60" )]
+        public uint Seed { get; set; }
         public Vector2 Field0C { get; set; }
         public Vector2 Field24 { get; set; }
         public Vector2 Field2C { get; set; }
         public Vector2 Field34 { get; set; }
         public Vector2 Field14 { get; set; }
         public Vector2 Field3C { get; set; }
-        public float Field58 { get; set; }
-        public float Field5C { get; set; }
+        [FormerName( "Field58" )]
+        public float AdjustScale { get; set; }
+        [FormerName( "Field5C" )]
+        public float AdjustSpeed { get; set; }
         public Resource Polygon { get; set; }
 
         public EplLightningPolygon() { }
@@ -44,17 +58,17 @@ namespace GFDLibrary.Effects
             //     SetRandomBackColor();
             Header = reader.ReadResource<EplLeafDataHeader>( Version );
             Type = reader.ReadUInt32();
-            Field00 = reader.ReadUInt32();
-            Field04 = reader.ReadSingle();
-            Field08 = reader.ReadUInt32();
-            Field1C = reader.ReadUInt32();
+            Flags = reader.ReadUInt32();
+            Life = reader.ReadSingle();
+            Number = reader.ReadUInt32();
+            Blend = reader.ReadUInt32();
             Feild20 = reader.ReadUInt32();
-            Field44 = reader.ReadSingle();
-            Field48 = reader.ReadSingle();
-            Field4C = reader.ReadUInt32();
-            Field50 = reader.ReadUInt32();
-            Field54 = reader.ReadUInt32();
-            Field60 = reader.ReadUInt32();
+            WidthCore = reader.ReadSingle();
+            WidthEdge = reader.ReadSingle();
+            RgbaCore = reader.ReadUInt32();
+            RgbaBorder = reader.ReadUInt32();
+            RgbaEdge = reader.ReadUInt32();
+            Seed = reader.ReadUInt32();
             Field0C = reader.ReadVector2();
             Field24 = reader.ReadVector2();
             Field2C = reader.ReadVector2();
@@ -63,8 +77,8 @@ namespace GFDLibrary.Effects
             Field3C = reader.ReadVector2();
             if ( Version > 0x1104050 )
             {
-                Field58 = reader.ReadSingle();
-                Field5C = reader.ReadSingle();
+                AdjustScale = reader.ReadSingle();
+                AdjustSpeed = reader.ReadSingle();
             }
             switch ( Type )
             {
@@ -80,17 +94,17 @@ namespace GFDLibrary.Effects
             //     SetRandomBackColor();
             writer.WriteResource( Header );
             writer.WriteUInt32( Type );
-            writer.WriteUInt32( Field00 );
-            writer.WriteSingle( Field04 );
-            writer.WriteUInt32( Field08 );
-            writer.WriteUInt32( Field1C );
+            writer.WriteUInt32( Flags );
+            writer.WriteSingle( Life );
+            writer.WriteUInt32( Number );
+            writer.WriteUInt32( Blend );
             writer.WriteUInt32( Feild20 );
-            writer.WriteSingle( Field44 );
-            writer.WriteSingle( Field48 );
-            writer.WriteUInt32( Field4C );
-            writer.WriteUInt32( Field50 );
-            writer.WriteUInt32( Field54 );
-            writer.WriteUInt32( Field60 );
+            writer.WriteSingle( WidthCore );
+            writer.WriteSingle( WidthEdge );
+            writer.WriteUInt32( RgbaCore );
+            writer.WriteUInt32( RgbaBorder );
+            writer.WriteUInt32( RgbaEdge );
+            writer.WriteUInt32( Seed );
             writer.WriteVector2( Field0C );
             writer.WriteVector2( Field24 );
             writer.WriteVector2( Field2C );
@@ -99,8 +113,8 @@ namespace GFDLibrary.Effects
             writer.WriteVector2( Field3C );
             if ( Version > 0x1104050 )
             {
-                writer.WriteSingle( Field58 );
-                writer.WriteSingle( Field5C );
+                writer.WriteSingle( AdjustScale );
+                writer.WriteSingle( AdjustSpeed );
             }
             if ( Polygon != null )
                 writer.WriteResource( Polygon );

@@ -2,6 +2,8 @@
 using System;
 using System.Numerics;
 
+using GFDLibrary;
+
 namespace GFDLibrary.Effects
 {
     public sealed class EplFlashPolygon : Resource
@@ -10,18 +12,27 @@ namespace GFDLibrary.Effects
 
         public EplLeafDataHeader Header { get; set; }
         public uint Type { get; set; }
-        public uint Field00 { get; set; }
-        public float Field04 { get; set; }
-        public uint Field08 { get; set; }
-        public float Field14 { get; set; }
-        public uint Field24 { get; set; }
-        public uint Field84 { get; set; }
+        [FormerName( "Field00" )]
+        public uint Flags { get; set; }
+        [FormerName( "Field04" )]
+        public float Life { get; set; }
+        [FormerName( "Field08" )]
+        public uint Number { get; set; }
+        [FormerName( "Field14" )]
+        public float Alpha { get; set; }
+        [FormerName( "Field24" )]
+        public uint Blend { get; set; }
+        [FormerName( "Field84" )]
+        public uint Seed { get; set; }
         public Vector2 Field08_ { get; set; }
         public Vector2 Field18 { get; set; }
         public EplLeafCommonData Field28 { get; set; }
-        public float Field20 { get; set; }
-        public float Field7C { get; set; }
-        public float Field80 { get; set; }
+        [FormerName( "Field20" )]
+        public float Random { get; set; }
+        [FormerName( "Field7C" )]
+        public float AdjustScale { get; set; }
+        [FormerName( "Field80" )]
+        public float AdjustSpeed { get; set; }
         public Resource Polygon { get; set; }
         public EplEmbeddedFile EmbeddedFile { get; set; }
 
@@ -34,21 +45,21 @@ namespace GFDLibrary.Effects
             //     SetRandomBackColor();
             Header = reader.ReadResource<EplLeafDataHeader>( Version );
             Type = reader.ReadUInt32();
-            Field00 = reader.ReadUInt32();
-            Field04 = reader.ReadSingle();
-            Field08 = reader.ReadUInt32();
-            Field14 = reader.ReadSingle();
-            Field24 = reader.ReadUInt32();
-            Field84 = reader.ReadUInt32();
+            Flags = reader.ReadUInt32();
+            Life = reader.ReadSingle();
+            Number = reader.ReadUInt32();
+            Alpha = reader.ReadSingle();
+            Blend = reader.ReadUInt32();
+            Seed = reader.ReadUInt32();
             Field08_ = reader.ReadVector2();
             Field18 = reader.ReadVector2();
             Field28 = reader.ReadResource<EplLeafCommonData>( Version );
             if ( Version > 0x1104700 )
-                Field20 = reader.ReadSingle();
+                Random = reader.ReadSingle();
             if ( Version > 0x1104050 )
             {
-                Field7C = reader.ReadSingle();
-                Field80 = reader.ReadSingle();
+                AdjustScale = reader.ReadSingle();
+                AdjustSpeed = reader.ReadSingle();
             }
             switch ( Type )
             {
@@ -68,21 +79,21 @@ namespace GFDLibrary.Effects
             //     SetRandomBackColor();
             writer.WriteResource( Header );
             writer.WriteUInt32( Type );
-            writer.WriteUInt32( Field00 );
-            writer.WriteSingle( Field04 );
-            writer.WriteUInt32( Field08 );
-            writer.WriteSingle( Field14 );
-            writer.WriteUInt32( Field24 );
-            writer.WriteUInt32( Field84 );
+            writer.WriteUInt32( Flags );
+            writer.WriteSingle( Life );
+            writer.WriteUInt32( Number );
+            writer.WriteSingle( Alpha );
+            writer.WriteUInt32( Blend );
+            writer.WriteUInt32( Seed );
             writer.WriteVector2( Field08_ );
             writer.WriteVector2( Field18 );
             writer.WriteResource( Field28 );
             if ( Version > 0x1104700 )
-                writer.WriteSingle( Field20 );
+                writer.WriteSingle( Random );
             if ( Version > 0x1104050 )
             {
-                writer.WriteSingle( Field7C );
-                writer.WriteSingle( Field80 );
+                writer.WriteSingle( AdjustScale );
+                writer.WriteSingle( AdjustSpeed );
             }
             if ( Polygon != null )
                 writer.WriteResource( Polygon );
