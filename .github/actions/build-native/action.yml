@@ -63,9 +63,14 @@ runs:
         # instantiated. Clang 17 and newer do, and the typo is then a hard error.
         tree="$FBXSDK_ROOT/include/fbxsdk/core/base/fbxredblacktree.h"
         if grep -q mLefttChild "$tree"; then
-          perl -pi -e 's/\bmLefttChild\b/mLeftChild/g' "$tree"
+          perl -pi -e 's/mLefttChild/mLeftChild/g' "$tree"
+          if grep -n mLefttChild "$tree"; then
+            echo "::error::the typo is still in $tree after patching it"
+            exit 1
+          fi
           echo "patched the mLeftChild typo in the FBX SDK"
         fi
+        echo "fbxredblacktree.h:318 reads: $(sed -n '318p' "$tree")"
 
         cmake -S src/native/GFDLibrary.Native.FbxSdk -B src/native/GFDLibrary.Native.FbxSdk/out \
           -DCMAKE_BUILD_TYPE=Release -DFbxSdkRoot="$FBXSDK_ROOT"
