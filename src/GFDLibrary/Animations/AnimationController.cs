@@ -52,7 +52,8 @@ namespace GFDLibrary.Animations
         {
             TargetKind = ( TargetKind )reader.ReadInt16();
             TargetId = reader.ReadInt32();
-            TargetName = reader.ReadStringWithHash( Version, Version >= 0x02000000 );
+            bool isCFB = ResourceVersion.TreatAsCatherineFullBody && ResourceVersion.IsCFBVersionConflict( Version );
+            TargetName = reader.ReadStringWithHash( Version, Version >= 0x02000000 || isCFB, isCFB );
             Logger.Debug( $"AnimationController: Reading {TargetName} kind:{TargetKind} id:{TargetId}" );
             Layers = reader.ReadResourceList<AnimationLayer>( Version );
         }
@@ -61,7 +62,7 @@ namespace GFDLibrary.Animations
         {
             writer.WriteInt16( ( short ) TargetKind );
             writer.WriteInt32( TargetId );
-            writer.WriteStringWithHash( Version, TargetName, Version >= 0x02000000 );
+            writer.WriteStringWithHash( Version, TargetName, Version >= 0x02000000 || ResourceVersion.TreatAsCatherineFullBody, ResourceVersion.TreatAsCatherineFullBody );
             writer.WriteResourceList( Layers );
         }
 

@@ -48,10 +48,10 @@ namespace GFDLibrary.Animations
                     case KeyType.NodePRHalf:
                     case KeyType.NodePRSHalf:
                     case KeyType.NodePRHalf_2:
-                        return true;
-
+                    case KeyType.NodeRSHalf:
+                    case KeyType.NodePSHalf:
                     case KeyType.Type31:
-                        return !IsCatherineFullBodyData;
+                        return true;
 
                     case KeyType.NodeRHalf:
                     case KeyType.NodeSHalf:
@@ -100,6 +100,9 @@ namespace GFDLibrary.Animations
 
         protected override void ReadCore( ResourceReader reader )
         {
+            if ( ResourceVersion.TreatAsCatherineFullBody && ResourceVersion.IsCFBVersionConflict( Version ) )
+                IsCatherineFullBodyData = true;
+
             KeyType = ( KeyType )reader.ReadInt32();
 
             var keyCount = reader.ReadInt32();
@@ -156,10 +159,10 @@ namespace GFDLibrary.Animations
                         key = new PRSByteKey();
                         break;
                     case KeyType.Single4Byte:
-                        //if (Version >= 0x2000000 )
+                        if ( ResourceVersion.TreatAsCatherineFullBody )
+                            key = new Single4ByteKey();
+                        else
                             key = new Single3ByteKey();
-                        //else
-                            //key = new Single4ByteKey();
                         break;
                     case KeyType.SingleByte:
                         key = new SingleByteKey();
@@ -169,7 +172,7 @@ namespace GFDLibrary.Animations
                         break;
                     case KeyType.Type31:
                         {
-                            if (IsCatherineFullBodyData || Version >= 0x2000000 )
+                            if ( IsCatherineFullBodyData || Version >= 0x2000000 )
                             {
                                 key = new KeyType31FullBody();
                             }
@@ -211,16 +214,19 @@ namespace GFDLibrary.Animations
             {
                 if ( UsesScaleVectors )
                 {
-                    PositionScale = reader.ReadVector3();
+                    if ( KeyType != KeyType.Type31 || !IsCatherineFullBodyData )
+                        PositionScale = reader.ReadVector3();
 
-                    if ( !IsCatherineFullBodyData || KeyType != KeyType.Type31 )
-                        ScaleScale = reader.ReadVector3();
+                    ScaleScale = reader.ReadVector3();
                 }
             }
         }
 
         protected override void WriteCore( ResourceWriter writer )
         {
+            if ( ResourceVersion.TreatAsCatherineFullBody )
+                IsCatherineFullBodyData = true;
+
             writer.WriteInt32( ( int ) KeyType );
             writer.WriteInt32( Keys.Count );
             Keys.ForEach( x => writer.WriteSingle( x.Time ) );
@@ -239,10 +245,10 @@ namespace GFDLibrary.Animations
             {
                 if ( UsesScaleVectors )
                 {
-                    writer.WriteVector3( PositionScale );
+                    if ( KeyType != KeyType.Type31 || !IsCatherineFullBodyData )
+                        writer.WriteVector3( PositionScale );
 
-                    if ( !IsCatherineFullBodyData || KeyType != KeyType.Type31 )
-                        writer.WriteVector3( ScaleScale );
+                    writer.WriteVector3( ScaleScale );
                 }
             }
         }

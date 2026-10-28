@@ -292,6 +292,15 @@ namespace GFDLibrary
 
         public void Save( Stream stream, bool leaveOpen )
         {
+            // Converting something else to Catherine Full Body means stamping its version, but a
+            // file already on one of the versions Catherine shares keeps the one it came with.
+            if ( ResourceVersion.TreatAsCatherineFullBody &&
+                 ( ResourceType == ResourceType.ModelPack || ResourceType == ResourceType.AnimationPack ) &&
+                 !ResourceVersion.IsCFBVersionConflict( Version ) )
+            {
+                Version = ResourceVersion.CatherineFullBody;
+            }
+
             using ( var writer = new ResourceWriter( stream, leaveOpen ) )
             {
                 ResourceType GetResourceType() => Version >= 0x2000000 ? ResourceType.ModelPack_Metaphor : ResourceType.ModelPack;

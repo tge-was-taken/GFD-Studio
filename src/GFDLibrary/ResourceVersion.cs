@@ -19,6 +19,11 @@ namespace GFDLibrary
         public const uint Persona5DancingShaderCache        = 0x01087159;
         public const uint MetaphorRefantazioDX11ShaderCache = 0x02000577;
 
+        public static bool TreatAsCatherineFullBody { get; set; } = false;
+
+        public static bool IsCFBVersionConflict(uint version)
+            => version == Persona3Dancing || version == Persona5Royal;
+
         public static bool IsV2(uint version)
         {
             return version >= 0x02000000;

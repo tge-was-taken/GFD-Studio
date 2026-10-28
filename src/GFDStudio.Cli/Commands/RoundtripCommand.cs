@@ -29,6 +29,8 @@ namespace GFDStudio.Cli.Commands
             var sample = new Option<int>( "--sample" ) { Description = "Take every Nth file.", DefaultValueFactory = _ => 1 };
             var offset = new Option<int>( "--offset" ) { Description = "Which of the N slices to take.", DefaultValueFactory = _ => 0 };
             var workers = new Option<int>( "--workers" ) { Description = "How many files to do at once.", DefaultValueFactory = _ => Environment.ProcessorCount };
+            var catherine = CommandHelpers.Switch( "--catherine-full-body",
+                "Read the files as Catherine Full Body, which shares its version numbers with P3D and P5R." );
             var budget = new Option<int>( "--memory-budget" )
             {
                 Description = "Megabytes of loaded files to hold at once. 0 lifts the limit.",
@@ -37,19 +39,19 @@ namespace GFDStudio.Cli.Commands
 
             var command = new Command( "roundtrip", "Load and save files unchanged, and report any that do not come back identical." )
             {
-                path, results, games, sample, offset, workers, budget,
+                path, results, games, sample, offset, workers, budget, catherine,
             };
 
             command.SetAction( parse => CommandHelpers.Guard( () => Run(
                 parse.GetValue( path ), parse.GetValue( results ), parse.GetValue( games ),
                 parse.GetValue( sample ), parse.GetValue( offset ), parse.GetValue( workers ),
-                parse.GetValue( budget ) ) ) );
+                parse.GetValue( budget ), parse.GetValue( catherine ) ) ) );
 
             return command;
         }
 
         private static int Run( string path, string resultsPath, string games, int sample, int offset, int workers,
-                                int budgetMegabytes )
+                                int budgetMegabytes, bool catherineFullBody )
         {
             var entries = Collect( path, games, Math.Max( sample, 1 ), offset );
 
@@ -62,8 +64,18 @@ namespace GFDStudio.Cli.Commands
             var budget = new MemoryBudget( (long)Math.Max( budgetMegabytes, 0 ) * 1024 * 1024 );
 
             var done = new ConcurrentBag<Result>();
-            Parallel.ForEach( queue, new ParallelOptions { MaxDegreeOfParallelism = Math.Max( workers, 1 ) },
-                              entry => done.Add( One( entry, budget ) ) );
+
+            // Whether a file is Catherine Full Body cannot be read from the file, so it is a
+            // setting rather than an argument. Its entries therefore run as their own pass.
+            foreach ( var pass in queue.GroupBy( x => catherineFullBody || x.CatherineFullBody ) )
+            {
+                ResourceVersion.TreatAsCatherineFullBody = pass.Key;
+
+                Parallel.ForEach( pass, new ParallelOptions { MaxDegreeOfParallelism = Math.Max( workers, 1 ) },
+                                  entry => done.Add( One( entry, budget ) ) );
+            }
+
+            ResourceVersion.TreatAsCatherineFullBody = false;
 
             var ordered = done.OrderBy( x => x.Name, StringComparer.Ordinal ).ToList();
 
@@ -169,7 +181,7 @@ namespace GFDStudio.Cli.Commands
         private static IEnumerable<Entry> Enumerate( string path, string games )
         {
             if ( File.Exists( path ) )
-                return new[] { new Entry( path, Path.GetFileName( path ), null ) };
+                return new[] { new Entry( path, Path.GetFileName( path ), null, false ) };
 
             if ( !Directory.Exists( path ) )
                 throw new CliException( $"No file or directory at \"{path}\"." );
@@ -196,7 +208,8 @@ namespace GFDStudio.Cli.Commands
                     continue;
 
                 yield return new Entry( Path.Combine( root, name ), name,
-                                        element.TryGetProperty( "known_bad", out var reason ) ? reason.GetString() : null );
+                                        element.TryGetProperty( "known_bad", out var reason ) ? reason.GetString() : null,
+                                        Game( element ).Equals( "cfb", StringComparison.OrdinalIgnoreCase ) );
             }
         }
 
@@ -206,7 +219,7 @@ namespace GFDStudio.Cli.Commands
         private static IEnumerable<Entry> FromTree( string root )
             => Directory.EnumerateFiles( root, "*", SearchOption.AllDirectories )
                         .Where( x => Readable.Contains( Path.GetExtension( x ) ) )
-                        .Select( x => new Entry( x, Path.GetRelativePath( root, x ), null ) );
+                        .Select( x => new Entry( x, Path.GetRelativePath( root, x ), null, false ) );
 
         private static readonly HashSet<string> Readable = new( StringComparer.OrdinalIgnoreCase )
         {
@@ -306,7 +319,7 @@ namespace GFDStudio.Cli.Commands
             }
         }
 
-        private sealed record Entry( string Path, string Name, string KnownBad );
+        private sealed record Entry( string Path, string Name, string KnownBad, bool CatherineFullBody );
 
         private sealed record Result( string Status, string Name, string Detail );
     }

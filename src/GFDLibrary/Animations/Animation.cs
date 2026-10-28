@@ -127,13 +127,16 @@ namespace GFDLibrary.Animations
             Logger.Debug( $"Animation: Reading" );
             var animationStart = reader.Position;
 
+            if ( ResourceVersion.TreatAsCatherineFullBody && ResourceVersion.IsCFBVersionConflict( Version ) )
+                IsCatherineFullBodyData = true;
+
             if ( Version > 0x1104110 )
                 Flags = ( AnimationFlags )reader.ReadInt32();
 
             Duration = reader.ReadSingle();
 
             var controllerCount = reader.ReadInt32();
-            if (IsCatherineFullBodyData || Version >= 0x2000000 )
+            if ( IsCatherineFullBodyData || Version >= 0x2000000 )
             {
                 mUnknown1 = reader.ReadInt32(); // TODO
                 mUnknown2 = reader.ReadInt32(); // TODO: no idea what this is
@@ -195,6 +198,9 @@ namespace GFDLibrary.Animations
 
         protected override void WriteCore( ResourceWriter writer )
         {
+            if ( ResourceVersion.TreatAsCatherineFullBody )
+                IsCatherineFullBodyData = true;
+
             if ( Version > 0x1104110 )
                 writer.WriteInt32( ( int ) Flags );
 
@@ -204,7 +210,7 @@ namespace GFDLibrary.Animations
             if ( IsCatherineFullBodyData || Version >= 0x2000000 )
             {
                 writer.WriteInt32( mUnknown1 );
-                writer.WriteInt32( mUnknown2 ); 
+                writer.WriteInt32( mUnknown2 );
             }
 
             foreach ( var controller in Controllers )
