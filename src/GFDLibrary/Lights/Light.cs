@@ -20,9 +20,15 @@ namespace GFDLibrary.Lights
 
         public float Field20 { get; set; }
 
-        public float Field04 { get; set; }
+        [FormerName( "Field04" )]
+        public float Field14 { get; set; }
 
-        public float Field08 { get; set; }
+        public float Field24 { get; set; }
+
+        [FormerName( "Field08" )]
+        public float Field18 { get; set; }
+
+        public float Field28 { get; set; }
 
         public float Field10 { get; set; }
 
@@ -49,7 +55,7 @@ namespace GFDLibrary.Lights
             DiffuseColor = Vector4.One;
             SpecularColor = Vector4.One;
             Type = LightType.Point;
-            Field08 = 1;
+            Field18 = 1;
 
         }
 
@@ -73,15 +79,15 @@ namespace GFDLibrary.Lights
             switch ( Type )
             {
                 case LightType.Type1:
-                    Field20 = reader.ReadSingle(); // 0
-                    Field04 = reader.ReadSingle(); // 0
-                    Field08 = reader.ReadSingle(); // 1
+                    Field20 = reader.ReadSingle();
+                    Field24 = reader.ReadSingle();
+                    Field28 = reader.ReadSingle();
                     break;
 
                 case LightType.Point:
-                    Field10 = reader.ReadSingle(); // 0
-                    Field04 = reader.ReadSingle(); // 0
-                    Field08 = reader.ReadSingle(); // 0
+                    Field10 = reader.ReadSingle();
+                    Field14 = reader.ReadSingle();
+                    Field18 = reader.ReadSingle();
 
                     if ( Flags.HasFlag( LightFlags.Bit2 ) )
                     {
@@ -97,11 +103,11 @@ namespace GFDLibrary.Lights
                     break;
 
                 case LightType.Spot:
-                    Field20 = reader.ReadSingle(); // 0
-                    Field04 = reader.ReadSingle(); // 0
-                    Field08 = reader.ReadSingle(); // 1
-                    AngleInnerCone = reader.ReadSingle(); // 0.08377809
-                    AngleOuterCone = reader.ReadSingle(); // 0.245575309
+                    Field20 = reader.ReadSingle();
+                    Field24 = reader.ReadSingle();
+                    Field28 = reader.ReadSingle();
+                    AngleInnerCone = reader.ReadSingle();
+                    AngleOuterCone = reader.ReadSingle();
                     goto case LightType.Point;
             }
             if ( Version > 0x2110191 )
@@ -126,13 +132,13 @@ namespace GFDLibrary.Lights
             {
                 case LightType.Type1:
                     writer.WriteSingle( Field20 );
-                    writer.WriteSingle( Field04 );
-                    writer.WriteSingle( Field08 );
+                    writer.WriteSingle( Field24 );
+                    writer.WriteSingle( Field28 );
                     break;
                 case LightType.Point:
                     writer.WriteSingle( Field10 );
-                    writer.WriteSingle( Field04 );
-                    writer.WriteSingle( Field08 );
+                    writer.WriteSingle( Field14 );
+                    writer.WriteSingle( Field18 );
 
                     if ( Flags.HasFlag( LightFlags.Bit2 ) )
                     {
@@ -148,8 +154,8 @@ namespace GFDLibrary.Lights
                     break;
                 case LightType.Spot:
                     writer.WriteSingle( Field20 );
-                    writer.WriteSingle( Field08 );
-                    writer.WriteSingle( Field04 );
+                    writer.WriteSingle( Field24 );
+                    writer.WriteSingle( Field28 );
                     writer.WriteSingle( AngleInnerCone );
                     writer.WriteSingle( AngleOuterCone );
                     goto case LightType.Point;

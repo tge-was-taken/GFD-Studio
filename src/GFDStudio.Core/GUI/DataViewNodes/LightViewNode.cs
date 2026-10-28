@@ -78,15 +78,15 @@ namespace GFDStudio.GUI.DataViewNodes
             set => SetDataProperty( value );
         }
 
-        public float Field04
+        public float Field14
         {
-            get => Data.Field04;
+            get => Data.Field14;
             set => SetDataProperty( value );
         }
 
-        public float Field08
+        public float Field18
         {
-            get => Data.Field08;
+            get => Data.Field18;
             set => SetDataProperty( value );
         }
 

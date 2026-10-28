@@ -721,13 +721,13 @@ namespace GFDLibrary.Tests
             {
                 case LightType.Type1:
                     Assert.AreEqual( a.Field20, b.Field20 );
-                    Assert.AreEqual( a.Field04, b.Field04 );
-                    Assert.AreEqual( a.Field08, b.Field08 );
+                    Assert.AreEqual( a.Field24, b.Field24 );
+                    Assert.AreEqual( a.Field28, b.Field28 );
                     break;
                 case LightType.Point:
                     Assert.AreEqual( a.Field10, b.Field10 );
-                    Assert.AreEqual( a.Field04, b.Field04 );
-                    Assert.AreEqual( a.Field08, b.Field08 );
+                    Assert.AreEqual( a.Field14, b.Field14 );
+                    Assert.AreEqual( a.Field18, b.Field18 );
 
                     if ( a.Flags.HasFlag( LightFlags.Bit2 ) )
                     {
@@ -743,8 +743,8 @@ namespace GFDLibrary.Tests
                     break;
                 case LightType.Spot:
                     Assert.AreEqual( a.Field20, b.Field20 );
-                    Assert.AreEqual( a.Field08, b.Field08 );
-                    Assert.AreEqual( a.Field04, b.Field04 );
+                    Assert.AreEqual( a.Field24, b.Field24 );
+                    Assert.AreEqual( a.Field28, b.Field28 );
                     Assert.AreEqual( a.AngleInnerCone, b.AngleInnerCone );
                     Assert.AreEqual( a.AngleOuterCone, b.AngleOuterCone );
                     goto case LightType.Point;
