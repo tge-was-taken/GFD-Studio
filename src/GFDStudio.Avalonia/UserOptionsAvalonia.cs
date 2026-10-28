@@ -1,4 +1,5 @@
 using GFDLibrary;
+using GFDLibrary.Conversion;
 using GFDStudio.GUI;
 
 namespace GFDStudio.Avalonia
@@ -19,6 +20,7 @@ namespace GFDStudio.Avalonia
         {
             var settings = new Config().LoadJson();
             ResourceVersion.TreatAsCatherineFullBody = settings.TreatAsCatherineFullBody;
+            AnimationConverterOptions.CompressKeyframesDefault = settings.CompressKeyframes;
 
             return settings;
         }

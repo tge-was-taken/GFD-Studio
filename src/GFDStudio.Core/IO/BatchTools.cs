@@ -76,6 +76,25 @@ namespace GFDStudio.IO
             Report( failures, "All animation packs successfully converted!" );
         }
 
+        public static void CompressAnimationPackKeyframes()
+        {
+            var directoryPath = UserDialogs.Current.SelectFolder(
+                "Select a directory containing GAP files, or subdirectories containing GAP files to compress the keyframes of.\n" +
+                "Note that this will replace the original files." );
+
+            if ( directoryPath == null )
+                return;
+
+            var failures = ForEachFile( "Compressing keyframes", directoryPath, "*.GAP", filePath =>
+            {
+                var animationPack = Resource.Load<AnimationPack>( filePath );
+                animationPack.CompressKeyframes();
+                animationPack.Save( filePath );
+            } );
+
+            Report( failures, "All animation packs successfully compressed!" );
+        }
+
         public static void RescaleAnimationPacks()
         {
             var directoryPath = UserDialogs.Current.SelectFolder(

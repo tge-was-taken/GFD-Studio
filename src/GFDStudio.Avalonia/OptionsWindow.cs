@@ -4,6 +4,7 @@ using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Media;
 using GFDLibrary;
+using GFDLibrary.Conversion;
 using GFDStudio.GUI;
 
 namespace GFDStudio.Avalonia
@@ -28,6 +29,16 @@ namespace GFDStudio.Avalonia
                 "From Metaphor onwards a texture can live in a file beside the model instead of " +
                 "inside it. Has no effect on earlier games.",
                 settings.SaveReplacedTexturesExternally, x => settings.SaveReplacedTexturesExternally = x ) );
+
+            list.Children.Add( Toggle(
+                "Compress keyframes when importing an animation",
+                "Writes imported node keys as half floats, and drops the scale entirely where it " +
+                "never changes. Smaller files, slightly less precision.",
+                settings.CompressKeyframes, x =>
+                {
+                    settings.CompressKeyframes = x;
+                    AnimationConverterOptions.CompressKeyframesDefault = x;
+                } ) );
 
             list.Children.Add( Toggle(
                 "Read files as Catherine Full Body",

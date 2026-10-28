@@ -15,6 +15,7 @@ namespace GFDStudio
         public bool RetainMaterialColors { get; set; } = false;
         public bool SaveReplacedTexturesExternally { get; set; } = true;
         public bool TreatAsCatherineFullBody { get; set; } = false;
+        public bool CompressKeyframes { get; set; } = false;
 
         public void SaveJson( Config settings )
         {

@@ -28,6 +28,12 @@ namespace GFDStudio.Avalonia
                  "Replaces the files in place.",
                  BatchTools.RescaleAnimationPacks ),
 
+            new( "Compress animation pack keyframes",
+                 "Rewrites the node keys of every GAP under a directory as half floats, dropping " +
+                 "the scale where it never changes. Smaller files, slightly less precision. " +
+                 "Replaces the files in place.",
+                 BatchTools.CompressAnimationPackKeyframes ),
+
             new( "Convert animation packs to Persona 5",
                  "Converts every GAP under a directory from the Royal format to the original. " +
                  "Replaces the files in place.",
