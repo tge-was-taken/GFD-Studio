@@ -204,5 +204,67 @@ namespace GFDLibrary.Animations
             Animations.ForEach( a => a.ConvertToP5() );
             BlendAnimations.ForEach( ba => ba.ConvertToP5() );
         }
+
+        public void CompressKeyframes()
+        {
+            CompressAnimationList( Animations );
+            CompressAnimationList( BlendAnimations );
+        }
+
+        private static void CompressAnimationList( List<Animation> animations )
+        {
+            foreach ( var animation in animations )
+            {
+                foreach ( var controller in animation.Controllers )
+                {
+                    for ( int i = 0; i < controller.Layers.Count; i++ )
+                    {
+                        var layer = controller.Layers[i];
+                        if ( layer.KeyType != KeyType.NodePRS )
+                            continue;
+
+                        var canDropScale = CanDropScale( layer );
+                        var targetType = canDropScale ? KeyType.NodePRHalf : KeyType.NodePRSHalf;
+
+                        var newLayer = new AnimationLayer( layer.Version )
+                        {
+                            KeyType = targetType,
+                            PositionScale = layer.PositionScale,
+                            ScaleScale = layer.ScaleScale
+                        };
+
+                        foreach ( PRSKey oldKey in layer.Keys )
+                        {
+                            var newKey = new PRSKey( targetType )
+                            {
+                                Time = oldKey.Time,
+                                Position = oldKey.Position,
+                                Rotation = oldKey.Rotation
+                            };
+
+                            if ( !canDropScale )
+                                newKey.Scale = oldKey.Scale;
+
+                            newLayer.Keys.Add( newKey );
+                        }
+
+                        controller.Layers[i] = newLayer;
+                    }
+                }
+            }
+        }
+
+        private static bool CanDropScale( AnimationLayer layer )
+        {
+            foreach ( PRSKey key in layer.Keys )
+            {
+                if ( Math.Abs( key.Scale.X - 1.0f ) > 0.001f ||
+                     Math.Abs( key.Scale.Y - 1.0f ) > 0.001f ||
+                     Math.Abs( key.Scale.Z - 1.0f ) > 0.001f )
+                    return false;
+            }
+
+            return true;
+        }
     }
 }

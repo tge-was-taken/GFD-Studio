@@ -1,4 +1,6 @@
-﻿using GFDLibrary.Animations;
+﻿using System;
+using System.Collections.Generic;
+using GFDLibrary.Animations;
 using GFDLibrary.Conversion.AssimpNet.Utilities;
 using System.Linq;
 using System.Numerics;
@@ -45,8 +47,18 @@ namespace GFDLibrary.Conversion.AssimpNet
 
                 var layer = new AnimationLayer( options.Version );
 
-                // NodePRS only for now
-                layer.KeyType = KeyType.NodePRS;
+                // Decompose the local transform of the affected node so we can use them as the base values for our keyframes
+                Matrix4x4.Decompose( node.Transform.ToNumerics(), out var nodeBaseScale, out var nodeBaseRotation, out var nodeBaseTranslation );
+
+                if ( options.UseCompressedKeyframes )
+                {
+                    var canDropScale = IsScaleStatic( aiChannel.ScalingKeys, nodeBaseScale, 0.001f );
+                    layer.KeyType = canDropScale ? KeyType.NodePRHalf : KeyType.NodePRSHalf;
+                }
+                else
+                {
+                    layer.KeyType = KeyType.NodePRS;
+                }
 
                 // Fetch the unique key frame timings from all position, rotation and scale keys.
                 var aiKeyTimings = aiChannel.PositionKeys
@@ -56,10 +68,6 @@ namespace GFDLibrary.Conversion.AssimpNet
                                                .Distinct()
                                                .OrderBy( x => x )
                                                .ToList();
-
-                // Decompose the local transform of the affected node so we can use them as the base values for our keyframes
-
-                Matrix4x4.Decompose( node.Transform.ToNumerics(), out var nodeBaseScale, out var nodeBaseRotation, out var nodeBaseTranslation );
 
                 // Keep track of the last position, rotation and scale used to ensure that interpolation works properly
                 var lastPosition = nodeBaseTranslation;
@@ -144,6 +152,24 @@ namespace GFDLibrary.Conversion.AssimpNet
                 return targetId;
             else
                 return -1;
+        }
+
+        private static bool IsScaleStatic( List<Ai.VectorKey> scalingKeys, Vector3 baseScale, float tolerance )
+        {
+            if ( Math.Abs( baseScale.X - 1.0f ) > tolerance ||
+                 Math.Abs( baseScale.Y - 1.0f ) > tolerance ||
+                 Math.Abs( baseScale.Z - 1.0f ) > tolerance )
+                return false;
+
+            foreach ( var key in scalingKeys )
+            {
+                if ( Math.Abs( key.Value.X - 1.0f ) > tolerance ||
+                     Math.Abs( key.Value.Y - 1.0f ) > tolerance ||
+                     Math.Abs( key.Value.Z - 1.0f ) > tolerance )
+                    return false;
+            }
+
+            return true;
         }
     }
 }
