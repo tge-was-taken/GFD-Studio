@@ -31,13 +31,14 @@ namespace GFDStudio.FormatModules
                 // generic modules
                 new StreamFormatModule(),
                 new BitmapFormatModule(),
-                new AssimpSceneFormatModule(),
 
                 // archive modules
                 new ArchiveFormatModule(),
 
-                // gfd resource modules
+                // gfd resource modules. These come before the scene module so a save dialog
+                // offers GMD and GFS ahead of the formats only the converter reads.
                 new ModelPackFormatModule(),
+                new AssimpSceneFormatModule(),
 
                 // gfd texture resource modules 
                 new TextureDictionaryFormatModule(),
