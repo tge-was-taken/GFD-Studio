@@ -720,3 +720,100 @@ const char* FbxGetLastError( void )
 {
     return gLastError.c_str();
 }
+
+// ---- animation ------------------------------------------------------------
+
+FbxAnimStackC* FbxAnimStack_Create( FbxSceneC* scene, const char* name )
+{
+    FbxScene* self = As<FbxScene>( scene );
+
+    return reinterpret_cast<FbxAnimStackC*>( FbxAnimStack::Create( self, name ? name : "Take 001" ) );
+}
+
+void FbxAnimStack_AddLayer( FbxAnimStackC* stack, FbxAnimLayerC* layer )
+{
+    As<FbxAnimStack>( stack )->AddMember( As<FbxAnimLayer>( layer ) );
+}
+
+void FbxAnimStack_SetLocalTimeSpan( FbxAnimStackC* stack, double start, double stop )
+{
+    FbxTime from, to;
+    from.SetSecondDouble( start );
+    to.SetSecondDouble( stop );
+
+    As<FbxAnimStack>( stack )->SetLocalTimeSpan( FbxTimeSpan( from, to ) );
+}
+
+FbxAnimLayerC* FbxAnimLayer_Create( FbxSceneC* scene, const char* name )
+{
+    FbxScene* self = As<FbxScene>( scene );
+
+    return reinterpret_cast<FbxAnimLayerC*>( FbxAnimLayer::Create( self, name ? name : "Base Layer" ) );
+}
+
+FbxAnimCurveC* FbxNode_GetAnimCurve( FbxNodeC* node, FbxAnimLayerC* layer,
+                                     FbxTransformChannelC channel, int component )
+{
+    FbxNode* self = As<FbxNode>( node );
+    FbxAnimLayer* on = As<FbxAnimLayer>( layer );
+
+    const char* which = component == 0 ? FBXSDK_CURVENODE_COMPONENT_X
+                      : component == 1 ? FBXSDK_CURVENODE_COMPONENT_Y
+                      : component == 2 ? FBXSDK_CURVENODE_COMPONENT_Z
+                      : nullptr;
+
+    if ( which == nullptr )
+    {
+        gLastError = "animation curve component must be 0, 1 or 2";
+        return nullptr;
+    }
+
+    FbxAnimCurve* curve = nullptr;
+
+    switch ( channel )
+    {
+        case FbxTransformChannel_Translation: curve = self->LclTranslation.GetCurve( on, which, true ); break;
+        case FbxTransformChannel_Rotation:    curve = self->LclRotation.GetCurve( on, which, true );    break;
+        case FbxTransformChannel_Scaling:     curve = self->LclScaling.GetCurve( on, which, true );     break;
+        default:
+            gLastError = "unknown animation transform channel";
+            return nullptr;
+    }
+
+    return reinterpret_cast<FbxAnimCurveC*>( curve );
+}
+
+void FbxAnimCurve_KeyModifyBegin( FbxAnimCurveC* curve )
+{
+    As<FbxAnimCurve>( curve )->KeyModifyBegin();
+}
+
+void FbxAnimCurve_KeyModifyEnd( FbxAnimCurveC* curve )
+{
+    As<FbxAnimCurve>( curve )->KeyModifyEnd();
+}
+
+int FbxAnimCurve_KeyAddLinear( FbxAnimCurveC* curve, double seconds, float value )
+{
+    FbxAnimCurve* self = As<FbxAnimCurve>( curve );
+
+    FbxTime at;
+    at.SetSecondDouble( seconds );
+
+    const int index = self->KeyAdd( at );
+    self->KeySetValue( index, value );
+    self->KeySetInterpolation( index, FbxAnimCurveDef::eInterpolationLinear );
+
+    return index;
+}
+
+void FbxQuaternionToEulerDegrees( const double* quaternion, double* euler )
+{
+    FbxAMatrix matrix;
+    matrix.SetQ( FbxQuaternion( quaternion[0], quaternion[1], quaternion[2], quaternion[3] ) );
+
+    const FbxVector4 r = matrix.GetR();
+    euler[0] = r[0];
+    euler[1] = r[1];
+    euler[2] = r[2];
+}

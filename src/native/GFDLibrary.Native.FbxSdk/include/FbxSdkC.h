@@ -37,6 +37,9 @@ typedef struct FbxLayerElementC FbxLayerElementC;
 typedef struct FbxBlendShapeC FbxBlendShapeC;
 typedef struct FbxBlendShapeChannelC FbxBlendShapeChannelC;
 typedef struct FbxShapeC FbxShapeC;
+typedef struct FbxAnimStackC FbxAnimStackC;
+typedef struct FbxAnimLayerC FbxAnimLayerC;
+typedef struct FbxAnimCurveC FbxAnimCurveC;
 
 /// FbxLayerElement::EMappingMode
 enum FbxMappingMode
@@ -236,6 +239,35 @@ FBXSDK_C_API int FbxScene_Export( FbxManagerC* manager, FbxSceneC* scene, const 
 
 /// The message from the most recent failure on this thread.
 FBXSDK_C_API const char* FbxGetLastError( void );
+
+/// Which of a node's local transform channels a curve belongs to.
+typedef enum
+{
+    FbxTransformChannel_Translation = 0,
+    FbxTransformChannel_Rotation    = 1,
+    FbxTransformChannel_Scaling     = 2
+} FbxTransformChannelC;
+
+FBXSDK_C_API FbxAnimStackC* FbxAnimStack_Create( FbxSceneC* scene, const char* name );
+FBXSDK_C_API void           FbxAnimStack_AddLayer( FbxAnimStackC* stack, FbxAnimLayerC* layer );
+/// Start and stop in seconds.
+FBXSDK_C_API void           FbxAnimStack_SetLocalTimeSpan( FbxAnimStackC* stack, double start, double stop );
+
+FBXSDK_C_API FbxAnimLayerC* FbxAnimLayer_Create( FbxSceneC* scene, const char* name );
+
+/// The curve for one component of one channel, created on the node if it is not there yet.
+/// Component is 0, 1 or 2 for X, Y and Z. Returns null when the SDK has no such curve.
+FBXSDK_C_API FbxAnimCurveC* FbxNode_GetAnimCurve( FbxNodeC* node, FbxAnimLayerC* layer,
+                                                  FbxTransformChannelC channel, int component );
+
+/// Euler angles in degrees, in the order FBX's own LclRotation uses, so a caller does not have
+/// to reimplement the SDK's convention. Quaternion is x, y, z, w; euler is three doubles.
+FBXSDK_C_API void FbxQuaternionToEulerDegrees( const double* quaternion, double* euler );
+
+FBXSDK_C_API void FbxAnimCurve_KeyModifyBegin( FbxAnimCurveC* curve );
+FBXSDK_C_API void FbxAnimCurve_KeyModifyEnd( FbxAnimCurveC* curve );
+/// Adds a linearly interpolated key at the given time in seconds.
+FBXSDK_C_API int  FbxAnimCurve_KeyAddLinear( FbxAnimCurveC* curve, double seconds, float value );
 
 #ifdef __cplusplus
 }

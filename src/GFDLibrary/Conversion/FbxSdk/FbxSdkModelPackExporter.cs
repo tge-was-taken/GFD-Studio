@@ -7,6 +7,7 @@ using System.Text;
 using GFDLibrary.Cameras;
 using GFDLibrary.Common;
 using GFDLibrary.Lights;
+using GFDLibrary.Animations;
 using GFDLibrary.Models;
 
 namespace GFDLibrary.Conversion.FbxSdk
@@ -84,6 +85,7 @@ namespace GFDLibrary.Conversion.FbxSdk
             mTextureBaseDirectoryPath = Path.Combine( baseDirectoryPath ?? string.Empty, $"{fileName}_Textures" );
 
             ConvertToFbxScene( modelPack );
+            ExportAnimations( modelPack.AnimationPack );
             ExportFbxScene();
         }
 
@@ -466,6 +468,25 @@ namespace GFDLibrary.Conversion.FbxSdk
             var matrix = new double[16];
             FbxSdk.NodeEvaluateGlobalTransform( fbxNode, matrix );
             FbxSdk.PoseAdd( mBindPose, fbxNode, matrix );
+        }
+
+        /// <summary>
+        /// Animations go in as a take each, keyed against the nodes already in the scene.
+        /// </summary>
+        private void ExportAnimations( AnimationPack pack )
+        {
+            if ( pack == null || pack.Animations == null || pack.Animations.Count == 0 )
+                return;
+
+            var byName = new Dictionary<string, IntPtr>();
+
+            foreach ( var pair in mNodeToFbxNode )
+            {
+                if ( pair.Key.Name != null )
+                    byName[pair.Key.Name] = pair.Value;
+            }
+
+            new FbxSdkAnimationExporter( mScene, byName ).Export( pack );
         }
 
         private void ExportFbxScene()

@@ -20,6 +20,13 @@ namespace GFDLibrary.Conversion.FbxSdk
         IndexToDirect = 2,
     }
 
+    internal enum FbxTransformChannel
+    {
+        Translation = 0,
+        Rotation = 1,
+        Scaling = 2,
+    }
+
     internal enum FbxLayerElementType
     {
         Normal = 0,
@@ -290,6 +297,33 @@ namespace GFDLibrary.Conversion.FbxSdk
 
         [DllImport( Library, EntryPoint = "FbxLight_SetConeAngles" )]
         public static extern void LightSetConeAngles( IntPtr light, double innerDegrees, double outerDegrees );
+
+        [DllImport( Library, EntryPoint = "FbxAnimStack_Create" )]
+        public static extern IntPtr AnimStackCreate( IntPtr scene, string name );
+
+        [DllImport( Library, EntryPoint = "FbxAnimStack_AddLayer" )]
+        public static extern void AnimStackAddLayer( IntPtr stack, IntPtr layer );
+
+        [DllImport( Library, EntryPoint = "FbxAnimStack_SetLocalTimeSpan" )]
+        public static extern void AnimStackSetLocalTimeSpan( IntPtr stack, double start, double stop );
+
+        [DllImport( Library, EntryPoint = "FbxAnimLayer_Create" )]
+        public static extern IntPtr AnimLayerCreate( IntPtr scene, string name );
+
+        [DllImport( Library, EntryPoint = "FbxNode_GetAnimCurve" )]
+        public static extern IntPtr NodeGetAnimCurve( IntPtr node, IntPtr layer, FbxTransformChannel channel, int component );
+
+        [DllImport( Library, EntryPoint = "FbxQuaternionToEulerDegrees" )]
+        public static extern void QuaternionToEulerDegrees( double[] quaternion, double[] euler );
+
+        [DllImport( Library, EntryPoint = "FbxAnimCurve_KeyModifyBegin" )]
+        public static extern void AnimCurveKeyModifyBegin( IntPtr curve );
+
+        [DllImport( Library, EntryPoint = "FbxAnimCurve_KeyModifyEnd" )]
+        public static extern void AnimCurveKeyModifyEnd( IntPtr curve );
+
+        [DllImport( Library, EntryPoint = "FbxAnimCurve_KeyAddLinear" )]
+        public static extern int AnimCurveKeyAddLinear( IntPtr curve, double seconds, float value );
 
         [DllImport( Library, EntryPoint = "FbxGetLastError" )]
         private static extern IntPtr GetLastErrorPtr();
