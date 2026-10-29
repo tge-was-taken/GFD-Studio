@@ -40,7 +40,8 @@ namespace GFDLibrary.Rendering.OpenGL
             IsVisible = isVisible;
         }
 
-        public GLMesh( Mesh mesh, Matrix4x4 modelMatrix, List<Bone> bones, List<GLNode> nodes, Dictionary<string, GLBaseMaterial> materials )
+        public GLMesh( Mesh mesh, Matrix4x4 modelMatrix, List<Bone> bones, List<GLNode> nodes, Dictionary<string, GLBaseMaterial> materials,
+                       uint version = ResourceVersion.Persona5 )
         {
             Mesh = mesh;
             IsSkinned = mesh.VertexWeights != null;
@@ -62,7 +63,7 @@ namespace GFDLibrary.Rendering.OpenGL
             VertexArray = new GLVertexArray( mesh.Vertices, mesh.Normals,
                 new[] { mesh.TexCoordsChannel0, mesh.TexCoordsChannel1, mesh.TexCoordsChannel2 }, 
                 new[] { mesh.ColorChannel0, mesh.ColorChannel1, mesh.ColorChannel2 },
-                indices, PrimitiveType.Triangles, boneWeights, boneIndices );
+                indices, PrimitiveType.Triangles, version, boneWeights, boneIndices );
 
             // material
             if ( mesh.MaterialName != null && materials != null )

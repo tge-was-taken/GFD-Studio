@@ -28,7 +28,7 @@ namespace GFDLibrary.Rendering.OpenGL
         public GLVertexArray( Vector3[] positions, Vector3[] normals, 
             Vector2[][] texCoordChannels,
             Graphics.Color[][] vertColorChannels, 
-            uint[] indices, PrimitiveType primitiveType,
+            uint[] indices, PrimitiveType primitiveType, uint version,
             Vector4[] boneWeights = null, Vector4[] boneIndices = null )
         {
             // vertex array
@@ -45,10 +45,14 @@ namespace GFDLibrary.Rendering.OpenGL
 
             if (texCoordChannels != null )
             {
+                // Metaphor's shaders take the second and third uv channels one attribute later
+                // than the earlier games do.
+                var uvAttributeOffset = ResourceVersion.IsV2( version ) ? 5 : 4;
+
                 for ( int channelIndex = 0; channelIndex < 3; ++channelIndex)
                 {
                     if ( texCoordChannels.Length > channelIndex && texCoordChannels[channelIndex] != null )
-                        TextureCoordinateChannelBuffers[channelIndex] = new GLVertexAttributeBuffer<Vector2>( texCoordChannels[channelIndex], channelIndex == 0 ? 2 : 4 + channelIndex, 2, VertexAttribPointerType.Float );
+                        TextureCoordinateChannelBuffers[channelIndex] = new GLVertexAttributeBuffer<Vector2>( texCoordChannels[channelIndex], channelIndex == 0 ? 2 : uvAttributeOffset + channelIndex, 2, VertexAttribPointerType.Float );
                 }
             }
 
