@@ -153,12 +153,18 @@ namespace GFDLibrary.Effects
         public override ResourceType ResourceType => ResourceType.EplLeafCommonData;
 
         public ushort Type { get; set; }
-        public object Field04 { get; set; }
-        public object Field08 { get; set; }
-        public object Field0C { get; set; }
-        public object Field10 { get; set; }
-        public Vector4 Field14 { get; set; }
-        public byte[] Field24 { get; set; }
+        [FormerName( "Field04" )]
+        public object StartValue { get; set; }
+        [FormerName( "Field08" )]
+        public object StartRange { get; set; }
+        [FormerName( "Field0C" )]
+        public object EndValue { get; set; }
+        [FormerName( "Field10" )]
+        public object EndRange { get; set; }
+        [FormerName( "Field14" )]
+        public Vector4 Points { get; set; }
+        [FormerName( "Field24" )]
+        public byte[] Table { get; set; }
 
         public EplLeafCommonData() { }
         public EplLeafCommonData( uint Version ) : base( Version ) { }
@@ -173,33 +179,33 @@ namespace GFDLibrary.Effects
             {
                 case 0:
                     {
-                        Field04 = reader.ReadInt32();
-                        Field0C = reader.ReadInt32();
+                        StartValue = reader.ReadInt32();
+                        EndValue = reader.ReadInt32();
                         break;
                     }
                 case 1:
                     {
-                        Field04 = reader.ReadSingle();
-                        Field0C = reader.ReadSingle();
+                        StartValue = reader.ReadSingle();
+                        EndValue = reader.ReadSingle();
                         break;
                     }
                 case 2:
                     {
-                        Field04 = reader.ReadUInt32();
-                        Field0C = reader.ReadUInt32();
+                        StartValue = reader.ReadUInt32();
+                        EndValue = reader.ReadUInt32();
                         break;
                     }
                 case 3:
                     {
-                        Field04 = reader.ReadSingle();
-                        Field08 = reader.ReadSingle();
-                        Field0C = reader.ReadSingle();
-                        Field10 = reader.ReadSingle();
+                        StartValue = reader.ReadSingle();
+                        StartRange = reader.ReadSingle();
+                        EndValue = reader.ReadSingle();
+                        EndRange = reader.ReadSingle();
                         break;
                     }
             }
-            Field14 = reader.ReadVector4();
-            Field24 = reader.ReadBytes( 46 );
+            Points = reader.ReadVector4();
+            Table = reader.ReadBytes( 46 );
         }
 
         protected override void WriteCore( ResourceWriter writer )
@@ -210,33 +216,33 @@ namespace GFDLibrary.Effects
             {
                 case 0:
                     {
-                        writer.WriteInt32( (int)Field04 );
-                        writer.WriteInt32( (int)Field0C );
+                        writer.WriteInt32( (int)StartValue );
+                        writer.WriteInt32( (int)EndValue );
                         break;
                     }
                 case 1:
                     {
-                        writer.WriteSingle( (float)Field04 );
-                        writer.WriteSingle( (float)Field0C );
+                        writer.WriteSingle( (float)StartValue );
+                        writer.WriteSingle( (float)EndValue );
                         break;
                     }
                 case 2:
                     {
-                        writer.WriteUInt32( (uint)Field04 );
-                        writer.WriteUInt32( (uint)Field0C );
+                        writer.WriteUInt32( (uint)StartValue );
+                        writer.WriteUInt32( (uint)EndValue );
                         break;
                     }
                 case 3:
                     {
-                        writer.WriteSingle( (float)Field04 );
-                        writer.WriteSingle( (float)Field08 );
-                        writer.WriteSingle( (float)Field0C );
-                        writer.WriteSingle( (float)Field10 );
+                        writer.WriteSingle( (float)StartValue );
+                        writer.WriteSingle( (float)StartRange );
+                        writer.WriteSingle( (float)EndValue );
+                        writer.WriteSingle( (float)EndRange );
                         break;
                     }
             }
-            writer.WriteVector4( Field14 );
-            writer.WriteBytes( Field24 );
+            writer.WriteVector4( Points );
+            writer.WriteBytes( Table );
         }
     }
 
@@ -245,16 +251,26 @@ namespace GFDLibrary.Effects
         public override ResourceType ResourceType => ResourceType.EplLeafCommonData2;
 
         public ushort Type { get; set; }
-        public object Field04 { get; set; }
-        public object Field08 { get; set; }
-        public object Field0C { get; set; }
-        public object Field10 { get; set; }
-        public object Field14 { get; set; }
-        public object Field18 { get; set; }
-        public object Field1C { get; set; }
-        public object Field20 { get; set; }
-        public Vector4 Field14_ { get; set; }
-        public byte[] Field24 { get; set; }
+        [FormerName( "Field04" )]
+        public object Target0 { get; set; }
+        [FormerName( "Field08" )]
+        public object Target0Range { get; set; }
+        [FormerName( "Field0C" )]
+        public object Target1 { get; set; }
+        [FormerName( "Field10" )]
+        public object Target1Range { get; set; }
+        [FormerName( "Field14" )]
+        public object Target2 { get; set; }
+        [FormerName( "Field18" )]
+        public object Target2Range { get; set; }
+        [FormerName( "Field1C" )]
+        public object Target3 { get; set; }
+        [FormerName( "Field20" )]
+        public object Target3Range { get; set; }
+        [FormerName( "Field14_" )]
+        public Vector4 Points { get; set; }
+        [FormerName( "Field24" )]
+        public byte[] Table { get; set; }
         public ushort Field62 { get; set; }
 
         public EplLeafCommonData2() { }
@@ -270,45 +286,45 @@ namespace GFDLibrary.Effects
             {
                 case 0:
                     {
-                        Field04 = reader.ReadInt32();
-                        Field0C = reader.ReadInt32();
-                        Field14 = reader.ReadInt32();
-                        Field1C = reader.ReadInt32();
+                        Target0 = reader.ReadInt32();
+                        Target1 = reader.ReadInt32();
+                        Target2 = reader.ReadInt32();
+                        Target3 = reader.ReadInt32();
                         break;
                     }
                 case 1:
                     {
-                        Field04 = reader.ReadSingle();
-                        Field0C = reader.ReadSingle();
-                        Field14 = reader.ReadSingle();
-                        Field1C = reader.ReadSingle();
+                        Target0 = reader.ReadSingle();
+                        Target1 = reader.ReadSingle();
+                        Target2 = reader.ReadSingle();
+                        Target3 = reader.ReadSingle();
                         break;
                     }
                 case 2:
                     {
-                        Field04 = reader.ReadUInt32();
-                        Field0C = reader.ReadUInt32();
-                        Field14 = reader.ReadUInt32();
-                        Field1C = reader.ReadUInt32();
+                        Target0 = reader.ReadUInt32();
+                        Target1 = reader.ReadUInt32();
+                        Target2 = reader.ReadUInt32();
+                        Target3 = reader.ReadUInt32();
                         break;
                     }
                 case 3:
                     {
-                        Field04 = reader.ReadSingle();
-                        Field08 = reader.ReadSingle();
-                        Field0C = reader.ReadSingle();
-                        Field10 = reader.ReadSingle();
-                        Field14 = reader.ReadSingle();
-                        Field18 = reader.ReadSingle();
-                        Field1C = reader.ReadSingle();
-                        Field20 = reader.ReadSingle();
+                        Target0 = reader.ReadSingle();
+                        Target0Range = reader.ReadSingle();
+                        Target1 = reader.ReadSingle();
+                        Target1Range = reader.ReadSingle();
+                        Target2 = reader.ReadSingle();
+                        Target2Range = reader.ReadSingle();
+                        Target3 = reader.ReadSingle();
+                        Target3Range = reader.ReadSingle();
                         break;
                     }
                 default:
                     throw new NotImplementedException();
             }
-            Field14_ = reader.ReadVector4();
-            Field24 = reader.ReadBytes( 46 );
+            Points = reader.ReadVector4();
+            Table = reader.ReadBytes( 46 );
             if ( Version > 0x2110186 )
                 Field62 = reader.ReadUInt16();
 
@@ -322,43 +338,43 @@ namespace GFDLibrary.Effects
             {
                 case 0:
                     {
-                        writer.WriteInt32( (int)Field04 );
-                        writer.WriteInt32( (int)Field0C );
-                        writer.WriteInt32( (int)Field14 );
-                        writer.WriteInt32( (int)Field1C );
+                        writer.WriteInt32( (int)Target0 );
+                        writer.WriteInt32( (int)Target1 );
+                        writer.WriteInt32( (int)Target2 );
+                        writer.WriteInt32( (int)Target3 );
                         break;
                     }
                 case 1:
                     {
-                        writer.WriteSingle( (float)Field04 );
-                        writer.WriteSingle( (float)Field0C );
-                        writer.WriteSingle( (float)Field14 );
-                        writer.WriteSingle( (float)Field1C );
+                        writer.WriteSingle( (float)Target0 );
+                        writer.WriteSingle( (float)Target1 );
+                        writer.WriteSingle( (float)Target2 );
+                        writer.WriteSingle( (float)Target3 );
                         break;
                     }
                 case 2:
                     {
-                        writer.WriteUInt32( (uint)Field04 );
-                        writer.WriteUInt32( (uint)Field0C );
-                        writer.WriteUInt32( (uint)Field14 );
-                        writer.WriteUInt32( (uint)Field1C );
+                        writer.WriteUInt32( (uint)Target0 );
+                        writer.WriteUInt32( (uint)Target1 );
+                        writer.WriteUInt32( (uint)Target2 );
+                        writer.WriteUInt32( (uint)Target3 );
                         break;
                     }
                 case 3:
                     {
-                        writer.WriteSingle( (float)Field04 );
-                        writer.WriteSingle( (float)Field08 );
-                        writer.WriteSingle( (float)Field0C );
-                        writer.WriteSingle( (float)Field10 );
-                        writer.WriteSingle( (float)Field14 );
-                        writer.WriteSingle( (float)Field18 );
-                        writer.WriteSingle( (float)Field1C );
-                        writer.WriteSingle( (float)Field20 );
+                        writer.WriteSingle( (float)Target0 );
+                        writer.WriteSingle( (float)Target0Range );
+                        writer.WriteSingle( (float)Target1 );
+                        writer.WriteSingle( (float)Target1Range );
+                        writer.WriteSingle( (float)Target2 );
+                        writer.WriteSingle( (float)Target2Range );
+                        writer.WriteSingle( (float)Target3 );
+                        writer.WriteSingle( (float)Target3Range );
                         break;
                     }
             }
-            writer.WriteVector4( Field14_ );
-            writer.WriteBytes( Field24 );
+            writer.WriteVector4( Points );
+            writer.WriteBytes( Table );
             if ( Version > 0x2110186 )
                 writer.WriteUInt16( Field62 );
         }

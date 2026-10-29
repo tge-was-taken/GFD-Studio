@@ -31,10 +31,14 @@ namespace GFDLibrary.Effects
         public float MoveTexV { get; set; }
         [FormerName( "Field138" )]
         public float Interval { get; set; }
-        public EplLeafCommonData2 Field10 { get; set; }
-        public EplLeafCommonData2 Field74 { get; set; }
-        public EplLeafCommonData FieldD8 { get; set; }
-        public EplParticleEmitter Field140 { get; set; }
+        [FormerName( "Field10" )]
+        public EplLeafCommonData2 ColorCore { get; set; }
+        [FormerName( "Field74" )]
+        public EplLeafCommonData2 ColorOutside { get; set; }
+        [FormerName( "FieldD8" )]
+        public EplLeafCommonData Alpha { get; set; }
+        [FormerName( "Field140" )]
+        public EplParticleEmitter Behavior { get; set; }
         public bool HasEmbeddedFile { get; set; }
         public EplEmbeddedFile EmbeddedFile { get; set; }
 
@@ -58,10 +62,10 @@ namespace GFDLibrary.Effects
             MoveTexV = reader.ReadSingle();
             if ( Version > 0x1104170 )
                 Interval = reader.ReadSingle();
-            Field10 = reader.ReadResource<EplLeafCommonData2>( Version );
-            Field74 = reader.ReadResource<EplLeafCommonData2>( Version );
-            FieldD8 = reader.ReadResource<EplLeafCommonData>( Version );
-            Field140 = EplParticleEmitter.Read( reader, Version, Type );
+            ColorCore = reader.ReadResource<EplLeafCommonData2>( Version );
+            ColorOutside = reader.ReadResource<EplLeafCommonData2>( Version );
+            Alpha = reader.ReadResource<EplLeafCommonData>( Version );
+            Behavior = EplParticleEmitter.Read( reader, Version, Type );
             HasEmbeddedFile = reader.ReadBoolean();
             if ( HasEmbeddedFile )
                 EmbeddedFile = reader.ReadResource<EplEmbeddedFile>( Version );
@@ -83,10 +87,10 @@ namespace GFDLibrary.Effects
             writer.WriteSingle( MoveTexV );
             if ( Version > 0x1104170 )
                 writer.WriteSingle( Interval );
-            writer.WriteResource( Field10 );
-            writer.WriteResource( Field74 );
-            writer.WriteResource( FieldD8 );
-            writer.WriteResource( Field140 );
+            writer.WriteResource( ColorCore );
+            writer.WriteResource( ColorOutside );
+            writer.WriteResource( Alpha );
+            writer.WriteResource( Behavior );
             writer.WriteBoolean( HasEmbeddedFile );
             if ( HasEmbeddedFile )
                 writer.WriteResource( EmbeddedFile );
