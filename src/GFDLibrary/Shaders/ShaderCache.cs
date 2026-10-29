@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using GFDLibrary.IO;
 
 namespace GFDLibrary.Shaders
@@ -9,45 +8,35 @@ namespace GFDLibrary.Shaders
     {
         private readonly List<TShader> mShaders;
 
-        public uint CacheVersion { get; set; }
-
-        protected ShaderCache() : this( ResourceVersion.Persona5 )
+        /// <summary>
+        /// The version in the file header, which is the only version a shader cache carries.
+        /// </summary>
+        public uint CacheVersion
         {
-            CacheVersion = ResourceVersion.Persona5ShaderCache;
+            get => Version;
+            set => Version = value;
+        }
+
+        protected ShaderCache() : this( ResourceVersion.Persona5ShaderCache )
+        {
         }
 
         protected ShaderCache( uint version )
             : base( version )
         {
             mShaders = new List<TShader>();
-            CacheVersion = ResourceVersion.Persona5ShaderCache;
-        }
-
-        protected ShaderCache( uint version, uint cacheVersion )
-            : base( version )
-        {
-            mShaders = new List<TShader>();
-            CacheVersion = cacheVersion;
         }
 
         protected override void ReadCore( ResourceReader reader )
         {
-            var header = reader.ReadFileHeader();
-            if ( header.Identifier != ResourceFileIdentifier.ShaderCache )
-                throw new InvalidDataException( "Expected shader cache identifier" );
-
-            CacheVersion = header.Version;
-
+            // The caller has already taken the file header off the stream, so what is left is
+            // shaders until the end of the file. A cache carries no count of its own.
             while ( !reader.EndOfStream )
-            {
-                var shader = reader.ReadResource<TShader>( header.Version );
-                Add( shader );
-            }
+                Add( reader.ReadResource<TShader>( Version ) );
         }
 
         protected override void WriteCore( ResourceWriter writer )
         {
-            writer.WriteFileHeader( ResourceFileIdentifier.ShaderCache, CacheVersion, ResourceType );
             foreach ( var shader in this )
                 writer.WriteResource( shader );
         }
@@ -156,9 +145,6 @@ namespace GFDLibrary.Shaders
         {
         }
 
-        public ShaderCachePS3( uint version, uint cacheVersion ) : base( version, cacheVersion )
-        {
-        }
     }
 
     public sealed class ShaderCachePSP2 : ShaderCache<ShaderPSP2>
@@ -173,9 +159,6 @@ namespace GFDLibrary.Shaders
         {
         }
 
-        public ShaderCachePSP2( uint version, uint cacheVersion ) : base( version, cacheVersion )
-        {
-        }
     }
 
     public class ShaderCachePS4 : ShaderCache<ShaderPS4>
@@ -190,14 +173,12 @@ namespace GFDLibrary.Shaders
         {
         }
 
-        public ShaderCachePS4( uint version, uint cacheVersion ) : base( version, cacheVersion )
-        {
-        }
     }
 
     public class ShaderCacheMetaphorDX11 : ShaderCache<ShaderMetaphor>
     {
-        public override ResourceType ResourceType => ResourceType.ShaderMetaphorDX11;
+        public override ResourceType ResourceType => ResourceType.ShaderCacheMetaphorDX11;
+
         public ShaderCacheMetaphorDX11()
         {
         }
@@ -206,8 +187,5 @@ namespace GFDLibrary.Shaders
         {
         }
 
-        public ShaderCacheMetaphorDX11( uint version, uint cacheVersion ) : base( version, cacheVersion )
-        {
-        }
     }
 }

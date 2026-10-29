@@ -115,6 +115,10 @@ namespace GFDLibrary
                         res = new ShaderCachePS4( header.Version );
                         break;
 
+                    case ResourceType.ShaderCacheMetaphorDX11:
+                        res = new ShaderCacheMetaphorDX11( header.Version );
+                        break;
+
                     // Custom
                     case ResourceType.TextureMap:
                         res = new TextureMap( header.Version );
@@ -197,6 +201,15 @@ namespace GFDLibrary
                         res = new AnimationController( header.Version );
                         break;
                     default:
+                        // Metaphor's shader cache uses a resource type nobody has written down
+                        // yet. Its version is known, so a GSC on one of those is read as one
+                        // rather than refused.
+                        if ( header.Identifier == ResourceFileIdentifier.ShaderCache && header.Version >= 0x02000000 )
+                        {
+                            res = new ShaderCacheMetaphorDX11( header.Version );
+                            break;
+                        }
+
                         throw new InvalidDataException( "Unknown/Invalid resource type" );
                 }
 
@@ -314,7 +327,7 @@ namespace GFDLibrary
                     return;
                 }
 
-                writer.WriteFileHeader( ResourceFileIdentifier.Model, Version, ResourceType == ResourceType.Model ? GetResourceType() : ResourceType );
+                writer.WriteFileHeader( FileIdentifier(), Version, ResourceType == ResourceType.Model ? GetResourceType() : ResourceType );
 
                 switch ( ResourceType )
                 {
@@ -337,6 +350,25 @@ namespace GFDLibrary
                 }
 
                 WriteCore( writer );
+            }
+        }
+
+        /// <summary>
+        /// A shader cache is its own kind of file rather than a chunk of a model, so it carries
+        /// its own identifier.
+        /// </summary>
+        private ResourceFileIdentifier FileIdentifier()
+        {
+            switch ( ResourceType )
+            {
+                case ResourceType.ShaderCachePS3:
+                case ResourceType.ShaderCachePSP2:
+                case ResourceType.ShaderCachePS4:
+                case ResourceType.ShaderCacheMetaphorDX11:
+                    return ResourceFileIdentifier.ShaderCache;
+
+                default:
+                    return ResourceFileIdentifier.Model;
             }
         }
 

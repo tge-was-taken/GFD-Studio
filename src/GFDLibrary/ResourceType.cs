@@ -127,6 +127,7 @@
         EplPostEffectLensFlareMakeData,
         EplPostEffectMotionBlurData,
         EplPostEffectAfterimageBlurData,
+        ShaderCacheMetaphorDX11,
 
         ModelPack_Metaphor_BIG_ENDIAN = 0x8000000
     }
