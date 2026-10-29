@@ -32,6 +32,38 @@ namespace GFDLibrary.Tests
         /// The leaf header's two numbers swapped names, so which one a file means depends on
         /// the version it was written under rather than on the key alone.
         /// </summary>
+        /// <summary>
+        /// Mesh used to be the geometry and is now the node tree that holds it, so the same tag
+        /// means different types either side of the version.
+        /// </summary>
+        [TestMethod]
+        public void A_version_1_mesh_tag_is_the_geometry()
+        {
+            var node = RoundtripYaml<Models.Node>(
+                "Name: root\nAttachments:\n- !NodeMeshAttachment\n    Mesh: !Mesh\n      MaterialName: mat\n" );
+
+            var attachment = (Models.NodeGeometryAttachment)node.Attachments[0];
+            Assert.AreEqual( "mat", attachment.Geometry.MaterialName );
+        }
+
+        [TestMethod]
+        public void A_version_2_mesh_tag_is_the_node_tree()
+        {
+            var node = RoundtripYaml<Models.Node>(
+                "FormatVersion: 2\n---\nName: root\nAttachments:\n- !NodeMeshAttachment\n    Mesh: !Mesh\n      Flags: 0\n" );
+
+            var attachment = (Models.NodeMeshAttachment)node.Attachments[0];
+            Assert.IsInstanceOfType( attachment.Mesh, typeof( Models.Mesh ) );
+        }
+
+        [TestMethod]
+        public void A_version_1_model_pack_still_finds_its_mesh()
+        {
+            var pack = RoundtripYaml<ModelPack>( "Model:\n  Flags: 0\n" );
+
+            Assert.IsNotNull( pack.Mesh, "the old Model key did not reach Mesh" );
+        }
+
         [TestMethod]
         public void Former_animation_member_names_still_load()
         {

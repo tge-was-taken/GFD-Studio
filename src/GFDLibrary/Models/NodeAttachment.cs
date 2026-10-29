@@ -23,12 +23,12 @@ namespace GFDLibrary.Models
         {
             switch ( resource.ResourceType )
             {
-                case ResourceType.Model:
-                    return new NodeModelAttachment( ( Model ) resource );
+                case ResourceType.Mesh:
+                    return new NodeMeshAttachment( ( Mesh ) resource );
                 case ResourceType.Node:
                     return new NodeNodeAttachment( ( Node ) resource );
-                case ResourceType.Mesh:
-                    return new NodeMeshAttachment( ( Mesh )resource );
+                case ResourceType.Geometry:
+                    return new NodeGeometryAttachment( ( Geometry )resource );
                 case ResourceType.Camera:
                     return new NodeCameraAttachment( ( Camera )resource );
                 case ResourceType.Light:
@@ -48,9 +48,9 @@ namespace GFDLibrary.Models
         {
             switch ( resource.ResourceType )
             {
-                case ResourceType.Model:
-                case ResourceType.Node:
                 case ResourceType.Mesh:
+                case ResourceType.Node:
+                case ResourceType.Geometry:
                 case ResourceType.Camera:
                 case ResourceType.Light:
                 case ResourceType.Epl:
@@ -69,15 +69,15 @@ namespace GFDLibrary.Models
             switch ( type )
             {
                 case NodeAttachmentType.Invalid:
-                case NodeAttachmentType.Model:
+                case NodeAttachmentType.Mesh:
                     throw new NotSupportedException();
 
-                //case NodeAttachmentType.Mesh:
-                //  return new NodeMeshAttachment( ReadMesh( version ) );
+                //case NodeAttachmentType.Geometry:
+                //  return new NodeGeometryAttachment( ReadMesh( version ) );
                 case NodeAttachmentType.Node:
                     return new NodeNodeAttachment( reader.ReadResource<Node>(version) );
-                case NodeAttachmentType.Mesh:
-                    return new NodeMeshAttachment( reader.ReadResource<Mesh>( version ) );
+                case NodeAttachmentType.Geometry:
+                    return new NodeGeometryAttachment( reader.ReadResource<Geometry>( version ) );
                 case NodeAttachmentType.Camera:
                     return new NodeCameraAttachment( reader.ReadResource<Camera>( version ) );
                 case NodeAttachmentType.Light:
@@ -100,32 +100,33 @@ namespace GFDLibrary.Models
         }
     }
 
-    public sealed class NodeModelAttachment : NodeAttachment
-    {
-        public Model Model { get; set; }
-
-        public NodeModelAttachment() : base( NodeAttachmentType.Model ) { }
-
-        public NodeModelAttachment( Model model ) : base( NodeAttachmentType.Model ) => Model = model;
-
-        public override Resource GetValue()
-        {
-            return Model;
-        }
-    }
-
-    /*
     public sealed class NodeMeshAttachment : NodeAttachment
     {
+        [FormerName( "Model" )]
         public Mesh Mesh { get; set; }
 
         public NodeMeshAttachment() : base( NodeAttachmentType.Mesh ) { }
 
         public NodeMeshAttachment( Mesh mesh ) : base( NodeAttachmentType.Mesh ) => Mesh = mesh;
 
-        public override object GetValue()
+        public override Resource GetValue()
         {
             return Mesh;
+        }
+    }
+
+    /*
+    public sealed class NodeGeometryAttachment : NodeAttachment
+    {
+        public Geometry Geometry { get; set; }
+
+        public NodeGeometryAttachment() : base( NodeAttachmentType.Geometry ) { }
+
+        public NodeGeometryAttachment( Geometry geometry ) : base( NodeAttachmentType.Geometry ) => Geometry = geometry;
+
+        public override object GetValue()
+        {
+            return Geometry;
         }
     }
     */
@@ -144,17 +145,18 @@ namespace GFDLibrary.Models
         }
     }
 
-    public sealed class NodeMeshAttachment : NodeAttachment
+    public sealed class NodeGeometryAttachment : NodeAttachment
     {
-        public Mesh Mesh { get; set; }
+        [FormerName( "Mesh" )]
+        public Geometry Geometry { get; set; }
 
-        public NodeMeshAttachment() : base( NodeAttachmentType.Mesh ) { }
+        public NodeGeometryAttachment() : base( NodeAttachmentType.Geometry ) { }
 
-        public NodeMeshAttachment( Mesh mesh ) : base( NodeAttachmentType.Mesh ) => Mesh = mesh;
+        public NodeGeometryAttachment( Geometry geometry ) : base( NodeAttachmentType.Geometry ) => Geometry = geometry;
 
         public override Resource GetValue()
         {
-            return Mesh;
+            return Geometry;
         }
     }
 
@@ -230,10 +232,10 @@ namespace GFDLibrary.Models
     public enum NodeAttachmentType
     {
         Invalid = 0,
-        Model = 1,
+        Mesh = 1,
         Unknown = 2,
         Node = 3,
-        Mesh = 4,
+        Geometry = 4,
         Camera = 5,
         Light = 6,
         Epl = 7,

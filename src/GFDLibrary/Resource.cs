@@ -138,8 +138,8 @@ namespace GFDLibrary
                     case ResourceType.ShaderPS4:
                         res = new ShaderPS4( header.Version );
                         break;
-                    case ResourceType.Model:
-                        res = new Model( header.Version );
+                    case ResourceType.Mesh:
+                        res = new Mesh( header.Version );
                         break;
                     case ResourceType.Node:
                         return Node.ReadRecursive( reader, header.Version );
@@ -174,8 +174,8 @@ namespace GFDLibrary
                     case ResourceType.Light:
                         res = new Light( header.Version );
                         break;
-                    case ResourceType.Mesh:
-                        res = new Mesh( header.Version );
+                    case ResourceType.Geometry:
+                        res = new Geometry( header.Version );
                         break;
                     case ResourceType.Camera:
                         res = new Camera( header.Version );
@@ -234,7 +234,7 @@ namespace GFDLibrary
                 {
                     // Identify AnimationPack from a file with a model resource header
                     if ( model.AnimationPack != null && model.ChunkType000100F8 == null && model.ChunkType000100F9 == null &&
-                         model.Materials == null && model.Model == null && model.Textures == null )
+                         model.Materials == null && model.Mesh == null && model.Textures == null )
                     {
                         res = model.AnimationPack;
                     }
@@ -322,12 +322,12 @@ namespace GFDLibrary
                 if ( ResourceType == ResourceType.AnimationPack )
                 {
                     // For AnimationPacks we write a model file header, and then a chunk containing the pack data.
-                    writer.WriteFileHeader( ResourceFileIdentifier.Model, Version, GetResourceType() );
+                    writer.WriteFileHeader( ResourceFileIdentifier.Mesh, Version, GetResourceType() );
                     writer.WriteResourceChunk( this );
                     return;
                 }
 
-                writer.WriteFileHeader( FileIdentifier(), Version, ResourceType == ResourceType.Model ? GetResourceType() : ResourceType );
+                writer.WriteFileHeader( FileIdentifier(), Version, ResourceType == ResourceType.Mesh ? GetResourceType() : ResourceType );
 
                 switch ( ResourceType )
                 {
@@ -368,7 +368,7 @@ namespace GFDLibrary
                     return ResourceFileIdentifier.ShaderCache;
 
                 default:
-                    return ResourceFileIdentifier.Model;
+                    return ResourceFileIdentifier.Mesh;
             }
         }
 

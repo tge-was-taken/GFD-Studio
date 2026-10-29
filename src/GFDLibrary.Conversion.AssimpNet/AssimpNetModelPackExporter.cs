@@ -62,8 +62,8 @@ namespace GFDLibrary.Conversion.AssimpNet
             if ( modelPack.Materials != null )
                 ConvertMaterials( modelPack.Materials );
 
-            if ( modelPack.Model != null )
-                ConvertModel( modelPack.Model );
+            if ( modelPack.Mesh != null )
+                ConvertModel( modelPack.Mesh );
 
             return mAiScene;
         }
@@ -211,12 +211,12 @@ namespace GFDLibrary.Conversion.AssimpNet
             return aiMaterial;
         }
 
-        private void ConvertModel( Model model )
+        private void ConvertModel( Mesh mesh )
         {
-            mAiScene.RootNode = ConvertNode( model, model.RootNode, null );
+            mAiScene.RootNode = ConvertNode( mesh, mesh.RootNode, null );
         }
 
-        private Ai.Node ConvertNode( Model model, Node node, Ai.Node aiParent )
+        private Ai.Node ConvertNode( Mesh mesh, Node node, Ai.Node aiParent )
         {
             var aiNode = new Ai.Node( AssimpConverterCommon.EscapeName( node.Name ), aiParent )
             {
@@ -225,14 +225,14 @@ namespace GFDLibrary.Conversion.AssimpNet
 
             if ( node.HasAttachments )
             {
-                ConvertNodeAttachments( model, node, aiNode );
+                ConvertNodeAttachments( mesh, node, aiNode );
             }
 
             if ( node.HasChildren )
             {
                 foreach ( var childNode in node.Children )
                 {
-                    aiNode.Children.Add( ConvertNode( model, childNode, aiNode ) );
+                    aiNode.Children.Add( ConvertNode( mesh, childNode, aiNode ) );
                 }
             }
 
@@ -252,7 +252,7 @@ namespace GFDLibrary.Conversion.AssimpNet
             aiNode.Metadata["UDP3DSMAX"] = new Ai.Metadata.Entry( Ai.MetaDataType.String, stringBuilder.ToString() );
         }
 
-        private void ConvertNodeAttachments( Model model, Node node, Ai.Node aiNode )
+        private void ConvertNodeAttachments( Mesh mesh, Node node, Ai.Node aiNode )
         {
             for ( int i = 0; i < node.Attachments.Count; i++ )
             {
@@ -260,13 +260,13 @@ namespace GFDLibrary.Conversion.AssimpNet
 
                 switch ( attachment.Type )
                 {
-                    case NodeAttachmentType.Mesh:
+                    case NodeAttachmentType.Geometry:
                         {
-                            var mesh = ConvertGeometry( model, node, attachment.GetValue<Mesh>() );
+                            var geometry = ConvertGeometry( mesh, node, attachment.GetValue<Geometry>() );
 
-                            mesh.Name = ModelConversionHelpers.GetMeshExportName( AssimpConverterCommon.EscapeName( node.Name ), i );
+                            geometry.Name = ModelConversionHelpers.GetMeshExportName( AssimpConverterCommon.EscapeName( node.Name ), i );
                             aiNode.MeshIndices.Add( mAiScene.Meshes.Count );
-                            mAiScene.Meshes.Add( mesh );
+                            mAiScene.Meshes.Add( geometry );
                         }
                         break;
 
@@ -309,16 +309,16 @@ namespace GFDLibrary.Conversion.AssimpNet
             }
         }
 
-        private Ai.Mesh ConvertGeometry( Model model, Node geometryNode, Mesh mesh )
+        private Ai.Mesh ConvertGeometry( Mesh mesh, Node geometryNode, Geometry geometry )
         {
             var aiMesh = new Ai.Mesh( Ai.PrimitiveType.Triangle );
 
-            if ( mesh.Flags.HasFlag( GeometryFlags.HasMaterial ) )
-                aiMesh.MaterialIndex = mAiScene.Materials.FindIndex( x => x.Name == AssimpConverterCommon.EscapeName( mesh.MaterialName ) );
+            if ( geometry.Flags.HasFlag( GeometryFlags.HasMaterial ) )
+                aiMesh.MaterialIndex = mAiScene.Materials.FindIndex( x => x.Name == AssimpConverterCommon.EscapeName( geometry.MaterialName ) );
 
-            if ( mesh.Flags.HasFlag( GeometryFlags.HasTriangles ) )
+            if ( geometry.Flags.HasFlag( GeometryFlags.HasTriangles ) )
             {
-                foreach ( var triangle in mesh.Triangles )
+                foreach ( var triangle in geometry.Triangles )
                 {
                     var aiFace = new Ai.Face();
                     aiFace.Indices.Add( (int)triangle.A );
@@ -328,9 +328,9 @@ namespace GFDLibrary.Conversion.AssimpNet
                 }
             }
 
-            (var vertices, var normals) = mesh.Transform( geometryNode, model.Nodes.ToList(), model.Bones, true, true, null );
+            (var vertices, var normals) = geometry.Transform( geometryNode, mesh.Nodes.ToList(), mesh.Bones, true, true, null );
 
-            if ( mesh.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Position ) )
+            if ( geometry.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Position ) )
             {
                 foreach ( var vertex in vertices )
                 {
@@ -338,7 +338,7 @@ namespace GFDLibrary.Conversion.AssimpNet
                 }
             }
 
-            if ( mesh.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Normal ) )
+            if ( geometry.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Normal ) )
             {
                 foreach ( var normal in normals )
                 {
@@ -346,63 +346,63 @@ namespace GFDLibrary.Conversion.AssimpNet
                 }
             }
 
-            if ( mesh.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Tangent ) )
+            if ( geometry.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Tangent ) )
             {
-                foreach ( var tangent in mesh.Tangents )
+                foreach ( var tangent in geometry.Tangents )
                 {
                     aiMesh.Tangents.Add( new Vector3( tangent.X, tangent.Y, tangent.Z ) );
                 }
             }
 
-            if ( mesh.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Binormal ) )
+            if ( geometry.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Binormal ) )
             {
-                foreach ( var binormal in mesh.Binormals )
+                foreach ( var binormal in geometry.Binormals )
                 {
                     aiMesh.BiTangents.Add( new Vector3( binormal.X, binormal.Y, binormal.Z ) );
                 }
             }
 
-            if ( mesh.VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord0 ) )
+            if ( geometry.VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord0 ) )
             {
-                foreach ( var vertex in mesh.TexCoordsChannel0 )
+                foreach ( var vertex in geometry.TexCoordsChannel0 )
                 {
                     aiMesh.TextureCoordinateChannels[0].Add( new Vector3( vertex.X, vertex.Y, 0 ) );
                 }
             }
 
-            if ( mesh.VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord1 ) )
+            if ( geometry.VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord1 ) )
             {
-                foreach ( var vertex in mesh.TexCoordsChannel1 )
+                foreach ( var vertex in geometry.TexCoordsChannel1 )
                 {
                     aiMesh.TextureCoordinateChannels[1].Add( new Vector3( vertex.X, vertex.Y, 0 ) );
                 }
             }
 
-            if ( mesh.VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord2 ) )
+            if ( geometry.VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord2 ) )
             {
-                foreach ( var vertex in mesh.TexCoordsChannel2 )
+                foreach ( var vertex in geometry.TexCoordsChannel2 )
                 {
                     aiMesh.TextureCoordinateChannels[2].Add( new Vector3( vertex.X, vertex.Y, 0 ) );
                 }
             }
 
             /* todo: colors
-            if ( mesh.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color0 ) )
+            if ( geometry.VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color0 ) )
             {
-                foreach ( var color in mesh.ColorChannel0 )
+                foreach ( var color in geometry.ColorChannel0 )
                 {
                     aiMesh.VertexColorChannels[0].Add( new Ai.Color4D( color. ))
                 }
             }
             */
 
-            if ( mesh.Flags.HasFlag( GeometryFlags.HasVertexWeights ) )
+            if ( geometry.Flags.HasFlag( GeometryFlags.HasVertexWeights ) )
             {
                 var boneMap = new Dictionary<int, Ai.Bone>();
 
-                for ( int i = 0; i < mesh.VertexWeights.Length; i++ )
+                for ( int i = 0; i < geometry.VertexWeights.Length; i++ )
                 {
-                    var vertexWeight = mesh.VertexWeights[i];
+                    var vertexWeight = geometry.VertexWeights[i];
 
                     for ( int j = 0; j < 4; j++ )
                     {
@@ -411,12 +411,12 @@ namespace GFDLibrary.Conversion.AssimpNet
                             continue;
 
                         var boneIndex = vertexWeight.Indices[j];
-                        var nodeIndex = model.Bones[boneIndex].NodeIndex;
+                        var nodeIndex = mesh.Bones[boneIndex].NodeIndex;
 
                         if ( !boneMap.ContainsKey( nodeIndex ) )
                         {
                             var aiBone = new Ai.Bone();
-                            var boneNode = model.GetNode( nodeIndex );
+                            var boneNode = mesh.GetNode( nodeIndex );
 
                             aiBone.Name = AssimpConverterCommon.EscapeName( boneNode.Name );
                             aiBone.VertexWeights.Add( new Ai.VertexWeight( i, boneWeight ) );

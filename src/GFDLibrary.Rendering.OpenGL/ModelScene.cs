@@ -63,12 +63,12 @@ namespace GFDLibrary.Rendering.OpenGL
         private PrimitiveMesh mLightPrimitive;
         private PrimitiveMesh mEplPrimitive;
 
-        // Model
+        // Mesh
         private GLModel mModel;
         private bool mIsModelLoaded;
         private bool mIsFieldModel;
         private Archive mFieldTextures;
-        private Mesh mSelectedMesh;
+        private Geometry mSelectedMesh;
         private Material mSelectedMaterial;
 
         // Animation
@@ -332,9 +332,9 @@ namespace GFDLibrary.Rendering.OpenGL
         /// </summary>
         private bool AddEplMeshes( Action add )
         {
-            var before = mModel.Nodes.Sum( x => x.Meshes.Count );
+            var before = mModel.Nodes.Sum( x => x.Geometries.Count );
             add();
-            return mModel.Nodes.Sum( x => x.Meshes.Count ) > before;
+            return mModel.Nodes.Sum( x => x.Geometries.Count ) > before;
         }
 
         private void DrawSphere( Vector3 center, float radius, int latitudeSegments = 20, int longitudeSegments = 20 )
@@ -438,7 +438,7 @@ namespace GFDLibrary.Rendering.OpenGL
         /// <param name="modelPack"></param>
         public void LoadModel( ModelPack modelPack )
         {
-            if ( !mCanRender || modelPack.Model == null )
+            if ( !mCanRender || modelPack.Mesh == null )
                 return;
 
             if ( mIsModelLoaded )
@@ -472,7 +472,7 @@ namespace GFDLibrary.Rendering.OpenGL
                 return null;
             } );
 
-            foreach ( var node in modelPack.Model.Nodes.Where( x => x.HasAttachments ) )
+            foreach ( var node in modelPack.Mesh.Nodes.Where( x => x.HasAttachments ) )
             {
                 var glNode = mModel.Nodes.Find( x => x.Node == node );
 
@@ -481,21 +481,21 @@ namespace GFDLibrary.Rendering.OpenGL
                     switch ( attachment.Type )
                     {
                         case NodeAttachmentType.Camera:
-                            glNode.Meshes.Add( mCameraPrimitive.Instantiate( true, false, PrimitiveMesh.DefaultColor ) );
+                            glNode.Geometries.Add( mCameraPrimitive.Instantiate( true, false, PrimitiveMesh.DefaultColor ) );
                             break;
 
                         case NodeAttachmentType.Light:
-                            glNode.Meshes.Add( mLightPrimitive.Instantiate( true, false, PrimitiveMesh.DefaultColor ) );
+                            glNode.Geometries.Add( mLightPrimitive.Instantiate( true, false, PrimitiveMesh.DefaultColor ) );
                             break;
 
                         case NodeAttachmentType.Epl:
                             if ( !AddEplMeshes( () => mModel.AddEplNodes( attachment.GetValue<Epl>(), glNode ) ) )
-                                glNode.Meshes.Add( mEplPrimitive.Instantiate( true, true, PrimitiveMesh.DefaultColor ) );
+                                glNode.Geometries.Add( mEplPrimitive.Instantiate( true, true, PrimitiveMesh.DefaultColor ) );
                             break;
 
                         case NodeAttachmentType.EplLeaf:
                             if ( !AddEplMeshes( () => mModel.AddEplLeafNodes( attachment.GetValue<EplLeaf>(), glNode ) ) )
-                                glNode.Meshes.Add( mEplPrimitive.Instantiate( true, true, PrimitiveMesh.DefaultColor ) );
+                                glNode.Geometries.Add( mEplPrimitive.Instantiate( true, true, PrimitiveMesh.DefaultColor ) );
                             break;
                     }
                 }
@@ -541,7 +541,7 @@ namespace GFDLibrary.Rendering.OpenGL
             BlendAnimation = animation;
 
             if ( mModel != null )
-                animation.FixTargetIds( mModel.ModelPack.Model );
+                animation.FixTargetIds( mModel.ModelPack.Mesh );
 
             mModel?.LoadBlendAnimation( animation );
 
@@ -630,12 +630,12 @@ namespace GFDLibrary.Rendering.OpenGL
                 //foreach ( var node in mModel.Nodes )
                 //{
                 //    DrawSphere( node.WorldTransform.Translation.ToOpenTK(), 1, 8, 8 );
-                //    foreach ( var mesh in node.Meshes )
+                //    foreach ( var geometry in node.Meshes )
                 //    {
-                //        if (mesh.Mesh.BoundingSphere.HasValue)
+                //        if (geometry.Geometry.BoundingSphere.HasValue)
                 //        {
-                //            var worldCenter = System.Numerics.Vector3.Transform( mesh.Mesh.BoundingSphere.Value.Center, node.WorldTransform );
-                //            DrawSphere( worldCenter.ToOpenTK(), mesh.Mesh.BoundingSphere.Value.Radius, 8, 8 );
+                //            var worldCenter = System.Numerics.Vector3.Transform( geometry.Geometry.BoundingSphere.Value.Center, node.WorldTransform );
+                //            DrawSphere( worldCenter.ToOpenTK(), geometry.Geometry.BoundingSphere.Value.Radius, 8, 8 );
                 //        }
                 //    }
                 //}
@@ -818,11 +818,11 @@ namespace GFDLibrary.Rendering.OpenGL
             var cameraFov = 45f;
 
             BoundingSphere bSphere;
-            if ( !mModel.ModelPack.Model.BoundingSphere.HasValue )
+            if ( !mModel.ModelPack.Mesh.BoundingSphere.HasValue )
             {
-                if ( mModel.ModelPack.Model.BoundingBox.HasValue )
+                if ( mModel.ModelPack.Mesh.BoundingBox.HasValue )
                 {
-                    bSphere = BoundingSphere.Calculate( mModel.ModelPack.Model.BoundingBox.Value );
+                    bSphere = BoundingSphere.Calculate( mModel.ModelPack.Mesh.BoundingBox.Value );
                 }
                 else
                 {
@@ -831,7 +831,7 @@ namespace GFDLibrary.Rendering.OpenGL
             }
             else
             {
-                bSphere = mModel.ModelPack.Model.BoundingSphere.Value;
+                bSphere = mModel.ModelPack.Mesh.BoundingSphere.Value;
             }
 
             mCamera = new GLPerspectiveCamera( 1f, 100000f, cameraFov,
@@ -1010,11 +1010,11 @@ namespace GFDLibrary.Rendering.OpenGL
 
             foreach ( var glNode in mModel.Nodes )
             {
-                foreach ( var glMesh in glNode.Meshes )
+                foreach ( var glMesh in glNode.Geometries )
                 {
-                    if ( glMesh.IsVisible && (glMesh.Mesh?.BoundingSphere.HasValue ?? false) )
+                    if ( glMesh.IsVisible && (glMesh.Geometry?.BoundingSphere.HasValue ?? false) )
                     {
-                        //var sphere = glMesh.Mesh.BoundingSphere.Value;
+                        //var sphere = glMesh.Geometry.BoundingSphere.Value;
                         //// Transform the sphere center to world space
                         //var sphereCenterWorld = System.Numerics.Vector3.Transform( sphere.Center, glNode.WorldTransform ).ToOpenTK();
 
@@ -1029,7 +1029,7 @@ namespace GFDLibrary.Rendering.OpenGL
                         //        closestNode = glNode;
                         //    }
                         //}
-                        var boundingBox = glMesh.Mesh.BoundingBox.Value;
+                        var boundingBox = glMesh.Geometry.BoundingBox.Value;
 
                         // Transform the bounding box to world space
                         var boxMinWorld = System.Numerics.Vector3.Transform( boundingBox.Min, glNode.WorldTransform ).ToOpenTK();
@@ -1050,11 +1050,11 @@ namespace GFDLibrary.Rendering.OpenGL
                 }
             }
 
-            // Select the closest mesh if found
+            // Select the closest geometry if found
             //if ( closestMesh != null )
             //{
-            //    SetSelection( closestMesh.Mesh );
-            //    Debug.WriteLine( $"Selected {closestNode.Node.Name} mesh" );
+            //    SetSelection( closestMesh.Geometry );
+            //    Debug.WriteLine( $"Selected {closestNode.Node.Name} geometry" );
             //    return true;
             //}
 
@@ -1068,7 +1068,7 @@ namespace GFDLibrary.Rendering.OpenGL
             Invalidate();
         }
 
-        public void SetSelection( Mesh data )
+        public void SetSelection( Geometry data )
         {
             ClearSelection();
             mSelectedMesh = data;

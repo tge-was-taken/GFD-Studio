@@ -14,14 +14,14 @@ namespace GFDLibrary.Rendering.OpenGL
         public List<AnimationJoint> BlendControllers { get; }
         public Matrix4x4 CurrentTransform { get; set; }
         public Matrix4x4 WorldTransform { get; set; }
-        public List<GLMesh> Meshes { get; }
+        public List<GLMesh> Geometries { get; }
         public bool IsVisible { get; set; } = true;
 
         public GLNode( Node node )
         {
             Node = node;
             WorldTransform = node.WorldTransform;
-            Meshes = new List<GLMesh>();
+            Geometries = new List<GLMesh>();
             Controllers = new List<AnimationJoint>();
             BlendControllers = new List<AnimationJoint>();
         }
@@ -37,7 +37,7 @@ namespace GFDLibrary.Rendering.OpenGL
                 {
                     Parent?.Dispose();
 
-                    foreach ( var glMesh in Meshes )
+                    foreach ( var glMesh in Geometries )
                     {
                         glMesh.Dispose();
                     }

@@ -34,7 +34,7 @@ namespace GFDLibrary.Conversion.AssimpNet
             }
 
             // Create scene
-            model.Model = AssimpNetModelConverter.ConvertFromAssimpScene( aiScene, options );
+            model.Mesh = AssimpNetModelConverter.ConvertFromAssimpScene( aiScene, options );
 
             return model;
         }

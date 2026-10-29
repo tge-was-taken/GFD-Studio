@@ -12,7 +12,7 @@ namespace GFDLibrary.Rendering.OpenGL
 {
     public class GLMesh : IDisposable
     {
-        public Mesh Mesh { get; }
+        public Geometry Geometry { get; }
 
         public GLVertexArray VertexArray { get; }
 
@@ -27,54 +27,54 @@ namespace GFDLibrary.Rendering.OpenGL
         public bool IsSkinned { get; }
 
         /// <summary>
-        /// The model bones this mesh actually uses. The vertices index into this rather than
+        /// The model bones this geometry actually uses. The vertices index into this rather than
         /// the model's whole list, which keeps the palette small enough for a uniform array.
         /// </summary>
         public int[] PaletteBones { get; private set; }
 
         public GLMesh( GLVertexArray vertexArray, GLBaseMaterial material, bool isVisible )
         {
-            Mesh = null;
+            Geometry = null;
             VertexArray = vertexArray;
             Material = material;
             IsVisible = isVisible;
         }
 
-        public GLMesh( Mesh mesh, Matrix4x4 modelMatrix, List<Bone> bones, List<GLNode> nodes, Dictionary<string, GLBaseMaterial> materials,
+        public GLMesh( Geometry geometry, Matrix4x4 modelMatrix, List<Bone> bones, List<GLNode> nodes, Dictionary<string, GLBaseMaterial> materials,
                        uint version = ResourceVersion.Persona5 )
         {
-            Mesh = mesh;
-            IsSkinned = mesh.VertexWeights != null;
+            Geometry = geometry;
+            IsSkinned = geometry.VertexWeights != null;
 
             Vector4[] boneWeights = null;
             Vector4[] boneIndices = null;
 
             if ( IsSkinned )
-                BuildSkinningData( mesh, out boneWeights, out boneIndices );
+                BuildSkinningData( geometry, out boneWeights, out boneIndices );
 
-            var indices = new uint[mesh.Triangles.Length * 3];
-            for ( int i = 0; i < mesh.Triangles.Length; i++ )
+            var indices = new uint[geometry.Triangles.Length * 3];
+            for ( int i = 0; i < geometry.Triangles.Length; i++ )
             {
-                indices[( i * 3 ) + 0] = mesh.Triangles[i].A;
-                indices[( i * 3 ) + 1] = mesh.Triangles[i].B;
-                indices[( i * 3 ) + 2] = mesh.Triangles[i].C;
+                indices[( i * 3 ) + 0] = geometry.Triangles[i].A;
+                indices[( i * 3 ) + 1] = geometry.Triangles[i].B;
+                indices[( i * 3 ) + 2] = geometry.Triangles[i].C;
             }
 
-            VertexArray = new GLVertexArray( mesh.Vertices, mesh.Normals,
-                new[] { mesh.TexCoordsChannel0, mesh.TexCoordsChannel1, mesh.TexCoordsChannel2 }, 
-                new[] { mesh.ColorChannel0, mesh.ColorChannel1, mesh.ColorChannel2 },
+            VertexArray = new GLVertexArray( geometry.Vertices, geometry.Normals,
+                new[] { geometry.TexCoordsChannel0, geometry.TexCoordsChannel1, geometry.TexCoordsChannel2 }, 
+                new[] { geometry.ColorChannel0, geometry.ColorChannel1, geometry.ColorChannel2 },
                 indices, PrimitiveType.Triangles, version, boneWeights, boneIndices );
 
             // material
-            if ( mesh.MaterialName != null && materials != null )
+            if ( geometry.MaterialName != null && materials != null )
             {
-                if ( materials.TryGetValue( mesh.MaterialName, out var material ) )
+                if ( materials.TryGetValue( geometry.MaterialName, out var material ) )
                 {
                     Material = material;
                 }
                 else
                 {
-                    Trace.TraceError( $"Mesh referenced material \"{mesh.MaterialName}\" which does not exist in the model" );
+                    Trace.TraceError( $"Geometry referenced material \"{geometry.MaterialName}\" which does not exist in the model" );
                     Material = new GLP5Material();
                 }
             }
@@ -87,20 +87,20 @@ namespace GFDLibrary.Rendering.OpenGL
         }
 
         /// <summary>
-        /// Collects the bones this mesh uses and rewrites each vertex's indices to point into
+        /// Collects the bones this geometry uses and rewrites each vertex's indices to point into
         /// that short list, so the palette uploaded per frame stays small.
         /// </summary>
-        private void BuildSkinningData( Mesh mesh, out Vector4[] weights, out Vector4[] indices )
+        private void BuildSkinningData( Geometry geometry, out Vector4[] weights, out Vector4[] indices )
         {
             var slotByBone = new Dictionary<ushort, int>();
             var palette = new List<int>();
 
-            weights = new Vector4[mesh.VertexCount];
-            indices = new Vector4[mesh.VertexCount];
+            weights = new Vector4[geometry.VertexCount];
+            indices = new Vector4[geometry.VertexCount];
 
-            for ( var i = 0; i < mesh.VertexCount; i++ )
+            for ( var i = 0; i < geometry.VertexCount; i++ )
             {
-                var vertex = mesh.VertexWeights[i];
+                var vertex = geometry.VertexWeights[i];
                 var w = new float[4];
                 var s = new float[4];
 
@@ -130,7 +130,7 @@ namespace GFDLibrary.Rendering.OpenGL
 
         public void Draw( Matrix4 modelMatrix, GLShaderProgram shaderProgram )
         {
-            // A skinned mesh is placed by its bones, so its node transform must not be applied
+            // A skinned geometry is placed by its bones, so its node transform must not be applied
             // on top. The palette already puts it in world space.
             shaderProgram.SetUniform( "uModel", IsSkinned ? Matrix4.Identity : modelMatrix );
             shaderProgram.SetUniform( "uIsSkinned", IsSkinned );

@@ -26,7 +26,7 @@ namespace GFDStudio.GUI.DataViewNodes
         public MaterialDictionaryViewNode Materials { get; set; }
 
         [Browsable( false )]
-        public ModelViewNode Model { get; set; }
+        public MeshViewNode Mesh { get; set; }
 
         [Browsable( false )]
         public ChunkType000100F9ViewNode ChunkType000100F9 { get; set; }
@@ -70,15 +70,15 @@ namespace GFDStudio.GUI.DataViewNodes
                     }
                 }
 
-                // Check if a mesh's material is missing
-                if ( modelPack.Model != null )
+                // Check if a geometry's material is missing
+                if ( modelPack.Mesh != null )
                 {
-                    foreach ( var node in modelPack.Model.Nodes )
+                    foreach ( var node in modelPack.Mesh.Nodes )
                     {
-                        foreach ( var mesh in node.Meshes )
+                        foreach ( var geometry in node.Geometries )
                         {
-                            if ( modelPack.Materials == null || !modelPack.Materials.ContainsKey( mesh.MaterialName ) )
-                                UserDialogs.Current.ShowMessage( $"Scene Geometry under \"{node.Name}\" references a Material that cannot be found:\n{mesh.MaterialName}", "Warning", UserMessageKind.Warning );
+                            if ( modelPack.Materials == null || !modelPack.Materials.ContainsKey( geometry.MaterialName ) )
+                                UserDialogs.Current.ShowMessage( $"Scene Geometry under \"{node.Name}\" references a Material that cannot be found:\n{geometry.MaterialName}", "Warning", UserMessageKind.Warning );
                         }
                     }
                 }
@@ -117,8 +117,8 @@ namespace GFDStudio.GUI.DataViewNodes
                 if ( Materials != null && Nodes.Contains( Materials ) )
                     model.Materials = Materials.Data;
 
-                if ( Model != null && Nodes.Contains( Model ) )
-                    model.Model = Model.Data;
+                if ( Mesh != null && Nodes.Contains( Mesh ) )
+                    model.Mesh = Mesh.Data;
 
                 if ( ChunkType000100F9 != null && Nodes.Contains( ChunkType000100F9 ) )
                     model.ChunkType000100F9 = ChunkType000100F9.Data;
@@ -162,10 +162,10 @@ namespace GFDStudio.GUI.DataViewNodes
                 AddChildNode( Materials );
             }
 
-            if ( Data.Model != null )
+            if ( Data.Mesh != null )
             {
-                Model = ( ModelViewNode ) DataViewNodeFactory.Create( "Model", Data.Model );
-                AddChildNode( Model );
+                Mesh = ( MeshViewNode ) DataViewNodeFactory.Create( "Mesh", Data.Mesh );
+                AddChildNode( Mesh );
             }
 
             if ( Data.ChunkType000100F9 != null )

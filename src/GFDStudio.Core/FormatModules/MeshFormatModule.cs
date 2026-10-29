@@ -10,7 +10,7 @@ namespace GFDStudio.FormatModules
             => "Mesh";
 
         public override string[] Extensions
-            => new[] { "gmsh" };
+            => new[] { "gmod" };
 
         public override FormatModuleUsageFlags UsageFlags
             => FormatModuleUsageFlags.Export | FormatModuleUsageFlags.Import;

@@ -46,7 +46,7 @@ namespace GFDLibrary.Conversion.AssimpNet.Utilities
         }
 
         /// <summary>
-        /// Determines the best target scene node for the mesh.
+        /// Determines the best target scene node for the geometry.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="aiMesh"></param>
@@ -58,7 +58,7 @@ namespace GFDLibrary.Conversion.AssimpNet.Utilities
         {
             if ( aiMesh.BoneCount > 1 )
             {
-                // Select node to which the mesh is weighted most
+                // Select node to which the geometry is weighted most
                 var boneWeightCoverage = CalculateBoneWeightCoverage( aiMesh );
                 var maxCoverage = boneWeightCoverage.Max( x => x.Coverage );
                 var bestTargetBone = boneWeightCoverage.First( x => x.Coverage == maxCoverage ).Bone;
@@ -71,7 +71,7 @@ namespace GFDLibrary.Conversion.AssimpNet.Utilities
             }
             else
             {
-                // Try to find a parent of the mesh's ainode that exists within the existing hierarchy
+                // Try to find a parent of the geometry's ainode that exists within the existing hierarchy
                 var aiNodeParent = aiNode.Parent;
                 while ( aiNodeParent != null )
                 {
@@ -114,7 +114,7 @@ namespace GFDLibrary.Conversion.AssimpNet.Utilities
         }
 
         /// <summary>
-        /// Calculate the weight coverage (in percent) of each bone in the mesh.
+        /// Calculate the weight coverage (in percent) of each bone in the geometry.
         /// </summary>
         /// <param name="aiMesh"></param>
         /// <returns></returns>
@@ -136,27 +136,27 @@ namespace GFDLibrary.Conversion.AssimpNet.Utilities
         }
 
         /// <summary>
-        /// Splits the mesh into submeshes that use <paramref name="maxBoneCount"/> or less bones.
+        /// Splits the geometry into submeshes that use <paramref name="maxBoneCount"/> or less bones.
         /// </summary>
         /// <param name="scene"></param>
-        /// <param name="mesh"></param>
+        /// <param name="geometry"></param>
         /// <param name="maxBoneCount"></param>
         /// <returns></returns>
-        public static List<Assimp.Mesh> SplitMeshByBoneCount( Assimp.Mesh mesh, int maxBoneCount )
+        public static List<Assimp.Mesh> SplitMeshByBoneCount( Assimp.Mesh geometry, int maxBoneCount )
         {
-            if ( mesh.BoneCount <= maxBoneCount )
-                return new List<Assimp.Mesh> { mesh };
+            if ( geometry.BoneCount <= maxBoneCount )
+                return new List<Assimp.Mesh> { geometry };
 
-            var vertexWeights = mesh.GetVertexWeights();
+            var vertexWeights = geometry.GetVertexWeights();
             var subMeshes = new List<Assimp.Mesh>();
-            var remainingFaces = mesh.Faces.ToList();
+            var remainingFaces = geometry.Faces.ToList();
 
             while ( remainingFaces.Count > 0 )
             {
                 var usedBones = new HashSet<Assimp.Bone>();
                 var faces = new List<Face>();
 
-                // Get faces that fit inside the new mesh
+                // Get faces that fit inside the new geometry
                 foreach ( var face in remainingFaces )
                 {
                     var faceUsedBones = face.Indices.SelectMany( y => vertexWeights[y].Select( z => z.Item1 ) ).ToList();
@@ -191,10 +191,10 @@ namespace GFDLibrary.Conversion.AssimpNet.Utilities
                 // Build submesh
                 var subMesh = new Assimp.Mesh()
                 {
-                    MaterialIndex = mesh.MaterialIndex,
-                    //MorphMethod = mesh.MorphMethod,
-                    Name = mesh.Name + $"_submesh{subMeshes.Count}",
-                    PrimitiveType = mesh.PrimitiveType,
+                    MaterialIndex = geometry.MaterialIndex,
+                    //MorphMethod = geometry.MorphMethod,
+                    Name = geometry.Name + $"_submesh{subMeshes.Count}",
+                    PrimitiveType = geometry.PrimitiveType,
                 };
                 var vertexCache = new List<Vertex>();
                 foreach ( var face in faces )
@@ -203,7 +203,7 @@ namespace GFDLibrary.Conversion.AssimpNet.Utilities
 
                     foreach ( var index in face.Indices )
                     {
-                        var cacheIndex = FindVertexCacheIndex( mesh, index, vertexWeights, vertexCache, out var vertex );
+                        var cacheIndex = FindVertexCacheIndex( geometry, index, vertexWeights, vertexCache, out var vertex );
                         if ( cacheIndex == -1 )
                         {
                             // This vertex is new
@@ -221,7 +221,7 @@ namespace GFDLibrary.Conversion.AssimpNet.Utilities
                     subMesh.Faces.Add( newFace );
                 }
 
-                PopulateSubMeshVertexData( mesh, subMesh, vertexCache );
+                PopulateSubMeshVertexData( geometry, subMesh, vertexCache );
 
 #if DEBUG
                 CheckIfAllVerticesHaveWeights( subMesh );
@@ -234,18 +234,18 @@ namespace GFDLibrary.Conversion.AssimpNet.Utilities
         }
 
         /// <summary>
-        /// Splits the mesh into submeshes that use <paramref name="maxVertexCount"/> or less vertices.
+        /// Splits the geometry into submeshes that use <paramref name="maxVertexCount"/> or less vertices.
         /// </summary>
-        /// <param name="mesh"></param>
+        /// <param name="geometry"></param>
         /// <param name="maxVertexCount"></param>
         /// <returns></returns>
-        public static List<Assimp.Mesh> SplitMeshByVertexCount( Assimp.Mesh mesh, int maxVertexCount )
+        public static List<Assimp.Mesh> SplitMeshByVertexCount( Assimp.Mesh geometry, int maxVertexCount )
         {
-            if ( mesh.VertexCount <= maxVertexCount )
-                return new List<Assimp.Mesh> { mesh };
+            if ( geometry.VertexCount <= maxVertexCount )
+                return new List<Assimp.Mesh> { geometry };
 
-            var vertexWeights = mesh.HasBones ? mesh.GetVertexWeights() : null;
-            var remainingFaces = mesh.Faces.ToList();
+            var vertexWeights = geometry.HasBones ? geometry.GetVertexWeights() : null;
+            var remainingFaces = geometry.Faces.ToList();
             var subMeshes = new List<Assimp.Mesh>();
 
             while ( remainingFaces.Count > 0 )
@@ -253,23 +253,23 @@ namespace GFDLibrary.Conversion.AssimpNet.Utilities
                 // Build submesh
                 var subMesh = new Assimp.Mesh()
                 {
-                    MaterialIndex = mesh.MaterialIndex,
-                    //MorphMethod = mesh.MorphMethod,
-                    Name = mesh.Name + $"_submesh{subMeshes.Count}",
-                    PrimitiveType = mesh.PrimitiveType,
+                    MaterialIndex = geometry.MaterialIndex,
+                    //MorphMethod = geometry.MorphMethod,
+                    Name = geometry.Name + $"_submesh{subMeshes.Count}",
+                    PrimitiveType = geometry.PrimitiveType,
                 };
 
                 var processedFaces = new List<Face>();
                 var vertexCache = new List<Vertex>();
 
-                // Get faces that fit inside the new mesh
+                // Get faces that fit inside the new geometry
                 foreach ( var face in remainingFaces )
                 {
                     var newVertices = new List<Vertex>();
                     var newFace = new Face();
                     foreach ( var i in face.Indices )
                     {
-                        var cacheIndex = FindVertexCacheIndex( mesh, i, vertexWeights, vertexCache, out var vertex );
+                        var cacheIndex = FindVertexCacheIndex( geometry, i, vertexWeights, vertexCache, out var vertex );
                         if ( cacheIndex == -1 )
                         {
                             // This vertex is new
@@ -305,7 +305,7 @@ namespace GFDLibrary.Conversion.AssimpNet.Utilities
                 foreach ( var face in processedFaces )
                     remainingFaces.Remove( face );
 
-                PopulateSubMeshVertexData( mesh, subMesh, vertexCache );
+                PopulateSubMeshVertexData( geometry, subMesh, vertexCache );
 
 #if DEBUG
                 CheckIfAllVerticesHaveWeights( subMesh );
@@ -317,15 +317,15 @@ namespace GFDLibrary.Conversion.AssimpNet.Utilities
             return subMeshes;
         }
 
-        private static int FindVertexCacheIndex( Assimp.Mesh mesh, int i, List<(Assimp.Bone, float)>[] vertexWeights, List<Vertex> vertexCache, out Vertex vertex )
+        private static int FindVertexCacheIndex( Assimp.Mesh geometry, int i, List<(Assimp.Bone, float)>[] vertexWeights, List<Vertex> vertexCache, out Vertex vertex )
         {
-            var position = mesh.HasVertices ? mesh.Vertices[i] : new Vector3();
-            var normal = mesh.HasNormals ? mesh.Normals[i] : new Vector3();
-            var tangent = mesh.HasTangentBasis ? mesh.Tangents[i] : new Vector3();
-            var texCoord = mesh.HasTextureCoords( 0 ) ? mesh.TextureCoordinateChannels[0][i] : new Vector3();
-            var texCoord2 = mesh.HasTextureCoords( 1 ) ? mesh.TextureCoordinateChannels[1][i] : new Vector3();
-            var color = mesh.HasVertexColors( 0 ) ? mesh.VertexColorChannels[0][i] : new Vector4();
-            var weights = mesh.HasBones ? vertexWeights[i] : new List<(Assimp.Bone, float)>();
+            var position = geometry.HasVertices ? geometry.Vertices[i] : new Vector3();
+            var normal = geometry.HasNormals ? geometry.Normals[i] : new Vector3();
+            var tangent = geometry.HasTangentBasis ? geometry.Tangents[i] : new Vector3();
+            var texCoord = geometry.HasTextureCoords( 0 ) ? geometry.TextureCoordinateChannels[0][i] : new Vector3();
+            var texCoord2 = geometry.HasTextureCoords( 1 ) ? geometry.TextureCoordinateChannels[1][i] : new Vector3();
+            var color = geometry.HasVertexColors( 0 ) ? geometry.VertexColorChannels[0][i] : new Vector4();
+            var weights = geometry.HasBones ? vertexWeights[i] : new List<(Assimp.Bone, float)>();
             var cacheIndex = vertexCache.FindIndex( y => y.Position == position && y.Normal == normal && y.Tangent == tangent && y.TexCoord == texCoord &&
                                                          y.TexCoord2 == texCoord2 && y.Color == color &&
                                                          y.Weights.SequenceEqual( weights ) );
@@ -334,31 +334,31 @@ namespace GFDLibrary.Conversion.AssimpNet.Utilities
             return cacheIndex;
         }
 
-        private static void PopulateSubMeshVertexData( Assimp.Mesh mesh, Assimp.Mesh subMesh, List<Vertex> vertexCache )
+        private static void PopulateSubMeshVertexData( Assimp.Mesh geometry, Assimp.Mesh subMesh, List<Vertex> vertexCache )
         {
             var vertexIndex = 0;
             foreach ( var vertex in vertexCache )
             {
                 // Split the vertex data from the cache
-                if ( mesh.HasVertices )
+                if ( geometry.HasVertices )
                     subMesh.Vertices.Add( vertex.Position );
 
-                if ( mesh.HasNormals )
+                if ( geometry.HasNormals )
                     subMesh.Normals.Add( vertex.Normal );
 
-                if ( mesh.HasTangentBasis )
+                if ( geometry.HasTangentBasis )
                     subMesh.Tangents.Add( vertex.Tangent );
 
-                if ( mesh.HasTextureCoords( 0 ) )
+                if ( geometry.HasTextureCoords( 0 ) )
                     subMesh.TextureCoordinateChannels[0].Add( vertex.TexCoord );
 
-                if ( mesh.HasTextureCoords( 1 ) )
+                if ( geometry.HasTextureCoords( 1 ) )
                     subMesh.TextureCoordinateChannels[1].Add( vertex.TexCoord2 );
 
-                if ( mesh.HasVertexColors( 0 ) )
+                if ( geometry.HasVertexColors( 0 ) )
                     subMesh.VertexColorChannels[0].Add( vertex.Color );
 
-                if ( mesh.HasBones )
+                if ( geometry.HasBones )
                 {
                     foreach ( var boneWeight in vertex.Weights )
                     {

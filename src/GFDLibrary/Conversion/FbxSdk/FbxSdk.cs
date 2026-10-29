@@ -124,7 +124,7 @@ namespace GFDLibrary.Conversion.FbxSdk
         public static extern void NodeEvaluateGlobalTransform( IntPtr node, double[] matrix16 );
 
         [DllImport( Library, EntryPoint = "FbxNode_SetMeshAttribute" )]
-        public static extern void NodeSetMeshAttribute( IntPtr node, IntPtr mesh );
+        public static extern void NodeSetMeshAttribute( IntPtr node, IntPtr geometry );
 
         [DllImport( Library, EntryPoint = "FbxNode_SetSkeletonAttribute" )]
         public static extern void NodeSetSkeletonAttribute( IntPtr node, IntPtr skeleton );
@@ -153,29 +153,29 @@ namespace GFDLibrary.Conversion.FbxSdk
         public static extern IntPtr MeshCreate( IntPtr scene, [MarshalAs( UnmanagedType.LPUTF8Str )] string name );
 
         [DllImport( Library, EntryPoint = "FbxMesh_InitControlPoints" )]
-        public static extern void MeshInitControlPoints( IntPtr mesh, int count );
+        public static extern void MeshInitControlPoints( IntPtr geometry, int count );
 
         [DllImport( Library, EntryPoint = "FbxMesh_GetControlPointsCount" )]
-        public static extern int MeshGetControlPointsCount( IntPtr mesh );
+        public static extern int MeshGetControlPointsCount( IntPtr geometry );
 
         [DllImport( Library, EntryPoint = "FbxMesh_SetControlPointAt" )]
-        public static extern void MeshSetControlPointAt( IntPtr mesh, int index, double x, double y, double z );
+        public static extern void MeshSetControlPointAt( IntPtr geometry, int index, double x, double y, double z );
 
         [DllImport( Library, EntryPoint = "FbxMesh_BeginPolygon" )]
-        public static extern void MeshBeginPolygon( IntPtr mesh, int material );
+        public static extern void MeshBeginPolygon( IntPtr geometry, int material );
 
         [DllImport( Library, EntryPoint = "FbxMesh_AddPolygon" )]
-        public static extern void MeshAddPolygon( IntPtr mesh, int index );
+        public static extern void MeshAddPolygon( IntPtr geometry, int index );
 
         [DllImport( Library, EntryPoint = "FbxMesh_EndPolygon" )]
-        public static extern void MeshEndPolygon( IntPtr mesh );
+        public static extern void MeshEndPolygon( IntPtr geometry );
 
         [DllImport( Library, EntryPoint = "FbxMesh_CreateElement" )]
-        public static extern IntPtr MeshCreateElement( IntPtr manager, IntPtr mesh, FbxLayerElementType type,
+        public static extern IntPtr MeshCreateElement( IntPtr manager, IntPtr geometry, FbxLayerElementType type,
                                                        [MarshalAs( UnmanagedType.LPUTF8Str )] string name );
 
         [DllImport( Library, EntryPoint = "FbxMesh_CreateLayerElement" )]
-        public static extern IntPtr MeshCreateLayerElement( IntPtr manager, IntPtr mesh, int layer,
+        public static extern IntPtr MeshCreateLayerElement( IntPtr manager, IntPtr geometry, int layer,
                                                             FbxLayerElementType type,
                                                             [MarshalAs( UnmanagedType.LPUTF8Str )] string name );
 
@@ -212,7 +212,7 @@ namespace GFDLibrary.Conversion.FbxSdk
         public static extern void SkinAddCluster( IntPtr skin, IntPtr cluster );
 
         [DllImport( Library, EntryPoint = "FbxMesh_AddSkinDeformer" )]
-        public static extern void MeshAddSkinDeformer( IntPtr mesh, IntPtr skin );
+        public static extern void MeshAddSkinDeformer( IntPtr geometry, IntPtr skin );
 
         [DllImport( Library, EntryPoint = "FbxCluster_Create" )]
         public static extern IntPtr ClusterCreate( IntPtr scene, [MarshalAs( UnmanagedType.LPUTF8Str )] string name );

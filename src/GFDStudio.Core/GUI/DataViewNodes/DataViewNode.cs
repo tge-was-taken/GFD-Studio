@@ -589,7 +589,7 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         /// <summary>
-        /// A mesh names its material and a material names its textures, so renaming one of those
+        /// A geometry names its material and a material names its textures, so renaming one of those
         /// in a model pack has to follow through or the references go dangling.
         /// </summary>
         private void PropagateRename( string oldName, string newName )

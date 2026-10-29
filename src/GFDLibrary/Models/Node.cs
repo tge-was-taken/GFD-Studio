@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -104,8 +104,10 @@ namespace GFDLibrary.Models
 
         public int AttachmentCount => HasAttachments ? Attachments.Count : 0;
 
-        public IEnumerable<Mesh> Meshes => Attachments.Where( x => x.Type == NodeAttachmentType.Mesh )
-                                                      .Select( x => x.GetValue<Mesh>() );
+        [FormerName( "Meshes" )]
+
+        public IEnumerable<Geometry> Geometries => Attachments.Where( x => x.Type == NodeAttachmentType.Geometry )
+                                                      .Select( x => x.GetValue<Geometry>() );
 
         // EC
         public UserPropertyDictionary Properties { get; set; }

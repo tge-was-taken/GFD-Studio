@@ -73,13 +73,13 @@ namespace GFDStudio.GUI.DataViewNodes
             Register<MaterialParameterSetType15ViewNode>();
 
             // gfd model view models
-            Register<ModelViewNode>();
+            Register<MeshViewNode>();
             Register( typeof( BoneListViewNode ), typeof( List<Bone> ) );
             Register<BoneViewNode>();
             Register<NodeViewNode>();
             Register( typeof( AttachmentListViewNode ), typeof( List<Resource> ) );
             Register( typeof( NodeListViewNode ), typeof( List<Node> ) );
-            Register<MeshViewNode>();
+            Register<GeometryViewNode>();
             Register<CameraViewNode>();
             Register<LightViewNode>();
             Register<EplViewNode>();

@@ -213,8 +213,8 @@ namespace GFDLibrary.IO
                 case ResourceType.MaterialDictionary:
                     type = ResourceChunkType.MaterialDictionary;
                     break;
-                case ResourceType.Model:
-                    type = ResourceChunkType.Model;
+                case ResourceType.Mesh:
+                    type = ResourceChunkType.Mesh;
                     break;
                 case ResourceType.ChunkType000100F9:
                     type = ResourceChunkType.ChunkType000100F9;

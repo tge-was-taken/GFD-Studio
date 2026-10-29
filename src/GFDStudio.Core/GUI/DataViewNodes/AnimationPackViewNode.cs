@@ -49,13 +49,13 @@ namespace GFDStudio.GUI.DataViewNodes
             });
             RegisterCustomHandler( "Tools", "Retarget", () =>
             {
-                var originalScene = ( Parent as ModelPackViewNode )?.Model?.Data ??
-                                    ModuleImportUtilities.SelectImportFile<ModelPack>( "Select the original model file." )?.Model;
+                var originalScene = ( Parent as ModelPackViewNode )?.Mesh?.Data ??
+                                    ModuleImportUtilities.SelectImportFile<ModelPack>( "Select the original model file." )?.Mesh;
 
                 if ( originalScene == null )
                     return;
 
-                var newScene = ModuleImportUtilities.SelectImportFile<ModelPack>( "Select the new model file." )?.Model;
+                var newScene = ModuleImportUtilities.SelectImportFile<ModelPack>( "Select the new model file." )?.Mesh;
                 if ( newScene == null )
                     return;    
 
@@ -106,8 +106,8 @@ namespace GFDStudio.GUI.DataViewNodes
                 try
                 {
                     var model = Resource.Load<ModelPack>( result.FileName );
-                    if (model.Model != null)
-                        animation.FixTargetIds(model.Model);
+                    if (model.Mesh != null)
+                        animation.FixTargetIds(model.Mesh);
                 }
                 catch (Exception e)
                 {

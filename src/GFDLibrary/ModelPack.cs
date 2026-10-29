@@ -20,19 +20,21 @@ namespace GFDLibrary
 
         public MaterialDictionary Materials { get; set; }
 
-        public Model Model { get; set; }
+        [FormerName( "Model" )]
+
+        public Mesh Mesh { get; set; }
 
         /// <summary>
-        /// Points every mesh that named the old material at the new name. A mesh names its
+        /// Points every geometry that named the old material at the new name. A geometry names its
         /// material by string, so a rename that does not follow through leaves it dangling.
         /// </summary>
         public void RenameMaterialReferences( string oldName, string newName )
         {
-            if ( !Renameable( oldName, newName ) || Model == null )
+            if ( !Renameable( oldName, newName ) || Mesh == null )
                 return;
 
-            foreach ( var mesh in Model.Meshes.Where( x => x.MaterialName == oldName ) )
-                mesh.MaterialName = newName;
+            foreach ( var geometry in Mesh.Geometries.Where( x => x.MaterialName == oldName ) )
+                geometry.MaterialName = newName;
         }
 
         /// <summary>
@@ -77,10 +79,10 @@ namespace GFDLibrary
             else
                 Materials.ReplaceWith( other.Materials );
 
-            if ( Model == null || other.Model == null )
-                Model = other.Model;
+            if ( Mesh == null || other.Mesh == null )
+                Mesh = other.Mesh;
             else
-                Model.ReplaceWith( other.Model );
+                Mesh.ReplaceWith( other.Mesh );
 
             if ( other.AnimationPack != null )
             {
@@ -155,16 +157,16 @@ namespace GFDLibrary
                 }
             }
 
-            // Model: delegate to Model.MergeWith
-            if (other.Model != null)
+            // Mesh: delegate to Mesh.MergeWith
+            if (other.Mesh != null)
             {
-                if (Model == null)
+                if (Mesh == null)
                 {
-                    Model = other.Model;
+                    Mesh = other.Mesh;
                 }
                 else
                 {
-                    Model.MergeWith(other.Model);
+                    Mesh.MergeWith(other.Mesh);
                 }
             }
 
@@ -204,8 +206,8 @@ namespace GFDLibrary
                     case ResourceChunkType.MaterialDictionary:
                         Materials = reader.ReadResource<MaterialDictionary>( chunk.Version );
                         break;
-                    case ResourceChunkType.Model:
-                        Model = reader.ReadResource<Model>( chunk.Version );
+                    case ResourceChunkType.Mesh:
+                        Mesh = reader.ReadResource<Mesh>( chunk.Version );
                         break;
                     case ResourceChunkType.ChunkType000100F9:
                         ChunkType000100F9 = reader.ReadResource<ChunkType000100F9>( chunk.Version );
@@ -217,7 +219,7 @@ namespace GFDLibrary
                         {
                             AnimationPack = reader.ReadResource<AnimationPack>( chunk.Version );
 
-                            if ( AnimationPack.ErrorsOccuredDuringLoad && Model != null )
+                            if ( AnimationPack.ErrorsOccuredDuringLoad && Mesh != null )
                             {
                                 // Invalid data, let's not make model uneditable because the animation support sucks, now shall we?
                                 reader.SeekBegin( chunkDataStart );
@@ -234,12 +236,12 @@ namespace GFDLibrary
             // Populate (semantic) metadata fields
             if ( Materials is not null )
             {
-                if ( Model is not null )
+                if ( Mesh is not null )
                 {
                     foreach ( var mat in Materials.Values )
                     {
-                        var meshesWithMaterial = Model.Nodes
-                            .SelectMany( n => n.Meshes )
+                        var meshesWithMaterial = Mesh.Nodes
+                            .SelectMany( n => n.Geometries )
                             .Where( m => m.MaterialName == mat.Name )
                             .ToList();
                         if (meshesWithMaterial.Count > 0 )
@@ -261,8 +263,8 @@ namespace GFDLibrary
             if ( Materials != null )
                 writer.WriteResourceChunk( Materials );
 
-            if ( Model != null )
-                writer.WriteResourceChunk( Model );
+            if ( Mesh != null )
+                writer.WriteResourceChunk( Mesh );
 
             if ( ChunkType000100F9 != null )
                 writer.WriteResourceChunk( ChunkType000100F9 );
@@ -276,7 +278,7 @@ namespace GFDLibrary
             bool animationOnly = AnimationPack != null &&
                                  Textures == null &&
                                  Materials == null &&
-                                 Model == null &&
+                                 Mesh == null &&
                                  ChunkType000100F9 == null &&
                                  ChunkType000100F8 == null;
 

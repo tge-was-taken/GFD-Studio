@@ -26,11 +26,11 @@ namespace GFDStudio.IO
 
         public static void RetargetAnimationPacks()
         {
-            var originalScene = ModuleImportUtilities.SelectImportFile<ModelPack>( "Select the original model file." )?.Model;
+            var originalScene = ModuleImportUtilities.SelectImportFile<ModelPack>( "Select the original model file." )?.Mesh;
             if ( originalScene == null )
                 return;
 
-            var newScene = ModuleImportUtilities.SelectImportFile<ModelPack>( "Select the new model file." )?.Model;
+            var newScene = ModuleImportUtilities.SelectImportFile<ModelPack>( "Select the new model file." )?.Mesh;
             if ( newScene == null )
                 return;
 
@@ -158,7 +158,7 @@ namespace GFDStudio.IO
             var isGap52 = UserDialogs.Current.AskYesNo( "GAP ID 52? If unsure, select No.", "Question" );
 
             var directoryPath = UserDialogs.Current.SelectFolder(
-                "Select a directory containing Model files, or subdirectories containing model files to make the new GAP files for.\n" +
+                "Select a directory containing model files, or subdirectories containing model files to make the new GAP files for.\n" +
                 "Note that this will replace the original files." );
 
             if ( directoryPath == null )
@@ -173,7 +173,7 @@ namespace GFDStudio.IO
                 var targetGapName = name.Split( "_" )[1];
                 var targetGapDirectory = Path.Join( Path.GetDirectoryName( filePath ), "battle" );
 
-                var targetModel = ModuleImportUtilities.ImportFile<ModelPack>( filePath )?.Model;
+                var targetModel = ModuleImportUtilities.ImportFile<ModelPack>( filePath )?.Mesh;
                 if ( targetModel == null )
                     return;
 
@@ -189,7 +189,7 @@ namespace GFDStudio.IO
 
         public static void ExportTexturesFromModels()
         {
-            var directoryPath = UserDialogs.Current.SelectFolder( "Select a directory containing Model files to extract textures from." );
+            var directoryPath = UserDialogs.Current.SelectFolder( "Select a directory containing model files to extract textures from." );
             if ( directoryPath == null )
                 return;
 
@@ -218,7 +218,7 @@ namespace GFDStudio.IO
 
         public static void ReplaceTexturesInModels()
         {
-            var directoryPath = UserDialogs.Current.SelectFolder( "Select a directory containing Model files to replace textures in." );
+            var directoryPath = UserDialogs.Current.SelectFolder( "Select a directory containing model files to replace textures in." );
             if ( directoryPath == null )
                 return;
 

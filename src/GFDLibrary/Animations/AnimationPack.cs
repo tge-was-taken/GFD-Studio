@@ -136,18 +136,18 @@ namespace GFDLibrary.Animations
                 writer.WriteResourceList( METAPHOR_AnimArray3 );
         }
 
-        public void FixTargetIds( Model model )
+        public void FixTargetIds( Mesh mesh )
         {
             foreach ( var animation in Animations )
-                animation.FixTargetIds( model );
+                animation.FixTargetIds( mesh );
 
             foreach ( var animation in BlendAnimations )
-                animation.FixTargetIds( model );
+                animation.FixTargetIds( mesh );
 
-            Bit29Data?.FixTargetIds( model );
+            Bit29Data?.FixTargetIds( mesh );
         }
 
-        public void Retarget( Model originalModel, Model newModel, bool fixArms )
+        public void Retarget( Mesh originalModel, Mesh newModel, bool fixArms )
         {
             var originalNodeLookup = originalModel.Nodes.ToDictionary( x => x.Name );
             var newNodeLookup = newModel.Nodes.ToDictionary( x => x.Name );

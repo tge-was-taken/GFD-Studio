@@ -31,7 +31,7 @@ namespace GFDLibrary.Conversion.FbxSdk
     /// Writes a model pack as an FBX file through the Autodesk FBX SDK.
     /// </summary>
     /// <remarks>
-    /// 3ds Max is picky about the order of layers and layer elements in a mesh, because it maps
+    /// 3ds Max is picky about the order of layers and layer elements in a geometry, because it maps
     /// layers to map channels positionally. It expects layer 0 to hold the normals, the material,
     /// the first colour channel and the first UV channel, in that order, with the second UV
     /// channel on layer 1 and the second colour channel on layer 2. The order of the calls below
@@ -46,7 +46,7 @@ namespace GFDLibrary.Conversion.FbxSdk
         private IntPtr mBindPose;
 
         private ModelPack mModelPack;
-        private Model mModel;
+        private Mesh mModel;
         private List<Node> mModelNodes;
 
         private readonly Dictionary<Node, IntPtr> mNodeToFbxNode = new();
@@ -107,7 +107,7 @@ namespace GFDLibrary.Conversion.FbxSdk
         private void ConvertToFbxScene( ModelPack modelPack )
         {
             mModelPack = modelPack;
-            mModel = modelPack.Model;
+            mModel = modelPack.Mesh;
             mModelNodes = new List<Node>( mModel.Nodes );
 
             mScene = FbxSdk.SceneCreate( mManager, "" );
@@ -139,7 +139,7 @@ namespace GFDLibrary.Conversion.FbxSdk
             var fbxRootNode = FbxSdk.SceneGetRootNode( mScene );
 
             // The root node is usually generated and empty, so it is left out of the output. Some
-            // models hang a mesh or a camera straight off it, and dropping it loses that.
+            // models hang a geometry or a camera straight off it, and dropping it loses that.
             if ( mModel.RootNode.HasAttachments )
             {
                 ConvertNode( fbxRootNode, mModel.RootNode );
@@ -248,8 +248,8 @@ namespace GFDLibrary.Conversion.FbxSdk
 
                 switch ( attachment.Type )
                 {
-                    case NodeAttachmentType.Mesh:
-                        ConvertMesh( fbxNode, node, attachment.GetValue<Mesh>(), typeIndex );
+                    case NodeAttachmentType.Geometry:
+                        ConvertMesh( fbxNode, node, attachment.GetValue<Geometry>(), typeIndex );
                         break;
 
                     case NodeAttachmentType.Camera:
@@ -273,7 +273,7 @@ namespace GFDLibrary.Conversion.FbxSdk
             }
         }
 
-        private void ConvertMesh( IntPtr fbxParentNode, Node parentNode, Mesh mesh, int typeIndex )
+        private void ConvertMesh( IntPtr fbxParentNode, Node parentNode, Geometry geometry, int typeIndex )
         {
             mNodeIndexToFbxCluster.Clear();
 
@@ -281,7 +281,7 @@ namespace GFDLibrary.Conversion.FbxSdk
 
             var fbxMeshNode = FbxSdk.NodeCreate( mScene, ModelConversionHelpers.GetMeshExportName( parentNode.Name, typeIndex ) );
 
-            // Parenting meshes to nodes on animated models leads to weird results.
+            // Parenting geometries to nodes on animated models leads to weird results.
             FbxSdk.NodeAddChild( isAnimated ? FbxSdk.SceneGetRootNode( mScene ) : fbxParentNode, fbxMeshNode );
 
             // 3ds Max ignores any node that is not in the bind pose, skinned or not.
@@ -291,7 +291,7 @@ namespace GFDLibrary.Conversion.FbxSdk
             FbxSdk.NodeSetMeshAttribute( fbxMeshNode, fbxMesh );
 
             // Always transform, even without weights, so the parent node matrix is applied.
-            var ( vertices, normals ) = mesh.Transform( parentNode, mModelNodes, mModel.Bones, true, true );
+            var ( vertices, normals ) = geometry.Transform( parentNode, mModelNodes, mModel.Bones, true, true );
 
             FbxSdk.MeshInitControlPoints( fbxMesh, vertices.Length );
             for ( int i = 0; i < vertices.Length; i++ )
@@ -313,44 +313,44 @@ namespace GFDLibrary.Conversion.FbxSdk
             FbxSdk.LayerElementSetMappingMode( fbxElementMaterial, FbxMappingMode.ByPolygon );
             FbxSdk.LayerElementSetReferenceMode( fbxElementMaterial, FbxReferenceMode.IndexToDirect );
 
-            ConvertVertexColorChannel( fbxMesh, mesh.ColorChannel0 );
-            ConvertVertexColorChannel( fbxMesh, mesh.ColorChannel1 );
+            ConvertVertexColorChannel( fbxMesh, geometry.ColorChannel0 );
+            ConvertVertexColorChannel( fbxMesh, geometry.ColorChannel1 );
 
-            ConvertTexCoordChannel( fbxMesh, mesh.TexCoordsChannel0, "UVChannel_1", 0 );
-            ConvertTexCoordChannel( fbxMesh, mesh.TexCoordsChannel1, "UVChannel_2", 1 );
-            ConvertTexCoordChannel( fbxMesh, mesh.TexCoordsChannel2, "UVChannel_3", 2 );
+            ConvertTexCoordChannel( fbxMesh, geometry.TexCoordsChannel0, "UVChannel_1", 0 );
+            ConvertTexCoordChannel( fbxMesh, geometry.TexCoordsChannel1, "UVChannel_2", 1 );
+            ConvertTexCoordChannel( fbxMesh, geometry.TexCoordsChannel2, "UVChannel_3", 2 );
 
             var fbxSkin = FbxSdk.SkinCreate( mScene, "" );
             FbxSdk.SkinSetSkinningTypeLinear( fbxSkin );
             FbxSdk.MeshAddSkinDeformer( fbxMesh, fbxSkin );
 
-            if ( mesh.VertexWeights != null )
-                ConvertVertexWeights( fbxSkin, mesh );
+            if ( geometry.VertexWeights != null )
+                ConvertVertexWeights( fbxSkin, geometry );
             else if ( isAnimated )
                 BindMeshToParentNode( fbxSkin, parentNode, vertices.Length );
 
-            if ( !mMaterialNameToFbxSurfaceMaterial.TryGetValue( mesh.MaterialName ?? string.Empty, out var fbxMaterial ) )
-                throw new FbxSdkModelPackExporterException( $"Mesh on node '{parentNode.Name}' references material '{mesh.MaterialName}', which the model pack does not have" );
+            if ( !mMaterialNameToFbxSurfaceMaterial.TryGetValue( geometry.MaterialName ?? string.Empty, out var fbxMaterial ) )
+                throw new FbxSdkModelPackExporterException( $"Geometry on node '{parentNode.Name}' references material '{geometry.MaterialName}', which the model pack does not have" );
 
             var materialIndex = FbxSdk.NodeAddMaterial( fbxMeshNode, fbxMaterial );
             if ( materialIndex < 0 )
-                throw new FbxSdkModelPackExporterException( $"Failed to add material '{mesh.MaterialName}' to mesh node '{parentNode.Name}'" );
+                throw new FbxSdkModelPackExporterException( $"Failed to add material '{geometry.MaterialName}' to geometry node '{parentNode.Name}'" );
 
-            for ( int i = 0; i < mesh.Triangles.Length; i++ )
+            for ( int i = 0; i < geometry.Triangles.Length; i++ )
             {
                 FbxSdk.MeshBeginPolygon( fbxMesh, materialIndex );
-                FbxSdk.MeshAddPolygon( fbxMesh, ( int )mesh.Triangles[i].A );
-                FbxSdk.MeshAddPolygon( fbxMesh, ( int )mesh.Triangles[i].B );
-                FbxSdk.MeshAddPolygon( fbxMesh, ( int )mesh.Triangles[i].C );
+                FbxSdk.MeshAddPolygon( fbxMesh, ( int )geometry.Triangles[i].A );
+                FbxSdk.MeshAddPolygon( fbxMesh, ( int )geometry.Triangles[i].B );
+                FbxSdk.MeshAddPolygon( fbxMesh, ( int )geometry.Triangles[i].C );
                 FbxSdk.MeshEndPolygon( fbxMesh );
             }
         }
 
-        private void ConvertVertexWeights( IntPtr fbxSkin, Mesh mesh )
+        private void ConvertVertexWeights( IntPtr fbxSkin, Geometry geometry )
         {
-            for ( int i = 0; i < mesh.VertexWeights.Length; i++ )
+            for ( int i = 0; i < geometry.VertexWeights.Length; i++ )
             {
-                var vertexWeights = mesh.VertexWeights[i];
+                var vertexWeights = geometry.VertexWeights[i];
 
                 for ( int j = 0; j < vertexWeights.Weights.Length; j++ )
                 {
@@ -366,7 +366,7 @@ namespace GFDLibrary.Conversion.FbxSdk
         }
 
         /// <summary>
-        /// An unweighted mesh on an animated model is parented to the scene root, so it needs a
+        /// An unweighted geometry on an animated model is parented to the scene root, so it needs a
         /// skin binding every vertex to its real parent to keep following that node.
         /// </summary>
         private void BindMeshToParentNode( IntPtr fbxSkin, Node parentNode, int vertexCount )

@@ -25,7 +25,7 @@ namespace GFDLibrary.Effects
         LightningPolygon = 4,
         TrajectoryPolygon = 5,
         WindPolygon = 6,
-        Model = 7,
+        Mesh = 7,
         TrajectoryPolygon2 = 8,
         BoardPolygon = 9,
         ObjectPartciles = 10,

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using GFDLibrary.Effects;
+using GFDLibrary.Models;
 
 namespace GFDLibrary
 {
@@ -23,6 +24,18 @@ namespace GFDLibrary
                 ["Field04"] = nameof( EplLeafDataHeader.Type ),
                 ["Variant"] = nameof( EplLeafDataHeader.Type ),
             },
+        };
+
+        /// <summary>
+        /// Tags that name a different type than they used to. <c>Mesh</c> was the geometry and
+        /// is now the node tree that holds it, so the tag alone cannot say which is meant.
+        /// </summary>
+        public static readonly IReadOnlyDictionary<string, Type> Tags = new Dictionary<string, Type>
+        {
+            ["Mesh"] = typeof( Geometry ),
+            ["Model"] = typeof( Mesh ),
+            ["NodeMeshAttachment"] = typeof( NodeGeometryAttachment ),
+            ["NodeModelAttachment"] = typeof( NodeMeshAttachment ),
         };
 
         public static IReadOnlyDictionary<string, string> For( Type type )

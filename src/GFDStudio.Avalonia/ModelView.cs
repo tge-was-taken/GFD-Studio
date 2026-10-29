@@ -111,7 +111,7 @@ namespace GFDStudio.Avalonia
             RequestNextFrameRendering();
         }
 
-        public void SetSelection( Mesh data )
+        public void SetSelection( GFDLibrary.Models.Geometry data )
         {
             mScene?.SetSelection( data );
             RequestNextFrameRendering();

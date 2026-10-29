@@ -4,30 +4,30 @@ using System.Numerics;
 namespace GFDLibrary.Models
 {
     /// <summary>
-    /// Works out a mesh's normals and tangent space from its triangles, for meshes that arrive
+    /// Works out a geometry's normals and tangent space from its triangles, for geometries that arrive
     /// without them or whose own are wrong.
     /// </summary>
-    public static class MeshVertexGeometry
+    public static class GeometryMath
     {
         /// <summary>
         /// Recalculates smooth vertex normals by accumulating the face normals around each
         /// vertex, weighted by face area, which the uncrossed edge product already gives.
         /// </summary>
-        public static void RegenerateNormals( Mesh mesh )
+        public static void RegenerateNormals( Geometry geometry )
         {
-            if ( !HasGeometry( mesh ) )
+            if ( !HasGeometry( geometry ) )
                 return;
 
-            var normals = new Vector3[mesh.VertexCount];
+            var normals = new Vector3[geometry.VertexCount];
 
-            foreach ( var triangle in mesh.Triangles )
+            foreach ( var triangle in geometry.Triangles )
             {
-                if ( !InRange( mesh, triangle ) )
+                if ( !InRange( geometry, triangle ) )
                     continue;
 
-                var a = mesh.Vertices[triangle.A];
-                var b = mesh.Vertices[triangle.B];
-                var c = mesh.Vertices[triangle.C];
+                var a = geometry.Vertices[triangle.A];
+                var b = geometry.Vertices[triangle.B];
+                var c = geometry.Vertices[triangle.C];
 
                 var faceNormal = Vector3.Cross( b - a, c - a );
 
@@ -36,36 +36,36 @@ namespace GFDLibrary.Models
                 normals[triangle.C] += faceNormal;
             }
 
-            mesh.Normals = Normalize( normals );
+            geometry.Normals = Normalize( normals );
         }
 
         /// <summary>
         /// Recalculates the tangent and binormal from how the first texture coordinates change
         /// across each triangle, so they line up with the way a normal map is laid out.
         /// </summary>
-        public static void RegenerateTangentSpace( Mesh mesh )
+        public static void RegenerateTangentSpace( Geometry geometry )
         {
-            if ( !HasGeometry( mesh ) || mesh.TexCoordsChannel0 == null )
+            if ( !HasGeometry( geometry ) || geometry.TexCoordsChannel0 == null )
                 return;
 
-            if ( mesh.Normals == null )
-                RegenerateNormals( mesh );
+            if ( geometry.Normals == null )
+                RegenerateNormals( geometry );
 
-            var tangents = new Vector3[mesh.VertexCount];
-            var binormals = new Vector3[mesh.VertexCount];
+            var tangents = new Vector3[geometry.VertexCount];
+            var binormals = new Vector3[geometry.VertexCount];
 
-            foreach ( var triangle in mesh.Triangles )
+            foreach ( var triangle in geometry.Triangles )
             {
-                if ( !InRange( mesh, triangle ) )
+                if ( !InRange( geometry, triangle ) )
                     continue;
 
-                var a = mesh.Vertices[triangle.A];
-                var edge1 = mesh.Vertices[triangle.B] - a;
-                var edge2 = mesh.Vertices[triangle.C] - a;
+                var a = geometry.Vertices[triangle.A];
+                var edge1 = geometry.Vertices[triangle.B] - a;
+                var edge2 = geometry.Vertices[triangle.C] - a;
 
-                var uvA = mesh.TexCoordsChannel0[triangle.A];
-                var deltaUv1 = mesh.TexCoordsChannel0[triangle.B] - uvA;
-                var deltaUv2 = mesh.TexCoordsChannel0[triangle.C] - uvA;
+                var uvA = geometry.TexCoordsChannel0[triangle.A];
+                var deltaUv1 = geometry.TexCoordsChannel0[triangle.B] - uvA;
+                var deltaUv2 = geometry.TexCoordsChannel0[triangle.C] - uvA;
 
                 var determinant = deltaUv1.X * deltaUv2.Y - deltaUv2.X * deltaUv1.Y;
                 if ( MathF.Abs( determinant ) < 1e-12f )
@@ -83,15 +83,15 @@ namespace GFDLibrary.Models
             }
 
             // Gram-Schmidt, so the tangent sits in the plane the normal defines.
-            for ( var i = 0; i < mesh.VertexCount; i++ )
+            for ( var i = 0; i < geometry.VertexCount; i++ )
             {
-                var normal = mesh.Normals[i];
+                var normal = geometry.Normals[i];
                 tangents[i] -= normal * Vector3.Dot( normal, tangents[i] );
                 binormals[i] -= normal * Vector3.Dot( normal, binormals[i] );
             }
 
-            mesh.Tangents = Normalize( tangents );
-            mesh.Binormals = Normalize( binormals );
+            geometry.Tangents = Normalize( tangents );
+            geometry.Binormals = Normalize( binormals );
         }
 
         /// <summary>
@@ -99,25 +99,25 @@ namespace GFDLibrary.Models
         /// rather than part of a tangent basis, such as a signed distance field toon shader,
         /// want this rather than something derived from the surface.
         /// </summary>
-        public static void SetBinormals( Mesh mesh, Vector3 direction )
+        public static void SetBinormals( Geometry geometry, Vector3 direction )
         {
-            if ( mesh.VertexCount == 0 )
+            if ( geometry.VertexCount == 0 )
                 return;
 
             var normalised = direction.Length() < 1e-6f ? Vector3.UnitZ : Vector3.Normalize( direction );
-            var binormals = new Vector3[mesh.VertexCount];
+            var binormals = new Vector3[geometry.VertexCount];
 
             for ( var i = 0; i < binormals.Length; i++ )
                 binormals[i] = normalised;
 
-            mesh.Binormals = binormals;
+            geometry.Binormals = binormals;
         }
 
-        private static bool HasGeometry( Mesh mesh )
-            => mesh?.Vertices != null && mesh.Triangles != null && mesh.VertexCount > 0;
+        private static bool HasGeometry( Geometry geometry )
+            => geometry?.Vertices != null && geometry.Triangles != null && geometry.VertexCount > 0;
 
-        private static bool InRange( Mesh mesh, Triangle triangle )
-            => triangle.A < mesh.VertexCount && triangle.B < mesh.VertexCount && triangle.C < mesh.VertexCount;
+        private static bool InRange( Geometry geometry, Triangle triangle )
+            => triangle.A < geometry.VertexCount && triangle.B < geometry.VertexCount && triangle.C < geometry.VertexCount;
 
         private static Vector3[] Normalize( Vector3[] vectors )
         {

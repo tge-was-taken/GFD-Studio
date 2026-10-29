@@ -64,17 +64,17 @@ namespace GFDStudio.Cli.Commands
                     yield return ("Textures", Count( pack.Textures?.Count ));
                     yield return ("Materials", Count( pack.Materials?.Count ));
 
-                    foreach ( var row in Contents( pack.Model ) )
+                    foreach ( var row in Contents( pack.Mesh ) )
                         yield return row;
 
                     yield return ("Animations", Count( pack.AnimationPack?.Animations?.Count ));
                     yield return ("Blend animations", Count( pack.AnimationPack?.BlendAnimations?.Count ));
                     break;
 
-                case Model model:
-                    yield return ("Nodes", Count( model.Nodes?.Count() ));
-                    yield return ("Meshes", Count( model.Meshes?.Count() ));
-                    yield return ("Bones", Count( model.Bones?.Count ));
+                case Mesh mesh:
+                    yield return ("Nodes", Count( mesh.Nodes?.Count() ));
+                    yield return ("Geometries", Count( mesh.Geometries?.Count() ));
+                    yield return ("Bones", Count( mesh.Bones?.Count ));
                     break;
 
                 case TextureDictionary textures:

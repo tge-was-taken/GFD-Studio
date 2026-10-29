@@ -102,7 +102,7 @@ namespace GFDLibrary.Materials
             using ( var stream = FileUtils.Create( path ) )
             using ( var writer = new ResourceWriter(stream, false ))
             {
-                writer.WriteFileHeader( ResourceFileIdentifier.Model, attribute.Version, ResourceType.MaterialAttribute );
+                writer.WriteFileHeader( ResourceFileIdentifier.Mesh, attribute.Version, ResourceType.MaterialAttribute );
                 Write( writer, attribute );
             }
         }

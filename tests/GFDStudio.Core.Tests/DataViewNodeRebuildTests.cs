@@ -31,7 +31,7 @@ namespace GFDStudio.Core.Tests
             root.AddChildNode( branch );
             root.AddChildNode( new Node { Name = "sibling" } );
 
-            pack.Model = new Model( Version ) { RootNode = root };
+            pack.Mesh = new Mesh( Version ) { RootNode = root };
             return pack;
         }
 
@@ -108,7 +108,7 @@ namespace GFDStudio.Core.Tests
             leaf.Delete();
 
             var pack = (ModelPack)tree.Data;
-            var branch = pack.Model.RootNode.Children.Single( x => x.Name == "branch" );
+            var branch = pack.Mesh.RootNode.Children.Single( x => x.Name == "branch" );
             Assert.AreEqual( 0, branch.ChildCount );
         }
 
@@ -122,7 +122,7 @@ namespace GFDStudio.Core.Tests
             leaf.Name = "renamed";
 
             var pack = (ModelPack)tree.Data;
-            var branch = pack.Model.RootNode.Children.Single( x => x.Name == "branch" );
+            var branch = pack.Mesh.RootNode.Children.Single( x => x.Name == "branch" );
             Assert.AreEqual( "renamed", branch.Children.Single().Name );
         }
 
@@ -138,7 +138,7 @@ namespace GFDStudio.Core.Tests
             var pack = (ModelPack)tree.Data;
             CollectionAssert.AreEqual(
                 new[] { "sibling", "branch" },
-                pack.Model.RootNode.Children.Select( x => x.Name ).ToArray() );
+                pack.Mesh.RootNode.Children.Select( x => x.Name ).ToArray() );
         }
 
         /// <summary>
@@ -153,8 +153,8 @@ namespace GFDStudio.Core.Tests
 
             var pack = (ModelPack)tree.Data;
             Assert.AreEqual( 2, pack.Textures.Count );
-            Assert.AreEqual( "root", pack.Model.RootNode.Name );
-            Assert.AreEqual( 2, pack.Model.RootNode.ChildCount );
+            Assert.AreEqual( "root", pack.Mesh.RootNode.Name );
+            Assert.AreEqual( 2, pack.Mesh.RootNode.ChildCount );
         }
     }
 }

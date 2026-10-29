@@ -68,7 +68,7 @@ namespace GFDLibrary.Tests
                 Resource.Load<Epl>( fileStream );
         }
 
-        // Model tests ( Persona 5 protagonist battle model )
+        // Model pack tests ( Persona 5 protagonist battle model )
 
         [TestMethod()]
         public void LoadFromStream_Model_P5PlayerModel_ShouldNotThrow()
@@ -106,7 +106,7 @@ namespace GFDLibrary.Tests
             CompareModels( originalModel, newModel );
         }
 
-        // Model tests ( Persona 4 DAN Face model w/ morphers )
+        // Model pack tests ( Persona 4 DAN Face model w/ morphers )
 
         [TestMethod()]
         public void LoadFromStream_Model_P4DMorphFaceModel_ShouldNotThrow()
@@ -144,7 +144,7 @@ namespace GFDLibrary.Tests
             CompareModels( originalModel, newModel );
         }
 
-        // Model tests ( Persona 5 field level model )
+        // Model pack tests ( Persona 5 field level model )
 
         [TestMethod()]
         public void LoadFromStream_Model_P5FieldLevelModel_ShouldNotThrow()
@@ -281,7 +281,7 @@ namespace GFDLibrary.Tests
 
             CompareTextureDictionaries( a.Textures, a.Textures );
             CompareMaterialDictionaries( a.Materials, b.Materials );
-            CompareScenes( a.Model, b.Model );
+            CompareScenes( a.Mesh, b.Mesh );
             CompareAnimationPackage( a.AnimationPack, b.AnimationPack );
         }
 
@@ -547,7 +547,7 @@ namespace GFDLibrary.Tests
             }
         }
 
-        private void CompareScenes( Model a, Model b )
+        private void CompareScenes( Mesh a, Mesh b )
         {
             if ( a == null || b == null )
             {
@@ -639,15 +639,15 @@ namespace GFDLibrary.Tests
             switch ( a.Type )
             {
                 case NodeAttachmentType.Invalid:
-                case NodeAttachmentType.Model:
+                case NodeAttachmentType.Mesh:
                 case NodeAttachmentType.Unknown:
                     throw new InvalidDataException();
 
                 case NodeAttachmentType.Node:
                     CompareNodes( a.GetValue<Node>(), b.GetValue<Node>() );
                     break;
-                case NodeAttachmentType.Mesh:
-                    CompareGeometries( a.GetValue<Mesh>(), b.GetValue<Mesh>() );
+                case NodeAttachmentType.Geometry:
+                    CompareGeometries( a.GetValue<Geometry>(), b.GetValue<Geometry>() );
                     break;
                 case NodeAttachmentType.Camera:
                     CompareCameras( a.GetValue<Camera>(), b.GetValue<Camera>() );
@@ -767,7 +767,7 @@ namespace GFDLibrary.Tests
             Assert.AreEqual( a.Field190, b.Field190 );
         }
 
-        private void CompareGeometries( Mesh a, Mesh b )
+        private void CompareGeometries( Geometry a, Geometry b )
         {
             if ( a == null || b == null )
             {

@@ -1,10 +1,12 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Numerics;
+using GFDLibrary.Cameras;
 using GFDLibrary.Common;
-using GFDLibrary.Graphics;
 using GFDLibrary.IO;
+using GFDLibrary.Lights;
 
 namespace GFDLibrary.Models
 {
@@ -12,228 +14,25 @@ namespace GFDLibrary.Models
     {
         public override ResourceType ResourceType => ResourceType.Mesh;
 
-        public GeometryFlags Flags { get; set; }
-
-        public VertexAttributeFlags VertexAttributeFlags { get; set; }
-
-        public int TriangleCount => Triangles?.Length ?? 0;
-
-        public TriangleIndexFormat TriangleIndexFormat { get; set; }
-
-        public int VertexCount => Vertices.Length;
-
-        public int Field14 { get; set; }
-
-        // Vertex attributes
-        private Vector3[] mVertices;
-        public Vector3[] Vertices
+        private ModelFlags mFlags;
+        public ModelFlags Flags
         {
-            get => mVertices;
+            get => mFlags;
             set
             {
-                if ( value != null )
-                    VertexAttributeFlags |= VertexAttributeFlags.Position;
-                else
-                    VertexAttributeFlags &= ~VertexAttributeFlags.Position;
-
-                mVertices = value;
+                mFlags = value;
+                ValidateFlags();
             }
         }
 
-        private Vector3[] mNormals;
-        public Vector3[] Normals
+        private List<Bone> mBones;
+        public List<Bone> Bones
         {
-            get => mNormals;
+            get => mBones;
             set
             {
-                if ( value != null )
-                    VertexAttributeFlags |= VertexAttributeFlags.Normal;
-                else
-                    VertexAttributeFlags &= ~VertexAttributeFlags.Normal;
-
-                mNormals = value;
-            }
-        }
-
-        private Vector3[] mBinormals;
-        public Vector3[] Binormals
-        {
-            get => mBinormals;
-            set
-            {
-                if ( value != null )
-                    VertexAttributeFlags |= VertexAttributeFlags.Binormal;
-                else
-                    VertexAttributeFlags &= ~VertexAttributeFlags.Binormal;
-
-                mBinormals = value;
-            }
-        }
-
-        private Vector3[] mTangents;
-        public Vector3[] Tangents
-        {
-            get => mTangents;
-            set
-            {
-                if ( value != null )
-                    VertexAttributeFlags |= VertexAttributeFlags.Tangent;
-                else
-                    VertexAttributeFlags &= ~VertexAttributeFlags.Tangent;
-
-                mTangents = value;
-            }
-        }
-
-        private Color[] mColorChannel0;
-        public Color[] ColorChannel0
-        {
-            get => mColorChannel0;
-            set
-            {
-                if ( value != null )
-                    VertexAttributeFlags |= VertexAttributeFlags.Color0;
-                else
-                    VertexAttributeFlags &= ~VertexAttributeFlags.Color0;
-
-                mColorChannel0 = value;
-            }
-        }
-
-        private Color[] mColorChannel1;
-        public Color[] ColorChannel1
-        {
-            get => mColorChannel1;
-            set
-            {
-                if ( value != null )
-                    VertexAttributeFlags |= VertexAttributeFlags.Color1;
-                else
-                    VertexAttributeFlags &= ~VertexAttributeFlags.Color1;
-
-                mColorChannel1 = value;
-            }
-        }
-
-        private Color[] mColorChannel2;
-        public Color[] ColorChannel2
-        {
-            get => mColorChannel2;
-            set
-            {
-                if ( value != null )
-                    VertexAttributeFlags |= VertexAttributeFlags.Color2;
-                else
-                    VertexAttributeFlags &= ~VertexAttributeFlags.Color2;
-
-                mColorChannel2 = value;
-            }
-        }
-
-        private Vector2[] mTexCoordsChannel0;
-        public Vector2[] TexCoordsChannel0
-        {
-            get => mTexCoordsChannel0;
-            set
-            {
-                if ( value != null )
-                    VertexAttributeFlags |= VertexAttributeFlags.TexCoord0;
-                else
-                    VertexAttributeFlags &= ~VertexAttributeFlags.TexCoord0;
-
-                mTexCoordsChannel0 = value;
-            }
-        }
-
-        private Vector2[] mTexCoordsChannel1;
-        public Vector2[] TexCoordsChannel1
-        {
-            get => mTexCoordsChannel1;
-            set
-            {
-                if ( value != null )
-                    VertexAttributeFlags |= VertexAttributeFlags.TexCoord1;
-                else
-                    VertexAttributeFlags &= ~VertexAttributeFlags.TexCoord1;
-
-                mTexCoordsChannel1 = value;
-            }
-        }
-
-        private Vector2[] mTexCoordsChannel2;
-        public Vector2[] TexCoordsChannel2
-        {
-            get => mTexCoordsChannel2;
-            set
-            {
-                if ( value != null )
-                    VertexAttributeFlags |= VertexAttributeFlags.TexCoord2;
-                else
-                    VertexAttributeFlags &= ~VertexAttributeFlags.TexCoord2;
-
-                mTexCoordsChannel2 = value;
-            }
-        }
-
-        private VertexWeight[] mVertexWeights;
-        public VertexWeight[] VertexWeights
-        {
-            get => mVertexWeights;
-            set
-            {
-                if ( value != null )
-                    Flags |= GeometryFlags.HasVertexWeights;
-                else
-                    Flags &= ~GeometryFlags.HasVertexWeights;
-
-                mVertexWeights = value;
-            }
-        }
-
-        private Triangle[] mTriangles;
-        public Triangle[] Triangles
-        {
-            get => mTriangles;
-            set
-            {
-                if ( value != null )
-                    Flags |= GeometryFlags.HasTriangles;
-                else
-                    Flags &= ~GeometryFlags.HasTriangles;
-
-                mTriangles = value;
-            }
-        }
-
-        private MorphTargetList mMorphTargets;
-        public MorphTargetList MorphTargets
-        {
-            get => mMorphTargets;
-            set
-            {
-                if ( value != null )
-                    Flags |= GeometryFlags.HasMorphTargets;
-                else
-                    Flags &= ~GeometryFlags.HasMorphTargets;
-
-                mMorphTargets = value;
-            }
-        }
-
-        private string mMaterialName;
-        public string MaterialName
-        {
-            get => mMaterialName;
-            set
-            {
-                // An empty name is still a name: a mesh can carry the flag with a zero length
-                // string, and clearing the flag for it would drop the field on write.
-                if ( value != null )
-                    Flags |= GeometryFlags.HasMaterial;
-                else
-                    Flags &= ~GeometryFlags.HasMaterial;
-
-                mMaterialName = value;
+                mBones = value;
+                ValidateFlags();
             }
         }
 
@@ -243,12 +42,8 @@ namespace GFDLibrary.Models
             get => mBoundingBox;
             set
             {
-                if ( value != null )
-                    Flags |= GeometryFlags.HasBoundingBox;
-                else
-                    Flags &= ~GeometryFlags.HasBoundingBox;
-
                 mBoundingBox = value;
+                ValidateFlags();
             }
         }
 
@@ -258,612 +53,794 @@ namespace GFDLibrary.Models
             get => mBoundingSphere;
             set
             {
-                if ( value != null )
-                    Flags |= GeometryFlags.HasBoundingSphere;
-                else
-                    Flags &= ~GeometryFlags.HasBoundingSphere;
-
                 mBoundingSphere = value;
+                ValidateFlags();
             }
         }
 
-        public float LodStart { get; set; }
+        public Node RootNode { get; set; }
 
-        public float LodEnd { get; set; }
+        public byte Field100_10 { get; set; }
 
-        public byte Unk_StrideType { get; set; }
-        public byte Unk_VertexWeight { get; set; }
+        public IEnumerable<Node> Nodes
+        {
+            get
+            {
+                IEnumerable<Node> RecursivelyAddToList( Node node )
+                {
+                    yield return node;
+                    foreach ( var childNode in node.Children )
+                    {
+                        foreach ( var childChildNode in RecursivelyAddToList( childNode ) )
+                            yield return childChildNode;
+                    }
+                }
 
-        public Vector2[][] TexCoordChannels => new[] { mTexCoordsChannel0, mTexCoordsChannel1, mTexCoordsChannel2 };
-        public Color[][] ColorChannels => new[] { mColorChannel0, mColorChannel1, mColorChannel2 };
+                return RecursivelyAddToList( RootNode );
+            }
+        }
+
+        public IEnumerable<Geometry> Geometries
+            => Nodes.SelectMany( n => n.Geometries );
 
         public Mesh()
-        {
-            TriangleIndexFormat = TriangleIndexFormat.UInt16;
+        {         
         }
 
-        public Mesh( uint version ) : base( version )
+        public Mesh(uint version) : base(version)
         {
-            TriangleIndexFormat = TriangleIndexFormat.UInt16;
-            Unk_StrideType = 3;
-        }
-
-        /// <summary>
-        /// Transforms the vertices using the bone weights while utilizing the inverse bind matrices from the bone palette.
-        /// </summary>
-        /// <param name="parentNode"></param>
-        /// <param name="nodes"></param>
-        /// <param name="usedBones"></param>
-        /// <returns></returns>
-        public (Vector3[] Vertices, Vector3[] Normals) Transform( Node parentNode, IList<Node> nodes, List<Bone> usedBones,
-            bool includeWeights = true, bool includeParentTransform = false, Matrix4x4? offsetTransform = null )
-        {
-            if ( nodes == null ) throw new ArgumentNullException( nameof( nodes ) );
-            if ( VertexWeights != null && usedBones == null ) throw new ArgumentNullException( nameof( usedBones ) );
-
-            var vertices = new Vector3[VertexCount];
-            Vector3[] normals = null;
-
-            if ( Normals != null )
-                normals = new Vector3[VertexCount];
-
-            var parentNodeWorldTransform = parentNode != null ? parentNode.WorldTransform : Matrix4x4.Identity;
-            Matrix4x4.Invert( parentNodeWorldTransform, out var parentNodeWorldTransformInv );
-
-            for ( int i = 0; i < VertexCount; i++ )
-            {
-                var position = Vertices[i];
-                var normal = Normals != null ? Normals[i] : Vector3.Zero;
-                var newPosition = Vector3.Zero;
-                var newNormal = Vector3.Zero;
-
-                if ( includeWeights && VertexWeights != null )
-                {
-                    for ( int j = 0; j < VertexWeights[i].Weights.Length; j++ )
-                    {
-                        var weight = VertexWeights[i].Weights[j];
-                        if ( weight == 0 )
-                            continue;
-
-                        var boneIndex = VertexWeights[i].Indices[j];
-                        var boneNodeIndex = usedBones[boneIndex].NodeIndex;
-                        var boneNode = nodes[boneNodeIndex];
-                        var inverseBindMatrix = usedBones[boneIndex].InverseBindMatrix;
-                        var bindMatrix = boneNode.WorldTransform;
-                        newPosition += Vector3.Transform( Vector3.Transform( position, inverseBindMatrix ), bindMatrix * weight );
-                        if ( normals != null )
-                            newNormal += Vector3.TransformNormal( Vector3.TransformNormal( normal, inverseBindMatrix ), bindMatrix * weight );
-                    }
-
-                    if ( !includeParentTransform )
-                    {
-                        newPosition = Vector3.Transform( newPosition, parentNodeWorldTransformInv );
-
-                        if ( normals != null )
-                            newNormal =
-                                Vector3.Normalize( Vector3.TransformNormal( newNormal, parentNodeWorldTransformInv ) );
-                    }
-                }
-                else
-                {
-                    newPosition = position;
-                    newNormal = normal;
-
-                    if ( includeParentTransform )
-                    {
-                        newPosition = Vector3.Transform( newPosition, parentNodeWorldTransform );
-
-                        if ( normals != null )
-                            newNormal =
-                                Vector3.Normalize( Vector3.TransformNormal( newNormal, parentNodeWorldTransform ) );
-
-                    }
-                }
-
-                if ( offsetTransform != null )
-                {
-                    newPosition = Vector3.Transform( newPosition, offsetTransform.Value );
-
-                    if ( normals != null )
-                        newNormal =
-                            Vector3.Normalize( Vector3.TransformNormal( newNormal, offsetTransform.Value ) );
-                }
-
-                vertices[i] = newPosition;
-                if ( normals != null )
-                    normals[i] = newNormal;
-            }
-
-            return (vertices, normals);
         }
 
         protected override void ReadCore( ResourceReader reader )
         {
-            var flags = (GeometryFlags)reader.ReadInt32();
-            Flags = flags;
-            VertexAttributeFlags = (VertexAttributeFlags)reader.ReadInt32();
+            var flags = ( ModelFlags ) reader.ReadInt32();
 
-            int triangleCount = 0;
-
-            if ( Flags.HasFlag( GeometryFlags.HasTriangles ) )
+            if ( flags.HasFlag( ModelFlags.HasSkinning ) )
             {
-                triangleCount = reader.ReadInt32();
-                TriangleIndexFormat = (TriangleIndexFormat)reader.ReadInt16();
-                Triangles = new Triangle[triangleCount];
+                int boneCount = reader.ReadInt32();
+
+                var inverseBindMatrices = new Matrix4x4[boneCount];
+                var boneToNodeIndices = new ushort[reader.ValidateCount( boneCount, 2 )];
+                for ( int i = 0; i < boneCount; i++ )
+                    inverseBindMatrices[i] = reader.ReadMatrix4x4();
+
+                for ( int i = 0; i < boneCount; i++ )
+                    boneToNodeIndices[i] = reader.ReadUInt16();
+
+                Bones = new List<Bone>( boneCount );
+                for ( int i = 0; i < boneCount; i++ )
+                    Bones.Add( new Bone( boneToNodeIndices[ i ], inverseBindMatrices[ i ] ) );
+                if ( Version >= 0x2040001 )
+                    Field100_10 = reader.ReadByte();
             }
 
-            int vertexCount = reader.ValidateCount( reader.ReadInt32(), 4 );
-            if ( Version > 0x2110205 )
-            {
-                Unk_StrideType = reader.ReadByte();
-            }
-
-            if ( Version > 0x1103020 )
-            {
-                Field14 = reader.ReadInt32();
-            }
-            AllocateBuffers( vertexCount );
-            long StartPos = reader.Position;
-            for ( int i = 0; i < vertexCount; i++ )
-            {
-                void ReadLegacyVertexWeights()
-                {
-                    const int MAX_NUM_WEIGHTS = 4;
-                    VertexWeights[i].Weights = new float[MAX_NUM_WEIGHTS];
-
-                    for ( int j = 0; j < VertexWeights[i].Weights.Length; j++ )
-                        VertexWeights[i].Weights[j] = reader.ReadSingle();
-
-                    VertexWeights[i].Indices = new ushort[MAX_NUM_WEIGHTS];
-                    uint indices = reader.ReadUInt32();
-                    for ( int j = 0; j < VertexWeights[i].Indices.Length; j++ )
-                    {
-                        int shift = j * 8;
-                        VertexWeights[i].Indices[j] = (byte)( ( indices & ( 0xFF << shift ) ) >> shift );
-                    }
-                }
-
-                if ( Version < 0x2000000 )
-                {
-                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Position ) )
-                        Vertices[i] = reader.ReadVector3();
-
-                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Normal ) )
-                        Normals[i] = reader.ReadVector3();
-
-                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Binormal ) )
-                        Binormals[i] = reader.ReadVector3();
-
-                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Tangent ) )
-                        Tangents[i] = reader.ReadVector3();
-
-                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color0 ) )
-                        ColorChannel0[i] = new Color() { ABGR = reader.ReadUInt32() };
-
-                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord0 ) )
-                        TexCoordsChannel0[i] = reader.ReadVector2();
-                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord1 ) )
-                        TexCoordsChannel1[i] = reader.ReadVector2();
-                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord2 ) )
-                        TexCoordsChannel2[i] = reader.ReadVector2();
-
-                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color2 ) )
-                        ColorChannel1[i] = new Color() { ABGR = reader.ReadUInt32() };
-
-                    if ( Flags.HasFlag( GeometryFlags.HasVertexWeights ) )
-                        ReadLegacyVertexWeights();
-                }
-                else
-                {
-                    const VertexAttributeFlags knownFlags = VertexAttributeFlags.Position |
-                        VertexAttributeFlags.Normal |
-                        VertexAttributeFlags.Binormal |
-                        VertexAttributeFlags.TexCoord0 |
-                        VertexAttributeFlags.TexCoord1 |
-                        VertexAttributeFlags.TexCoord2 |
-                        VertexAttributeFlags.Color0 |
-                        VertexAttributeFlags.Color1;
-                    var unknownFlags = VertexAttributeFlags & ~knownFlags;
-                    if ( unknownFlags != 0 )
-                        throw new NotImplementedException( $"Model contains one or more vertex attributes that are not yet implemented: {unknownFlags}" );
-
-                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Position ) )
-                        Vertices[i] = reader.ReadVector3();
-
-                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord0 ) )
-                        TexCoordsChannel0[i] = reader.ReadVector2Half();
-
-                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Normal ) )
-                        Normals[i] = reader.ReadVector3();
-
-                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Binormal ) )
-                        Binormals[i] = reader.ReadVector3();
-
-                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord1 ) )
-                        TexCoordsChannel1[i] = reader.ReadVector2Half();
-
-                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord2 ) )
-                        TexCoordsChannel2[i] = reader.ReadVector2Half();
-
-                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color0 ) ) // field object?
-                        ColorChannel0[i] = new Color() { RGBA = reader.ReadUInt32() };
-
-                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color1 ) ) // character model?
-                        ColorChannel1[i] = new Color() { RGBA = reader.ReadUInt32() };
-
-                    if ( Flags.HasFlag( GeometryFlags.HasVertexWeights ) )
-                    {
-                        if ( Version < 0x2040001 )
-                        {
-                            ReadLegacyVertexWeights();
-                        }
-                        else
-                        {
-                            const int MAX_NUM_WEIGHTS = 8;
-                            VertexWeights[i].Weights = new float[MAX_NUM_WEIGHTS];
-
-                            for ( int j = 0; j < VertexWeights[i].Weights.Length; j++ )
-                            {
-                                VertexWeights[i].Weights[j] = (float)reader.ReadUInt16() / 0xffff;
-                            }
-
-                            VertexWeights[i].Indices = new ushort[MAX_NUM_WEIGHTS];
-                            for ( int j = 0; j < VertexWeights[i].Indices.Length; j++ )
-                                VertexWeights[i].Indices[j] = reader.ReadUInt16();
-                        }
-                    }
-                }
-            }
-            //long StrideLength = ( reader.Position - StartPos ) / vertexCount;
-            //Logger.Info( $"Stride Length: 0x{StrideLength:X}" );
-
-            if ( Flags.HasFlag( GeometryFlags.HasVertexWeights ) && Version >= 0x2110213 )
-                Unk_VertexWeight = reader.ReadByte();
-
-
-            if ( Flags.HasFlag( GeometryFlags.HasMorphTargets ) )
-            {
-                MorphTargets = reader.ReadResource<MorphTargetList>( Version );
-            }
-
-            if ( Flags.HasFlag( GeometryFlags.HasTriangles ) )
-            {
-                for ( int i = 0; i < Triangles.Length; i++ )
-                {
-                    switch ( TriangleIndexFormat )
-                    {
-                        case TriangleIndexFormat.UInt16:
-                            Triangles[i].A = reader.ReadUInt16();
-                            Triangles[i].B = reader.ReadUInt16();
-                            Triangles[i].C = reader.ReadUInt16();
-                            break;
-                        case TriangleIndexFormat.UInt32:
-                            Triangles[i].A = reader.ReadUInt32();
-                            Triangles[i].B = reader.ReadUInt32();
-                            Triangles[i].C = reader.ReadUInt32();
-                            break;
-                        default:
-                            throw new Exception( $"Unsupported triangle index type: {TriangleIndexFormat}" );
-                    }
-                }
-            }
-
-            if ( Flags.HasFlag( GeometryFlags.HasMaterial ) )
-            {
-                MaterialName = reader.ReadStringWithHash( Version );
-            }
-
-            if ( Flags.HasFlag( GeometryFlags.HasBoundingBox ) )
-            {
+            if ( flags.HasFlag( ModelFlags.HasBoundingBox ) )
                 BoundingBox = reader.ReadBoundingBox();
-            }
 
-            if ( Flags.HasFlag( GeometryFlags.HasBoundingSphere ) )
-            {
+            if ( flags.HasFlag( ModelFlags.HasBoundingSphere ) )
                 BoundingSphere = reader.ReadBoundingSphere();
-            }
 
-            if ( Flags.HasFlag( GeometryFlags.Bit12 ) )
-            {
-                LodStart = reader.ReadSingle();
-                LodEnd = reader.ReadSingle();
-            }
-
-            if ( Flags != flags )
-                throw new InvalidDataException( $"Mesh flags read back as {Flags} but the file says {flags}." );
-        }
-
-        private void AllocateBuffers( int vertexCount )
-        {
-            if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Position ) )
-            {
-                Vertices = new Vector3[vertexCount];
-            }
-
-            if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Normal ) )
-            {
-                Normals = new Vector3[vertexCount];
-            }
-
-            if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Binormal ) )
-            {
-                Binormals = new Vector3[vertexCount];
-            }
-
-            if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Tangent ) )
-            {
-                Tangents = new Vector3[vertexCount];
-            }
-
-            if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color0 ) )
-            {
-                ColorChannel0 = new Color[vertexCount];
-            }
-
-            if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color1 ) )
-            {
-                ColorChannel1 = new Color[vertexCount];
-            }
-
-            if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color2 ) )
-            {
-                ColorChannel2 = new Color[vertexCount];
-            }
-
-            if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord0 ) )
-            {
-                TexCoordsChannel0 = new Vector2[vertexCount];
-            }
-
-            if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord1 ) )
-            {
-                TexCoordsChannel1 = new Vector2[vertexCount];
-            }
-
-            if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord2 ) )
-            {
-                TexCoordsChannel2 = new Vector2[vertexCount];
-            }
-
-            if ( Flags.HasFlag( GeometryFlags.HasVertexWeights ) )
-            {
-                VertexWeights = new VertexWeight[vertexCount];
-            }
+            RootNode = Node.ReadRecursive( reader, Version );
+            Flags = flags;
         }
 
         protected override void WriteCore( ResourceWriter writer )
         {
-            writer.WriteInt32( (int)Flags );
-            writer.WriteInt32( (int)VertexAttributeFlags );
+            writer.WriteInt32( ( int ) Flags );
 
-            if ( Flags.HasFlag( GeometryFlags.HasTriangles ) )
+            if ( Flags.HasFlag( ModelFlags.HasSkinning ) )
             {
-                writer.WriteInt32( TriangleCount );
-                writer.WriteInt16( (short)TriangleIndexFormat );
+                writer.WriteInt32( Bones.Count );
+
+                foreach ( var bone in Bones )
+                    writer.WriteMatrix4x4( bone.InverseBindMatrix );
+
+                foreach ( var bone in Bones )
+                    writer.WriteUInt16( bone.NodeIndex );
+
+                if ( Version >= 0x2040001 )
+                    writer.WriteByte( Field100_10 );
             }
 
-            writer.WriteInt32( VertexCount );
-            if ( Version > 0x2110205 )
-            {
-                writer.WriteByte( Unk_StrideType );
-            }
-
-            if ( Version > 0x1103020 )
-            {
-                writer.WriteInt32( Field14 );
-            }
-
-            for ( int i = 0; i < VertexCount; i++ )
-            {
-                if ( Version < 0x2000000 )
-                {
-                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Position ) )
-                        writer.WriteVector3( Vertices[i] );
-
-                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Normal ) )
-                        writer.WriteVector3( Normals[i] );
-
-                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Binormal ) )
-                        writer.WriteVector3( Binormals[i] );
-
-                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Tangent ) )
-                        writer.WriteVector3( Tangents[i] );
-
-                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color0 ) )
-                        writer.WriteUInt32( ColorChannel0[i].ABGR );
-
-                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord0 ) )
-                        writer.WriteVector2( TexCoordsChannel0[i] );
-
-                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord1 ) )
-                        writer.WriteVector2( TexCoordsChannel1[i] );
-
-                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord2 ) )
-                        writer.WriteVector2( TexCoordsChannel2[i] );
-
-                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color2 ) )
-                        writer.WriteUInt32( ColorChannel1[i].ABGR );
-                } else
-                {
-                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Position ) )
-                        writer.WriteVector3( Vertices[i] );
-
-                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord0 ) )
-                        writer.WriteVector2Half( TexCoordsChannel0[i] );
-
-                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Normal ) )
-                        writer.WriteVector3( Normals[i] );
-
-                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Binormal ) )
-                        writer.WriteVector3( Binormals[i] );
-
-                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord1 ) )
-                        writer.WriteVector2Half( TexCoordsChannel1[i] );
-
-                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.TexCoord2 ) )
-                        writer.WriteVector2Half( TexCoordsChannel2[i] );
-
-                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color0 ) )
-                        writer.WriteUInt32( ColorChannel0[i].RGBA );
-
-                    if ( VertexAttributeFlags.HasFlag( VertexAttributeFlags.Color1 ) )
-                        writer.WriteUInt32( ColorChannel1[i].RGBA );
-                }
-
-                if ( Flags.HasFlag( GeometryFlags.HasVertexWeights ) )
-                {
-                    if ( Version < 0x2040001 )
-                    {
-                        var vertexWeight = VertexWeights[i];
-                        for ( int j = 0; j < 4; j++ )
-                            writer.WriteSingle( vertexWeight.Weights[j] );
-
-                        int indices = vertexWeight.Indices[0] << 00 | ( vertexWeight.Indices[1] << 08 ) |
-                                      vertexWeight.Indices[2] << 16 | ( vertexWeight.Indices[3] << 24 );
-
-                        writer.WriteInt32( indices );
-                    } else
-                    {
-                        var vertexWeight = VertexWeights[i];
-                        for ( int j = 0; j < 8; j++ )
-                            writer.WriteUInt16( (ushort)(vertexWeight.Weights[j] * 0xffff) );
-                        for ( int j = 0; j < 8; j++ )
-                            writer.WriteUInt16( vertexWeight.Indices[j] );
-                    }
-                }
-            }
-
-            if ( Flags.HasFlag( GeometryFlags.HasVertexWeights ) && Version >= 0x2110213 )
-                writer.WriteByte( Unk_VertexWeight );
-
-            if ( Flags.HasFlag( GeometryFlags.HasMorphTargets ) )
-            {
-                writer.WriteResource( MorphTargets );
-            }
-
-            if ( Flags.HasFlag( GeometryFlags.HasTriangles ) )
-            {
-                for ( int i = 0; i < Triangles.Length; i++ )
-                {
-                    switch ( TriangleIndexFormat )
-                    {
-                        case TriangleIndexFormat.UInt16:
-                            writer.WriteUInt16( (ushort)Triangles[i].A );
-                            writer.WriteUInt16( (ushort)Triangles[i].B );
-                            writer.WriteUInt16( (ushort)Triangles[i].C );
-                            break;
-                        case TriangleIndexFormat.UInt32:
-                            writer.WriteUInt32( Triangles[i].A );
-                            writer.WriteUInt32( Triangles[i].B );
-                            writer.WriteUInt32( Triangles[i].C );
-                            break;
-                        default:
-                            throw new InvalidDataException( $"Unsupported triangle index type: {TriangleIndexFormat}" );
-                    }
-                }
-            }
-
-            if ( Flags.HasFlag( GeometryFlags.HasMaterial ) )
-            {
-                writer.WriteStringWithHash( Version, MaterialName );
-            }
-
-            if ( Flags.HasFlag( GeometryFlags.HasBoundingBox ) )
-            {
+            if ( Flags.HasFlag( ModelFlags.HasBoundingBox ) )
                 writer.WriteBoundingBox( BoundingBox.Value );
-            }
 
-            if ( Flags.HasFlag( GeometryFlags.HasBoundingSphere ) )
-            {
+            if ( Flags.HasFlag( ModelFlags.HasBoundingSphere ) )
                 writer.WriteBoundingSphere( BoundingSphere.Value );
+
+            Node.WriteRecursive( writer, RootNode );
+        }
+
+        public Node GetNode( int nodeIndex )
+        {
+            var i = 0;
+            return Nodes.FirstOrDefault( node => i++ == nodeIndex );
+        }
+
+        public void ReplaceWith( Mesh other )
+        {
+            // Remove geometries from this scene
+            RemoveGeometryAttachments();
+
+            Bones = other.Bones;
+            BoundingBox = other.BoundingBox;
+            BoundingSphere = other.BoundingSphere;
+            Flags = other.Flags;
+
+            var otherNodes = other.Nodes.ToList();
+
+            // Replace common nodes and get the unique nodes
+            var uniqueNodes = ReplaceCommonNodesAndGetUniqueNodes( otherNodes );
+
+            // Remove nodes that dont have attachments
+            uniqueNodes.RemoveAll( x => !x.HasAttachments );
+
+            // Fix unique nodes
+            FixUniqueNodes( other.RootNode, otherNodes, uniqueNodes );
+
+            // Add unique nodes to root.
+            foreach ( var uniqueNode in uniqueNodes )
+                RootNode.AddChildNode( uniqueNode );
+
+            // Rebuild matrix palette
+            RebuildBonePalette( otherNodes );
+        }
+
+        private List<Node> ReplaceCommonNodesAndGetUniqueNodes( IEnumerable<Node> otherNodes )
+        {
+            var uniqueNodes = new List<Node>();
+
+            foreach ( var otherNode in otherNodes )
+            {
+                if ( otherNode.Name == "RootNode" || ( otherNode.Parent == null || otherNode.Parent == otherNodes.First() ) && otherNode.Name.EndsWith( "_root" ) )
+                {
+                    continue;
+                }
+
+                if ( !Nodes.Any( x => x.Name == "Bip01 雜ｳ霍｡" ) )
+                {
+                    // Hacks to fix enemy/persona models
+                    if ( otherNode.Name == "Bip01 閼頑､・" )
+                        otherNode.Name = "Bip01 Spine";
+                    else if ( otherNode.Parent != null && otherNode.Parent.Name == "Bip01 Spine" && otherNode.Name == "Bip01 閼頑､・" )
+                        otherNode.Name = "Bip01 Spine1";
+                    else if ( otherNode.Name == "Bip01 鬥・" )
+                        otherNode.Name = "Bip01 Neck";
+                    else if ( otherNode.Name == "Bip01 雜ｳ霍｡" )
+                        otherNode.Name = "Bip01 Footsteps";
+                }
+
+                var thisNode = Nodes.SingleOrDefault( x => x.Name.Equals( otherNode.Name ) );
+
+                if ( thisNode == null )
+                {
+                    // Node not present, can't merge
+                    uniqueNodes.Add( otherNode );
+                    continue;
+                }
+
+                // Merge attachments
+                if ( otherNode.HasAttachments )
+                {
+                    Matrix4x4.Invert( thisNode.WorldTransform, out var thisNodeWorldTransformInv );
+                    var offsetMatrix = otherNode.WorldTransform * thisNodeWorldTransformInv;
+
+                    foreach ( var attachment in otherNode.Attachments )
+                    {
+                        switch ( attachment.Type )
+                        {
+                            case NodeAttachmentType.Geometry:
+                                {
+                                    var geometry = attachment.GetValue<Geometry>();
+
+                                    for ( int i = 0; i < geometry.Vertices.Length; i++ )
+                                    {
+                                        var position = geometry.Vertices[ i ];
+                                        var newPosition = geometry.Vertices[ i ] = Vector3.Transform( position, offsetMatrix );
+
+                                        if ( geometry.MorphTargets != null )
+                                        {
+                                            foreach ( var morphTarget in geometry.MorphTargets )
+                                            {
+                                                if ( morphTarget.VertexCount != geometry.VertexCount )
+                                                    throw new InvalidDataException( "A morph target has a different vertex count to its geometry." );
+                                                morphTarget.Vertices[ i ] = Vector3.Transform( ( position + morphTarget.Vertices[ i ] ), offsetMatrix ) - newPosition;
+                                            }
+                                        }
+                                    }
+
+                                    if ( geometry.Normals != null )
+                                    {
+                                        for ( int i = 0; i < geometry.Normals.Length; i++ )
+                                            geometry.Normals[i] = Vector3.TransformNormal( geometry.Normals[i], offsetMatrix );
+                                    }
+                                }
+                                break;
+
+                            case NodeAttachmentType.Epl:
+                                continue;
+
+                            case NodeAttachmentType.Light:
+                                if ( thisNode.Attachments.Any( x => x.Type == NodeAttachmentType.Light ) )
+                                {
+                                    // Don't replace lights, likely not what we want to do
+                                    continue;
+                                }
+                                break;
+                        }
+
+                        thisNode.Attachments.Add( attachment );
+                    }
+                }
+
+                // Replace properties
+                foreach ( var property in otherNode.Properties )
+                    thisNode.Properties[property.Key] = property.Value;
             }
 
-            if ( Flags.HasFlag( GeometryFlags.Bit12 ) )
+            return uniqueNodes;
+        }
+
+        private void FixUniqueNodes( Node otherRootNode, List<Node> otherNodes, List<Node> uniqueNodes )
+        {
+            foreach ( var uniqueNode in uniqueNodes.ToList() )
             {
-                writer.WriteSingle( LodStart );
-                writer.WriteSingle( LodEnd );
+                if ( uniqueNode.Parent == otherRootNode )
+                    continue;
+
+                // Find the last unique node in the hierarchy chain (going up the hierarchy)
+                var lastUniqueNode = uniqueNode;
+                while ( true )
+                {
+                    var parent = lastUniqueNode.Parent;
+                    if ( parent == null || parent == otherRootNode || Nodes.SingleOrDefault( x => x.Name.Equals( parent.Name ) ) != null )
+                        break;
+
+                    lastUniqueNode = parent;
+                }
+
+                // Get unweighted geometries
+                var unweightedGeometries = uniqueNode.Attachments.Where( x => x.Type == NodeAttachmentType.Geometry )
+                                                     .Select( x => x.GetValue<Geometry>() ).Where( x => x.VertexWeights == null ).ToList();
+
+                if ( unweightedGeometries.Any() )
+                {
+                    // If we have unweighted geometries, we have to assign vertex weights to them so that they
+                    // properly animate.
+                    // The node we are going to assign the weights to is the shared ancestor (between this model and the replacement one)
+                    // in the hopes that it will work out.
+
+                    // Find the bone index of this node
+                    int lastUniqueNodeIndex = -1;
+                    for ( int i = 0; i < otherNodes.Count; i++ )
+                    {
+                        if ( otherNodes[i].Name == lastUniqueNode.Parent.Name )
+                        {
+                            lastUniqueNodeIndex = i;
+                            break;
+                        }
+                    }
+
+                    if ( lastUniqueNodeIndex == -1 )
+                        throw new InvalidDataException( "No node carries the bone the model refers to." );
+
+                    if ( Bones == null )
+                    {
+                        Bones = new List<Bone>();
+                    }
+
+                    int boneIndex = Bones.FindIndex( x => x.NodeIndex == lastUniqueNodeIndex );
+
+                    if ( boneIndex == -1 )
+                    {
+                        // Node wasn't used as a bone, so we add it
+                        // TODO: This is a lazy hack. This should be done during the Bones fixup
+                        boneIndex = Bones.Count;
+                        Bones.Add( new Bone( ( ushort ) lastUniqueNodeIndex, Matrix4x4.Identity ) );
+                    }
+
+                    // Set vertex weights
+                    foreach ( var geometry in unweightedGeometries )
+                    {
+                        geometry.VertexWeights = new VertexWeight[geometry.VertexCount];
+                        for ( int i = 0; i < geometry.VertexWeights.Length; i++ )
+                        {
+                            ref var weight = ref geometry.VertexWeights[i];
+                            weight.Indices = new ushort[4];
+                            weight.Indices[0] = (ushort)boneIndex;
+                            weight.Weights = new float[4];
+                            weight.Weights[0] = 1f;
+                        }
+                    }
+                }
+
+                //// Fix morphs
+                //var morphs = uniqueNode.Attachments.Where( x => x.Type == NodeAttachmentType.Morph ).Select( x => x.GetValue<Morph>() );
+                //foreach ( var morph in morphs )
+                //{
+                //    // All unique nodes get assigned to the root node
+                //    morph.NodeName = "RootNode";
+                //}
+
+                // Fix transform for the node
+                var worldTransform = uniqueNode.WorldTransform;
+                uniqueNode.Parent?.RemoveChildNode( uniqueNode );
+                uniqueNode.LocalTransform = worldTransform;
             }
+        }
+
+        private void RebuildBonePalette( List<Node> otherNodes )
+        {
+            var uniqueBones = new List<Bone>();
+
+            // Recalculate inverse bind matrices & update bone indices
+            var nodes = Nodes.ToList();
+            foreach ( var node in nodes )
+            {
+                if ( !node.HasAttachments )
+                    continue;
+
+                Matrix4x4.Invert( node.WorldTransform, out var nodeInvWorldTransform );
+
+                foreach ( var geometry in node.Attachments.Where( x => x.Type == NodeAttachmentType.Geometry ).Select( x => x.GetValue<Geometry>() )
+                                              .Where( x => x.VertexWeights != null ) )
+                {
+                    foreach ( var weight in geometry.VertexWeights )
+                    {
+                        for ( int i = 0; i < weight.Indices.Length; i++ )
+                        {
+                            var boneIndex = weight.Indices[i];
+                            var boneWeight = weight.Weights[i];
+                            if ( boneWeight == 0 )
+                                continue;
+
+                            var otherNodeIndex = Bones[boneIndex].NodeIndex;
+                            var otherBoneNode = otherNodes[otherNodeIndex];
+
+                            var thisBoneNode = nodes.FirstOrDefault( x => x.Name == otherBoneNode.Name );
+                            if ( thisBoneNode == null )
+                            {
+                                // Find parent that does exist
+                                var curOtherBoneNode = otherBoneNode.Parent;
+                                while ( thisBoneNode == null && curOtherBoneNode != null )
+                                {
+                                    thisBoneNode = nodes.FirstOrDefault( x => x.Name == curOtherBoneNode.Name );
+                                    curOtherBoneNode = curOtherBoneNode.Parent;
+                                }
+
+                                if ( thisBoneNode == null )
+                                    thisBoneNode = RootNode;
+                            }
+
+                            var boneTransform = thisBoneNode.WorldTransform;
+
+                            // Attempt to fix spaghetti fingers
+                            //if ( thisBoneNode.Name.Contains( "Finger" ) || thisBoneNode.Name.Contains( "Hand" ) ||
+                            //     thisBoneNode.Name.Contains( "hand" ) )
+                            //    boneTransform = otherBoneNode.WorldTransform;
+
+                            var thisNodeIndex = nodes.IndexOf( thisBoneNode );
+                            if ( thisNodeIndex == -1 )
+                                throw new InvalidDataException( "A bone names a node that is not in the model." );
+                            var bindMatrix = boneTransform * nodeInvWorldTransform;
+                            Matrix4x4.Invert( bindMatrix, out var inverseBindMatrix );
+                            
+                            var newBoneIndex =
+                                uniqueBones.FindIndex( x => x.NodeIndex == thisNodeIndex && x.InverseBindMatrix.Equals( inverseBindMatrix ) );
+
+                            if ( newBoneIndex == -1 )
+                            {
+                                // Add if unique
+                                uniqueBones.Add( new Bone( (ushort)thisNodeIndex, inverseBindMatrix ) );
+                                newBoneIndex = uniqueBones.Count - 1;
+                            }
+
+                            // Update bone index
+                            weight.Indices[ i ] = (ushort)newBoneIndex;
+                        }
+                    }
+                }
+            }
+
+            Bones = uniqueBones;
+        }
+
+        private void RemoveGeometryAttachments()
+        {
+            foreach ( var node in Nodes )
+            {
+                if ( node.HasAttachments )
+                    foreach ( var geometryAttachment in node.Attachments.Where( x => x.Type == NodeAttachmentType.Geometry ).ToList() )
+                        node.Attachments.Remove( geometryAttachment );
+            }
+        }
+
+        public void MergeWith(Mesh other)
+        {
+            if (Version != other.Version)
+                throw new InvalidOperationException(
+                    $"Cannot merge models with different versions: {Version:X} vs {other.Version:X}");
+
+            var baseNodes = Nodes.ToList();
+            var baseNodeNames = new HashSet<string>(baseNodes.Select(n => n.Name));
+            var otherNodes = other.Nodes.ToList();
+            var processedOtherNodes = new HashSet<Node>();
+            var clonedMeshes = new List<Geometry>();
+
+            // handle nodes that share a name with a base model.
+            // These must be processed before cloning so their geometries/attachments
+            // are transferred to the existing model's nodes with matching names
+            foreach (var otherNode in otherNodes)
+            {
+                if (otherNode.Name == "RootNode" ||
+                    (otherNode.Parent != null && otherNode.Parent == otherNodes[0] && otherNode.Name.EndsWith("_root")))
+                    continue;
+
+                if (!baseNodeNames.Contains(otherNode.Name))
+                    continue;
+
+                if (RootNode.FindNodeBreadthFirst(otherNode.Name, out var existingNode))
+                {
+                    foreach (var attachment in otherNode.Attachments)
+                    {
+                        if (attachment.Type == NodeAttachmentType.Geometry)
+                        {
+                            var clonedMesh = DeepCloneMesh(attachment.GetValue<Geometry>(), Version);
+                            clonedMeshes.Add(clonedMesh);
+                            existingNode.Attachments.Add(new NodeGeometryAttachment(clonedMesh));
+                        }
+                        else if (attachment.Type != NodeAttachmentType.Epl &&
+                                 attachment.Type != NodeAttachmentType.EplLeaf)
+                        {
+                            existingNode.Attachments.Add(DeepCloneAttachment(attachment, Version));
+                        }
+                    }
+
+                    if (otherNode.HasProperties)
+                    {
+                        foreach (var kvp in otherNode.Properties)
+                            existingNode.Properties[kvp.Key] = kvp.Value;
+                    }
+                }
+
+                processedOtherNodes.Add(otherNode);
+            }
+
+            // Second pass: clone subtrees for nodes that are new,
+            // deleting any children already handled in the first pass.
+            foreach (var otherNode in otherNodes)
+            {
+                if (otherNode.Name == "RootNode" ||
+                    (otherNode.Parent != null && otherNode.Parent == otherNodes[0] && otherNode.Name.EndsWith("_root")))
+                    continue;
+
+                if (processedOtherNodes.Contains(otherNode))
+                    continue;
+
+                var subtreeRoot = FindNewSubtreeRoot(otherNode, other, baseNodeNames);
+
+                if (!processedOtherNodes.Contains(subtreeRoot))
+                {
+                    var clonedSubtree = DeepCloneNode(subtreeRoot, processedOtherNodes);
+                    CollectMeshes(clonedSubtree, clonedMeshes);
+
+                    Node baseParent = null;
+                    if (subtreeRoot.Parent != null &&
+                        subtreeRoot.Parent.Name != "RootNode" &&
+                        baseNodeNames.Contains(subtreeRoot.Parent.Name))
+                    {
+                        RootNode.FindNodeBreadthFirst(subtreeRoot.Parent.Name, out baseParent);
+                    }
+
+                    (baseParent ?? RootNode).AddChildNode(clonedSubtree);
+                    MarkSubtreeProcessed(subtreeRoot, processedOtherNodes, processedOtherNodes);
+                }
+            }
+
+            // After the node tree has been merged, capture the new order.
+            var postMergeNodes = Nodes.ToList();
+
+            // Build a name-based old-index -> new-index reindex for base bones.
+            // merging models shifts bone indices and they must be updated
+            // Must run even when other model has no bones (face models can have 0 "new" bones when merged into body).
+            if (Bones != null && Bones.Count > 0)
+            {
+                var nameToNewIndex = new Dictionary<string, int>();
+                for (int n = 0; n < postMergeNodes.Count; n++)
+                    nameToNewIndex[postMergeNodes[n].Name] = n;
+
+                var oldIndexToName = new Dictionary<int, string>();
+                for (int n = 0; n < baseNodes.Count; n++)
+                    oldIndexToName[n] = baseNodes[n].Name;
+
+                for (int b = 0; b < Bones.Count; b++)
+                {
+                    var oldIdx = Bones[b].NodeIndex;
+                    if (oldIndexToName.TryGetValue(oldIdx, out var name) &&
+                        nameToNewIndex.TryGetValue(name, out var newIdx))
+                    {
+                        Bones[b].NodeIndex = (ushort)newIdx;
+                    }
+                }
+            }
+
+            // No other bones to merge — just validate and return
+            if (other.Bones == null || other.Bones.Count == 0)
+            {
+                ValidateFlags();
+                return;
+            }
+
+            if (Bones == null)
+                Bones = new List<Bone>();
+
+            // Build bone remap table using post-merge node positions
+            var baseBoneNodeNameToIndex = new Dictionary<string, int>();
+            for (int i = 0; i < Bones.Count; i++)
+            {
+                var name = postMergeNodes[Bones[i].NodeIndex].Name;
+                if (!baseBoneNodeNameToIndex.ContainsKey(name))
+                    baseBoneNodeNameToIndex[name] = i;
+            }
+
+            var newBones = new List<Bone>();
+            var remapTable = new int[other.Bones.Count];
+
+            for (int i = 0; i < other.Bones.Count; i++)
+            {
+                var otherBone = other.Bones[i];
+                var otherNode = otherNodes[otherBone.NodeIndex];
+
+                if (baseBoneNodeNameToIndex.TryGetValue(otherNode.Name, out var baseIdx))
+                {
+                    remapTable[i] = baseIdx;
+                }
+                else
+                {
+                    var mergedNode = postMergeNodes.FirstOrDefault(n => n.Name == otherNode.Name);
+                    if (mergedNode == null)
+                    {
+                        remapTable[i] = 0;
+                        continue;
+                    }
+
+                    var mergedNodeIndex = (ushort)postMergeNodes.IndexOf(mergedNode);
+                    newBones.Add(new Bone(mergedNodeIndex, otherBone.InverseBindMatrix));
+                    remapTable[i] = Bones.Count + newBones.Count - 1;
+                }
+            }
+
+            // Remap vertex weights in all cloned geometries
+            foreach (var geometry in clonedMeshes)
+            {
+                if (geometry.VertexWeights == null)
+                    continue;
+
+                for (int v = 0; v < geometry.VertexWeights.Length; v++)
+                {
+                    for (int w = 0; w < geometry.VertexWeights[v].Indices.Length; w++)
+                    {
+                        if (geometry.VertexWeights[v].Weights[w] != 0)
+                            geometry.VertexWeights[v].Indices[w] = (ushort)remapTable[geometry.VertexWeights[v].Indices[w]];
+                    }
+                }
+            }
+
+            // Append new bones
+            Bones.AddRange(newBones);
+
+            ValidateFlags();
+        }
+
+        internal static Geometry DeepCloneMesh(Geometry source, uint version)
+        {
+            var clone = new Geometry(version);
+            clone.Vertices = source.Vertices?.ToArray();
+            clone.Normals = source.Normals?.ToArray();
+            clone.Tangents = source.Tangents?.ToArray();
+            clone.Binormals = source.Binormals?.ToArray();
+            clone.ColorChannel0 = source.ColorChannel0?.ToArray();
+            clone.ColorChannel1 = source.ColorChannel1?.ToArray();
+            clone.ColorChannel2 = source.ColorChannel2?.ToArray();
+            clone.TexCoordsChannel0 = source.TexCoordsChannel0?.ToArray();
+            clone.TexCoordsChannel1 = source.TexCoordsChannel1?.ToArray();
+            clone.TexCoordsChannel2 = source.TexCoordsChannel2?.ToArray();
+            clone.Triangles = source.Triangles?.ToArray();
+            clone.TriangleIndexFormat = source.TriangleIndexFormat;
+            clone.Field14 = source.Field14;
+            clone.Unk_StrideType = source.Unk_StrideType;
+            clone.Unk_VertexWeight = source.Unk_VertexWeight;
+            clone.LodStart = source.LodStart;
+            clone.LodEnd = source.LodEnd;
+
+            if (source.VertexWeights != null)
+            {
+                clone.VertexWeights = new VertexWeight[source.VertexWeights.Length];
+                for (int i = 0; i < source.VertexWeights.Length; i++)
+                {
+                    clone.VertexWeights[i] = new VertexWeight(
+                        source.VertexWeights[i].Weights?.ToArray(),
+                        source.VertexWeights[i].Indices?.ToArray());
+                }
+            }
+
+            if (source.MorphTargets != null)
+            {
+                clone.MorphTargets = new MorphTargetList(version) { Flags = source.MorphTargets.Flags };
+                foreach (var morphTarget in source.MorphTargets)
+                {
+                    var clonedTarget = new MorphTarget(version) { Flags = morphTarget.Flags };
+                    clonedTarget.Vertices.AddRange(morphTarget.Vertices);
+                    clone.MorphTargets.Add(clonedTarget);
+                }
+            }
+
+            clone.MaterialName = source.MaterialName;
+            clone.BoundingBox = source.BoundingBox;
+            clone.BoundingSphere = source.BoundingSphere;
+            clone.Flags = source.Flags;
+            clone.VertexAttributeFlags = source.VertexAttributeFlags;
+            return clone;
+        }
+
+        internal static NodeAttachment DeepCloneAttachment(NodeAttachment source, uint version)
+        {
+            switch (source.Type)
+            {
+                case NodeAttachmentType.Geometry:
+                    return new NodeGeometryAttachment(DeepCloneMesh(source.GetValue<Geometry>(), version));
+                case NodeAttachmentType.Node:
+                    return new NodeNodeAttachment(DeepCloneNode(source.GetValue<Node>()));
+                case NodeAttachmentType.Camera:
+                    {
+                        var src = source.GetValue<Camera>();
+                        var cam = new Camera(version)
+                        {
+                            ViewMatrix = src.ViewMatrix,
+                            ClipPlaneNear = src.ClipPlaneNear,
+                            ClipPlaneFar = src.ClipPlaneFar,
+                            FieldOfView = src.FieldOfView,
+                            AspectRatio = src.AspectRatio,
+                            Field190 = src.Field190,
+                            Field198 = src.Field198,
+                            Field19C = src.Field19C,
+                            Field1A0 = src.Field1A0
+                        };
+                        return new NodeCameraAttachment(cam);
+                    }
+                case NodeAttachmentType.Light:
+                    {
+                        var src = source.GetValue<Light>();
+                        var light = new Light(version)
+                        {
+                            Flags = src.Flags,
+                            Type = src.Type,
+                            AmbientColor = src.AmbientColor,
+                            DiffuseColor = src.DiffuseColor,
+                            SpecularColor = src.SpecularColor,
+                            Field20 = src.Field20,
+                            Field24 = src.Field24,
+                            Field28 = src.Field28,
+                            Field10 = src.Field10,
+                            Field14 = src.Field14,
+                            Field18 = src.Field18,
+                            AttenuationStart = src.AttenuationStart,
+                            AttenuationEnd = src.AttenuationEnd,
+                            Field60 = src.Field60,
+                            Field64 = src.Field64,
+                            Field68 = src.Field68,
+                            AngleInnerCone = src.AngleInnerCone,
+                            AngleOuterCone = src.AngleOuterCone,
+                            Field98 = src.Field98,
+                            Field9C = src.Field9C
+                        };
+                        return new NodeLightAttachment(light);
+                    }
+                case NodeAttachmentType.Morph:
+                    {
+                        var src = source.GetValue<Morph>();
+                        var morph = new Morph(version)
+                        {
+                            NodeName = src.NodeName,
+                            Weights = src.Weights?.ToArray()
+                        };
+                        return new NodeMorphAttachment(morph);
+                    }
+                default:
+                    return null;
+            }
+        }
+
+        internal static Node DeepCloneNode(Node source, HashSet<Node> skipSourceNodes = null)
+        {
+            var clone = new Node(source.Name)
+            {
+                Translation = source.Translation,
+                Rotation = source.Rotation,
+                Scale = source.Scale,
+                FieldE0 = source.FieldE0
+            };
+
+            foreach (var attachment in source.Attachments)
+            {
+                var clonedAttachment = DeepCloneAttachment(attachment, source.Version);
+                if (clonedAttachment != null)
+                    clone.Attachments.Add(clonedAttachment);
+            }
+
+            if (source.HasProperties)
+            {
+                foreach (var kvp in source.Properties)
+                    clone.Properties[kvp.Key] = kvp.Value;
+            }
+
+            foreach (var child in source.Children)
+            {
+                if (skipSourceNodes != null && skipSourceNodes.Contains(child))
+                    continue;
+                clone.AddChildNode(DeepCloneNode(child, skipSourceNodes));
+            }
+
+            return clone;
+        }
+
+        private static void CollectMeshes(Node node, List<Geometry> geometries)
+        {
+            foreach (var attachment in node.Attachments)
+            {
+                if (attachment.Type == NodeAttachmentType.Geometry)
+                    geometries.Add(attachment.GetValue<Geometry>());
+            }
+            foreach (var child in node.Children)
+                CollectMeshes(child, geometries);
+        }
+
+        private static Node FindNewSubtreeRoot(Node node, Mesh otherModel, HashSet<string> baseNodeNames)
+        {
+            var current = node;
+            while (current.Parent != null &&
+                   current.Parent.Name != "RootNode" &&
+                   !baseNodeNames.Contains(current.Parent.Name))
+            {
+                current = current.Parent;
+            }
+            return current;
+        }
+
+        private static void MarkSubtreeProcessed(Node root, HashSet<Node> processed, HashSet<Node> skipNodes = null)
+        {
+            if (skipNodes != null && skipNodes.Contains(root))
+                return;
+            processed.Add(root);
+            foreach (var child in root.Children)
+                MarkSubtreeProcessed(child, processed, skipNodes);
+        }
+
+        private void ValidateFlags()
+        {
+            if ( Bones == null || Bones.Count == 0 )
+                mFlags &= ~ModelFlags.HasSkinning;
+            else
+                mFlags |= ModelFlags.HasSkinning;
+
+            if ( BoundingBox == null )
+                mFlags &= ~ModelFlags.HasBoundingBox;
+            else
+                mFlags |= ModelFlags.HasBoundingBox;
+
+            if ( BoundingSphere == null )
+                mFlags &= ~ModelFlags.HasBoundingSphere;
+            else
+                mFlags |= ModelFlags.HasBoundingSphere;
         }
     }
 
-    public enum TriangleIndexFormat
-    {
-        None = 0,
-        UInt16 = 1,
-        UInt32 = 2
-    }
-
     [Flags]
-    public enum GeometryFlags : uint
+    public enum ModelFlags
     {
-        HasVertexWeights = 1 << 0,
-        HasMaterial = 1 << 1,
-        HasTriangles = 1 << 2,
-        HasBoundingBox = 1 << 3,
-        HasBoundingSphere = 1 << 4,
-        Bit5 = 1 << 5, // render flag
-        HasMorphTargets = 1 << 6,
-        Bit7 = 1 << 7, // render flag
-        Bit8 = 1 << 8,
-        Bit9 = 1 << 9,
-        Bit10 = 1 << 10,
-        Bit11 = 1 << 11,
-        Bit12 = 1 << 12, // 2 floats
-        Bit13 = 1 << 13,
-        Bit14 = 1 << 14, // render flag
-        Bit15 = 1 << 15,
-        Bit16 = 1 << 16,
-        Bit17 = 1 << 17,
-        Bit18 = 1 << 18,
-        Bit19 = 1 << 19,
-        Bit20 = 1 << 20,
-        Bit21 = 1 << 21,
-        Bit22 = 1 << 22,
-        Bit23 = 1 << 23,
-        Bit24 = 1 << 24,
-        Bit25 = 1 << 25,
-        Bit26 = 1 << 26,
-        Bit27 = 1 << 27,
-        Bit28 = 1 << 28,
-        Bit29 = 1 << 29,
-        Bit30 = 1 << 30, // r7 |= 8
-        Bit31 = 1u << 31,
-    }
-
-    [Flags]
-    public enum VertexAttributeFlags : uint
-    {
-        Position = 1 << 1,
-        Bit2 = 1 << 2,
-        Bit3 = 1 << 3,
-        Normal = 1 << 4, // might be normals. maybe normal should be position
-        Color0 = 1 << 6,
-        Bit6 = 1 << 7,
-        TexCoord0 = 1 << 8,
-        TexCoord1 = 1 << 9,
-        TexCoord2 = 1 << 10,
-        Color1 = 1 << 11, // 4 bytes, after normals
-        Bit12 = 1 << 12,
-        Bit13 = 1 << 13,
-        Bit14 = 1 << 14,
-        Bit15 = 1 << 15,
-        Bit16 = 1 << 16,
-        Bit17 = 1 << 17,
-        Bit18 = 1 << 18,
-        Bit19 = 1 << 19,
-        Bit20 = 1 << 20,
-        Bit21 = 1 << 21,
-        Bit22 = 1 << 22,
-        Bit23 = 1 << 23,
-        Bit24 = 1 << 24,
-        Bit25 = 1 << 25,
-        Bit26 = 1 << 26,
-        Bit27 = 1 << 27,
-        // The game's own vertex format printer names 0x10000000 BINORMAL and
-        // 0x20000000 TANGENT, and the layout puts the binormal first.
-        Binormal = 1 << 28,
-        Tangent = 1 << 29,
-        Color2 = 1 << 30, // 4 bytes, after tex coord 2
-        Bit31 = 1u << 31, // 20 bytes, after HasBoundingBox
+        HasBoundingBox    = 1 << 0,
+        HasBoundingSphere = 1 << 1,
+        HasSkinning       = 1 << 2,
+        HasMorphs         = 1 << 3
     }
 }

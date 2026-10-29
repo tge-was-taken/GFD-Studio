@@ -13,7 +13,7 @@ using PropertyGridControl = Avalonia.PropertyGrid.Controls.PropertyGrid;
 namespace GFDStudio.Avalonia
 {
     /// <summary>
-    /// Asks how to convert an imported scene: the global settings, plus per material and per mesh
+    /// Asks how to convert an imported scene: the global settings, plus per material and per geometry
     /// overrides picked from a tree.
     /// </summary>
     public sealed class ModelConversionOptionsWindow : Window
@@ -25,7 +25,7 @@ namespace GFDStudio.Avalonia
         {
             mViewModel = ModelConverterOptionsBuilder.Build( scene, originalModel );
 
-            Title = "Model conversion options";
+            Title = "Mesh conversion options";
             Width = 980;
             Height = 640;
             WindowStartupLocation = WindowStartupLocation.CenterOwner;
@@ -79,7 +79,7 @@ namespace GFDStudio.Avalonia
         private List<OptionsGroup> BuildGroups() =>
         [
             new OptionsGroup( "Materials", null, mViewModel.Materials.Select( x => new OptionsGroup( x.Name, x, [] ) ).ToList() ),
-            new OptionsGroup( "Meshes", null, mViewModel.Meshes.Select( x => new OptionsGroup( x.Name, x, [] ) ).ToList() ),
+            new OptionsGroup( "Geometries", null, mViewModel.Geometries.Select( x => new OptionsGroup( x.Name, x, [] ) ).ToList() ),
         ];
 
         private static void Add( Grid grid, Control control, int column )

@@ -87,7 +87,7 @@ namespace GFDLibrary.Rendering.OpenGL
         }
 
         /// <summary>
-        /// Replaces the positions and normals without rebuilding the array, for a mesh that is
+        /// Replaces the positions and normals without rebuilding the array, for a geometry that is
         /// reskinned every frame.
         /// </summary>
         public void UpdateGeometry( Vector3[] positions, Vector3[] normals )

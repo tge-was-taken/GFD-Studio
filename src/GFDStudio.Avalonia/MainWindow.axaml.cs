@@ -144,7 +144,7 @@ namespace GFDStudio.Avalonia
             if ( model == null )
                 return;
 
-            TopNode = DataViewNodeFactory.Create( "Model", model );
+            TopNode = DataViewNodeFactory.Create( "Mesh", model );
             mFilePath = null;
             mTree.Load( TopNode );
             mTree.Select( TopNode );
@@ -327,8 +327,8 @@ namespace GFDStudio.Avalonia
                     mModelView.LoadAnyAnimation( animation );
                     break;
 
-                case Mesh mesh:
-                    mModelView.SetSelection( mesh );
+                case Geometry geometry:
+                    mModelView.SetSelection( geometry );
                     break;
 
                 case Material material:

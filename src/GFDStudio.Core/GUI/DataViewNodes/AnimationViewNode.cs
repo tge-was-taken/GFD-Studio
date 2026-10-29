@@ -43,7 +43,7 @@ namespace GFDStudio.GUI.DataViewNodes
         //// 10
         //public List<AnimationFlag10000000DataEntry> Field10
         //{
-        //    get => Model.Field10;
+        //    get => Mesh.Field10;
         //    set => SetDataProperty( value );
         //}
 
@@ -59,7 +59,7 @@ namespace GFDStudio.GUI.DataViewNodes
 
         //public AnimationFlag80000000Data Field1C
         //{
-        //    get => Model.Field1C;
+        //    get => Mesh.Field1C;
         //    set => SetDataProperty( value );
         //}
 
@@ -99,9 +99,9 @@ namespace GFDStudio.GUI.DataViewNodes
                 var animation = AssimpNetAnimationConverter.ConvertFromAssimpScene( file, new AnimationConverterOptions() );
                 var modelViewModel = Parent?.Parent as ModelPackViewNode;
 
-                if ( modelViewModel?.Model != null )
+                if ( modelViewModel?.Mesh != null )
                 {
-                    animation.FixTargetIds( modelViewModel.Model.Data );
+                    animation.FixTargetIds( modelViewModel.Mesh.Data );
                 }
                 else
                 {
@@ -113,13 +113,13 @@ namespace GFDStudio.GUI.DataViewNodes
             RegisterCustomHandler( "Tools", "Fix IDs", () => ImportModelAndFixTargetIds( Data ) );
             RegisterCustomHandler( "Tools", "Retarget", () =>
             {
-                var originalModel = ( Parent as ModelPackViewNode )?.Model?.Data ??
-                                    ModuleImportUtilities.SelectImportFile<ModelPack>( "Select the original model file." )?.Model;
+                var originalModel = ( Parent as ModelPackViewNode )?.Mesh?.Data ??
+                                    ModuleImportUtilities.SelectImportFile<ModelPack>( "Select the original model file." )?.Mesh;
 
                 if ( originalModel == null )
                     return;
 
-                var newModel = ModuleImportUtilities.SelectImportFile<ModelPack>( "Select the new model file." )?.Model;
+                var newModel = ModuleImportUtilities.SelectImportFile<ModelPack>( "Select the new model file." )?.Mesh;
                 if ( newModel == null )
                     return;
 
@@ -149,8 +149,8 @@ namespace GFDStudio.GUI.DataViewNodes
             try
             {
                 var model = Resource.Load<ModelPack>( result.FileName );
-                if ( model.Model != null )
-                    animation.FixTargetIds( model.Model );
+                if ( model.Mesh != null )
+                    animation.FixTargetIds( model.Mesh );
             }
             catch ( Exception e )
             {

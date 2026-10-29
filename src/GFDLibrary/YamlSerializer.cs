@@ -22,7 +22,7 @@ namespace GFDLibrary
         private static Lazy<ISerializer> sSerializer = new Lazy<ISerializer>( () =>
          {
              var builder = new SerializerBuilder();
-             AddAbstractTypeTagMappings( ref builder, false );
+             AddAbstractTypeTagMappings( ref builder, FormatVersion );
              return builder.Build();
          } );
 
@@ -36,7 +36,7 @@ namespace GFDLibrary
                     .IgnoreUnmatchedProperties()
                     .WithTypeInspector( inner => new FormerNameTypeInspector( inner, version ) )
                     .WithTypeConverter( new FormerNameEnumConverter() );
-            AddAbstractTypeTagMappings( ref builder, true );
+            AddAbstractTypeTagMappings( ref builder, version );
             return builder.Build();
         }
 
@@ -44,15 +44,27 @@ namespace GFDLibrary
         /// Maps a tag to each concrete resource type. Only the reader takes the tags a type used
         /// to go by, so a renamed class still loads but is always written under its new name.
         /// </summary>
-        private static void AddAbstractTypeTagMappings<T>( ref T builder, bool includeFormerNames )
+        private static void AddAbstractTypeTagMappings<T>( ref T builder, int version )
             where T : BuilderSkeleton<T>
         {
+            var includeFormerNames = version < FormatVersion;
             
             var assemblyTypes = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany( x => x.GetTypes() )
                 .Where( x => x.Namespace != null && x.Namespace.StartsWith( "GFDLibrary" ) );
             var abstractClasses = assemblyTypes.Where( x => x.IsAbstract ).ToList();
             var addedTypes = new HashSet<string>();
+
+            // A tag that changed which type it names is claimed first, so the loop below does
+            // not give it the current meaning as well.
+            if ( version < 2 )
+            {
+                foreach ( var pair in LegacyNames.Tags )
+                {
+                    if ( addedTypes.Add( pair.Key ) )
+                        builder = builder.WithTagMapping( "!" + pair.Key, pair.Value );
+                }
+            }
             foreach ( var abstractClass in abstractClasses )
             {
                 foreach ( Type type in assemblyTypes

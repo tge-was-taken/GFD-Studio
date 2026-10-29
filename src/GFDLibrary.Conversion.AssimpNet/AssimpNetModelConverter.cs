@@ -21,29 +21,29 @@ namespace GFDLibrary.Conversion.AssimpNet
 
         private static readonly Matrix4x4 ZToYUpMatrix = new Matrix4x4( 1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1 );
 
-        public static Model ConvertFromAssimpScene( string filePath, ModelConverterOptions options )
+        public static Mesh ConvertFromAssimpScene( string filePath, ModelConverterOptions options )
         {
             var aiScene = AssimpHelper.ImportScene( filePath );
             return ConvertFromAssimpScene( aiScene, options );
         }
 
-        public static Model ConvertFromAssimpScene( Ai.Scene aiScene, ModelConverterOptions options )
+        public static Mesh ConvertFromAssimpScene( Ai.Scene aiScene, ModelConverterOptions options )
         {
-            var scene = new Model( options.Version );
+            var scene = new Mesh( options.Version );
 
             // Convert assimp nodes to our nodes 
             var nodeLookup = new Dictionary<string, NodeInfo>();
             int nextNodeIndex = 0;
             scene.RootNode = ConvertAssimpNodeRecursively( aiScene, aiScene.RootNode, nodeLookup, ref nextNodeIndex, options );
 
-            // Process the meshes attached to the assimp nodes
+            // Process the geometries attached to the assimp nodes
             var nodeToBoneIndices = new Dictionary<int, List<int>>();
             int nextBoneIndex = 0;
             var boneInverseBindMatrices = new List<Matrix4x4>();
             var transformedVertices = new List<Vector3>();
             ProcessAssimpNodeMeshesRecursively( aiScene.RootNode, aiScene, nodeLookup, ref nextBoneIndex, nodeToBoneIndices, boneInverseBindMatrices, transformedVertices, options );
 
-            // Don't build a bone palette if there are no skinned meshes
+            // Don't build a bone palette if there are no skinned geometries
             if ( boneInverseBindMatrices.Count > 0 )
             {
                 // Build bone palette for skinning
@@ -104,8 +104,8 @@ namespace GFDLibrary.Conversion.AssimpNet
 
         private static bool IsLegacyMeshAttachmentNode( Ai.Node node )
         {
-            bool isMeshAttachmentNode = node.Parent != null &&                                                          // definitely not a mesh attachment if it doesnt have a parent -> RootNode
-                                        node.Parent.Name != "RootNode" &&                                               // probably not a mesh attachment if its part of the scene root
+            bool isMeshAttachmentNode = node.Parent != null &&                                                          // definitely not a geometry attachment if it doesnt have a parent -> RootNode
+                                        node.Parent.Name != "RootNode" &&                                               // probably not a geometry attachment if its part of the scene root
                                         AssimpConverterCommon.LegacyMeshAttachmentNameRegex.IsMatch( node.Name ) &&     // match name regex
                                         NearlyEquals( node.Transform, Matrix4x4.Identity );                          // transform must be identity
             return isMeshAttachmentNode;
@@ -116,7 +116,7 @@ namespace GFDLibrary.Conversion.AssimpNet
             if ( IsLegacyMeshAttachmentNode( node ) )
                 return true;
 
-            bool isMeshAttachmentNode = node.Parent != null &&                                                          // mesh attachments are parented to the root of the scene to prevent animation issues
+            bool isMeshAttachmentNode = node.Parent != null &&                                                          // geometry attachments are parented to the root of the scene to prevent animation issues
                                         node.Parent.Name == "RootNode" &&
                                         AssimpConverterCommon.MeshAttachmentNameRegex.IsMatch( node.Name ) &&           // match name regex
                                         NearlyEquals( node.Transform, Matrix4x4.Identity );                          // transform must be identity
@@ -499,7 +499,7 @@ namespace GFDLibrary.Conversion.AssimpNet
                             }
                             else if ( nodeInfo.Node.Parent != null )
                             {
-                                Logger.Info( $"Mesh attachment '{nodeInfo.Node.Name}' references unknown parent '{originalParentNodeName}'; attaching to its current parent instead." );
+                                Logger.Info( $"Geometry attachment '{nodeInfo.Node.Name}' references unknown parent '{originalParentNodeName}'; attaching to its current parent instead." );
                                 targetNode = nodeInfo.Node.Parent;
                             }
                         }
@@ -524,11 +524,11 @@ namespace GFDLibrary.Conversion.AssimpNet
 
                     if ( !nodeInfo.IsMeshAttachment )
                     {
-                        targetNode.Attachments.Add( new NodeMeshAttachment( geometry ) );
+                        targetNode.Attachments.Add( new NodeGeometryAttachment( geometry ) );
                     }
                     else
                     {
-                        targetNode.Attachments.Add( new NodeMeshAttachment( geometry ) );
+                        targetNode.Attachments.Add( new NodeGeometryAttachment( geometry ) );
                         sourceNode.Parent.RemoveChildNode( sourceNode );
                     }
                 }
@@ -540,10 +540,10 @@ namespace GFDLibrary.Conversion.AssimpNet
             }
         }
 
-        private static Mesh ConvertAssimpMeshToGeometry( Ai.Mesh aiMesh, Ai.Material material, Dictionary<string, NodeInfo> nodeLookup, ref int nextBoneIndex, Dictionary<int, List<int>> nodeToBoneIndices, List<Matrix4x4> boneInverseBindMatrices, Matrix4x4 modelMatrix, ref Matrix4x4 nodeWorldTransform, ref Matrix4x4 nodeInverseWorldTransform, List<Vector3> transformedVertices, ModelConverterOptions options )
+        private static Geometry ConvertAssimpMeshToGeometry( Ai.Mesh aiMesh, Ai.Material material, Dictionary<string, NodeInfo> nodeLookup, ref int nextBoneIndex, Dictionary<int, List<int>> nodeToBoneIndices, List<Matrix4x4> boneInverseBindMatrices, Matrix4x4 modelMatrix, ref Matrix4x4 nodeWorldTransform, ref Matrix4x4 nodeInverseWorldTransform, List<Vector3> transformedVertices, ModelConverterOptions options )
         {
             if ( !aiMesh.HasVertices )
-                throw new Exception( "Assimp mesh has no vertices" );
+                throw new Exception( "Assimp geometry has no vertices" );
             
             var meshName = AssimpConverterCommon.UnescapeName( aiMesh.Name );
             var materialName = AssimpConverterCommon.UnescapeName( material.Name );
@@ -551,11 +551,11 @@ namespace GFDLibrary.Conversion.AssimpNet
             if ( options.Materials.TryGetValue( materialName, out var materialOptionsOverride ) )
                 materialOptions = materialOptionsOverride;
 
-            var meshOptions = materialOptions.Mesh;
-            if ( options.Meshes.TryGetValue( meshName, out var meshOptionsOverride ) )
+            var meshOptions = materialOptions.Geometry;
+            if ( options.Geometries.TryGetValue( meshName, out var meshOptionsOverride ) )
                 meshOptions = meshOptionsOverride;
 
-            var geometry = new Mesh( options.Version );
+            var geometry = new Geometry( options.Version );
             var geometryTransformedVertices = new Vector3[ aiMesh.VertexCount ];
 
             geometry.Vertices = aiMesh.Vertices

@@ -20,7 +20,7 @@ namespace GFDLibrary.Tests
                 Version = ResourceVersion.Persona5,
                 Materials = new MaterialDictionary(),
                 Textures = new TextureDictionary(),
-                Model = new Model { RootNode = new Node( "root" ) },
+                Mesh = new Mesh { RootNode = new Node( "root" ) },
             };
 
             pack.Materials.Add( new Material( materialName ) );

@@ -4,30 +4,30 @@ using GFDLibrary.Models;
 
 namespace GFDStudio.FormatModules
 {
-    public class ModelFormatModule : FormatModule<Model>
+    public class GeometryFormatModule : FormatModule<Geometry>
     {
         public override string Name
-            => "Model";
+            => "Geometry";
 
         public override string[] Extensions
-            => new[] { "gmod" };
+            => new[] { "gmsh" };
 
         public override FormatModuleUsageFlags UsageFlags
             => FormatModuleUsageFlags.Export | FormatModuleUsageFlags.Import;
 
         protected override bool CanImportCore( Stream stream, string filename = null )
         {
-            return Resource.GetResourceType( stream ) == ResourceType.Model;
+            return Resource.GetResourceType( stream ) == ResourceType.Geometry;
         }
 
-        protected override void ExportCore( Model obj, Stream stream, string filename = null )
+        protected override void ExportCore( Geometry obj, Stream stream, string filename = null )
         {
             obj.Save( stream, true );
         }
 
-        protected override Model ImportCore( Stream stream, string filename = null )
+        protected override Geometry ImportCore( Stream stream, string filename = null )
         {
-            return Resource.Load<Model>( stream );
+            return Resource.Load<Geometry>( stream );
         }
     }
 }

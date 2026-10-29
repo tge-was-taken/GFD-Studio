@@ -253,9 +253,9 @@ namespace GFDLibrary.Animations
                 writer.WriteResource( Properties );
         }
 
-        public void FixTargetIds( Model model )
+        public void FixTargetIds( Mesh mesh )
         {
-            FixTargetIds( model.Nodes );
+            FixTargetIds( mesh.Nodes );
         }
 
         internal void FixTargetIds( IEnumerable<Node> nodes )
@@ -293,7 +293,7 @@ namespace GFDLibrary.Animations
                 Joints.AddRange(other.Joints);
         }
 
-        public void Retarget( Model originalModel, Model newModel, bool fixArms )
+        public void Retarget( Mesh originalModel, Mesh newModel, bool fixArms )
         {
             Retarget( originalModel.Nodes.ToDictionary( x => x.Name ), newModel.Nodes.ToDictionary( x => x.Name ), fixArms );
         }

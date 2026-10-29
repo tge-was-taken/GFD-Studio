@@ -24,7 +24,7 @@ public static class ModelConverterOptionsBuilder
                 {
                     Name = item.Name,
                     InheritDefaults = true,
-                    Mesh = null,
+                    Geometry = null,
                     Preset = null,
                 };
 
@@ -60,7 +60,7 @@ public static class ModelConverterOptionsBuilder
                     }
                 }
 
-                viewModel.Meshes.Add( options );
+                viewModel.Geometries.Add( options );
             }
         }
 
@@ -76,27 +76,27 @@ public static class ModelConverterOptionsBuilder
     }
 
     /// <summary>
-    /// Matches an imported mesh to one in the original model, by the name the exporter would have
+    /// Matches an imported geometry to one in the original model, by the name the exporter would have
     /// given it, and failing that by the material it uses.
     /// </summary>
-    private static Mesh FindReferenceMesh( Assimp.Scene scene, ModelPack originalModel, Assimp.Mesh item )
+    private static Geometry FindReferenceMesh( Assimp.Scene scene, ModelPack originalModel, Assimp.Mesh item )
     {
-        if ( originalModel?.Model is null )
+        if ( originalModel?.Mesh is null )
             return null;
 
-        foreach ( var node in originalModel.Model.Nodes )
+        foreach ( var node in originalModel.Mesh.Nodes )
         {
             for ( var i = 0; i < node.Attachments.Count; i++ )
             {
-                if ( node.Attachments[i].Type != NodeAttachmentType.Mesh )
+                if ( node.Attachments[i].Type != NodeAttachmentType.Geometry )
                     continue;
 
                 if ( item.Name == ModelConversionHelpers.GetMeshExportName( node.Name, i ) )
-                    return node.Attachments[i].GetValue<Mesh>();
+                    return node.Attachments[i].GetValue<Geometry>();
             }
         }
 
-        return originalModel.Model.Meshes
+        return originalModel.Mesh.Geometries
                             .FirstOrDefault( x => x.MaterialName == scene.Materials[item.MaterialIndex].Name );
     }
 }

@@ -7,20 +7,20 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace GFDLibrary.Tests
 {
     /// <summary>
-    /// Exporting a model to YAML and reading it back has to give the same tree. The children
+    /// Exporting a mesh to YAML and reading it back has to give the same tree. The children
     /// used to be written out and then dropped on the way back in.
     /// </summary>
     [TestClass]
     public class YamlModelTests
     {
-        private static Model Roundtrip( Model model )
+        private static Mesh Roundtrip( Mesh mesh )
         {
             var path = Path.Combine( Path.GetTempPath(), Path.GetRandomFileName() + ".yml" );
 
             try
             {
-                model.SaveYamlFile( path );
-                return YamlSerializer.LoadYamlFile<Model>( path );
+                mesh.SaveYamlFile( path );
+                return YamlSerializer.LoadYamlFile<Mesh>( path );
             }
             finally
             {
@@ -28,7 +28,7 @@ namespace GFDLibrary.Tests
             }
         }
 
-        private static Model ThreeDeep()
+        private static Mesh ThreeDeep()
         {
             var root = new Node( "root" );
             var middle = new Node( "middle" );
@@ -38,7 +38,7 @@ namespace GFDLibrary.Tests
             root.AddChildNode( middle );
             root.AddChildNode( new Node( "sibling" ) );
 
-            return new Model { RootNode = root };
+            return new Mesh { RootNode = root };
         }
 
         [TestMethod]
@@ -64,8 +64,8 @@ namespace GFDLibrary.Tests
         [TestMethod]
         public void User_properties_survive()
         {
-            var model = ThreeDeep();
-            var root = model.RootNode;
+            var mesh = ThreeDeep();
+            var root = mesh.RootNode;
 
             root.Properties = new UserPropertyDictionary
             {
@@ -74,7 +74,7 @@ namespace GFDLibrary.Tests
                 new UserBoolProperty( "visible", true ),
             };
 
-            var back = Roundtrip( model ).RootNode;
+            var back = Roundtrip( mesh ).RootNode;
 
             Assert.AreEqual( 3, back.Properties.Count );
             Assert.AreEqual( 3, back.Properties["gfdHelperID"].GetValue<int>() );

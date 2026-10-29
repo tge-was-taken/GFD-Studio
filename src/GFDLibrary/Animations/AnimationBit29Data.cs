@@ -57,15 +57,15 @@ namespace GFDLibrary.Animations
             writer.WriteSingle( Field1C );
         }
 
-        public void FixTargetIds( Model model )
+        public void FixTargetIds( Mesh mesh )
         {
-            Field00.FixTargetIds( model );
-            Field04.FixTargetIds( model );
-            Field08.FixTargetIds( model );
-            Field0C.FixTargetIds( model );
+            Field00.FixTargetIds( mesh );
+            Field04.FixTargetIds( mesh );
+            Field08.FixTargetIds( mesh );
+            Field0C.FixTargetIds( mesh );
         }
 
-        public void Retarget( Model originalModel, Model newModel, bool fixArms )
+        public void Retarget( Mesh originalModel, Mesh newModel, bool fixArms )
         {
             Field00.Retarget( originalModel, newModel, fixArms );
             Field04.Retarget( originalModel, newModel, fixArms );

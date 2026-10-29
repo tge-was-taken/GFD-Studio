@@ -71,17 +71,17 @@ namespace GFDLibrary.Conversion.AssimpNet.Utilities
         /// <summary>
         /// Gets the weights assigned to each vertex. This also fixes any missing weights.
         /// </summary>
-        /// <param name="mesh"></param>
+        /// <param name="geometry"></param>
         /// <returns></returns>
-        public static List<(Assimp.Bone Bone, float Weight)>[] GetVertexWeights( this Assimp.Mesh mesh )
+        public static List<(Assimp.Bone Bone, float Weight)>[] GetVertexWeights( this Assimp.Mesh geometry )
         {
             // Map out the vertex weights for each vertex
-            var vertexWeights = new List<(Assimp.Bone, float)>[mesh.VertexCount];
+            var vertexWeights = new List<(Assimp.Bone, float)>[geometry.VertexCount];
             var missingVertexWeights = new List<int>();
-            for ( int i = 0; i < mesh.VertexCount; i++ )
+            for ( int i = 0; i < geometry.VertexCount; i++ )
             {
                 var weights = new List<(Assimp.Bone, float)>();
-                foreach ( var bone in mesh.Bones )
+                foreach ( var bone in geometry.Bones )
                 {
                     foreach ( var vertexWeight in bone.VertexWeights )
                     {
@@ -104,19 +104,19 @@ namespace GFDLibrary.Conversion.AssimpNet.Utilities
             // Resolve vertices without any weights by finding the closest vertex next to it that does, and taking its weights
             foreach ( var i in missingVertexWeights )
             {
-                var position = mesh.Vertices[i];
+                var position = geometry.Vertices[i];
                 var range = 0.001f;
                 List<(Assimp.Bone, float)> weights = null;
 
                 while ( weights == null )
                 {
-                    for ( var j = 0; j < mesh.Vertices.Count; j++ )
+                    for ( var j = 0; j < geometry.Vertices.Count; j++ )
                     {
                         if ( missingVertexWeights.Contains( j ) )
                             continue;
 
                         // ＤＥＬＴＡ
-                        var otherPosition = mesh.Vertices[j];
+                        var otherPosition = geometry.Vertices[j];
                         var delta = position - otherPosition;
                         if ( IsWithinRange( delta, range ) )
                         {

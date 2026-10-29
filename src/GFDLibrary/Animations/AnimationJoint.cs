@@ -67,9 +67,9 @@ namespace GFDLibrary.Animations
             writer.WriteResourceList( Layers );
         }
 
-        public bool FixTargetIds( Model model )
+        public bool FixTargetIds( Mesh mesh )
         {
-            return FixTargetIds( model.Nodes.ToList() );
+            return FixTargetIds( mesh.Nodes.ToList() );
         }
 
         internal bool FixTargetIds( IEnumerable<Node> nodes )

@@ -32,7 +32,7 @@ namespace GFDLibrary.Rendering.OpenGL
         {
             ModelPack = modelPack;
 
-            var nodes = modelPack.Model.Nodes.ToList();
+            var nodes = modelPack.Mesh.Nodes.ToList();
             Nodes = nodes.Select( x => new GLNode( x ) ).ToList();
 
             Materials = modelPack.Materials?.ToDictionary( x => x.Key, y => GLBaseMaterial.CreateGLMaterial( y.Value, textureCreator ) ) ??
@@ -46,11 +46,11 @@ namespace GFDLibrary.Rendering.OpenGL
 
                 foreach ( var attachment in glNode.Node.Attachments )
                 {
-                    if ( attachment.Type != NodeAttachmentType.Mesh )
+                    if ( attachment.Type != NodeAttachmentType.Geometry )
                         continue;
 
-                    var glMesh = new GLMesh( attachment.GetValue<Mesh>(), glNode.Node.WorldTransform, modelPack.Model.Bones, Nodes, Materials, modelPack.Version );
-                    glNode.Meshes.Add( glMesh );
+                    var glMesh = new GLMesh( attachment.GetValue<Geometry>(), glNode.Node.WorldTransform, modelPack.Mesh.Bones, Nodes, Materials, modelPack.Version );
+                    glNode.Geometries.Add( glMesh );
                 }
             }
         }
@@ -90,8 +90,8 @@ namespace GFDLibrary.Rendering.OpenGL
             {
                 switch ( attachment.Type )
                 {
-                    case NodeAttachmentType.Mesh:
-                        glNode.Meshes.Add( new GLMesh( attachment.GetValue<Mesh>(), glNode.WorldTransform, ModelPack.Model.Bones, Nodes, Materials, ModelPack.Version ) );
+                    case NodeAttachmentType.Geometry:
+                        glNode.Geometries.Add( new GLMesh( attachment.GetValue<Geometry>(), glNode.WorldTransform, ModelPack.Mesh.Bones, Nodes, Materials, ModelPack.Version ) );
                         break;
 
                     case NodeAttachmentType.Epl:
@@ -123,7 +123,7 @@ namespace GFDLibrary.Rendering.OpenGL
                 }
             }
 
-            var embeddedRootNode = embeddedModelPack.Model.RootNode;
+            var embeddedRootNode = embeddedModelPack.Mesh.RootNode;
 
             if ( embeddedRootNode.HasAttachments )
                 AddEmbeddedNodeAttachments( embeddedRootNode, attachmentGlNode, embeddedModelPack );
@@ -149,8 +149,8 @@ namespace GFDLibrary.Rendering.OpenGL
 
             foreach ( var attachment in embeddedNode.Attachments )
             {
-                if ( attachment.Type == NodeAttachmentType.Mesh )
-                    glNode.Meshes.Add( new GLMesh( attachment.GetValue<Mesh>(), glNode.WorldTransform, embeddedModelPack.Model.Bones, Nodes, Materials, embeddedModelPack.Version ) );
+                if ( attachment.Type == NodeAttachmentType.Geometry )
+                    glNode.Geometries.Add( new GLMesh( attachment.GetValue<Geometry>(), glNode.WorldTransform, embeddedModelPack.Mesh.Bones, Nodes, Materials, embeddedModelPack.Version ) );
             }
         }
 
@@ -257,13 +257,13 @@ namespace GFDLibrary.Rendering.OpenGL
 
             foreach ( var glNode in Nodes )
             {
-                // Rebuild meshes
-                for ( var i = 0; i < glNode.Meshes.Count; i++ )
+                // Rebuild geometries
+                for ( var i = 0; i < glNode.Geometries.Count; i++ )
                 {
-                    var oldGlMesh = glNode.Meshes[i];
-                    if (oldGlMesh.Mesh != null)
+                    var oldGlMesh = glNode.Geometries[i];
+                    if (oldGlMesh.Geometry != null)
                     {
-                        glNode.Meshes[i] = new GLMesh( oldGlMesh.Mesh, glNode.WorldTransform, ModelPack.Model.Bones, Nodes, Materials, ModelPack.Version );
+                        glNode.Geometries[i] = new GLMesh( oldGlMesh.Geometry, glNode.WorldTransform, ModelPack.Mesh.Bones, Nodes, Materials, ModelPack.Version );
                     }
 
                     oldGlMesh.Dispose();
@@ -288,7 +288,7 @@ namespace GFDLibrary.Rendering.OpenGL
         }
 
         /// <summary>
-        /// Matches MAX_BONES in the vertex shaders. The widest single mesh seen across the test
+        /// Matches MAX_BONES in the vertex shaders. The widest single geometry seen across the test
         /// corpus uses 83 bones, so this leaves room without overrunning the uniform space.
         /// </summary>
         private const int MaxPaletteBones = 96;
@@ -297,7 +297,7 @@ namespace GFDLibrary.Rendering.OpenGL
         private readonly HashSet<string> mReportedOversizedMeshes = new();
 
         /// <summary>
-        /// Fills the shader's bone palette for one mesh. Each bone goes up as the top three rows
+        /// Fills the shader's bone palette for one geometry. Each bone goes up as the top three rows
         /// of its matrix, the fourth being constant for an affine transform, which is a quarter
         /// less to upload and keeps the array inside the smallest guaranteed uniform space.
         /// </summary>
@@ -310,8 +310,8 @@ namespace GFDLibrary.Rendering.OpenGL
 
             if ( palette.Length > MaxPaletteBones )
             {
-                if ( mReportedOversizedMeshes.Add( glMesh.Mesh?.MaterialName ?? "?" ) )
-                    Trace.TraceWarning( $"Mesh uses {palette.Length} bones, more than the {MaxPaletteBones} the shader holds" );
+                if ( mReportedOversizedMeshes.Add( glMesh.Geometry?.MaterialName ?? "?" ) )
+                    Trace.TraceWarning( $"Geometry uses {palette.Length} bones, more than the {MaxPaletteBones} the shader holds" );
 
                 return;
             }
@@ -323,7 +323,7 @@ namespace GFDLibrary.Rendering.OpenGL
 
             for ( var i = 0; i < palette.Length; i++ )
             {
-                var bone = ModelPack.Model.Bones[palette[i]];
+                var bone = ModelPack.Mesh.Bones[palette[i]];
                 var matrix = bone.InverseBindMatrix * Nodes[bone.NodeIndex].WorldTransform;
                 var at = i * 12;
 
@@ -350,7 +350,7 @@ namespace GFDLibrary.Rendering.OpenGL
 
         private bool ShouldMeshShowAsSelected( DrawContext context, GLMesh glMesh )
         {
-            return context.SelectedMesh == glMesh.Mesh || context.SelectedMaterial?.Name == glMesh.Mesh.MaterialName;
+            return context.SelectedMesh == glMesh.Geometry || context.SelectedMaterial?.Name == glMesh.Geometry.MaterialName;
         }
 
         public void Draw( DrawContext context )
@@ -363,7 +363,7 @@ namespace GFDLibrary.Rendering.OpenGL
 
             HashSet<ResourceType> shaderProgramsInUse = new();
 
-            // List to hold transparent meshes and their world transforms
+            // List to hold transparent geometries and their world transforms
             List<Tuple<GLMesh, Matrix4, GLShaderProgram>> transparentMeshes = new();
 
             // Draw opaque objects first
@@ -372,15 +372,15 @@ namespace GFDLibrary.Rendering.OpenGL
                 if ( !glNode.IsVisible )
                     continue;
 
-                for ( var i = 0; i < glNode.Meshes.Count; i++ )
+                for ( var i = 0; i < glNode.Geometries.Count; i++ )
                 {
-                    var glMesh = glNode.Meshes[i];
+                    var glMesh = glNode.Geometries[i];
 
 
                     GLShaderProgram targetShader = GetTargetShader( context.ShaderRegistry, glMesh, context.Camera.View, context.Camera.Projection, shaderProgramsInUse );
                     if ( !glMesh.Material.IsMaterialTransparent() ) // If opaque
                     {
-                        if ( glMesh.Mesh != null )
+                        if ( glMesh.Geometry != null )
                             targetShader.SetUniform( "uIsSelected", ShouldMeshShowAsSelected(context, glMesh ) );
                         UploadBonePalette( glMesh, targetShader );
                         glMesh.Draw( glNode.WorldTransform.ToOpenTK(), targetShader );
@@ -418,7 +418,7 @@ namespace GFDLibrary.Rendering.OpenGL
                         break;
                 }
 
-                if ( glMesh.Mesh != null )
+                if ( glMesh.Geometry != null )
                     shaderProgram.SetUniform( "uIsSelected", ShouldMeshShowAsSelected( context, glMesh ) );
                 UploadBonePalette( glMesh, shaderProgram );
                 glMesh.Draw( worldTransform, shaderProgram );
@@ -748,7 +748,7 @@ namespace GFDLibrary.Rendering.OpenGL
                     {
                         glNode.Dispose();
 
-                        foreach ( var geometry in glNode.Meshes )
+                        foreach ( var geometry in glNode.Geometries )
                             geometry.Dispose();
                     }
                 }
@@ -771,7 +771,7 @@ namespace GFDLibrary.Rendering.OpenGL
         public ShaderRegistry ShaderRegistry { get; init; }
         public GLCamera Camera { get; init; }
         public double AnimationTime { get; init; }
-        public Mesh SelectedMesh { get; init; }
+        public Geometry SelectedMesh { get; init; }
         public Material SelectedMaterial { get; init; }
     }
 }

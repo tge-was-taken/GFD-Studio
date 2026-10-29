@@ -62,9 +62,9 @@ namespace GFDStudio.FormatModules
                 // gfd misc modules
                 new ChunkType000100F8FormatModule(),
                 new ChunkType000100F9FormatModule(),
-                new ModelFormatModule(),
-                new NodeFormatModule(),
                 new MeshFormatModule(),
+                new NodeFormatModule(),
+                new GeometryFormatModule(),
                 new CameraFormatModule(),
                 new LightFormatModule(),
                 new EplFormatModule(),

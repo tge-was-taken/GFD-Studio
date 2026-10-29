@@ -18,7 +18,7 @@ namespace GFDLibrary.IO
             {
                 // Hack for Metaphor: cast endian reader to little endian
                 ((EndianBinaryReader)reader ).Endianness = Endianness.LittleEndian;
-                Identifier = ResourceFileIdentifier.Model;
+                Identifier = ResourceFileIdentifier.Mesh;
             }
             Version = reader.ReadUInt32();
             Type = ( ResourceType )reader.ReadInt32();

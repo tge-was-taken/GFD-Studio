@@ -274,24 +274,24 @@ namespace GFDStudio.GUI.DataViewNodes
             } );
             RegisterCustomHandler("Convert to", "Material preset", () => { ConvertToMaterialPreset(); });
 
-            RegisterCustomHandler( "Meshes using this material", "Set binormals to a direction", () =>
+            RegisterCustomHandler( "Geometries using this material", "Set binormals to a direction", () =>
             {
                 var direction = UserDialogs.Current.AskDirection(
                     "Set binormals",
-                    "Every binormal of every mesh using this material is set to this direction. A shader " +
+                    "Every binormal of every geometry using this material is set to this direction. A shader " +
                     "that reads the binormal as a forward vector, rather than as part of a tangent basis, " +
                     "wants this.",
                     Vector3.UnitZ );
 
                 if ( direction != null )
-                    ApplyToMeshesUsingThisMaterial( mesh => MeshVertexGeometry.SetBinormals( mesh, direction.Value ) );
+                    ApplyToMeshesUsingThisMaterial( geometry => GeometryMath.SetBinormals( geometry, direction.Value ) );
             } );
 
-            RegisterCustomHandler( "Meshes using this material", "Regenerate normals", () =>
-                ApplyToMeshesUsingThisMaterial( MeshVertexGeometry.RegenerateNormals ) );
+            RegisterCustomHandler( "Geometries using this material", "Regenerate normals", () =>
+                ApplyToMeshesUsingThisMaterial( GeometryMath.RegenerateNormals ) );
 
-            RegisterCustomHandler( "Meshes using this material", "Regenerate tangents and binormals", () =>
-                ApplyToMeshesUsingThisMaterial( MeshVertexGeometry.RegenerateTangentSpace ) );
+            RegisterCustomHandler( "Geometries using this material", "Regenerate tangents and binormals", () =>
+                ApplyToMeshesUsingThisMaterial( GeometryMath.RegenerateTangentSpace ) );
             RegisterModelUpdateHandler( () =>
             {
                 var material = Data;
@@ -395,46 +395,46 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         /// <summary>
-        /// Runs something over every mesh in the model that names this material. The meshes live
-        /// under the model rather than under the material, so the pack has to be found first.
+        /// Runs something over every geometry in the mesh that names this material. The geometries live
+        /// under the mesh rather than under the material, so the pack has to be found first.
         /// </summary>
-        private void ApplyToMeshesUsingThisMaterial( Action<Mesh> apply )
+        private void ApplyToMeshesUsingThisMaterial( Action<Geometry> apply )
         {
-            var model = FindModel();
-            if ( model == null )
+            var mesh = FindModel();
+            if ( mesh == null )
             {
                 UserDialogs.Current.ShowMessage(
-                    "This material is not part of a model, so there are no meshes to change.",
+                    "This material is not part of a mesh, so there are no geometries to change.",
                     "Nothing to do", UserMessageKind.Information );
                 return;
             }
 
             var changed = 0;
-            foreach ( var mesh in model.Meshes.Where( x => x.MaterialName == Data.Name ) )
+            foreach ( var geometry in mesh.Geometries.Where( x => x.MaterialName == Data.Name ) )
             {
-                apply( mesh );
+                apply( geometry );
                 changed++;
             }
 
             UserDialogs.Current.ShowMessage(
                 changed == 0
-                    ? $"No mesh uses \"{Data.Name}\"."
-                    : $"Changed {changed} mesh{( changed == 1 ? string.Empty : "es" )} using \"{Data.Name}\".",
+                    ? $"No geometry uses \"{Data.Name}\"."
+                    : $"Changed {changed} geometry{( changed == 1 ? string.Empty : "es" )} using \"{Data.Name}\".",
                 "Done", UserMessageKind.Information );
         }
 
         /// <summary>
-        /// The model this material belongs to, found by walking up past the material dictionary.
+        /// The mesh this material belongs to, found by walking up past the material dictionary.
         /// </summary>
-        private Model FindModel()
+        private Mesh FindModel()
         {
             for ( var node = Parent; node != null; node = node.Parent )
             {
                 if ( node.Data is ModelPack pack )
-                    return pack.Model;
+                    return pack.Mesh;
 
-                if ( node.Data is Model model )
-                    return model;
+                if ( node.Data is Mesh mesh )
+                    return mesh;
             }
 
             return null;

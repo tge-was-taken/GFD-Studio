@@ -42,7 +42,7 @@ public class ModelConverterOptionsViewModel
     public ObservableCollection<ModelConverterMaterialOptionsViewModel> Materials { get; set; } = new();
 
     [Browsable( false )]
-    public ObservableCollection<ModelConverterMeshOptionsViewModel> Meshes { get; set; } = new();
+    public ObservableCollection<ModelConverterMeshOptionsViewModel> Geometries { get; set; } = new();
 
     [Browsable( false )]
     public ObservableCollection<Material> AdditionalMaterialPresets { get; set; } = new();
@@ -60,18 +60,18 @@ public class ModelConverterOptionsViewModel
             DefaultMaterial = new()
             {
                 Preset = DefaultMaterial.Preset.Material,
-                Mesh = new ModelConverterMeshOptions()
+                Geometry = new ModelConverterMeshOptions()
                 {
-                    GeometryFlags = DefaultMaterial.Mesh.GeometryFlags.GetValueOrDefault(),
-                    VertexAttributeFlags = DefaultMaterial.Mesh.VertexAttributeFlags.GetValueOrDefault(),
+                    GeometryFlags = DefaultMaterial.Geometry.GeometryFlags.GetValueOrDefault(),
+                    VertexAttributeFlags = DefaultMaterial.Geometry.VertexAttributeFlags.GetValueOrDefault(),
                     TexCoordChannelMap =
-                            DefaultMaterial.Mesh.TexCoordChannelMap
+                            DefaultMaterial.Geometry.TexCoordChannelMap
                             .Select( tc => new ModelConverterTexCoordChannelOptions
                             {
                                 SourceChannel = tc.SourceChannel
                             } ).ToArray(),
                     ColorChannelMap =
-                            DefaultMaterial.Mesh.ColorChannelMap
+                            DefaultMaterial.Geometry.ColorChannelMap
                             .Select( cc => new ModelConverterColorChannelOptions
                             {
                                 SourceChannel = cc.SourceChannel,
@@ -84,7 +84,7 @@ public class ModelConverterOptionsViewModel
             ConvertSkinToZUp = ConvertSkinToZUp,
             SetFullBodyNodeProperties = FullBodyCompatibilityMode,
             AutoAddGFDHelperIDs = AutoAddGFDHelperIDs,
-            Meshes = Meshes
+            Geometries = Geometries
                 .Where(m => !m.InheritDefaults || !m.InheritChannelSettingsDefaults)
                 .Select(m => 
                 new
@@ -92,16 +92,16 @@ public class ModelConverterOptionsViewModel
                     Name = m.Name,
                     Options = new ModelConverterMeshOptions()
                     {
-                        GeometryFlags = m.InheritDefaults ? DefaultMaterial.Mesh.GeometryFlags.Value : m.GeometryFlags.GetValueOrDefault(),
-                        VertexAttributeFlags = m.InheritDefaults ? DefaultMaterial.Mesh.VertexAttributeFlags.Value : m.VertexAttributeFlags.GetValueOrDefault(),
+                        GeometryFlags = m.InheritDefaults ? DefaultMaterial.Geometry.GeometryFlags.Value : m.GeometryFlags.GetValueOrDefault(),
+                        VertexAttributeFlags = m.InheritDefaults ? DefaultMaterial.Geometry.VertexAttributeFlags.Value : m.VertexAttributeFlags.GetValueOrDefault(),
                         TexCoordChannelMap = 
-                            (m.InheritChannelSettingsDefaults ? DefaultMaterial.Mesh.TexCoordChannelMap : m.TexCoordChannelMap)
+                            (m.InheritChannelSettingsDefaults ? DefaultMaterial.Geometry.TexCoordChannelMap : m.TexCoordChannelMap)
                             .Select( tc => new ModelConverterTexCoordChannelOptions
                             {
                                 SourceChannel = tc.SourceChannel
                             } ).ToArray(),
                         ColorChannelMap =
-                            (m.InheritChannelSettingsDefaults ? DefaultMaterial.Mesh.ColorChannelMap : m.ColorChannelMap)
+                            (m.InheritChannelSettingsDefaults ? DefaultMaterial.Geometry.ColorChannelMap : m.ColorChannelMap)
                             .Select( cc => new ModelConverterColorChannelOptions
                             {
                                 SourceChannel = cc.SourceChannel,
@@ -202,8 +202,8 @@ public class ModelConverterDefaultMaterialOptionsViewModel
     }
 
     [Category( "Material settings" )]
-    [DisplayName( "Mesh" )]
-    public ModelConverterDefaultMeshOptionsViewModel Mesh { get; set; }
+    [DisplayName( "Geometry" )]
+    public ModelConverterDefaultMeshOptionsViewModel Geometry { get; set; }
 
     [Browsable( false )]
     public ModelConverterOptionsViewModel Parent => _parent;
@@ -219,15 +219,15 @@ public class ModelConverterDefaultMaterialOptionsViewModel
         _preset = preset;
         if ( _preset is null )
         {
-            Mesh = null;
+            Geometry = null;
         }
         else
         {
-            Mesh ??= new();
-            Mesh.VertexAttributeFlags = _preset.Material.RuntimeMetadata?.VertexAttributeFlags.HasValue ?? false
+            Geometry ??= new();
+            Geometry.VertexAttributeFlags = _preset.Material.RuntimeMetadata?.VertexAttributeFlags.HasValue ?? false
                 ? _preset.Material.RuntimeMetadata.VertexAttributeFlags.Value
                 : ModelConverterDefaultMeshOptionsViewModel.DefaultVertexAttributeFlags;
-            Mesh.GeometryFlags = _preset.Material.RuntimeMetadata?.GeometryFlags.HasValue ?? false
+            Geometry.GeometryFlags = _preset.Material.RuntimeMetadata?.GeometryFlags.HasValue ?? false
                 ? _preset.Material.RuntimeMetadata.GeometryFlags.Value
                 : ModelConverterDefaultMeshOptionsViewModel.DefaultGeometryFlags;
         }
@@ -333,17 +333,17 @@ public class ModelConverterDefaultMeshOptionsViewModel
     public static readonly GeometryFlags DefaultGeometryFlags =
         GFDLibrary.Models.GeometryFlags.Bit7;
 
-    [CustomSortedCategory( "Mesh settings", 1, 2 )]
+    [CustomSortedCategory( "Geometry settings", 1, 2 )]
     [DisplayName( "Geometry flags" )]
     public GeometryFlags? GeometryFlags { get; set; }
         = DefaultGeometryFlags;
 
-    [CustomSortedCategory( "Mesh settings", 1, 2 )]
+    [CustomSortedCategory( "Geometry settings", 1, 2 )]
     [DisplayName( "Vertex attribute flags" )]
     public VertexAttributeFlags? VertexAttributeFlags { get; set; }
         = DefaultVertexAttributeFlags;
 
-    [CustomSortedCategory("Mesh channel settings", 2, 2)]
+    [CustomSortedCategory("Geometry channel settings", 2, 2)]
     [DisplayName( "UV channel map" )]
     public ModelConverterTexCoordChannelOptionsViewModel[] TexCoordChannelMap { get; set; } = new ModelConverterTexCoordChannelOptionsViewModel[]
     {
@@ -352,7 +352,7 @@ public class ModelConverterDefaultMeshOptionsViewModel
         new(2,2),
     };
 
-    [CustomSortedCategory("Mesh channel settings", 2, 2)]
+    [CustomSortedCategory("Geometry channel settings", 2, 2)]
     [DisplayName( "Color channel map" )]
     public ModelConverterColorChannelOptionsViewModel[] ColorChannelMap { get; set; } = new ModelConverterColorChannelOptionsViewModel[]
     {
@@ -370,17 +370,17 @@ public class ModelConverterDefaultMeshOptionsViewModel
 [TypeConverter( typeof( ExpandableObjectConverter ) )]
 public class ModelConverterMeshOptionsViewModel : ModelConverterDefaultMeshOptionsViewModel
 {
-    [CustomSortedCategory("Mesh settings", 1, 2)]
+    [CustomSortedCategory("Geometry settings", 1, 2)]
     [DisplayName( "Name" )]
     [Editable( false )]
     [ReadOnly( true )]
     public string Name { get; set; }
 
-    [CustomSortedCategory("Mesh settings", 1, 2)]
+    [CustomSortedCategory("Geometry settings", 1, 2)]
     [DisplayName( "Inherit from material" )]
     public bool InheritDefaults { get; set; } = true;
 
-    [CustomSortedCategory("Mesh channel settings", 2, 2)]
+    [CustomSortedCategory("Geometry channel settings", 2, 2)]
     [DisplayName( "Inherit from material" )]
     public bool InheritChannelSettingsDefaults { get; set; } = true;
 }
