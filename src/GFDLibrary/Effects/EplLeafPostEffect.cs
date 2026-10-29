@@ -13,8 +13,10 @@ namespace GFDLibrary.Effects
 
         public EplLeafDataHeader Header { get; set; }
         public uint Type { get; set; }
-        public uint Field00 { get; set; }
-        public float Field04 { get; set; }
+        [FormerName( "Field00" )]
+        public uint Flags { get; set; }
+        [FormerName( "Field04" )]
+        public float Life { get; set; }
         public Resource Data { get; set; }
         public bool HasEmbeddedFile { get; set; }
         public EplEmbeddedFile EmbeddedFile { get; set; }
@@ -28,8 +30,8 @@ namespace GFDLibrary.Effects
             //     SetRandomBackColor();
             Header = reader.ReadResource<EplLeafDataHeader>( Version );
             Type = reader.ReadUInt32();
-            Field00 = reader.ReadUInt32();
-            Field04 = reader.ReadSingle();
+            Flags = reader.ReadUInt32();
+            Life = reader.ReadSingle();
             switch ( Type )
             {
 
@@ -63,8 +65,8 @@ namespace GFDLibrary.Effects
             //     SetRandomBackColor();
             writer.WriteResource( Header );
             writer.WriteUInt32( Type );
-            writer.WriteUInt32( Field00 );
-            writer.WriteSingle( Field04 );
+            writer.WriteUInt32( Flags );
+            writer.WriteSingle( Life );
             writer.WriteResource( Data );
             writer.WriteBoolean( HasEmbeddedFile );
             if ( HasEmbeddedFile )
@@ -76,13 +78,21 @@ namespace GFDLibrary.Effects
     {
         public override ResourceType ResourceType => ResourceType.EplPostEffectRadiationBlurData;
 
-        public EplLeafCommonData2 Field10 { get; set; }
-        public uint Field74 { get; set; }
-        public EplLeafCommonData2 Field78 { get; set; }
-        public float FieldDC { get; set; }
-        public float FieldE0 { get; set; }
-        public float FieldE4 { get; set; }
-        public byte FieldE8 { get; set; }
+        [FormerName( "Field10" )]
+
+        public EplLeafCommonData2 Color { get; set; }
+        [FormerName( "Field74" )]
+        public uint Blend { get; set; }
+        [FormerName( "Field78" )]
+        public EplLeafCommonData2 Power { get; set; }
+        [FormerName( "FieldDC" )]
+        public float Falloff { get; set; }
+        [FormerName( "FieldE0" )]
+        public float CenterX { get; set; }
+        [FormerName( "FieldE4" )]
+        public float CenterY { get; set; }
+        [FormerName( "FieldE8" )]
+        public byte SsaoMask { get; set; }
 
         public EplPostEffectRadiationBlurData() { }
         public EplPostEffectRadiationBlurData( uint Version ) : base( Version ) { }
@@ -90,29 +100,29 @@ namespace GFDLibrary.Effects
 
         protected override void ReadCore( ResourceReader reader )
         {
-            Field10 = reader.ReadResource<EplLeafCommonData2>( Version );
-            Field74 = reader.ReadUInt32();
-            Field78 = reader.ReadResource<EplLeafCommonData2>( Version );
-            FieldDC = reader.ReadSingle();
-            FieldE0 = reader.ReadSingle();
-            FieldE4 = reader.ReadSingle();
+            Color = reader.ReadResource<EplLeafCommonData2>( Version );
+            Blend = reader.ReadUInt32();
+            Power = reader.ReadResource<EplLeafCommonData2>( Version );
+            Falloff = reader.ReadSingle();
+            CenterX = reader.ReadSingle();
+            CenterY = reader.ReadSingle();
             if ( Version > 0x1104930 )
             {
-                FieldE8 = reader.ReadByte();
+                SsaoMask = reader.ReadByte();
             }
         }
 
         protected override void WriteCore( ResourceWriter writer )
         {
-            writer.WriteResource( Field10 );
-            writer.WriteUInt32( Field74 );
-            writer.WriteResource( Field78 );
-            writer.WriteSingle( FieldDC );
-            writer.WriteSingle( FieldE0 );
-            writer.WriteSingle( FieldE4 );
+            writer.WriteResource( Color );
+            writer.WriteUInt32( Blend );
+            writer.WriteResource( Power );
+            writer.WriteSingle( Falloff );
+            writer.WriteSingle( CenterX );
+            writer.WriteSingle( CenterY );
             if ( Version > 0x1104930 )
             {
-                writer.WriteByte( FieldE8 );
+                writer.WriteByte( SsaoMask );
             }
         }
     }
@@ -121,10 +131,15 @@ namespace GFDLibrary.Effects
     {
         public override ResourceType ResourceType => ResourceType.EplPostEffectStraightBlurData;
 
-        public EplLeafCommonData2 Field10 { get; set; }
-        public uint Field74 { get; set; }
-        public EplLeafCommonData2 Field78 { get; set; }
-        public float FieldDC { get; set; }
+        [FormerName( "Field10" )]
+
+        public EplLeafCommonData2 Color { get; set; }
+        [FormerName( "Field74" )]
+        public uint Blend { get; set; }
+        [FormerName( "Field78" )]
+        public EplLeafCommonData2 Power { get; set; }
+        [FormerName( "FieldDC" )]
+        public float Direction { get; set; }
 
         public EplPostEffectStraightBlurData() { }
         public EplPostEffectStraightBlurData( uint Version ) : base( Version ) { }
@@ -132,18 +147,18 @@ namespace GFDLibrary.Effects
 
         protected override void ReadCore( ResourceReader reader )
         {
-            Field10 = reader.ReadResource<EplLeafCommonData2>( Version );
-            Field74 = reader.ReadUInt32();
-            Field78 = reader.ReadResource<EplLeafCommonData2>( Version );
-            FieldDC = reader.ReadSingle();
+            Color = reader.ReadResource<EplLeafCommonData2>( Version );
+            Blend = reader.ReadUInt32();
+            Power = reader.ReadResource<EplLeafCommonData2>( Version );
+            Direction = reader.ReadSingle();
         }
 
         protected override void WriteCore( ResourceWriter writer )
         {
-            writer.WriteResource( Field10 );
-            writer.WriteUInt32( Field74 );
-            writer.WriteResource( Field78 );
-            writer.WriteSingle( FieldDC );
+            writer.WriteResource( Color );
+            writer.WriteUInt32( Blend );
+            writer.WriteResource( Power );
+            writer.WriteSingle( Direction );
         }
     }
 
@@ -151,11 +166,17 @@ namespace GFDLibrary.Effects
     {
         public override ResourceType ResourceType => ResourceType.EplPostEffectNoiseBlurData;
 
-        public EplLeafCommonData2 Field10 { get; set; }
-        public uint Field74 { get; set; }
-        public EplLeafCommonData2 Field78 { get; set; }
-        public EplLeafCommonData2 FieldDC { get; set; }
-        public byte Field140 { get; set; }
+        [FormerName( "Field10" )]
+
+        public EplLeafCommonData2 Color { get; set; }
+        [FormerName( "Field74" )]
+        public uint Blend { get; set; }
+        [FormerName( "Field78" )]
+        public EplLeafCommonData2 Power { get; set; }
+        [FormerName( "FieldDC" )]
+        public EplLeafCommonData2 Scale { get; set; }
+        [FormerName( "Field140" )]
+        public byte SsaoMask { get; set; }
 
         public EplPostEffectNoiseBlurData() { }
         public EplPostEffectNoiseBlurData( uint Version ) : base( Version ) { }
@@ -163,25 +184,25 @@ namespace GFDLibrary.Effects
 
         protected override void ReadCore( ResourceReader reader )
         {
-            Field10 = reader.ReadResource<EplLeafCommonData2>( Version );
-            Field74 = reader.ReadUInt32();
-            Field78 = reader.ReadResource<EplLeafCommonData2>( Version );
-            FieldDC = reader.ReadResource<EplLeafCommonData2>( Version );
+            Color = reader.ReadResource<EplLeafCommonData2>( Version );
+            Blend = reader.ReadUInt32();
+            Power = reader.ReadResource<EplLeafCommonData2>( Version );
+            Scale = reader.ReadResource<EplLeafCommonData2>( Version );
             if ( Version > 0x1104920 )
             {
-                Field140 = reader.ReadByte();
+                SsaoMask = reader.ReadByte();
             }
         }
 
         protected override void WriteCore( ResourceWriter writer )
         {
-            writer.WriteResource( Field10 );
-            writer.WriteUInt32( Field74 );
-            writer.WriteResource( Field78 );
-            writer.WriteResource( FieldDC );
+            writer.WriteResource( Color );
+            writer.WriteUInt32( Blend );
+            writer.WriteResource( Power );
+            writer.WriteResource( Scale );
             if ( Version > 0x1104920 )
             {
-                writer.WriteByte( Field140 );
+                writer.WriteByte( SsaoMask );
             }
         }
     }
@@ -190,14 +211,23 @@ namespace GFDLibrary.Effects
     {
         public override ResourceType ResourceType => ResourceType.EplPostEffectDistortionBlurData;
 
-        public EplLeafCommonData2 Field10 { get; set; }
-        public uint Field74 { get; set; }
-        public EplLeafCommonData2 Field78 { get; set; }
-        public EplLeafCommonData2 FieldDC { get; set; }
-        public float Field140 { get; set; }
-        public float Field144 { get; set; }
-        public float Field148 { get; set; }
-        public float Field14C { get; set; }
+        [FormerName( "Field10" )]
+
+        public EplLeafCommonData2 Color { get; set; }
+        [FormerName( "Field74" )]
+        public uint Blend { get; set; }
+        [FormerName( "Field78" )]
+        public EplLeafCommonData2 Power0 { get; set; }
+        [FormerName( "FieldDC" )]
+        public EplLeafCommonData2 Power1 { get; set; }
+        [FormerName( "Field140" )]
+        public float Uv0X { get; set; }
+        [FormerName( "Field144" )]
+        public float Uv0Y { get; set; }
+        [FormerName( "Field148" )]
+        public float Uv1X { get; set; }
+        [FormerName( "Field14C" )]
+        public float Uv1Y { get; set; }
 
         public EplPostEffectDistortionBlurData() { }
         public EplPostEffectDistortionBlurData( uint Version ) : base( Version ) { }
@@ -205,26 +235,26 @@ namespace GFDLibrary.Effects
 
         protected override void ReadCore( ResourceReader reader )
         {
-            Field10 = reader.ReadResource<EplLeafCommonData2>( Version );
-            Field74 = reader.ReadUInt32();
-            Field78 = reader.ReadResource<EplLeafCommonData2>( Version );
-            FieldDC = reader.ReadResource<EplLeafCommonData2>( Version );
-            Field140 = reader.ReadSingle();
-            Field144 = reader.ReadSingle();
-            Field148 = reader.ReadSingle();
-            Field14C = reader.ReadSingle();
+            Color = reader.ReadResource<EplLeafCommonData2>( Version );
+            Blend = reader.ReadUInt32();
+            Power0 = reader.ReadResource<EplLeafCommonData2>( Version );
+            Power1 = reader.ReadResource<EplLeafCommonData2>( Version );
+            Uv0X = reader.ReadSingle();
+            Uv0Y = reader.ReadSingle();
+            Uv1X = reader.ReadSingle();
+            Uv1Y = reader.ReadSingle();
         }
 
         protected override void WriteCore( ResourceWriter writer )
         {
-            writer.WriteResource( Field10 );
-            writer.WriteUInt32( Field74 );
-            writer.WriteResource( Field78 );
-            writer.WriteResource( FieldDC );
-            writer.WriteSingle( Field140 );
-            writer.WriteSingle( Field144 );
-            writer.WriteSingle( Field148 );
-            writer.WriteSingle( Field14C );
+            writer.WriteResource( Color );
+            writer.WriteUInt32( Blend );
+            writer.WriteResource( Power0 );
+            writer.WriteResource( Power1 );
+            writer.WriteSingle( Uv0X );
+            writer.WriteSingle( Uv0Y );
+            writer.WriteSingle( Uv1X );
+            writer.WriteSingle( Uv1Y );
         }
     }
 
@@ -232,11 +262,17 @@ namespace GFDLibrary.Effects
     {
         public override ResourceType ResourceType => ResourceType.EplPostEffectFillData;
 
-        public EplLeafCommonData2 Field10 { get; set; }
-        public EplLeafCommonData2 Field74 { get; set; }
-        public EplLeafCommonData2 FieldD8 { get; set; }
-        public EplLeafCommonData2 Field13C { get; set; }
-        public uint FieldlA0 { get; set; }
+        [FormerName( "Field10" )]
+
+        public EplLeafCommonData2 Color0 { get; set; }
+        [FormerName( "Field74" )]
+        public EplLeafCommonData2 Color1 { get; set; }
+        [FormerName( "FieldD8" )]
+        public EplLeafCommonData2 Color2 { get; set; }
+        [FormerName( "Field13C" )]
+        public EplLeafCommonData2 Color3 { get; set; }
+        [FormerName( "FieldlA0" )]
+        public uint Blend { get; set; }
 
         public EplPostEffectFillData() { }
         public EplPostEffectFillData( uint Version ) : base( Version ) { }
@@ -244,20 +280,20 @@ namespace GFDLibrary.Effects
 
         protected override void ReadCore( ResourceReader reader )
         {
-            Field10 = reader.ReadResource<EplLeafCommonData2>( Version );
-            Field74 = reader.ReadResource<EplLeafCommonData2>( Version );
-            FieldD8 = reader.ReadResource<EplLeafCommonData2>( Version );
-            Field13C = reader.ReadResource<EplLeafCommonData2>( Version );
-            FieldlA0 = reader.ReadUInt32();
+            Color0 = reader.ReadResource<EplLeafCommonData2>( Version );
+            Color1 = reader.ReadResource<EplLeafCommonData2>( Version );
+            Color2 = reader.ReadResource<EplLeafCommonData2>( Version );
+            Color3 = reader.ReadResource<EplLeafCommonData2>( Version );
+            Blend = reader.ReadUInt32();
         }
 
         protected override void WriteCore( ResourceWriter writer )
         {
-            writer.WriteResource( Field10 );
-            writer.WriteResource( Field74 );
-            writer.WriteResource( FieldD8 );
-            writer.WriteResource( Field13C );
-            writer.WriteUInt32( FieldlA0 );
+            writer.WriteResource( Color0 );
+            writer.WriteResource( Color1 );
+            writer.WriteResource( Color2 );
+            writer.WriteResource( Color3 );
+            writer.WriteUInt32( Blend );
         }
     }
 
@@ -265,11 +301,17 @@ namespace GFDLibrary.Effects
     {
         public override ResourceType ResourceType => ResourceType.EplPostEffectLensFlareData;
 
-        public uint Field10 { get; set; }
-        public uint Field14 { get; set; }
-        public uint Field18 { get; set; }
-        public EplLeafCommonData2 Field1C { get; set; }
-        public float Field80 { get; set; }
+        [FormerName( "Field10" )]
+
+        public uint Flags { get; set; }
+        [FormerName( "Field14" )]
+        public uint Template { get; set; }
+        [FormerName( "Field18" )]
+        public uint Filter { get; set; }
+        [FormerName( "Field1C" )]
+        public EplLeafCommonData2 Color { get; set; }
+        [FormerName( "Field80" )]
+        public float Brightness { get; set; }
 
         public EplPostEffectLensFlareData() { }
         public EplPostEffectLensFlareData( uint Version ) : base( Version ) { }
@@ -277,20 +319,20 @@ namespace GFDLibrary.Effects
 
         protected override void ReadCore( ResourceReader reader )
         {
-            Field10 = reader.ReadUInt32();
-            Field14 = reader.ReadUInt32();
-            Field18 = reader.ReadUInt32();
-            Field1C = reader.ReadResource<EplLeafCommonData2>( Version );
-            Field80 = reader.ReadSingle();
+            Flags = reader.ReadUInt32();
+            Template = reader.ReadUInt32();
+            Filter = reader.ReadUInt32();
+            Color = reader.ReadResource<EplLeafCommonData2>( Version );
+            Brightness = reader.ReadSingle();
         }
 
         protected override void WriteCore( ResourceWriter writer )
         {
-            writer.WriteUInt32( Field10 );
-            writer.WriteUInt32( Field14 );
-            writer.WriteUInt32( Field18 );
-            writer.WriteResource( Field1C );
-            writer.WriteSingle( Field80 );
+            writer.WriteUInt32( Flags );
+            writer.WriteUInt32( Template );
+            writer.WriteUInt32( Filter );
+            writer.WriteResource( Color );
+            writer.WriteSingle( Brightness );
         }
     }
 
@@ -298,13 +340,21 @@ namespace GFDLibrary.Effects
     {
         public override ResourceType ResourceType => ResourceType.EplPostEffectColorCorrectionData;
 
-        public float Field10 { get; set; }
-        public float Field14 { get; set; }
-        public float Field18 { get; set; }
-        public float Field1C { get; set; }
-        public float Field20 { get; set; }
-        public float Field24 { get; set; }
-        public Vector2 Field28 { get; set; }
+        [FormerName( "Field10" )]
+
+        public float Cyan { get; set; }
+        [FormerName( "Field14" )]
+        public float Magenta { get; set; }
+        [FormerName( "Field18" )]
+        public float Yellow { get; set; }
+        [FormerName( "Field1C" )]
+        public float Dodge { get; set; }
+        [FormerName( "Field20" )]
+        public float Burn { get; set; }
+        [FormerName( "Field24" )]
+        public float Alpha { get; set; }
+        [FormerName( "Field28" )]
+        public Vector2 Fade { get; set; }
 
         public EplPostEffectColorCorrectionData() { }
         public EplPostEffectColorCorrectionData( uint Version ) : base( Version ) { }
@@ -312,24 +362,24 @@ namespace GFDLibrary.Effects
 
         protected override void ReadCore( ResourceReader reader )
         {
-            Field10 = reader.ReadSingle();
-            Field14 = reader.ReadSingle();
-            Field18 = reader.ReadSingle();
-            Field1C = reader.ReadSingle();
-            Field20 = reader.ReadSingle();
-            Field24 = reader.ReadSingle();
-            Field28 = reader.ReadVector2();
+            Cyan = reader.ReadSingle();
+            Magenta = reader.ReadSingle();
+            Yellow = reader.ReadSingle();
+            Dodge = reader.ReadSingle();
+            Burn = reader.ReadSingle();
+            Alpha = reader.ReadSingle();
+            Fade = reader.ReadVector2();
         }
 
         protected override void WriteCore( ResourceWriter writer )
         {
-            writer.WriteSingle( Field10 );
-            writer.WriteSingle( Field14 );
-            writer.WriteSingle( Field18 );
-            writer.WriteSingle( Field1C );
-            writer.WriteSingle( Field20 );
-            writer.WriteSingle( Field24 );
-            writer.WriteVector2( Field28 );
+            writer.WriteSingle( Cyan );
+            writer.WriteSingle( Magenta );
+            writer.WriteSingle( Yellow );
+            writer.WriteSingle( Dodge );
+            writer.WriteSingle( Burn );
+            writer.WriteSingle( Alpha );
+            writer.WriteVector2( Fade );
         }
     }
 
@@ -337,8 +387,11 @@ namespace GFDLibrary.Effects
     {
         public override ResourceType ResourceType => ResourceType.EplPostEffectMonotoneData;
 
-        public float Field10 { get; set; }
-        public Vector2 Field14 { get; set; }
+        [FormerName( "Field10" )]
+
+        public float Alpha { get; set; }
+        [FormerName( "Field14" )]
+        public Vector2 Fade { get; set; }
 
         public EplPostEffectMonotoneData() { }
         public EplPostEffectMonotoneData( uint Version ) : base( Version ) { }
@@ -346,14 +399,14 @@ namespace GFDLibrary.Effects
 
         protected override void ReadCore( ResourceReader reader )
         {
-            Field10 = reader.ReadSingle();
-            Field14 = reader.ReadVector2();
+            Alpha = reader.ReadSingle();
+            Fade = reader.ReadVector2();
         }
 
         protected override void WriteCore( ResourceWriter writer )
         {
-            writer.WriteSingle( Field10 );
-            writer.WriteVector2( Field14 );
+            writer.WriteSingle( Alpha );
+            writer.WriteVector2( Fade );
         }
     }
 
