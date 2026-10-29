@@ -33,8 +33,10 @@ namespace GFDLibrary.Effects
         public float ColorRandom { get; set; }
         [FormerName( "FieldC8" )]
         public Resource ScaleCurve4 { get; set; }
-        public float Field12C { get; set; }
-        public float Field130 { get; set; }
+        [FormerName( "Field12C" )]
+        public float ScaleRateX { get; set; }
+        [FormerName( "Field130" )]
+        public float ScaleRateY { get; set; }
         public EplLeafCommonData Field134_Old { get; set; }
         [FormerName( "Field134" )]
         public Vector2 RotateStart { get; set; }
@@ -97,8 +99,8 @@ namespace GFDLibrary.Effects
                 ScaleCurve4 = reader.ReadResource<EplLeafCommonData2>( Version );
             if (Version > 0x1104041)
             {
-                Field12C = reader.ReadSingle();
-                Field130 = reader.ReadSingle();
+                ScaleRateX = reader.ReadSingle();
+                ScaleRateY = reader.ReadSingle();
             }
             if (Version > 0x2107001)
                 Field140 = reader.ReadVector2();
@@ -160,8 +162,8 @@ namespace GFDLibrary.Effects
             writer.WriteResource( ScaleCurve4 );
             if ( Version > 0x1104041 )
             {
-                writer.WriteSingle( Field12C );
-                writer.WriteSingle( Field130 );
+                writer.WriteSingle( ScaleRateX );
+                writer.WriteSingle( ScaleRateY );
             }
             if ( Version > 0x2107001 )
                 writer.WriteVector2( Field140 );
@@ -245,12 +247,19 @@ namespace GFDLibrary.Effects
     {
         public override ResourceType ResourceType => ResourceType.EplSmokeEffectParams;
 
-        public float Field170 { get; set; }
-        public Vector2 Field174 { get; set; }
-        public Vector2 Field17C { get; set; }
-        public Vector2 Field184 { get; set; }
-        public Vector2 Field18C { get; set; }
-        public Vector2 Field194 { get; set; }
+        [FormerName( "Field170" )]
+
+        public float Radius { get; set; }
+        [FormerName( "Field174" )]
+        public Vector2 Speed { get; set; }
+        [FormerName( "Field17C" )]
+        public Vector2 Gravity { get; set; }
+        [FormerName( "Field184" )]
+        public Vector2 AmpliBegin { get; set; }
+        [FormerName( "Field18C" )]
+        public Vector2 AmpliEnd { get; set; }
+        [FormerName( "Field194" )]
+        public Vector2 AmpliSpeed { get; set; }
 
         public EplSmokeEffectParams() { }
         public EplSmokeEffectParams( uint Version ) : base( Version ) { }
@@ -259,23 +268,23 @@ namespace GFDLibrary.Effects
         protected override void ReadCore( ResourceReader reader )
         {
             //     SetRandomBackColor();
-            Field170 = reader.ReadSingle();
-            Field174 = reader.ReadVector2();
-            Field17C = reader.ReadVector2();
-            Field184 = reader.ReadVector2();
-            Field18C = reader.ReadVector2();
-            Field194 = reader.ReadVector2();
+            Radius = reader.ReadSingle();
+            Speed = reader.ReadVector2();
+            Gravity = reader.ReadVector2();
+            AmpliBegin = reader.ReadVector2();
+            AmpliEnd = reader.ReadVector2();
+            AmpliSpeed = reader.ReadVector2();
         }
 
         protected override void WriteCore( ResourceWriter writer )
         {
             //     SetRandomBackColor();
-            writer.WriteSingle( Field170 );
-            writer.WriteVector2( Field174 );
-            writer.WriteVector2( Field17C );
-            writer.WriteVector2( Field184 );
-            writer.WriteVector2( Field18C );
-            writer.WriteVector2( Field194 );
+            writer.WriteSingle( Radius );
+            writer.WriteVector2( Speed );
+            writer.WriteVector2( Gravity );
+            writer.WriteVector2( AmpliBegin );
+            writer.WriteVector2( AmpliEnd );
+            writer.WriteVector2( AmpliSpeed );
         }
     }
 
@@ -283,12 +292,19 @@ namespace GFDLibrary.Effects
     {
         public override ResourceType ResourceType => ResourceType.EplExplosionEffectParams;
 
-        public Vector2 Field170 { get; set; }
-        public Vector2 Field188 { get; set; }
-        public Vector2 Field178 { get; set; }
-        public Vector2 Field180 { get; set; }
-        public Vector2 Field190 { get; set; }
-        public float Field198 { get; set; }
+        [FormerName( "Field170" )]
+
+        public Vector2 Radius { get; set; }
+        [FormerName( "Field188" )]
+        public Vector2 Speed { get; set; }
+        [FormerName( "Field178" )]
+        public Vector2 SpreadXZ { get; set; }
+        [FormerName( "Field180" )]
+        public Vector2 SpreadY { get; set; }
+        [FormerName( "Field190" )]
+        public Vector2 Gravity { get; set; }
+        [FormerName( "Field198" )]
+        public float Accele { get; set; }
 
         public EplExplosionEffectParams() { }
         public EplExplosionEffectParams( uint Version ) : base( Version ) { }
@@ -297,23 +313,23 @@ namespace GFDLibrary.Effects
         protected override void ReadCore( ResourceReader reader )
         {
             //     SetRandomBackColor();
-            Field170 = reader.ReadVector2();
-            Field188 = reader.ReadVector2();
-            Field178 = reader.ReadVector2();
-            Field180 = reader.ReadVector2();
-            Field190 = reader.ReadVector2();
-            Field198 = reader.ReadSingle();
+            Radius = reader.ReadVector2();
+            Speed = reader.ReadVector2();
+            SpreadXZ = reader.ReadVector2();
+            SpreadY = reader.ReadVector2();
+            Gravity = reader.ReadVector2();
+            Accele = reader.ReadSingle();
         }
 
         protected override void WriteCore( ResourceWriter writer )
         {
             //     SetRandomBackColor();
-            writer.WriteVector2( Field170 );
-            writer.WriteVector2( Field188 );
-            writer.WriteVector2( Field178 );
-            writer.WriteVector2( Field180 );
-            writer.WriteVector2( Field190 );
-            writer.WriteSingle( Field198 );
+            writer.WriteVector2( Radius );
+            writer.WriteVector2( Speed );
+            writer.WriteVector2( SpreadXZ );
+            writer.WriteVector2( SpreadY );
+            writer.WriteVector2( Gravity );
+            writer.WriteSingle( Accele );
         }
     }
 
@@ -321,13 +337,21 @@ namespace GFDLibrary.Effects
     {
         public override ResourceType ResourceType => ResourceType.EplSpiralEffectParams;
 
-        public float Field170 { get; set; }
-        public Vector2 Field174 { get; set; }
-        public Vector2 Field17C { get; set; }
-        public Vector2 Field184 { get; set; }
-        public float Field18C { get; set; }
-        public Vector2 Field190 { get; set; }
-        public Vector2 Field198 { get; set; }
+        [FormerName( "Field170" )]
+
+        public float Height { get; set; }
+        [FormerName( "Field174" )]
+        public Vector2 RadiusBegin { get; set; }
+        [FormerName( "Field17C" )]
+        public Vector2 RadiusEnd { get; set; }
+        [FormerName( "Field184" )]
+        public Vector2 RotateSpeed { get; set; }
+        [FormerName( "Field18C" )]
+        public float RotateAccele { get; set; }
+        [FormerName( "Field190" )]
+        public Vector2 RiseSpeed { get; set; }
+        [FormerName( "Field198" )]
+        public Vector2 Gravity { get; set; }
 
         public EplSpiralEffectParams() { }
         public EplSpiralEffectParams( uint Version ) : base( Version ) { }
@@ -336,25 +360,25 @@ namespace GFDLibrary.Effects
         protected override void ReadCore( ResourceReader reader )
         {
             //     SetRandomBackColor();
-            Field170 = reader.ReadSingle();
-            Field174 = reader.ReadVector2();
-            Field17C = reader.ReadVector2();
-            Field184 = reader.ReadVector2();
-            Field18C = reader.ReadSingle();
-            Field190 = reader.ReadVector2();
-            Field198 = reader.ReadVector2();
+            Height = reader.ReadSingle();
+            RadiusBegin = reader.ReadVector2();
+            RadiusEnd = reader.ReadVector2();
+            RotateSpeed = reader.ReadVector2();
+            RotateAccele = reader.ReadSingle();
+            RiseSpeed = reader.ReadVector2();
+            Gravity = reader.ReadVector2();
         }
 
         protected override void WriteCore( ResourceWriter writer )
         {
             //     SetRandomBackColor();
-            writer.WriteSingle( Field170 );
-            writer.WriteVector2( Field174 );
-            writer.WriteVector2( Field17C );
-            writer.WriteVector2( Field184 );
-            writer.WriteSingle( Field18C );
-            writer.WriteVector2( Field190 );
-            writer.WriteVector2( Field198 );
+            writer.WriteSingle( Height );
+            writer.WriteVector2( RadiusBegin );
+            writer.WriteVector2( RadiusEnd );
+            writer.WriteVector2( RotateSpeed );
+            writer.WriteSingle( RotateAccele );
+            writer.WriteVector2( RiseSpeed );
+            writer.WriteVector2( Gravity );
         }
     }
 
@@ -362,11 +386,17 @@ namespace GFDLibrary.Effects
     {
         public override ResourceType ResourceType => ResourceType.EplBallEffectParams;
 
-        public Vector2 Field170 { get; set; }
-        public Vector2 Field178 { get; set; }
-        public Vector2 Field180 { get; set; }
-        public float Field188 { get; set; }
-        public Vector2 Field18C { get; set; }
+        [FormerName( "Field170" )]
+
+        public Vector2 RadiusBegin { get; set; }
+        [FormerName( "Field178" )]
+        public Vector2 RadiusEnd { get; set; }
+        [FormerName( "Field180" )]
+        public Vector2 RotateSpeed { get; set; }
+        [FormerName( "Field188" )]
+        public float RotateAccele { get; set; }
+        [FormerName( "Field18C" )]
+        public Vector2 Gravity { get; set; }
 
         public EplBallEffectParams() { }
         public EplBallEffectParams( uint Version ) : base( Version ) { }
@@ -375,21 +405,21 @@ namespace GFDLibrary.Effects
         protected override void ReadCore( ResourceReader reader )
         {
             //     SetRandomBackColor();
-            Field170 = reader.ReadVector2();
-            Field178 = reader.ReadVector2();
-            Field180 = reader.ReadVector2();
-            Field188 = reader.ReadSingle();
-            Field18C = reader.ReadVector2();
+            RadiusBegin = reader.ReadVector2();
+            RadiusEnd = reader.ReadVector2();
+            RotateSpeed = reader.ReadVector2();
+            RotateAccele = reader.ReadSingle();
+            Gravity = reader.ReadVector2();
         }
 
         protected override void WriteCore( ResourceWriter writer )
         {
             //     SetRandomBackColor();
-            writer.WriteVector2( Field170 );
-            writer.WriteVector2( Field178 );
-            writer.WriteVector2( Field180 );
-            writer.WriteSingle( Field188 );
-            writer.WriteVector2( Field18C );
+            writer.WriteVector2( RadiusBegin );
+            writer.WriteVector2( RadiusEnd );
+            writer.WriteVector2( RotateSpeed );
+            writer.WriteSingle( RotateAccele );
+            writer.WriteVector2( Gravity );
         }
     }
 
@@ -397,13 +427,21 @@ namespace GFDLibrary.Effects
     {
         public override ResourceType ResourceType => ResourceType.EplCircleEffectParams;
 
-        public Vector2 Field170 { get; set; }
-        public Vector2 Field180 { get; set; }
-        public float Field188 { get; set; }
-        public Vector2 Field18C { get; set; }
-        public float Field194 { get; set; }
-        public Vector2 Field178 { get; set; }
-        public Vector2 Field198 { get; set; }
+        [FormerName( "Field170" )]
+
+        public Vector2 Radius { get; set; }
+        [FormerName( "Field180" )]
+        public Vector2 SpreadSpeed { get; set; }
+        [FormerName( "Field188" )]
+        public float SpreadAccele { get; set; }
+        [FormerName( "Field18C" )]
+        public Vector2 RotateSpeed { get; set; }
+        [FormerName( "Field194" )]
+        public float RotateAccele { get; set; }
+        [FormerName( "Field178" )]
+        public Vector2 Height { get; set; }
+        [FormerName( "Field198" )]
+        public Vector2 Gravity { get; set; }
 
         public EplCircleEffectParams() { }
         public EplCircleEffectParams( uint Version ) : base( Version ) { }
@@ -412,25 +450,25 @@ namespace GFDLibrary.Effects
         protected override void ReadCore( ResourceReader reader )
         {
             //     SetRandomBackColor();
-            Field170 = reader.ReadVector2();
-            Field180 = reader.ReadVector2();
-            Field188 = reader.ReadSingle();
-            Field18C = reader.ReadVector2();
-            Field194 = reader.ReadSingle();
-            Field178 = reader.ReadVector2();
-            Field198 = reader.ReadVector2();
+            Radius = reader.ReadVector2();
+            SpreadSpeed = reader.ReadVector2();
+            SpreadAccele = reader.ReadSingle();
+            RotateSpeed = reader.ReadVector2();
+            RotateAccele = reader.ReadSingle();
+            Height = reader.ReadVector2();
+            Gravity = reader.ReadVector2();
         }
 
         protected override void WriteCore( ResourceWriter writer )
         {
             //     SetRandomBackColor();
-            writer.WriteVector2( Field170 );
-            writer.WriteVector2( Field180 );
-            writer.WriteSingle( Field188 );
-            writer.WriteVector2( Field18C );
-            writer.WriteSingle( Field194 );
-            writer.WriteVector2( Field178 );
-            writer.WriteVector2( Field198 );
+            writer.WriteVector2( Radius );
+            writer.WriteVector2( SpreadSpeed );
+            writer.WriteSingle( SpreadAccele );
+            writer.WriteVector2( RotateSpeed );
+            writer.WriteSingle( RotateAccele );
+            writer.WriteVector2( Height );
+            writer.WriteVector2( Gravity );
         }
     }
 
@@ -438,12 +476,19 @@ namespace GFDLibrary.Effects
     {
         public override ResourceType ResourceType => ResourceType.EplStraightLineEffectParams;
 
-        public float Field170 { get; set; }
-        public Vector2 Field174 { get; set; }
-        public Vector2 Field17C { get; set; }
-        public Vector2 Field184 { get; set; }
-        public Vector2 Field18C { get; set; }
-        public Vector2 Field194 { get; set; }
+        [FormerName( "Field170" )]
+
+        public float Length { get; set; }
+        [FormerName( "Field174" )]
+        public Vector2 Speed { get; set; }
+        [FormerName( "Field17C" )]
+        public Vector2 Gravity { get; set; }
+        [FormerName( "Field184" )]
+        public Vector2 AmpliBegin { get; set; }
+        [FormerName( "Field18C" )]
+        public Vector2 AmpliEnd { get; set; }
+        [FormerName( "Field194" )]
+        public Vector2 AmpliSpeed { get; set; }
 
         public EplStraightLineEffectParams() { }
         public EplStraightLineEffectParams( uint Version ) : base( Version ) { }
@@ -452,23 +497,23 @@ namespace GFDLibrary.Effects
         protected override void ReadCore( ResourceReader reader )
         {
             //     SetRandomBackColor();
-            Field170 = reader.ReadSingle();
-            Field174 = reader.ReadVector2();
-            Field17C = reader.ReadVector2();
-            Field184 = reader.ReadVector2();
-            Field18C = reader.ReadVector2();
-            Field194 = reader.ReadVector2();
+            Length = reader.ReadSingle();
+            Speed = reader.ReadVector2();
+            Gravity = reader.ReadVector2();
+            AmpliBegin = reader.ReadVector2();
+            AmpliEnd = reader.ReadVector2();
+            AmpliSpeed = reader.ReadVector2();
         }
 
         protected override void WriteCore( ResourceWriter writer )
         {
             //     SetRandomBackColor();
-            writer.WriteSingle( Field170 );
-            writer.WriteVector2( Field174 );
-            writer.WriteVector2( Field17C );
-            writer.WriteVector2( Field184 );
-            writer.WriteVector2( Field18C );
-            writer.WriteVector2( Field194 );
+            writer.WriteSingle( Length );
+            writer.WriteVector2( Speed );
+            writer.WriteVector2( Gravity );
+            writer.WriteVector2( AmpliBegin );
+            writer.WriteVector2( AmpliEnd );
+            writer.WriteVector2( AmpliSpeed );
         }
     }
 

@@ -24,7 +24,8 @@ namespace GFDLibrary.Effects
         public uint Number { get; set; }
         [FormerName( "Field1C" )]
         public uint Blend { get; set; }
-        public uint Feild20 { get; set; }
+        [FormerName( "Feild20" )]
+        public uint Split { get; set; }
         [FormerName( "Field44" )]
         public float WidthCore { get; set; }
         [FormerName( "Field48" )]
@@ -37,12 +38,18 @@ namespace GFDLibrary.Effects
         public uint RgbaEdge { get; set; }
         [FormerName( "Field60" )]
         public uint Seed { get; set; }
-        public Vector2 Field0C { get; set; }
-        public Vector2 Field24 { get; set; }
-        public Vector2 Field2C { get; set; }
-        public Vector2 Field34 { get; set; }
-        public Vector2 Field14 { get; set; }
-        public Vector2 Field3C { get; set; }
+        [FormerName( "Field0C" )]
+        public Vector2 Count { get; set; }
+        [FormerName( "Field24" )]
+        public Vector2 Wave { get; set; }
+        [FormerName( "Field2C" )]
+        public Vector2 WaveHeight { get; set; }
+        [FormerName( "Field34" )]
+        public Vector2 Uneven { get; set; }
+        [FormerName( "Field14" )]
+        public Vector2 Fade { get; set; }
+        [FormerName( "Field3C" )]
+        public Vector2 BothEnds { get; set; }
         [FormerName( "Field58" )]
         public float AdjustScale { get; set; }
         [FormerName( "Field5C" )]
@@ -62,19 +69,19 @@ namespace GFDLibrary.Effects
             Life = reader.ReadSingle();
             Number = reader.ReadUInt32();
             Blend = reader.ReadUInt32();
-            Feild20 = reader.ReadUInt32();
+            Split = reader.ReadUInt32();
             WidthCore = reader.ReadSingle();
             WidthEdge = reader.ReadSingle();
             RgbaCore = reader.ReadUInt32();
             RgbaBorder = reader.ReadUInt32();
             RgbaEdge = reader.ReadUInt32();
             Seed = reader.ReadUInt32();
-            Field0C = reader.ReadVector2();
-            Field24 = reader.ReadVector2();
-            Field2C = reader.ReadVector2();
-            Field34 = reader.ReadVector2();
-            Field14 = reader.ReadVector2();
-            Field3C = reader.ReadVector2();
+            Count = reader.ReadVector2();
+            Wave = reader.ReadVector2();
+            WaveHeight = reader.ReadVector2();
+            Uneven = reader.ReadVector2();
+            Fade = reader.ReadVector2();
+            BothEnds = reader.ReadVector2();
             if ( Version > 0x1104050 )
             {
                 AdjustScale = reader.ReadSingle();
@@ -98,19 +105,19 @@ namespace GFDLibrary.Effects
             writer.WriteSingle( Life );
             writer.WriteUInt32( Number );
             writer.WriteUInt32( Blend );
-            writer.WriteUInt32( Feild20 );
+            writer.WriteUInt32( Split );
             writer.WriteSingle( WidthCore );
             writer.WriteSingle( WidthEdge );
             writer.WriteUInt32( RgbaCore );
             writer.WriteUInt32( RgbaBorder );
             writer.WriteUInt32( RgbaEdge );
             writer.WriteUInt32( Seed );
-            writer.WriteVector2( Field0C );
-            writer.WriteVector2( Field24 );
-            writer.WriteVector2( Field2C );
-            writer.WriteVector2( Field34 );
-            writer.WriteVector2( Field14 );
-            writer.WriteVector2( Field3C );
+            writer.WriteVector2( Count );
+            writer.WriteVector2( Wave );
+            writer.WriteVector2( WaveHeight );
+            writer.WriteVector2( Uneven );
+            writer.WriteVector2( Fade );
+            writer.WriteVector2( BothEnds );
             if ( Version > 0x1104050 )
             {
                 writer.WriteSingle( AdjustScale );
@@ -125,7 +132,9 @@ namespace GFDLibrary.Effects
     {
         public override ResourceType ResourceType => ResourceType.EplLightningPolygonRod;
 
-        public Vector2 Field64 { get; set; }
+        [FormerName( "Field64" )]
+
+        public Vector2 Length { get; set; }
 
         public EplLightningPolygonRod() { }
         public EplLightningPolygonRod( uint Version ) : base( Version ) { }
@@ -133,12 +142,12 @@ namespace GFDLibrary.Effects
 
         protected override void ReadCore( ResourceReader reader )
         {
-            Field64 = reader.ReadVector2();
+            Length = reader.ReadVector2();
         }
 
         protected override void WriteCore( ResourceWriter writer )
         {
-            writer.WriteVector2( Field64 );
+            writer.WriteVector2( Length );
         }
     }
 
@@ -146,14 +155,23 @@ namespace GFDLibrary.Effects
     {
         public override ResourceType ResourceType => ResourceType.EplLightningPolygonBall;
 
-        public EplLeafCommonData Field64 { get; set; }
-        public Vector2 FieldB8 { get; set; }
-        public Vector2 FieldC0 { get; set; }
-        public float FieldC8 { get; set; }
-        public uint FieldCC { get; set; }
-        public Vector2 FieldD0 { get; set; }
-        public float FieldD8 { get; set; }
-        public uint FieldDC { get; set; }
+        [FormerName( "Field64" )]
+
+        public EplLeafCommonData Radius { get; set; }
+        [FormerName( "FieldB8" )]
+        public Vector2 Round { get; set; }
+        [FormerName( "FieldC0" )]
+        public Vector2 RotateYSpeed { get; set; }
+        [FormerName( "FieldC8" )]
+        public float RotateYAccele { get; set; }
+        [FormerName( "FieldCC" )]
+        public uint RotateYType { get; set; }
+        [FormerName( "FieldD0" )]
+        public Vector2 RotateZSpeed { get; set; }
+        [FormerName( "FieldD8" )]
+        public float RotateZAccele { get; set; }
+        [FormerName( "FieldDC" )]
+        public uint RotateZType { get; set; }
 
         public EplLightningPolygonBall() { }
         public EplLightningPolygonBall( uint Version ) : base( Version ) { }
@@ -161,26 +179,26 @@ namespace GFDLibrary.Effects
 
         protected override void ReadCore( ResourceReader reader )
         {
-            Field64 = reader.ReadResource<EplLeafCommonData>( Version );
-            FieldB8 = reader.ReadVector2();
-            FieldC0 = reader.ReadVector2();
-            FieldC8 = reader.ReadSingle();
-            FieldCC = reader.ReadUInt32();
-            FieldD0 = reader.ReadVector2();
-            FieldD8 = reader.ReadSingle();
-            FieldDC = reader.ReadUInt32();
+            Radius = reader.ReadResource<EplLeafCommonData>( Version );
+            Round = reader.ReadVector2();
+            RotateYSpeed = reader.ReadVector2();
+            RotateYAccele = reader.ReadSingle();
+            RotateYType = reader.ReadUInt32();
+            RotateZSpeed = reader.ReadVector2();
+            RotateZAccele = reader.ReadSingle();
+            RotateZType = reader.ReadUInt32();
         }
 
         protected override void WriteCore( ResourceWriter writer )
         {
-            writer.WriteResource( Field64 );
-            writer.WriteVector2( FieldB8 );
-            writer.WriteVector2( FieldC0 );
-            writer.WriteSingle( FieldC8 );
-            writer.WriteUInt32( FieldCC );
-            writer.WriteVector2( FieldD0 );
-            writer.WriteSingle( FieldD8 );
-            writer.WriteUInt32( FieldDC );
+            writer.WriteResource( Radius );
+            writer.WriteVector2( Round );
+            writer.WriteVector2( RotateYSpeed );
+            writer.WriteSingle( RotateYAccele );
+            writer.WriteUInt32( RotateYType );
+            writer.WriteVector2( RotateZSpeed );
+            writer.WriteSingle( RotateZAccele );
+            writer.WriteUInt32( RotateZType );
         }
     }
 }

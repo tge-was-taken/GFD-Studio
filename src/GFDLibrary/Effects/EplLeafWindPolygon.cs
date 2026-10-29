@@ -31,11 +31,16 @@ namespace GFDLibrary.Effects
         public uint Split { get; set; }
         [FormerName( "FieldA8" )]
         public uint Seed { get; set; }
-        public Resource Field14 { get; set; }
-        public Vector2 Field0C { get; set; }
-        public Vector2 Field90 { get; set; }
-        public Vector2 Field98 { get; set; }
-        public Vector2 Field7C { get; set; }
+        [FormerName( "Field14" )]
+        public Resource Color { get; set; }
+        [FormerName( "Field0C" )]
+        public Vector2 Count { get; set; }
+        [FormerName( "Field90" )]
+        public Vector2 RepeatTexV { get; set; }
+        [FormerName( "Field98" )]
+        public Vector2 MoveTexV { get; set; }
+        [FormerName( "Field7C" )]
+        public Vector2 Fade { get; set; }
         [FormerName( "Field84" )]
         public float Random { get; set; }
         [FormerName( "FieldA0" )]
@@ -43,7 +48,8 @@ namespace GFDLibrary.Effects
         [FormerName( "FieldA4" )]
         public float AdjustSpeed { get; set; }
         public Resource Polygon { get; set; }
-        public EplEmbeddedFile Field70 { get; set; }
+        [FormerName( "Field70" )]
+        public EplEmbeddedFile EmbeddedFile { get; set; }
 
         public EplWindPolygon() { }
         public EplWindPolygon( uint Version ) : base( Version ) { }
@@ -62,13 +68,13 @@ namespace GFDLibrary.Effects
             Split = reader.ReadUInt32();
             Seed = reader.ReadUInt32();
             if ( Version <= 0x1104040 )
-                Field14 = reader.ReadResource<EplLeafCommonData>( Version );
+                Color = reader.ReadResource<EplLeafCommonData>( Version );
             else
-                Field14 = reader.ReadResource<EplLeafCommonData2>( Version );
-            Field0C = reader.ReadVector2();
-            Field90 = reader.ReadVector2();
-            Field98 = reader.ReadVector2();
-            Field7C = reader.ReadVector2();
+                Color = reader.ReadResource<EplLeafCommonData2>( Version );
+            Count = reader.ReadVector2();
+            RepeatTexV = reader.ReadVector2();
+            MoveTexV = reader.ReadVector2();
+            Fade = reader.ReadVector2();
             if ( Version > 0x1104700 )
                 Random = reader.ReadSingle();
             if ( Version > 0x1104050 )
@@ -83,7 +89,7 @@ namespace GFDLibrary.Effects
                 case 3: Polygon = reader.ReadResource<EplWindPolygonBall>( Version ); break;
                 default: Debug.Assert( false, "Not implemented" ); break;
             }
-            Field70 = reader.ReadResource<EplEmbeddedFile>( Version );
+            EmbeddedFile = reader.ReadResource<EplEmbeddedFile>( Version );
         }
 
         protected override void WriteCore( ResourceWriter writer )
@@ -99,13 +105,13 @@ namespace GFDLibrary.Effects
             writer.WriteUInt32( Split );
             writer.WriteUInt32( Seed );
             if ( Version <= 0x1104040 )
-                writer.WriteResource( Field14 );
+                writer.WriteResource( Color );
             else
-                writer.WriteResource( Field14 );
-            writer.WriteVector2( Field0C );
-            writer.WriteVector2( Field90 );
-            writer.WriteVector2( Field98 );
-            writer.WriteVector2( Field7C );
+                writer.WriteResource( Color );
+            writer.WriteVector2( Count );
+            writer.WriteVector2( RepeatTexV );
+            writer.WriteVector2( MoveTexV );
+            writer.WriteVector2( Fade );
             if ( Version > 0x1104700 )
                 writer.WriteSingle( Random );
             if ( Version > 0x1104050 )
@@ -115,22 +121,32 @@ namespace GFDLibrary.Effects
             }
             if ( Polygon != null )
                 writer.WriteResource( Polygon );
-            writer.WriteResource( Field70 );
+            writer.WriteResource( EmbeddedFile );
         }
     }
     public sealed class EplWindPolygonSpiral : Resource
     {
         public override ResourceType ResourceType => ResourceType.EplWindPolygonSpiral;
 
-        public EplLeafCommonData FieldAC { get; set; }
-        public EplLeafCommonData Field100 { get; set; }
-        public EplLeafCommonData Field154 { get; set; }
-        public Vector2 Field1A8 { get; set; }
-        public Vector2 Field1B0 { get; set; }
-        public Vector2 Field1B8 { get; set; }
-        public float Field1C0 { get; set; }
-        public uint Field1C4 { get; set; }
-        public Vector2 Field1C8 { get; set; }
+        [FormerName( "FieldAC" )]
+
+        public EplLeafCommonData Radius { get; set; }
+        [FormerName( "Field100" )]
+        public EplLeafCommonData Height { get; set; }
+        [FormerName( "Field154" )]
+        public EplLeafCommonData Width { get; set; }
+        [FormerName( "Field1A8" )]
+        public Vector2 Slant { get; set; }
+        [FormerName( "Field1B0" )]
+        public Vector2 Round { get; set; }
+        [FormerName( "Field1B8" )]
+        public Vector2 RotateSpeed { get; set; }
+        [FormerName( "Field1C0" )]
+        public float RotateAccele { get; set; }
+        [FormerName( "Field1C4" )]
+        public uint RotateType { get; set; }
+        [FormerName( "Field1C8" )]
+        public Vector2 BothEnds { get; set; }
 
         public EplWindPolygonSpiral() { }
         public EplWindPolygonSpiral( uint Version ) : base( Version ) { }
@@ -138,28 +154,28 @@ namespace GFDLibrary.Effects
 
         protected override void ReadCore( ResourceReader reader )
         {
-            FieldAC = reader.ReadResource<EplLeafCommonData>( Version );
-            Field100 = reader.ReadResource<EplLeafCommonData>( Version );
-            Field154 = reader.ReadResource<EplLeafCommonData>( Version );
-            Field1A8 = reader.ReadVector2();
-            Field1B0 = reader.ReadVector2();
-            Field1B8 = reader.ReadVector2();
-            Field1C0 = reader.ReadSingle();
-            Field1C4 = reader.ReadUInt32();
-            Field1C8 = reader.ReadVector2();
+            Radius = reader.ReadResource<EplLeafCommonData>( Version );
+            Height = reader.ReadResource<EplLeafCommonData>( Version );
+            Width = reader.ReadResource<EplLeafCommonData>( Version );
+            Slant = reader.ReadVector2();
+            Round = reader.ReadVector2();
+            RotateSpeed = reader.ReadVector2();
+            RotateAccele = reader.ReadSingle();
+            RotateType = reader.ReadUInt32();
+            BothEnds = reader.ReadVector2();
         }
 
         protected override void WriteCore( ResourceWriter writer )
         {
-            writer.WriteResource( FieldAC );
-            writer.WriteResource( Field100 );
-            writer.WriteResource( Field154 );
-            writer.WriteVector2( Field1A8 );
-            writer.WriteVector2( Field1B0 );
-            writer.WriteVector2( Field1B8 );
-            writer.WriteSingle( Field1C0 );
-            writer.WriteUInt32( Field1C4 );
-            writer.WriteVector2( Field1C8 );
+            writer.WriteResource( Radius );
+            writer.WriteResource( Height );
+            writer.WriteResource( Width );
+            writer.WriteVector2( Slant );
+            writer.WriteVector2( Round );
+            writer.WriteVector2( RotateSpeed );
+            writer.WriteSingle( RotateAccele );
+            writer.WriteUInt32( RotateType );
+            writer.WriteVector2( BothEnds );
         }
     }
 
@@ -167,12 +183,19 @@ namespace GFDLibrary.Effects
     {
         public override ResourceType ResourceType => ResourceType.EplWindPolygonExplosion;
 
-        public EplLeafCommonData FieldAC { get; set; }
-        public Vector2 Field100 { get; set; }
-        public Vector2 Field108 { get; set; }
-        public float Field110 { get; set; }
-        public float Field114 { get; set; }
-        public Vector2 Field118 { get; set; }
+        [FormerName( "FieldAC" )]
+
+        public EplLeafCommonData Radius { get; set; }
+        [FormerName( "Field100" )]
+        public Vector2 WidthRatio { get; set; }
+        [FormerName( "Field108" )]
+        public Vector2 RotateSpeed { get; set; }
+        [FormerName( "Field110" )]
+        public float RotateAccele { get; set; }
+        [FormerName( "Field114" )]
+        public float RotateType { get; set; }
+        [FormerName( "Field118" )]
+        public Vector2 MoveTexV { get; set; }
 
         public EplWindPolygonExplosion() { }
         public EplWindPolygonExplosion( uint Version ) : base( Version ) { }
@@ -180,24 +203,24 @@ namespace GFDLibrary.Effects
 
         protected override void ReadCore( ResourceReader reader )
         {
-            FieldAC = reader.ReadResource<EplLeafCommonData>( Version );
-            Field100 = reader.ReadVector2();
-            Field108 = reader.ReadVector2();
-            Field110 = reader.ReadSingle();
-            Field114 = reader.ReadSingle();
+            Radius = reader.ReadResource<EplLeafCommonData>( Version );
+            WidthRatio = reader.ReadVector2();
+            RotateSpeed = reader.ReadVector2();
+            RotateAccele = reader.ReadSingle();
+            RotateType = reader.ReadSingle();
             if ( Version > 0x1104080 )
-                Field118 = reader.ReadVector2();
+                MoveTexV = reader.ReadVector2();
         }
 
         protected override void WriteCore( ResourceWriter writer )
         {
-            writer.WriteResource( FieldAC );
-            writer.WriteVector2( Field100 );
-            writer.WriteVector2( Field108 );
-            writer.WriteSingle( Field110 );
-            writer.WriteSingle( Field114 );
+            writer.WriteResource( Radius );
+            writer.WriteVector2( WidthRatio );
+            writer.WriteVector2( RotateSpeed );
+            writer.WriteSingle( RotateAccele );
+            writer.WriteSingle( RotateType );
             if ( Version > 0x1104080 )
-                writer.WriteVector2( Field118 );
+                writer.WriteVector2( MoveTexV );
         }
     }
 
@@ -205,13 +228,21 @@ namespace GFDLibrary.Effects
     {
         public override ResourceType ResourceType => ResourceType.EplWindPolygonBall;
 
-        public EplLeafCommonData FieldAC { get; set; }
-        public EplLeafCommonData Field100 { get; set; }
-        public Vector2 Field154 { get; set; }
-        public Vector2 Field15C { get; set; }
-        public float Field164 { get; set; }
-        public uint Field168 { get; set; }
-        public Vector2 Field16C { get; set; }
+        [FormerName( "FieldAC" )]
+
+        public EplLeafCommonData Radius { get; set; }
+        [FormerName( "Field100" )]
+        public EplLeafCommonData Width { get; set; }
+        [FormerName( "Field154" )]
+        public Vector2 Round { get; set; }
+        [FormerName( "Field15C" )]
+        public Vector2 RotateSpeed { get; set; }
+        [FormerName( "Field164" )]
+        public float RotateAccele { get; set; }
+        [FormerName( "Field168" )]
+        public uint RotateType { get; set; }
+        [FormerName( "Field16C" )]
+        public Vector2 BothEnds { get; set; }
 
         public EplWindPolygonBall() { }
         public EplWindPolygonBall( uint Version ) : base( Version ) { }
@@ -219,24 +250,24 @@ namespace GFDLibrary.Effects
 
         protected override void ReadCore( ResourceReader reader )
         {
-            FieldAC = reader.ReadResource<EplLeafCommonData>( Version );
-            Field100 = reader.ReadResource<EplLeafCommonData>( Version );
-            Field154 = reader.ReadVector2();
-            Field15C = reader.ReadVector2();
-            Field164 = reader.ReadSingle();
-            Field168 = reader.ReadUInt32();
-            Field16C = reader.ReadVector2();
+            Radius = reader.ReadResource<EplLeafCommonData>( Version );
+            Width = reader.ReadResource<EplLeafCommonData>( Version );
+            Round = reader.ReadVector2();
+            RotateSpeed = reader.ReadVector2();
+            RotateAccele = reader.ReadSingle();
+            RotateType = reader.ReadUInt32();
+            BothEnds = reader.ReadVector2();
         }
 
         protected override void WriteCore( ResourceWriter writer )
         {
-            writer.WriteResource( FieldAC );
-            writer.WriteResource( Field100 );
-            writer.WriteVector2( Field154 );
-            writer.WriteVector2( Field15C );
-            writer.WriteSingle( Field164 );
-            writer.WriteUInt32( Field168 );
-            writer.WriteVector2( Field16C );
+            writer.WriteResource( Radius );
+            writer.WriteResource( Width );
+            writer.WriteVector2( Round );
+            writer.WriteVector2( RotateSpeed );
+            writer.WriteSingle( RotateAccele );
+            writer.WriteUInt32( RotateType );
+            writer.WriteVector2( BothEnds );
         }
     }
 }
