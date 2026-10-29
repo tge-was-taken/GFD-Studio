@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using YamlDotNet.Core;
 using YamlDotNet.Core.Events;
 using YamlDotNet.Serialization;
@@ -13,7 +14,7 @@ namespace GFDLibrary
         private static Lazy<ISerializer> sSerializer = new Lazy<ISerializer>( () =>
          {
              var builder = new SerializerBuilder();
-             AddAbstractTypeTagMappings( ref builder );
+             AddAbstractTypeTagMappings( ref builder, false );
              return builder.Build();
          } );
 
@@ -23,11 +24,15 @@ namespace GFDLibrary
                     .IgnoreUnmatchedProperties()
                     .WithTypeInspector( inner => new FormerNameTypeInspector( inner ) )
                     .WithTypeConverter( new FormerNameEnumConverter() );
-            AddAbstractTypeTagMappings( ref builder );
+            AddAbstractTypeTagMappings( ref builder, true );
             return builder.Build();
         } );
 
-        private static void AddAbstractTypeTagMappings<T>( ref T builder )
+        /// <summary>
+        /// Maps a tag to each concrete resource type. Only the reader takes the tags a type used
+        /// to go by, so a renamed class still loads but is always written under its new name.
+        /// </summary>
+        private static void AddAbstractTypeTagMappings<T>( ref T builder, bool includeFormerNames )
             where T : BuilderSkeleton<T>
         {
             
@@ -45,6 +50,15 @@ namespace GFDLibrary
                     var name = type.Name;
                     if ( addedTypes.Add( name ) )
                         builder = builder.WithTagMapping( "!" + name, type );
+
+                    if ( !includeFormerNames )
+                        continue;
+
+                    foreach ( var former in type.GetCustomAttributes<FormerNameAttribute>( inherit: false ) )
+                    {
+                        if ( addedTypes.Add( former.Name ) )
+                            builder = builder.WithTagMapping( "!" + former.Name, type );
+                    }
                 }
             }
         }
