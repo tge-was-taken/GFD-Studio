@@ -58,7 +58,7 @@ namespace GFDLibrary.Effects
 
                 case 0: break;
                 case 1: Polygon = reader.ReadResource<EplCirclePolygonRing>( Version ); break;
-                case 2: Polygon = reader.ReadResource<EplCirclePolygonTrajectory>( Version ); break;
+                case 2: Polygon = reader.ReadResource<EplCirclePolygonTrack>( Version ); break;
                 case 3: Polygon = reader.ReadResource<EplCirclePolygonFill>( Version ); break;
                 case 4: Polygon = reader.ReadResource<EplCirclePolygonHoop>( Version ); break;
                 default: throw new NotImplementedException( $"Epl circle polygon type {Type} not implemented" );
@@ -97,7 +97,6 @@ namespace GFDLibrary.Effects
         public override ResourceType ResourceType => ResourceType.EplCirclePolygonRing;
 
         [FormerName( "Field24" )]
-
         public float Occurrence { get; set; }
         [FormerName( "Field28" )]
         public EplLeafCommonData Radius { get; set; }
@@ -139,12 +138,12 @@ namespace GFDLibrary.Effects
         }
     }
 
-    public sealed class EplCirclePolygonTrajectory : Resource
+    [FormerName( "EplCirclePolygonTrajectory" )]
+    public sealed class EplCirclePolygonTrack : Resource
     {
-        public override ResourceType ResourceType => ResourceType.EplCirclePolygonTrajectory;
+        public override ResourceType ResourceType => ResourceType.EplCirclePolygonTrack;
 
         [FormerName( "Field24" )]
-
         public float Radius { get; set; }
         [FormerName( "Field28" )]
         public float WidthRatio { get; set; }
@@ -161,8 +160,8 @@ namespace GFDLibrary.Effects
         [FormerName( "Field100" )]
         public float MoveTexV { get; set; }
 
-        public EplCirclePolygonTrajectory() { }
-        public EplCirclePolygonTrajectory( uint Version ) : base( Version ) { }
+        public EplCirclePolygonTrack() { }
+        public EplCirclePolygonTrack( uint Version ) : base( Version ) { }
 
 
         protected override void ReadCore( ResourceReader reader )
@@ -195,7 +194,6 @@ namespace GFDLibrary.Effects
         public override ResourceType ResourceType => ResourceType.EplCirclePolygonFill;
 
         [FormerName( "Field24" )]
-
         public float Occurrence { get; set; }
         [FormerName( "Field28" )]
         public EplLeafCommonData Radius { get; set; }
@@ -230,7 +228,6 @@ namespace GFDLibrary.Effects
         public override ResourceType ResourceType => ResourceType.EplCirclePolygonHoop;
 
         [FormerName( "Field28" )]
-
         public float Radius { get; set; }
         [FormerName( "Field2C" )]
         public float Speed { get; set; }

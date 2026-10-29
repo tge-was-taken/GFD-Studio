@@ -93,7 +93,6 @@ namespace GFDLibrary.Effects
         public override ResourceType ResourceType => ResourceType.EplLightSceneData;
 
         [FormerName( "Field0C" )]
-
         public float Life { get; set; }
         public Vector2 Field10 { get; set; }
         [FormerName( "Field18" )]

@@ -90,8 +90,8 @@ namespace GFDLibrary.Effects
             switch ( Type )
             {
                 case 0: break;
-                case 1: Polygon = reader.ReadResource<EplLightningPolygonRod>( Version ); break;
-                case 2: Polygon = reader.ReadResource<EplLightningPolygonBall>( Version ); break;
+                case 1: Polygon = reader.ReadResource<EplLightningPolygonBar>( Version ); break;
+                case 2: Polygon = reader.ReadResource<EplLightningPolygonSphere>( Version ); break;
                     //         default: Assert(false, "Not implemented"); break;
             }
         }
@@ -128,16 +128,16 @@ namespace GFDLibrary.Effects
         }
     }
 
-    public sealed class EplLightningPolygonRod : Resource
+    [FormerName( "EplLightningPolygonRod" )]
+    public sealed class EplLightningPolygonBar : Resource
     {
-        public override ResourceType ResourceType => ResourceType.EplLightningPolygonRod;
+        public override ResourceType ResourceType => ResourceType.EplLightningPolygonBar;
 
         [FormerName( "Field64" )]
-
         public Vector2 Length { get; set; }
 
-        public EplLightningPolygonRod() { }
-        public EplLightningPolygonRod( uint Version ) : base( Version ) { }
+        public EplLightningPolygonBar() { }
+        public EplLightningPolygonBar( uint Version ) : base( Version ) { }
 
 
         protected override void ReadCore( ResourceReader reader )
@@ -151,12 +151,12 @@ namespace GFDLibrary.Effects
         }
     }
 
-    public sealed class EplLightningPolygonBall : Resource
+    [FormerName( "EplLightningPolygonBall" )]
+    public sealed class EplLightningPolygonSphere : Resource
     {
-        public override ResourceType ResourceType => ResourceType.EplLightningPolygonBall;
+        public override ResourceType ResourceType => ResourceType.EplLightningPolygonSphere;
 
         [FormerName( "Field64" )]
-
         public EplLeafCommonData Radius { get; set; }
         [FormerName( "FieldB8" )]
         public Vector2 Round { get; set; }
@@ -173,8 +173,8 @@ namespace GFDLibrary.Effects
         [FormerName( "FieldDC" )]
         public uint RotateZType { get; set; }
 
-        public EplLightningPolygonBall() { }
-        public EplLightningPolygonBall( uint Version ) : base( Version ) { }
+        public EplLightningPolygonSphere() { }
+        public EplLightningPolygonSphere( uint Version ) : base( Version ) { }
 
 
         protected override void ReadCore( ResourceReader reader )

@@ -85,8 +85,8 @@ namespace GFDLibrary.Effects
             switch ( Type )
             {
                 case 1: Polygon = reader.ReadResource<EplWindPolygonSpiral>( Version ); break;
-                case 2: Polygon = reader.ReadResource<EplWindPolygonExplosion>( Version ); break;
-                case 3: Polygon = reader.ReadResource<EplWindPolygonBall>( Version ); break;
+                case 2: Polygon = reader.ReadResource<EplWindPolygonSpark>( Version ); break;
+                case 3: Polygon = reader.ReadResource<EplWindPolygonSphere>( Version ); break;
                 default: Debug.Assert( false, "Not implemented" ); break;
             }
             EmbeddedFile = reader.ReadResource<EplEmbeddedFile>( Version );
@@ -129,7 +129,6 @@ namespace GFDLibrary.Effects
         public override ResourceType ResourceType => ResourceType.EplWindPolygonSpiral;
 
         [FormerName( "FieldAC" )]
-
         public EplLeafCommonData Radius { get; set; }
         [FormerName( "Field100" )]
         public EplLeafCommonData Height { get; set; }
@@ -179,12 +178,12 @@ namespace GFDLibrary.Effects
         }
     }
 
-    public sealed class EplWindPolygonExplosion : Resource
+    [FormerName( "EplWindPolygonExplosion" )]
+    public sealed class EplWindPolygonSpark : Resource
     {
-        public override ResourceType ResourceType => ResourceType.EplWindPolygonExplosion;
+        public override ResourceType ResourceType => ResourceType.EplWindPolygonSpark;
 
         [FormerName( "FieldAC" )]
-
         public EplLeafCommonData Radius { get; set; }
         [FormerName( "Field100" )]
         public Vector2 WidthRatio { get; set; }
@@ -197,8 +196,8 @@ namespace GFDLibrary.Effects
         [FormerName( "Field118" )]
         public Vector2 MoveTexV { get; set; }
 
-        public EplWindPolygonExplosion() { }
-        public EplWindPolygonExplosion( uint Version ) : base( Version ) { }
+        public EplWindPolygonSpark() { }
+        public EplWindPolygonSpark( uint Version ) : base( Version ) { }
 
 
         protected override void ReadCore( ResourceReader reader )
@@ -224,12 +223,12 @@ namespace GFDLibrary.Effects
         }
     }
 
-    public sealed class EplWindPolygonBall : Resource
+    [FormerName( "EplWindPolygonBall" )]
+    public sealed class EplWindPolygonSphere : Resource
     {
-        public override ResourceType ResourceType => ResourceType.EplWindPolygonBall;
+        public override ResourceType ResourceType => ResourceType.EplWindPolygonSphere;
 
         [FormerName( "FieldAC" )]
-
         public EplLeafCommonData Radius { get; set; }
         [FormerName( "Field100" )]
         public EplLeafCommonData Width { get; set; }
@@ -244,8 +243,8 @@ namespace GFDLibrary.Effects
         [FormerName( "Field16C" )]
         public Vector2 BothEnds { get; set; }
 
-        public EplWindPolygonBall() { }
-        public EplWindPolygonBall( uint Version ) : base( Version ) { }
+        public EplWindPolygonSphere() { }
+        public EplWindPolygonSphere( uint Version ) : base( Version ) { }
 
 
         protected override void ReadCore( ResourceReader reader )

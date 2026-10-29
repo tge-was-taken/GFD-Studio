@@ -129,11 +129,11 @@ namespace GFDLibrary.Effects
             {
                 case 0: break;
                 case 1: Params = reader.ReadResource<EplSmokeEffectParams>( Version ); break;
-                case 2: Params = reader.ReadResource<EplExplosionEffectParams>( Version ); break;
+                case 2: Params = reader.ReadResource<EplSparkEffectParams>( Version ); break;
                 case 3: Params = reader.ReadResource<EplSpiralEffectParams>( Version ); break;
-                case 4: Params = reader.ReadResource<EplBallEffectParams>( Version ); break;
-                case 5: Params = reader.ReadResource<EplCircleEffectParams>( Version ); break;
-                case 6: Params = reader.ReadResource<EplStraightLineEffectParams>( Version ); break;
+                case 4: Params = reader.ReadResource<EplSphereEffectParams>( Version ); break;
+                case 5: Params = reader.ReadResource<EplRingEffectParams>( Version ); break;
+                case 6: Params = reader.ReadResource<EplLineEffectParams>( Version ); break;
                 default:
                     throw new NotImplementedException( $"Epl particle emitter type {Type} not implemented" );
             }
@@ -248,7 +248,6 @@ namespace GFDLibrary.Effects
         public override ResourceType ResourceType => ResourceType.EplSmokeEffectParams;
 
         [FormerName( "Field170" )]
-
         public float Radius { get; set; }
         [FormerName( "Field174" )]
         public Vector2 Speed { get; set; }
@@ -288,12 +287,12 @@ namespace GFDLibrary.Effects
         }
     }
 
-    public sealed class EplExplosionEffectParams : Resource
+    [FormerName( "EplExplosionEffectParams" )]
+    public sealed class EplSparkEffectParams : Resource
     {
-        public override ResourceType ResourceType => ResourceType.EplExplosionEffectParams;
+        public override ResourceType ResourceType => ResourceType.EplSparkEffectParams;
 
         [FormerName( "Field170" )]
-
         public Vector2 Radius { get; set; }
         [FormerName( "Field188" )]
         public Vector2 Speed { get; set; }
@@ -306,8 +305,8 @@ namespace GFDLibrary.Effects
         [FormerName( "Field198" )]
         public float Accele { get; set; }
 
-        public EplExplosionEffectParams() { }
-        public EplExplosionEffectParams( uint Version ) : base( Version ) { }
+        public EplSparkEffectParams() { }
+        public EplSparkEffectParams( uint Version ) : base( Version ) { }
 
 
         protected override void ReadCore( ResourceReader reader )
@@ -338,7 +337,6 @@ namespace GFDLibrary.Effects
         public override ResourceType ResourceType => ResourceType.EplSpiralEffectParams;
 
         [FormerName( "Field170" )]
-
         public float Height { get; set; }
         [FormerName( "Field174" )]
         public Vector2 RadiusBegin { get; set; }
@@ -382,12 +380,12 @@ namespace GFDLibrary.Effects
         }
     }
 
-    public sealed class EplBallEffectParams : Resource
+    [FormerName( "EplBallEffectParams" )]
+    public sealed class EplSphereEffectParams : Resource
     {
-        public override ResourceType ResourceType => ResourceType.EplBallEffectParams;
+        public override ResourceType ResourceType => ResourceType.EplSphereEffectParams;
 
         [FormerName( "Field170" )]
-
         public Vector2 RadiusBegin { get; set; }
         [FormerName( "Field178" )]
         public Vector2 RadiusEnd { get; set; }
@@ -398,8 +396,8 @@ namespace GFDLibrary.Effects
         [FormerName( "Field18C" )]
         public Vector2 Gravity { get; set; }
 
-        public EplBallEffectParams() { }
-        public EplBallEffectParams( uint Version ) : base( Version ) { }
+        public EplSphereEffectParams() { }
+        public EplSphereEffectParams( uint Version ) : base( Version ) { }
 
 
         protected override void ReadCore( ResourceReader reader )
@@ -423,12 +421,12 @@ namespace GFDLibrary.Effects
         }
     }
 
-    public sealed class EplCircleEffectParams : Resource
+    [FormerName( "EplCircleEffectParams" )]
+    public sealed class EplRingEffectParams : Resource
     {
-        public override ResourceType ResourceType => ResourceType.EplCircleEffectParams;
+        public override ResourceType ResourceType => ResourceType.EplRingEffectParams;
 
         [FormerName( "Field170" )]
-
         public Vector2 Radius { get; set; }
         [FormerName( "Field180" )]
         public Vector2 SpreadSpeed { get; set; }
@@ -443,8 +441,8 @@ namespace GFDLibrary.Effects
         [FormerName( "Field198" )]
         public Vector2 Gravity { get; set; }
 
-        public EplCircleEffectParams() { }
-        public EplCircleEffectParams( uint Version ) : base( Version ) { }
+        public EplRingEffectParams() { }
+        public EplRingEffectParams( uint Version ) : base( Version ) { }
 
 
         protected override void ReadCore( ResourceReader reader )
@@ -472,12 +470,12 @@ namespace GFDLibrary.Effects
         }
     }
 
-    public sealed class EplStraightLineEffectParams : Resource
+    [FormerName( "EplStraightLineEffectParams" )]
+    public sealed class EplLineEffectParams : Resource
     {
-        public override ResourceType ResourceType => ResourceType.EplStraightLineEffectParams;
+        public override ResourceType ResourceType => ResourceType.EplLineEffectParams;
 
         [FormerName( "Field170" )]
-
         public float Length { get; set; }
         [FormerName( "Field174" )]
         public Vector2 Speed { get; set; }
@@ -490,8 +488,8 @@ namespace GFDLibrary.Effects
         [FormerName( "Field194" )]
         public Vector2 AmpliSpeed { get; set; }
 
-        public EplStraightLineEffectParams() { }
-        public EplStraightLineEffectParams( uint Version ) : base( Version ) { }
+        public EplLineEffectParams() { }
+        public EplLineEffectParams( uint Version ) : base( Version ) { }
 
 
         protected override void ReadCore( ResourceReader reader )

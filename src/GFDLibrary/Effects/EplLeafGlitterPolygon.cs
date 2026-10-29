@@ -82,8 +82,8 @@ namespace GFDLibrary.Effects
             switch ( Type )
             {
                 case 0: break;
-                case 1: Polygon = reader.ReadResource<EplGlitterPolygonExplosion>( Version ); break;
-                case 2: Polygon = reader.ReadResource<EplGlitterPolygonSplash>( Version ); break;
+                case 1: Polygon = reader.ReadResource<EplGlitterPolygonSpark>( Version ); break;
+                case 2: Polygon = reader.ReadResource<EplGlitterPolygonScatter>( Version ); break;
                 case 3: Polygon = reader.ReadResource<EplGlitterPolygonCylinder>( Version ); break;
                 case 4: Polygon = reader.ReadResource<EplGlitterPolygonWall>( Version ); break;
                 default: Debug.Assert( false, "Not implemented" ); break;
@@ -125,12 +125,12 @@ namespace GFDLibrary.Effects
         }
     }
 
-    public sealed class EplGlitterPolygonExplosion : Resource
+    [FormerName( "EplGlitterPolygonExplosion" )]
+    public sealed class EplGlitterPolygonSpark : Resource
     {
-        public override ResourceType ResourceType => ResourceType.EplGlitterPolygonExplosion;
+        public override ResourceType ResourceType => ResourceType.EplGlitterPolygonSpark;
 
         [FormerName( "Field154" )]
-
         public Vector2 Radius { get; set; }
         [FormerName( "Field15C" )]
         public Vector2 Width { get; set; }
@@ -141,8 +141,8 @@ namespace GFDLibrary.Effects
         [FormerName( "Field174" )]
         public float Accele { get; set; }
 
-        public EplGlitterPolygonExplosion() { }
-        public EplGlitterPolygonExplosion( uint Version ) : base( Version ) { }
+        public EplGlitterPolygonSpark() { }
+        public EplGlitterPolygonSpark( uint Version ) : base( Version ) { }
 
 
         protected override void ReadCore( ResourceReader reader )
@@ -164,12 +164,12 @@ namespace GFDLibrary.Effects
         }
     }
 
-    public sealed class EplGlitterPolygonSplash : Resource
+    [FormerName( "EplGlitterPolygonSplash" )]
+    public sealed class EplGlitterPolygonScatter : Resource
     {
-        public override ResourceType ResourceType => ResourceType.EplGlitterPolygonSplash;
+        public override ResourceType ResourceType => ResourceType.EplGlitterPolygonScatter;
 
         [FormerName( "Field154" )]
-
         public EplLeafCommonData Radius { get; set; }
         [FormerName( "Field1A8" )]
         public EplLeafCommonData Spread { get; set; }
@@ -182,8 +182,8 @@ namespace GFDLibrary.Effects
         [FormerName( "Field214" )]
         public float Accele { get; set; }
 
-        public EplGlitterPolygonSplash() { }
-        public EplGlitterPolygonSplash( uint Version ) : base( Version ) { }
+        public EplGlitterPolygonScatter() { }
+        public EplGlitterPolygonScatter( uint Version ) : base( Version ) { }
 
 
         protected override void ReadCore( ResourceReader reader )
@@ -212,7 +212,6 @@ namespace GFDLibrary.Effects
         public override ResourceType ResourceType => ResourceType.EplGlitterPolygonCylinder;
 
         [FormerName( "Field154" )]
-
         public EplLeafCommonData Radius { get; set; }
         [FormerName( "Field1A8" )]
         public Vector2 Width { get; set; }
@@ -263,7 +262,6 @@ namespace GFDLibrary.Effects
         public override ResourceType ResourceType => ResourceType.EplGlitterPolygonWall;
 
         [FormerName( "Field154" )]
-
         public EplLeafCommonData Distance { get; set; }
         [FormerName( "Field1A8" )]
         public Vector2 Width { get; set; }

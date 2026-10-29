@@ -48,24 +48,32 @@
         EplDummy,
         EplParticle,
         EplFlashPolygon,
-        EplFlashPolygonRadiation,
-        EplFlashPolygonExplosion,
+        [FormerName( "EplFlashPolygonRadiation" )]
+        EplFlashPolygonRadiate,
+        [FormerName( "EplFlashPolygonExplosion" )]
+        EplFlashPolygonSpark,
         EplFlashPolygonRing,
-        EplFlashPolygonSplash,
+        [FormerName( "EplFlashPolygonSplash" )]
+        EplFlashPolygonScatter,
         EplFlashPolygonCylinder,
         EplCirclePolygon,
         EplCirclePolygonRing,
-        EplCirclePolygonTrajectory,
+        [FormerName( "EplCirclePolygonTrajectory" )]
+        EplCirclePolygonTrack,
         EplCirclePolygonFill,
         EplCirclePolygonHoop,
         EplLightningPolygon,
-        EplLightningPolygonRod,
-        EplLightningPolygonBall,
+        [FormerName( "EplLightningPolygonRod" )]
+        EplLightningPolygonBar,
+        [FormerName( "EplLightningPolygonBall" )]
+        EplLightningPolygonSphere,
         EplTrajectoryPolygon,
         EplWindPolygon,
         EplWindPolygonSpiral,
-        EplWindPolygonExplosion,
-        EplWindPolygonBall,
+        [FormerName( "EplWindPolygonExplosion" )]
+        EplWindPolygonSpark,
+        [FormerName( "EplWindPolygonBall" )]
+        EplWindPolygonSphere,
         EplModel,
         EplModel3DData,
         EplModel2DData,
@@ -74,16 +82,22 @@
         EplRectangleBoardPolygon,
         EplObjectParticles,
         EplGlitterPolygon,
-        EplGlitterPolygonExplosion,
-        EplGlitterPolygonSplash,
+        [FormerName( "EplGlitterPolygonExplosion" )]
+        EplGlitterPolygonSpark,
+        [FormerName( "EplGlitterPolygonSplash" )]
+        EplGlitterPolygonScatter,
         EplGlitterPolygonCylinder,
         EplGlitterPolygonWall,
         EplSmokeEffectParams,
-        EplExplosionEffectParams,
+        [FormerName( "EplExplosionEffectParams" )]
+        EplSparkEffectParams,
         EplSpiralEffectParams,
-        EplBallEffectParams,
-        EplCircleEffectParams,
-        EplStraightLineEffectParams,
+        [FormerName( "EplBallEffectParams" )]
+        EplSphereEffectParams,
+        [FormerName( "EplCircleEffectParams" )]
+        EplRingEffectParams,
+        [FormerName( "EplStraightLineEffectParams" )]
+        EplLineEffectParams,
         EplCamera,
         EplCameraMeshParams,
         EplCameraQuakeParams,

@@ -67,10 +67,10 @@ namespace GFDLibrary.Effects
             switch ( Type )
             {
                 case 0: break;
-                case 1: Polygon = reader.ReadResource<EplFlashPolygonRadiation>( Version ); break;
-                case 2: Polygon = reader.ReadResource<EplFlashPolygonExplosion>( Version ); break;
+                case 1: Polygon = reader.ReadResource<EplFlashPolygonRadiate>( Version ); break;
+                case 2: Polygon = reader.ReadResource<EplFlashPolygonSpark>( Version ); break;
                 case 3: Polygon = reader.ReadResource<EplFlashPolygonRing>( Version ); break;
-                case 4: Polygon = reader.ReadResource<EplFlashPolygonSplash>( Version ); break;
+                case 4: Polygon = reader.ReadResource<EplFlashPolygonScatter>( Version ); break;
                 case 5: Polygon = reader.ReadResource<EplFlashPolygonCylinder>( Version ); break;
                 default: throw new NotImplementedException( $"Epl flash polygon type {Type} not implemented" );
             }
@@ -104,12 +104,12 @@ namespace GFDLibrary.Effects
         }
     }
 
-    public sealed class EplFlashPolygonRadiation : Resource
+    [FormerName( "EplFlashPolygonRadiation" )]
+    public sealed class EplFlashPolygonRadiate : Resource
     {
-        public override ResourceType ResourceType => ResourceType.EplFlashPolygonRadiation;
+        public override ResourceType ResourceType => ResourceType.EplFlashPolygonRadiate;
 
         [FormerName( "Field88" )]
-
         public uint ColorIn { get; set; }
         [FormerName( "Field8C" )]
         public uint ColorOut { get; set; }
@@ -126,8 +126,8 @@ namespace GFDLibrary.Effects
         [FormerName( "FieldB4" )]
         public uint RotateType { get; set; }
 
-        public EplFlashPolygonRadiation() { }
-        public EplFlashPolygonRadiation( uint Version ) : base( Version ) { }
+        public EplFlashPolygonRadiate() { }
+        public EplFlashPolygonRadiate( uint Version ) : base( Version ) { }
 
 
         protected override void ReadCore( ResourceReader reader )
@@ -155,12 +155,12 @@ namespace GFDLibrary.Effects
         }
     }
 
-    public sealed class EplFlashPolygonExplosion : Resource
+    [FormerName( "EplFlashPolygonExplosion" )]
+    public sealed class EplFlashPolygonSpark : Resource
     {
-        public override ResourceType ResourceType => ResourceType.EplFlashPolygonExplosion;
+        public override ResourceType ResourceType => ResourceType.EplFlashPolygonSpark;
 
         [FormerName( "Field88" )]
-
         public Vector2 Radius { get; set; }
         [FormerName( "Field90" )]
         public uint ColorIn { get; set; }
@@ -175,8 +175,8 @@ namespace GFDLibrary.Effects
         [FormerName( "FieldB0" )]
         public float Accele { get; set; }
 
-        public EplFlashPolygonExplosion() { }
-        public EplFlashPolygonExplosion( uint Version ) : base( Version ) { }
+        public EplFlashPolygonSpark() { }
+        public EplFlashPolygonSpark( uint Version ) : base( Version ) { }
 
 
         protected override void ReadCore( ResourceReader reader )
@@ -207,7 +207,6 @@ namespace GFDLibrary.Effects
         public override ResourceType ResourceType => ResourceType.EplFlashPolygonRing;
 
         [FormerName( "Field88" )]
-
         public EplLeafCommonData Radius { get; set; }
         [FormerName( "FieldDC" )]
         public EplLeafCommonData Spread { get; set; }
@@ -261,12 +260,12 @@ namespace GFDLibrary.Effects
         }
     }
 
-    public sealed class EplFlashPolygonSplash : Resource
+    [FormerName( "EplFlashPolygonSplash" )]
+    public sealed class EplFlashPolygonScatter : Resource
     {
-        public override ResourceType ResourceType => ResourceType.EplFlashPolygonSplash;
+        public override ResourceType ResourceType => ResourceType.EplFlashPolygonScatter;
 
         [FormerName( "Field88" )]
-
         public EplLeafCommonData Radius { get; set; }
         [FormerName( "FieldDC" )]
         public EplLeafCommonData Spread { get; set; }
@@ -285,8 +284,8 @@ namespace GFDLibrary.Effects
         [FormerName( "Field158" )]
         public float Accele { get; set; }
 
-        public EplFlashPolygonSplash() { }
-        public EplFlashPolygonSplash( uint Version ) : base( Version ) { }
+        public EplFlashPolygonScatter() { }
+        public EplFlashPolygonScatter( uint Version ) : base( Version ) { }
 
 
         protected override void ReadCore( ResourceReader reader )
@@ -321,7 +320,6 @@ namespace GFDLibrary.Effects
         public override ResourceType ResourceType => ResourceType.EplFlashPolygonCylinder;
 
         [FormerName( "Field88" )]
-
         public EplLeafCommonData Radius { get; set; }
         [FormerName( "FieldDC" )]
         public Resource Color { get; set; }

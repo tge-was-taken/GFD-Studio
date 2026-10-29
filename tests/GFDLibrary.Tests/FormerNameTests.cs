@@ -29,6 +29,29 @@ namespace GFDLibrary.Tests
         }
 
         [TestMethod]
+        public void Former_class_name_still_loads_as_a_tag()
+        {
+            // An Epl leaf names the concrete body type as a YAML tag, so a renamed class has to
+            // keep answering to the tag files were written with.
+            var leaf = RoundtripYaml<Effects.EplLeaf>(
+                "Name: leaf\nData: !EplParticle\n  Emitter:\n    Params: !EplExplosionEffectParams\n      Accele: 2\n" );
+
+            var emitter = ( (Effects.EplParticle)leaf.Data ).Emitter;
+            Assert.IsInstanceOfType( emitter.Params, typeof( Effects.EplSparkEffectParams ) );
+            Assert.AreEqual( 2f, ( (Effects.EplSparkEffectParams)emitter.Params ).Accele );
+        }
+
+        [TestMethod]
+        public void Current_class_name_loads_as_a_tag()
+        {
+            var leaf = RoundtripYaml<Effects.EplLeaf>(
+                "Name: leaf\nData: !EplParticle\n  Emitter:\n    Params: !EplSparkEffectParams\n      Accele: 3\n" );
+
+            var emitter = ( (Effects.EplParticle)leaf.Data ).Emitter;
+            Assert.IsInstanceOfType( emitter.Params, typeof( Effects.EplSparkEffectParams ) );
+        }
+
+        [TestMethod]
         public void Former_property_name_still_loads()
         {
             var material = RoundtripYaml<Material>( "Name: test\nSpecularMap:\n  Name: gloss.dds\n" );

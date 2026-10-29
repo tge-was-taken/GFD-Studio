@@ -79,7 +79,6 @@ namespace GFDLibrary.Effects
         public override ResourceType ResourceType => ResourceType.EplPostEffectRadiationBlurData;
 
         [FormerName( "Field10" )]
-
         public EplLeafCommonData2 Color { get; set; }
         [FormerName( "Field74" )]
         public uint Blend { get; set; }
@@ -132,7 +131,6 @@ namespace GFDLibrary.Effects
         public override ResourceType ResourceType => ResourceType.EplPostEffectStraightBlurData;
 
         [FormerName( "Field10" )]
-
         public EplLeafCommonData2 Color { get; set; }
         [FormerName( "Field74" )]
         public uint Blend { get; set; }
@@ -167,7 +165,6 @@ namespace GFDLibrary.Effects
         public override ResourceType ResourceType => ResourceType.EplPostEffectNoiseBlurData;
 
         [FormerName( "Field10" )]
-
         public EplLeafCommonData2 Color { get; set; }
         [FormerName( "Field74" )]
         public uint Blend { get; set; }
@@ -212,7 +209,6 @@ namespace GFDLibrary.Effects
         public override ResourceType ResourceType => ResourceType.EplPostEffectDistortionBlurData;
 
         [FormerName( "Field10" )]
-
         public EplLeafCommonData2 Color { get; set; }
         [FormerName( "Field74" )]
         public uint Blend { get; set; }
@@ -263,7 +259,6 @@ namespace GFDLibrary.Effects
         public override ResourceType ResourceType => ResourceType.EplPostEffectFillData;
 
         [FormerName( "Field10" )]
-
         public EplLeafCommonData2 Color0 { get; set; }
         [FormerName( "Field74" )]
         public EplLeafCommonData2 Color1 { get; set; }
@@ -302,7 +297,6 @@ namespace GFDLibrary.Effects
         public override ResourceType ResourceType => ResourceType.EplPostEffectLensFlareData;
 
         [FormerName( "Field10" )]
-
         public uint Flags { get; set; }
         [FormerName( "Field14" )]
         public uint Template { get; set; }
@@ -341,7 +335,6 @@ namespace GFDLibrary.Effects
         public override ResourceType ResourceType => ResourceType.EplPostEffectColorCorrectionData;
 
         [FormerName( "Field10" )]
-
         public float Cyan { get; set; }
         [FormerName( "Field14" )]
         public float Magenta { get; set; }
@@ -388,7 +381,6 @@ namespace GFDLibrary.Effects
         public override ResourceType ResourceType => ResourceType.EplPostEffectMonotoneData;
 
         [FormerName( "Field10" )]
-
         public float Alpha { get; set; }
         [FormerName( "Field14" )]
         public Vector2 Fade { get; set; }

@@ -76,8 +76,15 @@ namespace GFDLibrary.Effects
     {
         public override ResourceType ResourceType => ResourceType.EplLeafDataHeader;
 
+        /// <summary>
+        /// Officially this pair is <c>category</c> then <c>type</c>: which kind of leaf, then
+        /// which variant within it. Our <see cref="Type"/> is the category, and renaming the two
+        /// into line would make an older file's <c>Type</c> load into the wrong one of them.
+        /// </summary>
         public uint Type { get; set; }
-        public uint Field04 { get; set; }
+
+        [FormerName( "Field04" )]
+        public uint Variant { get; set; }
         //public ushort Field06 { get; set; }
 
         public EplLeafDataHeader() { }
@@ -87,13 +94,13 @@ namespace GFDLibrary.Effects
         protected override void ReadCore( ResourceReader reader )
         {
             Type = reader.ReadUInt32();
-            Field04 = reader.ReadUInt32();
+            Variant = reader.ReadUInt32();
             /*
             if ( Version < 0x2000002 )
-                Field04 = reader.ReadUInt32();
+                Variant = reader.ReadUInt32();
             else
             {
-                Field04 = reader.ReadUInt16();
+                Variant = reader.ReadUInt16();
                 Field06 = reader.ReadUInt16();
             }
             */
@@ -102,7 +109,7 @@ namespace GFDLibrary.Effects
         protected override void WriteCore( ResourceWriter writer )
         {
             writer.WriteUInt32( Type );
-            writer.WriteUInt32( Field04 );
+            writer.WriteUInt32( Variant );
             //writer.WriteUInt16( Field06 );
         }
     }
