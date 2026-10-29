@@ -96,7 +96,7 @@ namespace GFDStudio.Cli.Commands
 
                 case Animation animation:
                     yield return ("Duration", $"{animation.Duration:0.###}s");
-                    yield return ("Controllers", Count( animation.Controllers?.Count ));
+                    yield return ("Controllers", Count( animation.Joints?.Count ));
                     break;
             }
         }

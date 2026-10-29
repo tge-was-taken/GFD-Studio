@@ -197,8 +197,8 @@ namespace GFDLibrary
                     case ResourceType.AnimationLayer:
                         res = new AnimationLayer( header.Version );
                         break;
-                    case ResourceType.AnimationController:
-                        res = new AnimationController( header.Version );
+                    case ResourceType.AnimationJoint:
+                        res = new AnimationJoint( header.Version );
                         break;
                     default:
                         // Metaphor's shader cache uses a resource type nobody has written down

@@ -38,7 +38,7 @@ namespace GFDLibrary.Conversion.AssimpNet
                 if ( node == null )
                     continue;
 
-                var controller = new AnimationController( options.Version )
+                var controller = new AnimationJoint( options.Version )
                 {
                     TargetKind = TargetKind.Node,
                     TargetName = nodeName,
@@ -115,7 +115,7 @@ namespace GFDLibrary.Conversion.AssimpNet
                 }
 
                 controller.Layers.Add( layer );
-                animation.Controllers.Add( controller );
+                animation.Joints.Add( controller );
             }
 
             return animation;

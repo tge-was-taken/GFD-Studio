@@ -36,7 +36,8 @@
         Animation,
         AnimationBit29Data,
         AnimationLayer,
-        AnimationController,
+        [FormerName( "AnimationController" )]
+        AnimationJoint,
 
         EplAnimation,
         EplAnimationController,

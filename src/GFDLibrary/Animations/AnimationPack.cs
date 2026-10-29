@@ -166,9 +166,9 @@ namespace GFDLibrary.Animations
             for (int w = 0; w < this.Animations.Count; w++)
             {
                 Animation animation = this.Animations[w];
-                for (int x = 0; x < animation.Controllers.Count; x++)
+                for (int x = 0; x < animation.Joints.Count; x++)
                 {
-                    AnimationController controller = animation.Controllers[x];
+                    AnimationJoint controller = animation.Joints[x];
                     for (int y = 0; y < controller.Layers.Count; y++)
                     {
                         AnimationLayer layer = controller.Layers[y];
@@ -216,7 +216,7 @@ namespace GFDLibrary.Animations
         {
             foreach ( var animation in animations )
             {
-                foreach ( var controller in animation.Controllers )
+                foreach ( var controller in animation.Joints )
                 {
                     for ( int i = 0; i < controller.Layers.Count; i++ )
                     {

@@ -26,7 +26,7 @@ namespace GFDLibrary.Rendering.OpenGL
 
         public Animation BlendAnimation { get; private set; }
 
-        private readonly List<AnimationController> mMaterialControllers = new();
+        private readonly List<AnimationJoint> mMaterialControllers = new();
 
         public GLModel( ModelPack modelPack, MaterialTextureCreator textureCreator )
         {
@@ -199,12 +199,12 @@ namespace GFDLibrary.Rendering.OpenGL
             foreach ( var glNode in Nodes )
             {
                 glNode.Controllers.Clear();
-                glNode.Controllers.AddRange( animation.Controllers.Where( x => x.TargetKind == TargetKind.Node &&
+                glNode.Controllers.AddRange( animation.Joints.Where( x => x.TargetKind == TargetKind.Node &&
                                                                                x.TargetName == glNode.Node.Name ) );
             }
 
             mMaterialControllers.Clear();
-            mMaterialControllers.AddRange( animation.Controllers.Where( x => x.TargetKind == TargetKind.Material ) );
+            mMaterialControllers.AddRange( animation.Joints.Where( x => x.TargetKind == TargetKind.Material ) );
         }
 
         /// <summary>
@@ -218,7 +218,7 @@ namespace GFDLibrary.Rendering.OpenGL
             foreach ( var glNode in Nodes )
             {
                 glNode.BlendControllers.Clear();
-                glNode.BlendControllers.AddRange( animation.Controllers.Where( x => x.TargetKind == TargetKind.Node &&
+                glNode.BlendControllers.AddRange( animation.Joints.Where( x => x.TargetKind == TargetKind.Node &&
                                                                                     x.TargetName == glNode.Node.Name ) );
             }
         }

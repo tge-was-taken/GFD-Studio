@@ -35,7 +35,7 @@ namespace GFDLibrary.Effects
             //     local u32 i;
             //     local u32 controllerCount = Animation.ControllerCount;
             //     //for ( i = 0; i < controllerCount; ++i )
-            //     //    keyCountsBuffer[i] = Animation.Controllers.Controllers[i].Layers[0].KeyCount;
+            //     //    keyCountsBuffer[i] = Animation.Joints.Controllers[i].Layers[0].KeyCount;
             writer.WriteResourceList( Controllers );
         }
     }

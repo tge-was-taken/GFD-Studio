@@ -581,7 +581,7 @@ namespace GFDLibrary.Rendering.OpenGL
 
                 if ( activeAnimation != null )
                 {
-                    var nextAnimationTime = AnimationTime + ( deltaTime * activeAnimation.Speed.GetValueOrDefault( 1f ) );
+                    var nextAnimationTime = AnimationTime + ( deltaTime * activeAnimation.Frequency.GetValueOrDefault( 1f ) );
                     AnimationTime = nextAnimationTime >= activeAnimation.Duration ? 0 : nextAnimationTime;
                 }
             }

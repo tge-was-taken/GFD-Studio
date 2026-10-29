@@ -8,7 +8,8 @@ using System.Diagnostics;
 
 namespace GFDLibrary.Animations
 {
-    public sealed class AnimationController : Resource
+    [FormerName( "AnimationController" )]
+    public sealed class AnimationJoint : Resource
     {
         [Flags]
         enum PRSFlags
@@ -19,7 +20,7 @@ namespace GFDLibrary.Animations
             S = 4
         }
 
-        public override ResourceType ResourceType => ResourceType.AnimationController;
+        public override ResourceType ResourceType => ResourceType.AnimationJoint;
 
         // 00
         public TargetKind TargetKind { get; set; }
@@ -33,12 +34,12 @@ namespace GFDLibrary.Animations
         // 1C
         public List<AnimationLayer> Layers { get; set; }
 
-        public AnimationController(uint version) : base(version)
+        public AnimationJoint(uint version) : base(version)
         {
             Layers = new List<AnimationLayer>();
         }
 
-        public AnimationController() : this(ResourceVersion.Persona5)
+        public AnimationJoint() : this(ResourceVersion.Persona5)
         {
             
         }
@@ -54,7 +55,7 @@ namespace GFDLibrary.Animations
             TargetId = reader.ReadInt32();
             bool isCFB = ResourceVersion.TreatAsCatherineFullBody && ResourceVersion.IsCFBVersionConflict( Version );
             TargetName = reader.ReadStringWithHash( Version, Version >= 0x02000000 || isCFB, isCFB );
-            Logger.Debug( $"AnimationController: Reading {TargetName} kind:{TargetKind} id:{TargetId}" );
+            Logger.Debug( $"AnimationJoint: Reading {TargetName} kind:{TargetKind} id:{TargetId}" );
             Layers = reader.ReadResourceList<AnimationLayer>( Version );
         }
 

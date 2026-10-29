@@ -45,7 +45,7 @@ namespace GFDLibrary.Conversion.FbxSdk
 
         private void ExportAnimation( Animation animation, string name )
         {
-            if ( animation?.Controllers == null )
+            if ( animation?.Joints == null )
                 return;
 
             var stack = FbxSdk.AnimStackCreate( mScene, name );
@@ -53,12 +53,12 @@ namespace GFDLibrary.Conversion.FbxSdk
             FbxSdk.AnimStackAddLayer( stack, layer );
             FbxSdk.AnimStackSetLocalTimeSpan( stack, 0, animation.Duration );
 
-            foreach ( var controller in animation.Controllers.Where( x => x.TargetKind == TargetKind.Node ) )
+            foreach ( var joint in animation.Joints.Where( x => x.TargetKind == TargetKind.Node ) )
             {
-                if ( controller.TargetName == null || !mNodesByName.TryGetValue( controller.TargetName, out var node ) )
+                if ( joint.TargetName == null || !mNodesByName.TryGetValue( joint.TargetName, out var node ) )
                     continue;
 
-                foreach ( var animationLayer in controller.Layers ?? Enumerable.Empty<AnimationLayer>() )
+                foreach ( var animationLayer in joint.Layers ?? Enumerable.Empty<AnimationLayer>() )
                     ExportLayer( animationLayer, node, layer );
             }
         }

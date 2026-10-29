@@ -44,10 +44,12 @@ namespace GFDLibrary.Animations
         // 08 = Controller count
 
         // 0C
-        public List<AnimationController> Controllers { get; set; }
+        [FormerName( "Controllers" )]
+        public List<AnimationJoint> Joints { get; set; }
 
         // 10
-        public List<AnimationBit28DataEntry> Field10
+        [FormerName( "Field10" )]
+        public List<AnimationBit28DataEntry> Effect
         {
             get => mField10;
             set
@@ -60,7 +62,8 @@ namespace GFDLibrary.Animations
         public byte[] Flag10000000Data { get; set; }
 
         // 14
-        public AnimationBit29Data Field14
+        [FormerName( "Field14" )]
+        public AnimationBit29Data Neck
         {
             get => mField14;
             set
@@ -82,7 +85,8 @@ namespace GFDLibrary.Animations
         }
 
         // 1C
-        public AnimationBit31Data Field1C
+        [FormerName( "Field1C" )]
+        public AnimationBit31Data Translation
         {
             get => mField1C;
             set
@@ -104,7 +108,8 @@ namespace GFDLibrary.Animations
         }
 
         // 24
-        public float? Speed
+        [FormerName( "Speed" )]
+        public float? Frequency
         {
             get => mSpeed;
             set
@@ -117,7 +122,7 @@ namespace GFDLibrary.Animations
         public Animation( uint version ) : base(version)
         {
             Flags = AnimationFlags.Bit0 | AnimationFlags.Bit1;
-            Controllers = new List< AnimationController >();
+            Joints = new List< AnimationJoint >();
         }
 
         public Animation() : this(ResourceVersion.Persona5)
@@ -148,13 +153,13 @@ namespace GFDLibrary.Animations
             for ( var i = 0; i < controllerCount; i++ )
             {
                 Logger.Debug( $"Animation: Reading animation controller #{i}" );
-                var controller = reader.ReadResource<AnimationController>( Version );
-                Controllers.Add( controller );
+                var controller = reader.ReadResource<AnimationJoint>( Version );
+                Joints.Add( controller );
             }
 
             if ( Flags.HasFlag( AnimationFlags.Bit28 ) )
             {
-                Field10 = new List<AnimationBit28DataEntry>();
+                Effect = new List<AnimationBit28DataEntry>();
 
                 var count = reader.ReadInt32();
                 Logger.Debug( $"Animation: Reading {count} bit 28 data entries" );
@@ -163,7 +168,7 @@ namespace GFDLibrary.Animations
                     Logger.Debug( $"Animation: Reading animation bit 28 data entry #{i}" );
                     var epl = new Epl( Version );
                     epl.Read( reader );
-                    Field10.Add( new AnimationBit28DataEntry
+                    Effect.Add( new AnimationBit28DataEntry
                     {
                         Field00 = epl,
                         Field04 = reader.ReadStringWithHash( Version )
@@ -174,13 +179,13 @@ namespace GFDLibrary.Animations
             if ( Flags.HasFlag( AnimationFlags.Bit29 ) )
             {
                 Logger.Debug( $"Animation: Reading bit 29 data" );
-                Field14 = reader.ReadResource<AnimationBit29Data>( Version );
+                Neck = reader.ReadResource<AnimationBit29Data>( Version );
             }
 
             if ( Flags.HasFlag( AnimationFlags.Bit31 ) )
             {
                 Logger.Debug( $"Animation: Reading bit 31 data" );
-                Field1C = new AnimationBit31Data
+                Translation = new AnimationBit31Data
                 {
                     Field00 = reader.ReadInt32(),
                     Field04 = reader.ReadStringWithHash( Version, Version < 0x2000000 ),
@@ -192,7 +197,7 @@ namespace GFDLibrary.Animations
                 BoundingBox = reader.ReadBoundingBox();
 
             if ( Flags.HasFlag( AnimationFlags.HasSpeed ) )
-                Speed = reader.ReadSingle();
+                Frequency = reader.ReadSingle();
 
             if ( Flags.HasFlag( AnimationFlags.HasProperties ) )
                 Properties = reader.ReadResource<UserPropertyDictionary>( Version );
@@ -207,7 +212,7 @@ namespace GFDLibrary.Animations
                 writer.WriteInt32( ( int ) Flags );
 
             writer.WriteSingle( Duration );
-            writer.WriteInt32( Controllers.Count );
+            writer.WriteInt32( Joints.Count );
 
             if ( IsCatherineFullBodyData || Version >= 0x2000000 )
             {
@@ -215,13 +220,13 @@ namespace GFDLibrary.Animations
                 writer.WriteInt32( mUnknown2 );
             }
 
-            foreach ( var controller in Controllers )
+            foreach ( var controller in Joints )
                 writer.WriteResource( controller );
 
             if ( Flags.HasFlag( AnimationFlags.Bit28 ) )
             {
-                writer.WriteInt32( Field10.Count );
-                foreach ( var entry in Field10 )
+                writer.WriteInt32( Effect.Count );
+                foreach ( var entry in Effect )
                 {
                     writer.WriteResource( entry.Field00 );
                     writer.WriteStringWithHash( Version, entry.Field04, Version < 0x2000000 );
@@ -229,20 +234,20 @@ namespace GFDLibrary.Animations
             }
 
             if ( Flags.HasFlag( AnimationFlags.Bit29 ) )
-                writer.WriteResource( Field14 );
+                writer.WriteResource( Neck );
 
             if ( Flags.HasFlag( AnimationFlags.Bit31 ) )
             {
-                writer.WriteInt32( Field1C.Field00 );
-                writer.WriteStringWithHash( Version, Field1C.Field04, Version < 0x2000000 );
-                writer.WriteResource( Field1C.Field20 );
+                writer.WriteInt32( Translation.Field00 );
+                writer.WriteStringWithHash( Version, Translation.Field04, Version < 0x2000000 );
+                writer.WriteResource( Translation.Field20 );
             }
 
             if ( Flags.HasFlag( AnimationFlags.HasBoundingBox ) )
                 writer.WriteBoundingBox( BoundingBox.Value );
 
             if ( Flags.HasFlag( AnimationFlags.HasSpeed ) )
-                writer.WriteSingle( Speed.Value );
+                writer.WriteSingle( Frequency.Value );
 
             if ( Flags.HasFlag( AnimationFlags.HasProperties ) )
                 writer.WriteResource( Properties );
@@ -257,7 +262,7 @@ namespace GFDLibrary.Animations
         {
             // MorphIndexed controllers: group by TargetName, assign sequential TargetIds within each group
             var morphIndexedCounters = new Dictionary<string, int>();
-            foreach ( var controller in Controllers )
+            foreach ( var controller in Joints )
             {
                 if ( controller.TargetKind == TargetKind.MorphIndexed )
                 {
@@ -270,22 +275,22 @@ namespace GFDLibrary.Animations
                 }
             }
 
-            foreach ( var controller in Controllers.ToList() )
+            foreach ( var controller in Joints.ToList() )
             {
                 if ( !controller.FixTargetIds( nodes ) )
-                    Controllers.Remove( controller );
+                    Joints.Remove( controller );
             }
         }
 
         public void ConvertToP5()
         {
-            Controllers.ForEach( c => c.ConvertToP5() );
+            Joints.ForEach( c => c.ConvertToP5() );
         }
 
         public void MergeWith(Animation other)
         {
-            if (other.Controllers != null)
-                Controllers.AddRange(other.Controllers);
+            if (other.Joints != null)
+                Joints.AddRange(other.Joints);
         }
 
         public void Retarget( Model originalModel, Model newModel, bool fixArms )
@@ -297,7 +302,7 @@ namespace GFDLibrary.Animations
         {
             FixTargetIds( newNodeLookup.Values );
 
-            foreach ( var controller in Controllers )
+            foreach ( var controller in Joints )
             {
                 if ( !originalNodeLookup.TryGetValue( controller.TargetName, out var originalNode ) || !newNodeLookup.TryGetValue( controller.TargetName, out var newNode ) )
                     continue;

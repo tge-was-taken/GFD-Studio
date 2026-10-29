@@ -4,7 +4,7 @@ using GFDLibrary.Animations;
 
 namespace GFDStudio.GUI.DataViewNodes
 {
-    public class AnimationControllerViewNode : DataViewNode<AnimationController>
+    public class AnimationJointViewNode : DataViewNode<AnimationJoint>
     {
         public override DataViewNodeMenuFlags ContextMenuFlags => DataViewNodeMenuFlags.Replace | DataViewNodeMenuFlags.Export;
 
@@ -31,15 +31,15 @@ namespace GFDStudio.GUI.DataViewNodes
             set => Set( x => x.TargetName, value );
         }
 
-        public AnimationControllerViewNode( string text, AnimationController data ) : base( text, data )
+        public AnimationJointViewNode( string text, AnimationJoint data ) : base( text, data )
         {
         }
 
         protected override void InitializeCore()
         {
             TextChanged += ( s, o ) => TargetName = Name = Text;
-            RegisterExportHandler<AnimationController>( Data.Save );
-            RegisterReplaceHandler<AnimationController>( Resource.Load<AnimationController> );
+            RegisterExportHandler<AnimationJoint>( Data.Save );
+            RegisterReplaceHandler<AnimationJoint>( Resource.Load<AnimationJoint> );
         }
     }
 }

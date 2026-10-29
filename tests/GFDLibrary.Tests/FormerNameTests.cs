@@ -33,6 +33,17 @@ namespace GFDLibrary.Tests
         /// the version it was written under rather than on the key alone.
         /// </summary>
         [TestMethod]
+        public void Former_animation_member_names_still_load()
+        {
+            var animation = RoundtripYaml<Animations.Animation>(
+                "Duration: 2\nSpeed: 1.5\nControllers:\n- TargetName: bone\n" );
+
+            Assert.AreEqual( 1.5f, animation.Frequency );
+            Assert.AreEqual( 1, animation.Joints.Count );
+            Assert.AreEqual( "bone", animation.Joints[0].TargetName );
+        }
+
+        [TestMethod]
         public void A_version_1_leaf_header_keeps_the_old_meanings()
         {
             var leaf = RoundtripYaml<Effects.EplLeaf>(

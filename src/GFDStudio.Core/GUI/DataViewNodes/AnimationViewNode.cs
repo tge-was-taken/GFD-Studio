@@ -32,13 +32,13 @@ namespace GFDStudio.GUI.DataViewNodes
             set => Set( x => x.Duration, value );
         }
 
-        [DisplayName( "Controller count" )]
-        public int ControllerCount => Data.Controllers.Count;
+        [DisplayName( "Joint count" )]
+        public int JointCount => Data.Joints.Count;
 
         [Browsable(false)]
-        public ListViewNode<AnimationController> Controllers { get; set; }
+        public ListViewNode<AnimationJoint> Joints { get; set; }
 
-        //public List<AnimationController> Controllers { get; set; }
+        //public List<AnimationJoint> Controllers { get; set; }
 
         //// 10
         //public List<AnimationFlag10000000DataEntry> Field10
@@ -75,10 +75,10 @@ namespace GFDStudio.GUI.DataViewNodes
             }
         }
 
-        public float? Speed
+        public float? Frequency
         {
-            get => Data.Speed;
-            set => Set( x => x.Speed, value );
+            get => Data.Frequency;
+            set => Set( x => x.Frequency, value );
         }
 
         protected internal AnimationViewNode( string text, Animation data ) : base( text, data )
@@ -131,8 +131,8 @@ namespace GFDStudio.GUI.DataViewNodes
 
         protected override void InitializeViewCore()
         {
-            Controllers = ( ListViewNode<AnimationController> )DataViewNodeFactory.Create( "Controllers", Data.Controllers, new[] { new ListItemNameProvider<AnimationController>( ( x, i ) => x.TargetName ) } );
-            AddChildNode( Controllers );
+            Joints = ( ListViewNode<AnimationJoint> )DataViewNodeFactory.Create( "Joints", Data.Joints, new[] { new ListItemNameProvider<AnimationJoint>( ( x, i ) => x.TargetName ) } );
+            AddChildNode( Joints );
         }
 
         private static void ImportModelAndFixTargetIds( Animation animation )

@@ -323,17 +323,17 @@ namespace GFDLibrary.Api
             return animationPack.BlendAnimations[index];
         }
 
-        public static AnimationController[] GetAnimationControllers( Animation a )
+        public static AnimationJoint[] GetAnimationControllers( Animation a )
         {
-            return a.Controllers.ToArray();
+            return a.Joints.ToArray();
         }
 
-        public static AnimationLayer[] GetAnimationLayers( AnimationController c )
+        public static AnimationLayer[] GetAnimationLayers( AnimationJoint c )
         {
             return c.Layers.ToArray();
         }
 
-        public static int GetAnimationControllerTargetKind( AnimationController c )
+        public static int GetAnimationControllerTargetKind( AnimationJoint c )
         {
             return (int)c.TargetKind;
         }
