@@ -98,11 +98,18 @@ namespace GFDStudio.Avalonia
                 OpenFile( result.FileName );
         }
 
+        /// <summary>
+        /// Puts the reason a file would not load in front of the user, since it usually names the
+        /// offset the reader gave up at.
+        /// </summary>
+        private static string Describe( string message, Exception error )
+            => error == null ? message : $"{message}\n\n{error.Message}";
+
         public void OpenFile( string path )
         {
-            if ( !DataViewNodeFactory.TryCreate( path, out var node ) )
+            if ( !DataViewNodeFactory.TryCreate( path, out var node, out var error ) )
             {
-                UserDialogs.Current.ShowMessage( $"The file could not be loaded:\n{path}", "Error", UserMessageKind.Error );
+                UserDialogs.Current.ShowMessage( Describe( $"The file could not be loaded:\n{path}", error ), "Error", UserMessageKind.Error );
                 return;
             }
 
@@ -181,9 +188,9 @@ namespace GFDStudio.Avalonia
             if ( result == null )
                 return;
 
-            if ( !DataViewNodeFactory.TryCreate( result.FileName, out var node ) )
+            if ( !DataViewNodeFactory.TryCreate( result.FileName, out var node, out var error ) )
             {
-                UserDialogs.Current.ShowMessage( "The file could not be loaded.", "Error", UserMessageKind.Error );
+                UserDialogs.Current.ShowMessage( Describe( "The file could not be loaded.", error ), "Error", UserMessageKind.Error );
                 return;
             }
 

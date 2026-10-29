@@ -37,8 +37,10 @@ namespace GFDStudio.Cli
             // node for a format with no reader of its own keeps hold of it.
             var stream = new MemoryStream( File.ReadAllBytes( path ) );
 
-            if ( !DataViewNodeFactory.TryCreate( Path.GetFileName( path ), stream, out var node ) )
-                throw new CliException( $"Nothing here reads \"{path}\"." );
+            if ( !DataViewNodeFactory.TryCreate( Path.GetFileName( path ), stream, null, out var node, out var error ) )
+                throw new CliException( error == null
+                    ? $"Nothing here reads \"{path}\"."
+                    : $"\"{path}\" could not be read: {error.Message}" );
 
             // Several parts of a Metaphor model pack live in files beside it.
             if ( node.Data is ModelPack pack && pack.Version >= 0x02000000 )

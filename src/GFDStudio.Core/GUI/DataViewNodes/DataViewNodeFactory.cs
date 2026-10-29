@@ -205,6 +205,24 @@ namespace GFDStudio.GUI.DataViewNodes
         /// <returns>Whether or not the operation succeeded.</returns>
         public static bool TryCreate( string filepath, object[] extraArguments, out DataViewNode viewModel )
         {
+            return TryCreate( filepath, extraArguments, out viewModel, out _ );
+        }
+
+        /// <summary>
+        /// Tries to create a view model from a given file, saying why if it could not.
+        /// </summary>
+        public static bool TryCreate( string filepath, out DataViewNode viewModel, out Exception error )
+        {
+            return TryCreate( filepath, null, out viewModel, out error );
+        }
+
+        /// <summary>
+        /// Tries to create a view model from a given file, saying why if it could not.
+        /// </summary>
+        public static bool TryCreate( string filepath, object[] extraArguments, out DataViewNode viewModel, out Exception error )
+        {
+            error = null;
+
             // first and foremost check if the file exists at all
             if ( !File.Exists( filepath ) )
             {
@@ -217,8 +235,11 @@ namespace GFDStudio.GUI.DataViewNodes
             var stream = File.OpenRead( filepath );
 
             // try create viewModel
-            if ( !TryCreate( filename, stream, extraArguments, out viewModel ) )
+            if ( !TryCreate( filename, stream, extraArguments, out viewModel, out error ) )
             {
+                // Nothing took the stream on, and on Windows an open handle keeps the user from
+                // doing anything else with the file.
+                stream.Dispose();
                 return false;
             }
 
@@ -246,6 +267,18 @@ namespace GFDStudio.GUI.DataViewNodes
         /// <returns>Whether or not the operation succeeded.</returns>
         public static bool TryCreate( string text, Stream stream, object[] extraArguments, out DataViewNode viewModel )
         {
+            return TryCreate( text, stream, extraArguments, out viewModel, out _ );
+        }
+
+        /// <summary>
+        /// Tries to create a view model from a given stream, saying why if it could not. A file
+        /// the module cannot make sense of is something to tell the user about, not a reason to
+        /// take the application down, so the import is allowed to fail here.
+        /// </summary>
+        public static bool TryCreate( string text, Stream stream, object[] extraArguments, out DataViewNode viewModel, out Exception error )
+        {
+            error = null;
+
             // check if the given text is likely a filename
             string filename = null;
             if ( stream is FileStream fileStream )
@@ -268,7 +301,19 @@ namespace GFDStudio.GUI.DataViewNodes
             }
 
             // import resource w/ module
-            var resource = module.Import( stream, filename );
+            object resource;
+
+            try
+            {
+                resource = module.Import( stream, filename );
+            }
+            catch ( Exception exception )
+            {
+                Trace.TraceError( $"{nameof( DataViewNodeFactory )}: {module.Name} failed to read {text}: {exception}" );
+                error = exception;
+                viewModel = null;
+                return false;
+            }
 
             // try to create a view model
             if ( !TryCreate( text, resource, module.ModelType, extraArguments, out viewModel ) )
