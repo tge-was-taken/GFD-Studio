@@ -10,61 +10,57 @@ namespace GFDLibrary.Rendering.OpenGL
     {
         public int Id { get; }
 
-        public unsafe GLTexture( Texture texture )
+        public GLTexture( Texture texture )
         {
             Id = GL.GenTexture();
             GL.BindTexture( TextureTarget.Texture2D, Id );
 
-            switch ( texture.Format )
+            if ( texture.Format == TextureFormat.DDS && TryUploadDDS( texture.Data ) )
+                return;
+
+            UploadDecoded( texture );
+        }
+
+        /// <summary>
+        /// Hands the compressed blocks straight to the driver. Returns false for a format the
+        /// driver cannot take, which is then decoded on the CPU instead.
+        /// </summary>
+        private static bool TryUploadDDS( byte[] data )
+        {
+            var header = new DDSHeader( new MemoryStream( data ) );
+
+            if ( !TryGetPixelInternalFormat( header, out var format ) )
+                return false;
+
+            // todo: identify and retrieve values from texture
+            // todo: disable mipmaps for now, they often break and show up as black ( eg after replacing a texture )
+            var mipMapCount = header.MipMapCount > 0 ? header.MipMapCount - 1 : 1;
+
+            SetTextureParameters( TextureWrapMode.Repeat, TextureWrapMode.Repeat, TextureMagFilter.Linear, TextureMinFilter.Linear, mipMapCount );
+
+            var dataOffset = 0x4 + 0x7C; // 4 + 124, INFO + HEADER
+
+            // A DX10 four character code means the extended header sits between the header and
+            // the pixel data, whatever format it names.
+            if ( header.PixelFormat.FourCC == DDSPixelFormatFourCC.DX10 )
+                dataOffset += 0x14;
+
+            UploadDDSTextureData( header.Width, header.Height, format, 1, data, dataOffset );
+            return true;
+        }
+
+        private static unsafe void UploadDecoded( Texture texture )
+        {
+            // rip hardware acceleration
+            var bitmap = TextureDecoder.Decode( texture );
+            SetTextureParameters( TextureWrapMode.Repeat, TextureWrapMode.Repeat, TextureMagFilter.Linear, TextureMinFilter.Linear, 1 );
+
+            var pixels = bitmap.Pixels;
+
+            fixed ( byte* pPixels = &pixels[ 0 ] )
             {
-                case TextureFormat.DDS:
-                    {
-                        var ddsHeader = new DDSHeader( new MemoryStream( texture.Data ) );
-                        var dataOffset = 0x4 + 0x7C; // 4 + 124, INFO + HEADER
-
-                        // todo: identify and retrieve values from texture
-                        // todo: disable mipmaps for now, they often break and show up as black ( eg after replacing a texture )
-                        int mipMapCount = ddsHeader.MipMapCount;
-                        if ( mipMapCount > 0 )
-                            --mipMapCount;
-                        else
-                            mipMapCount = 1;
-
-                        SetTextureParameters( TextureWrapMode.Repeat, TextureWrapMode.Repeat, TextureMagFilter.Linear, TextureMinFilter.Linear, mipMapCount );
-
-                        var format = (PixelInternalFormat)0;
-
-                        if ( ddsHeader.PixelFormat.FourCC != 0 ||
-                            !ddsHeader.PixelFormat.Flags.HasFlag( DDSPixelFormatFlags.RGB ) ||
-                            ddsHeader.PixelFormat.RGBBitCount != 32 )
-                            format = GetPixelInternalFormat( ddsHeader.PixelFormat.FourCC, ddsHeader.DxgiFormat );
-                        else if ( ddsHeader.PixelFormat.Flags.HasFlag( DDSPixelFormatFlags.AlphaPixels ) )
-                            format = PixelInternalFormat.Rgba;
-                        else
-                            format = PixelInternalFormat.Rgb;
-
-                        if ( format == PixelInternalFormat.CompressedRgbaBptcUnorm || format == PixelInternalFormat.CompressedRgbBptcSignedFloat || format == PixelInternalFormat.CompressedRgbBptcUnsignedFloat ) dataOffset += 0x14; //DX10 have an additional 20 bytes of header
-
-                        UploadDDSTextureData( ddsHeader.Width, ddsHeader.Height, format, 1, texture.Data, dataOffset );
-                    }
-                    break;
-
-                default:
-                    {
-                        // rip hardware acceleration
-                        var bitmap = TextureDecoder.Decode( texture );
-                        SetTextureParameters( TextureWrapMode.Repeat, TextureWrapMode.Repeat, TextureMagFilter.Linear, TextureMinFilter.Linear, 1 );
-
-                        var pixels = bitmap.Pixels;
-
-                        fixed ( byte* pPixels = &pixels[ 0 ] )
-                        {
-                            GL.TexImage2D( TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, bitmap.Width, bitmap.Height, 0, PixelFormat.Rgba,
-                                           PixelType.UnsignedByte, ( IntPtr )pPixels );
-                        }
-                    }
-                    break;
-
+                GL.TexImage2D( TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, bitmap.Width, bitmap.Height, 0, PixelFormat.Rgba,
+                               PixelType.UnsignedByte, ( IntPtr )pPixels );
             }
         }
 
@@ -96,42 +92,129 @@ namespace GFDLibrary.Rendering.OpenGL
             GL.TexParameter( TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, maxMipLevel );
         }
 
-        private static PixelInternalFormat GetPixelInternalFormat( DDSPixelFormatFourCC format, DDSDxgiFormat dxgiFormat )
+        private static bool TryGetPixelInternalFormat( DDSHeader header, out PixelInternalFormat format )
         {
-            switch ( format )
+            var pixelFormat = header.PixelFormat;
+
+            if ( pixelFormat.FourCC == 0 &&
+                 pixelFormat.Flags.HasFlag( DDSPixelFormatFlags.RGB ) &&
+                 pixelFormat.RGBBitCount == 32 )
+            {
+                format = pixelFormat.Flags.HasFlag( DDSPixelFormatFlags.AlphaPixels )
+                    ? PixelInternalFormat.Rgba
+                    : PixelInternalFormat.Rgb;
+
+                return true;
+            }
+
+            switch ( pixelFormat.FourCC )
             {
                 case DDSPixelFormatFourCC.DXT1:
-                    return PixelInternalFormat.CompressedRgbaS3tcDxt1Ext;
+                    format = PixelInternalFormat.CompressedRgbaS3tcDxt1Ext;
+                    return true;
 
+                // DXT2 and DXT4 are DXT3 and DXT5 with the colour premultiplied by the alpha,
+                // which the games do not use, so the blocks decode the same way.
+                case DDSPixelFormatFourCC.DXT2:
                 case DDSPixelFormatFourCC.DXT3:
-                    return PixelInternalFormat.CompressedRgbaS3tcDxt3Ext;
+                    format = PixelInternalFormat.CompressedRgbaS3tcDxt3Ext;
+                    return true;
 
+                case DDSPixelFormatFourCC.DXT4:
                 case DDSPixelFormatFourCC.DXT5:
-                    return PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
+                    format = PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
+                    return true;
+
+                case DDSPixelFormatFourCC.ATI1:
+                    format = PixelInternalFormat.CompressedRedRgtc1;
+                    return true;
+
+                case DDSPixelFormatFourCC.ATI2N_3Dc:
+                    format = PixelInternalFormat.CompressedRgRgtc2;
+                    return true;
 
                 case DDSPixelFormatFourCC.A8R8G8B8:
-                    return PixelInternalFormat.Rgba8;
+                    format = PixelInternalFormat.Rgba8;
+                    return true;
 
                 case DDSPixelFormatFourCC.DX10:
-                    {
-                        switch ( dxgiFormat )
-                        {
-                            case DDSDxgiFormat.BC7_UNORM:
-                            case DDSDxgiFormat.BC7_TYPELESS:
-                            case DDSDxgiFormat.BC7_UNORM_SRGB:
-                                return PixelInternalFormat.CompressedRgbaBptcUnorm;
-                            case DDSDxgiFormat.BC6H_SF16:
-                            case DDSDxgiFormat.BC6H_TYPELESS:
-                                return PixelInternalFormat.CompressedRgbBptcSignedFloat;
-                            case DDSDxgiFormat.BC6H_UF16:
-                                return PixelInternalFormat.CompressedRgbBptcUnsignedFloat;
-                        }
-                        return PixelInternalFormat.CompressedRgbaBptcUnorm;
-                    }
-
-                default:
-                    throw new NotImplementedException( format.ToString() );
+                    return TryGetPixelInternalFormat( header.DxgiFormat, out format );
             }
+
+            format = 0;
+            return false;
+        }
+
+        private static bool TryGetPixelInternalFormat( DDSDxgiFormat dxgiFormat, out PixelInternalFormat format )
+        {
+            switch ( dxgiFormat )
+            {
+                case DDSDxgiFormat.BC1_TYPELESS:
+                case DDSDxgiFormat.BC1_UNORM:
+                    format = PixelInternalFormat.CompressedRgbaS3tcDxt1Ext;
+                    return true;
+
+                case DDSDxgiFormat.BC1_UNORM_SRGB:
+                    format = PixelInternalFormat.CompressedSrgbAlphaS3tcDxt1Ext;
+                    return true;
+
+                case DDSDxgiFormat.BC2_TYPELESS:
+                case DDSDxgiFormat.BC2_UNORM:
+                    format = PixelInternalFormat.CompressedRgbaS3tcDxt3Ext;
+                    return true;
+
+                case DDSDxgiFormat.BC2_UNORM_SRGB:
+                    format = PixelInternalFormat.CompressedSrgbAlphaS3tcDxt3Ext;
+                    return true;
+
+                case DDSDxgiFormat.BC3_TYPELESS:
+                case DDSDxgiFormat.BC3_UNORM:
+                    format = PixelInternalFormat.CompressedRgbaS3tcDxt5Ext;
+                    return true;
+
+                case DDSDxgiFormat.BC3_UNORM_SRGB:
+                    format = PixelInternalFormat.CompressedSrgbAlphaS3tcDxt5Ext;
+                    return true;
+
+                case DDSDxgiFormat.BC4_TYPELESS:
+                case DDSDxgiFormat.BC4_UNORM:
+                    format = PixelInternalFormat.CompressedRedRgtc1;
+                    return true;
+
+                case DDSDxgiFormat.BC4_SNORM:
+                    format = PixelInternalFormat.CompressedSignedRedRgtc1;
+                    return true;
+
+                case DDSDxgiFormat.BC5_TYPELESS:
+                case DDSDxgiFormat.BC5_UNORM:
+                    format = PixelInternalFormat.CompressedRgRgtc2;
+                    return true;
+
+                case DDSDxgiFormat.BC5_SNORM:
+                    format = PixelInternalFormat.CompressedSignedRgRgtc2;
+                    return true;
+
+                case DDSDxgiFormat.BC6H_TYPELESS:
+                case DDSDxgiFormat.BC6H_UF16:
+                    format = PixelInternalFormat.CompressedRgbBptcUnsignedFloat;
+                    return true;
+
+                case DDSDxgiFormat.BC6H_SF16:
+                    format = PixelInternalFormat.CompressedRgbBptcSignedFloat;
+                    return true;
+
+                case DDSDxgiFormat.BC7_TYPELESS:
+                case DDSDxgiFormat.BC7_UNORM:
+                    format = PixelInternalFormat.CompressedRgbaBptcUnorm;
+                    return true;
+
+                case DDSDxgiFormat.BC7_UNORM_SRGB:
+                    format = PixelInternalFormat.CompressedSrgbAlphaBptcUnorm;
+                    return true;
+            }
+
+            format = 0;
+            return false;
         }
 
         private static PixelInternalFormat GetPixelInternalFormat( FieldTextureFlags flags )
@@ -157,37 +240,47 @@ namespace GFDLibrary.Rendering.OpenGL
 
         private static void UploadDDSTextureData( int width, int height, PixelInternalFormat format, int mipMapCount, IntPtr data )
         {
-            int mipWidth  = width;
-            int mipHeight = height;
-            int blockSize = ( format == PixelInternalFormat.CompressedRgbaS3tcDxt1Ext ) ? 8 : 16;
-            int mipOffset = 0;
+            var uncompressed = format == PixelInternalFormat.Rgb || format == PixelInternalFormat.Rgba;
+            var blockSize = GetBlockSize( format );
+            var mipWidth  = width;
+            var mipHeight = height;
+            var mipOffset = 0;
 
-            if (format == PixelInternalFormat.Rgb || format == PixelInternalFormat.Rgba)
-                blockSize = 8;
-
-            for ( int mipLevel = 0; mipLevel < mipMapCount; mipLevel++ )
+            for ( int mipLevel = 0; mipLevel < mipMapCount && mipWidth > 0 && mipHeight > 0; mipLevel++ )
             {
-                int mipSize = ( ( mipWidth * mipHeight ) / 16 ) * blockSize;
-
-                if ( mipSize > blockSize)
+                if ( uncompressed )
                 {
-                    switch ( format )
-                    {
-                        case PixelInternalFormat.Rgb:
-                        //    GL.TexImage2D(TextureTarget.Texture2D, mipLevel, format, mipWidth, mipHeight, 0, PixelFormat.Bgra, PixelType.UnsignedByte, data + mipOffset);
-                        //    break;
-                        case PixelInternalFormat.Rgba:
-                            GL.TexImage2D(TextureTarget.Texture2D, mipLevel, format, mipWidth, mipHeight, 0, PixelFormat.Bgra, PixelType.UnsignedByte, data + mipOffset);
-                            break;
-                        default:
-                            GL.CompressedTexImage2D(TextureTarget.Texture2D, mipLevel, (InternalFormat)format, mipWidth, mipHeight, 0, mipSize, data + mipOffset);
-                            break;
-                    }
+                    GL.TexImage2D( TextureTarget.Texture2D, mipLevel, format, mipWidth, mipHeight, 0, PixelFormat.Bgra, PixelType.UnsignedByte, data + mipOffset );
+                    mipOffset += mipWidth * mipHeight * 4;
+                }
+                else
+                {
+                    // A level is a whole number of 4x4 blocks, so one smaller than that still
+                    // takes a full block and the last levels are not all the same size.
+                    var mipSize = Math.Max( 1, ( mipWidth + 3 ) / 4 ) * Math.Max( 1, ( mipHeight + 3 ) / 4 ) * blockSize;
+                    GL.CompressedTexImage2D( TextureTarget.Texture2D, mipLevel, (InternalFormat)format, mipWidth, mipHeight, 0, mipSize, data + mipOffset );
+                    mipOffset += mipSize;
                 }
 
-                mipOffset += mipSize;
                 mipWidth  /= 2;
                 mipHeight /= 2;
+            }
+        }
+
+        private static int GetBlockSize( PixelInternalFormat format )
+        {
+            switch ( format )
+            {
+                case PixelInternalFormat.CompressedRgbS3tcDxt1Ext:
+                case PixelInternalFormat.CompressedRgbaS3tcDxt1Ext:
+                case PixelInternalFormat.CompressedSrgbS3tcDxt1Ext:
+                case PixelInternalFormat.CompressedSrgbAlphaS3tcDxt1Ext:
+                case PixelInternalFormat.CompressedRedRgtc1:
+                case PixelInternalFormat.CompressedSignedRedRgtc1:
+                    return 8;
+
+                default:
+                    return 16;
             }
         }
 
