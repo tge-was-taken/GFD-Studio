@@ -63,6 +63,18 @@ namespace GFDStudio.Avalonia
         public static Task<bool> Show( Window owner, string text, string caption, MessageWindowButtons buttons )
         {
             var window = new MessageWindow( text, caption, buttons );
+
+            // A modal dialog needs an owner that is already on screen. A message raised before
+            // the main window appears, such as one about a file named on the command line, is
+            // shown on its own rather than taking the application down.
+            if ( owner is not { IsVisible: true } )
+            {
+                var completion = new TaskCompletionSource<bool>();
+                window.Closed += ( s, e ) => completion.TrySetResult( window.mResult );
+                window.Show();
+                return completion.Task;
+            }
+
             return window.ShowDialog<bool>( owner );
         }
 

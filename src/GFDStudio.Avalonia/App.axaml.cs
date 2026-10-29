@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Avalonia.Threading;
 using Avalonia.PropertyGrid.Services;
 using GFDStudio.GUI;
 
@@ -26,8 +27,10 @@ namespace GFDStudio.Avalonia
                 var window = new MainWindow();
                 UserDialogs.Current = new UserDialogsAvalonia( window );
 
+                // A file named on the command line is opened once the window is up and has had a
+                // chance to lay out, because a dialog over a window that is not showing throws.
                 if ( desktop.Args is { Length: > 0 } args && System.IO.File.Exists( args[0] ) )
-                    window.OpenFile( args[0] );
+                    window.Opened += ( s, e ) => Dispatcher.UIThread.Post( () => window.OpenFile( args[0] ) );
 
                 desktop.MainWindow = window;
             }
