@@ -87,6 +87,28 @@ namespace GFDLibrary.Animations
             }
         }
 
+        /// <summary>
+        /// Whether the keys carry a uv transform, which is the five float layout the material
+        /// animations use.
+        /// </summary>
+        public bool HasSingle5KeyFrames
+        {
+            get
+            {
+                switch ( KeyType )
+                {
+                    case KeyType.UV0Transform:
+                    case KeyType.UV1Transform:
+                    case KeyType.UV0TransformNoInterp:
+                    case KeyType.UV1TransformNoInterp:
+                        return true;
+
+                    default:
+                        return false;
+                }
+            }
+        }
+
         public AnimationLayer(uint version) : base(version)
         {
             Keys = new List< Key >();

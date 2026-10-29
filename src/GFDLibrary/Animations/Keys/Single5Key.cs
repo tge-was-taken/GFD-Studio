@@ -4,15 +4,20 @@ namespace GFDLibrary.Animations
 {
     public class Single5Key : Key
     {
-        public float Field00 { get; set; }
+        [FormerName( "Field00" )]
+        public float UVOffsetX { get; set; }
 
-        public float Field04 { get; set; }
+        [FormerName( "Field04" )]
+        public float UVOffsetY { get; set; }
 
-        public float Field08 { get; set; }
+        [FormerName( "Field08" )]
+        public float UVScaleX { get; set; }
 
-        public float Field0C { get; set; }
+        [FormerName( "Field0C" )]
+        public float UVScaleY { get; set; }
 
-        public float Field10 { get; set; }
+        [FormerName( "Field10" )]
+        public float UVRotation { get; set; }
 
         public Single5Key() : this( KeyType.UV0Transform ) { }
 
@@ -22,20 +27,20 @@ namespace GFDLibrary.Animations
 
         internal override void Read( ResourceReader reader )
         {
-            Field00 = reader.ReadSingle();
-            Field04 = reader.ReadSingle();
-            Field08 = reader.ReadSingle();
-            Field0C = reader.ReadSingle();
-            Field10 = reader.ReadSingle();
+            UVOffsetX = reader.ReadSingle();
+            UVOffsetY = reader.ReadSingle();
+            UVScaleX = reader.ReadSingle();
+            UVScaleY = reader.ReadSingle();
+            UVRotation = reader.ReadSingle();
         }
 
         internal override void Write( ResourceWriter writer )
         {
-            writer.WriteSingle( Field00 );
-            writer.WriteSingle( Field04 );
-            writer.WriteSingle( Field08 );
-            writer.WriteSingle( Field0C );
-            writer.WriteSingle( Field10 );
+            writer.WriteSingle( UVOffsetX );
+            writer.WriteSingle( UVOffsetY );
+            writer.WriteSingle( UVScaleX );
+            writer.WriteSingle( UVScaleY );
+            writer.WriteSingle( UVRotation );
         }
     }
 }
