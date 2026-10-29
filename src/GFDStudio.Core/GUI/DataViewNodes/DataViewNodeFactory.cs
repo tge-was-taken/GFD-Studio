@@ -101,6 +101,16 @@ namespace GFDStudio.GUI.DataViewNodes
             Register( typeof( AnimationListViewNode ), typeof( List<Animation> ) );
             Register<AnimationControllerViewNode>();
 
+            // gfd shader cache view models
+            Register<ShaderCachePS3ViewNode>();
+            Register<ShaderCachePSP2ViewNode>();
+            Register<ShaderCachePS4ViewNode>();
+            Register<ShaderCacheMetaphorDX11ViewNode>();
+            Register<ShaderPS3ViewNode>();
+            Register<ShaderPSP2ViewNode>();
+            Register<ShaderPS4ViewNode>();
+            Register<ShaderMetaphorViewNode>();
+
             Register<FieldTexturePS3ViewNode>();
             Register<GNFTextureViewNode>();
         }

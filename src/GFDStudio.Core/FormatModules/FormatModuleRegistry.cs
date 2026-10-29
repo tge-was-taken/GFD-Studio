@@ -48,6 +48,13 @@ namespace GFDStudio.FormatModules
                 new MaterialDictionaryFormatModule(),
                 new MaterialFormatModule(),
 
+                // gfd shader cache modules
+                new ShaderCachePS3FormatModule(),
+                new ShaderCachePSP2FormatModule(),
+                new ShaderCachePS4FormatModule(),
+                new ShaderCacheMetaphorDX11FormatModule(),
+                new ShaderBinaryFormatModule(),
+
                 // gfd animation modules
                 new AnimationPackFormatModule(),
                 new AnimationFormatModule(),
