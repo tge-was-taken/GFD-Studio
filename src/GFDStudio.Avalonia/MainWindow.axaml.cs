@@ -196,7 +196,7 @@ namespace GFDStudio.Avalonia
 
             if ( node.DataType == typeof( Animation ) )
             {
-                mModelView.LoadAnimation( (Animation)node.Data );
+                mModelView.LoadAnyAnimation( (Animation)node.Data );
             }
             else if ( node.DataType == typeof( AnimationPack ) )
             {
@@ -219,7 +219,7 @@ namespace GFDStudio.Avalonia
                 return;
 
             if ( node.DataType == typeof( Animation ) )
-                mModelView.LoadAnimation( (Animation)node.Data );
+                mModelView.LoadAnyAnimation( (Animation)node.Data );
 
             mProperties.DataContext = node;
         }
@@ -233,6 +233,11 @@ namespace GFDStudio.Avalonia
         {
             mAnimationControls.IsEnabled = animation != null;
             if ( animation == null )
+                return;
+
+            // A blend animation loaded over one already playing keeps the running timeline, so
+            // its shorter duration does not cut the slider short.
+            if ( animation.IsBlendAnimation && mModelView.Animation is { Duration: > 0 } )
                 return;
 
             mAnimationTime.Maximum = animation.Duration * 1000d;
@@ -319,7 +324,7 @@ namespace GFDStudio.Avalonia
             switch ( node.Data )
             {
                 case Animation animation:
-                    mModelView.LoadAnimation( animation );
+                    mModelView.LoadAnyAnimation( animation );
                     break;
 
                 case Mesh mesh:

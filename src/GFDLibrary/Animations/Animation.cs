@@ -33,6 +33,8 @@ namespace GFDLibrary.Animations
 
         public bool IsCatherineFullBodyData { get; set; } = false;
 
+        public bool IsBlendAnimation { get; set; } = false;
+
         // 00
         public AnimationFlags Flags { get; set; }
 

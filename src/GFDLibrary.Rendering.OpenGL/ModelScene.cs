@@ -11,6 +11,7 @@ using GFDLibrary.Textures;
 using OpenTK.Mathematics;
 using OpenTK.Graphics.OpenGL4;
 using GFDLibrary.Animations;
+using GFDLibrary.Effects;
 using GFDLibrary.Models;
 using Color = System.Drawing.Color;
 using Quaternion = OpenTK.Mathematics.Quaternion;
@@ -78,7 +79,9 @@ namespace GFDLibrary.Rendering.OpenGL
 
         public Animation Animation { get; private set; }
 
-        public bool IsAnimationLoaded => Animation != null;
+        public Animation BlendAnimation { get; private set; }
+
+        public bool IsAnimationLoaded => Animation != null || BlendAnimation != null;
 
         [DesignerSerializationVisibility( DesignerSerializationVisibility.Hidden )]
         public AnimationPlaybackState AnimationPlayback
@@ -100,8 +103,11 @@ namespace GFDLibrary.Rendering.OpenGL
                     case AnimationPlaybackState.Paused:
                         break;
                     case AnimationPlaybackState.Playing:
-                        if ( mModel?.Animation == null && IsAnimationLoaded )
+                        if ( mModel?.Animation == null && Animation != null )
                             mModel?.LoadAnimation( Animation );
+
+                        if ( mModel?.BlendAnimation == null && BlendAnimation != null )
+                            mModel?.LoadBlendAnimation( BlendAnimation );
                         break;
                 }
 
@@ -320,6 +326,17 @@ namespace GFDLibrary.Rendering.OpenGL
         //    }
         //}
 
+        /// <summary>
+        /// Runs an Epl attachment through the model and says whether it produced anything to
+        /// draw. Most leaves describe particles and post effects, which get the placeholder.
+        /// </summary>
+        private bool AddEplMeshes( Action add )
+        {
+            var before = mModel.Nodes.Sum( x => x.Meshes.Count );
+            add();
+            return mModel.Nodes.Sum( x => x.Meshes.Count ) > before;
+        }
+
         private void DrawSphere( Vector3 center, float radius, int latitudeSegments = 20, int longitudeSegments = 20 )
         {
             List<float> vertices = new List<float>();
@@ -472,7 +489,13 @@ namespace GFDLibrary.Rendering.OpenGL
                             break;
 
                         case NodeAttachmentType.Epl:
-                            glNode.Meshes.Add( mEplPrimitive.Instantiate( true, true, PrimitiveMesh.DefaultColor ) );
+                            if ( !AddEplMeshes( () => mModel.AddEplNodes( attachment.GetValue<Epl>(), glNode ) ) )
+                                glNode.Meshes.Add( mEplPrimitive.Instantiate( true, true, PrimitiveMesh.DefaultColor ) );
+                            break;
+
+                        case NodeAttachmentType.EplLeaf:
+                            if ( !AddEplMeshes( () => mModel.AddEplLeafNodes( attachment.GetValue<EplLeaf>(), glNode ) ) )
+                                glNode.Meshes.Add( mEplPrimitive.Instantiate( true, true, PrimitiveMesh.DefaultColor ) );
                             break;
                     }
                 }
@@ -489,6 +512,9 @@ namespace GFDLibrary.Rendering.OpenGL
                 LoadAnimation( Animation, AnimationPlayback != AnimationPlaybackState.Playing );
             }
 
+            if ( BlendAnimation != null )
+                LoadBlendAnimation( BlendAnimation, AnimationPlayback != AnimationPlaybackState.Playing );
+
             Invalidate();
         }
 
@@ -500,6 +526,31 @@ namespace GFDLibrary.Rendering.OpenGL
             AnimationLoaded?.Invoke( this, animation );
 
             if ( reset )
+            {
+                AnimationTime = 0;
+                AnimationPlayback = AnimationPlaybackState.Playing;
+            }
+        }
+
+        /// <summary>
+        /// A blend animation offsets whatever else is playing, so loading one does not restart
+        /// the timeline when a full animation is already running it.
+        /// </summary>
+        public void LoadBlendAnimation( Animation animation, bool reset = true )
+        {
+            BlendAnimation = animation;
+
+            if ( mModel != null )
+                animation.FixTargetIds( mModel.ModelPack.Model );
+
+            mModel?.LoadBlendAnimation( animation );
+
+            if ( animation.Duration > 0 )
+                AnimationLoaded?.Invoke( this, animation );
+
+            var hasActiveNonBlendAnimation = Animation != null && Animation.Duration > 0;
+
+            if ( reset && !hasActiveNonBlendAnimation )
             {
                 AnimationTime = 0;
                 AnimationPlayback = AnimationPlaybackState.Playing;
@@ -524,8 +575,15 @@ namespace GFDLibrary.Rendering.OpenGL
 
             if ( AnimationPlayback == AnimationPlaybackState.Playing )
             {
-                var nextAnimationTime = AnimationTime + ( deltaTime * Animation.Speed.GetValueOrDefault( 1f ) );
-                AnimationTime = nextAnimationTime >= Animation.Duration ? 0 : nextAnimationTime;
+                var activeAnimation = Animation != null && Animation.Duration > 0
+                    ? Animation
+                    : BlendAnimation != null && BlendAnimation.Duration > 0 ? BlendAnimation : null;
+
+                if ( activeAnimation != null )
+                {
+                    var nextAnimationTime = AnimationTime + ( deltaTime * activeAnimation.Speed.GetValueOrDefault( 1f ) );
+                    AnimationTime = nextAnimationTime >= activeAnimation.Duration ? 0 : nextAnimationTime;
+                }
             }
 
             action();

@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using GFDLibrary.Animations;
+using GFDLibrary.Effects;
 using GFDLibrary.Materials;
 using GFDLibrary.Models;
 using OpenTK.Mathematics;
@@ -22,6 +23,10 @@ namespace GFDLibrary.Rendering.OpenGL
         public Dictionary<string, GLBaseMaterial> Materials { get; }
 
         public Animation Animation { get; private set; }
+
+        public Animation BlendAnimation { get; private set; }
+
+        private readonly List<AnimationController> mMaterialControllers = new();
 
         public GLModel( ModelPack modelPack, MaterialTextureCreator textureCreator )
         {
@@ -44,9 +49,146 @@ namespace GFDLibrary.Rendering.OpenGL
                     if ( attachment.Type != NodeAttachmentType.Mesh )
                         continue;
 
-                    var glMesh = new GLMesh( attachment.GetValue<Mesh>(), glNode.Node.WorldTransform, modelPack.Model.Bones, Nodes, Materials );
+                    var glMesh = new GLMesh( attachment.GetValue<Mesh>(), glNode.Node.WorldTransform, modelPack.Model.Bones, Nodes, Materials, modelPack.Version );
                     glNode.Meshes.Add( glMesh );
                 }
+            }
+        }
+
+        /// <summary>
+        /// Walks an Epl attachment and hangs whatever it can draw off the node it is attached to.
+        /// Only leaves carrying an embedded model are drawable; the rest describe particles and
+        /// post effects that nothing here simulates.
+        /// </summary>
+        public void AddEplNodes( Epl epl, GLNode parentGlNode )
+        {
+            foreach ( var child in epl.RootNode.Children )
+                AddEplNodeRecursive( child, parentGlNode );
+
+            if ( epl.RootNode.HasAttachments )
+                AddEplNodeAttachments( epl.RootNode, parentGlNode );
+        }
+
+        public void AddEplLeafNodes( EplLeaf eplLeaf, GLNode glNode ) => AddEplLeafModel( eplLeaf, glNode );
+
+        private void AddEplNodeRecursive( Node eplNode, GLNode parentGlNode )
+        {
+            var glNode = Attach( eplNode, parentGlNode );
+
+            AddEplNodeAttachments( eplNode, glNode );
+
+            foreach ( var child in eplNode.Children )
+                AddEplNodeRecursive( child, glNode );
+        }
+
+        private void AddEplNodeAttachments( Node eplNode, GLNode glNode )
+        {
+            if ( !eplNode.HasAttachments )
+                return;
+
+            foreach ( var attachment in eplNode.Attachments )
+            {
+                switch ( attachment.Type )
+                {
+                    case NodeAttachmentType.Mesh:
+                        glNode.Meshes.Add( new GLMesh( attachment.GetValue<Mesh>(), glNode.WorldTransform, ModelPack.Model.Bones, Nodes, Materials, ModelPack.Version ) );
+                        break;
+
+                    case NodeAttachmentType.Epl:
+                        AddEplNodes( attachment.GetValue<Epl>(), glNode );
+                        break;
+
+                    case NodeAttachmentType.EplLeaf:
+                        AddEplLeafModel( attachment.GetValue<EplLeaf>(), glNode );
+                        break;
+                }
+            }
+        }
+
+        private void AddEplLeafModel( EplLeaf eplLeaf, GLNode attachmentGlNode )
+        {
+            var embeddedModelPack = TryLoadModelPackFromEplLeaf( eplLeaf );
+            if ( embeddedModelPack == null )
+                return;
+
+            if ( embeddedModelPack.Materials != null && embeddedModelPack.Textures != null )
+            {
+                foreach ( var pair in embeddedModelPack.Materials )
+                {
+                    if ( Materials.ContainsKey( pair.Key ) )
+                        continue;
+
+                    Materials[pair.Key] = GLBaseMaterial.CreateGLMaterial( pair.Value, ( material, textureName ) =>
+                        embeddedModelPack.Textures.TryGetTexture( textureName, out var texture ) ? new GLTexture( texture ) : null );
+                }
+            }
+
+            var embeddedRootNode = embeddedModelPack.Model.RootNode;
+
+            if ( embeddedRootNode.HasAttachments )
+                AddEmbeddedNodeAttachments( embeddedRootNode, attachmentGlNode, embeddedModelPack );
+
+            foreach ( var child in embeddedRootNode.Children )
+                AddEmbeddedNodeRecursive( child, attachmentGlNode, embeddedModelPack );
+        }
+
+        private void AddEmbeddedNodeRecursive( Node embeddedNode, GLNode parentGlNode, ModelPack embeddedModelPack )
+        {
+            var glNode = Attach( embeddedNode, parentGlNode );
+
+            AddEmbeddedNodeAttachments( embeddedNode, glNode, embeddedModelPack );
+
+            foreach ( var child in embeddedNode.Children )
+                AddEmbeddedNodeRecursive( child, glNode, embeddedModelPack );
+        }
+
+        private void AddEmbeddedNodeAttachments( Node embeddedNode, GLNode glNode, ModelPack embeddedModelPack )
+        {
+            if ( !embeddedNode.HasAttachments )
+                return;
+
+            foreach ( var attachment in embeddedNode.Attachments )
+            {
+                if ( attachment.Type == NodeAttachmentType.Mesh )
+                    glNode.Meshes.Add( new GLMesh( attachment.GetValue<Mesh>(), glNode.WorldTransform, embeddedModelPack.Model.Bones, Nodes, Materials, embeddedModelPack.Version ) );
+            }
+        }
+
+        /// <summary>
+        /// Adds a node under a parent, working its world transform out from the parent chain we
+        /// are building rather than the one the node came from.
+        /// </summary>
+        private GLNode Attach( Node node, GLNode parentGlNode )
+        {
+            var glNode = new GLNode( node ) { Parent = parentGlNode };
+
+            var transform = Matrix4x4.CreateFromQuaternion( node.Rotation ) * Matrix4x4.CreateScale( node.Scale );
+            transform.Translation = node.Translation;
+
+            glNode.CurrentTransform = transform;
+            glNode.WorldTransform = glNode.CurrentTransform * parentGlNode.WorldTransform;
+
+            Nodes.Add( glNode );
+            return glNode;
+        }
+
+        private static ModelPack TryLoadModelPackFromEplLeaf( EplLeaf eplLeaf )
+        {
+            if ( eplLeaf.Data is not EplModel eplModel )
+                return null;
+
+            if ( eplModel.HasEmbeddedFile != 1 || eplModel.EmbeddedFile?.Data == null || eplModel.EmbeddedFile.Data.Length == 0 )
+                return null;
+
+            try
+            {
+                using var stream = new System.IO.MemoryStream( eplModel.EmbeddedFile.Data );
+                return Resource.Load<ModelPack>( stream );
+            }
+            catch ( Exception exception )
+            {
+                Trace.TraceWarning( $"Epl leaf \"{eplLeaf.Name}\" holds a file that is not a model pack: {exception.Message}" );
+                return null;
             }
         }
 
@@ -60,14 +202,49 @@ namespace GFDLibrary.Rendering.OpenGL
                 glNode.Controllers.AddRange( animation.Controllers.Where( x => x.TargetKind == TargetKind.Node &&
                                                                                x.TargetName == glNode.Node.Name ) );
             }
+
+            mMaterialControllers.Clear();
+            mMaterialControllers.AddRange( animation.Controllers.Where( x => x.TargetKind == TargetKind.Material ) );
+        }
+
+        /// <summary>
+        /// A blend animation plays on top of whatever is already posing the model, so its
+        /// controllers are kept apart from the main ones.
+        /// </summary>
+        public void LoadBlendAnimation( Animation animation )
+        {
+            BlendAnimation = animation;
+
+            foreach ( var glNode in Nodes )
+            {
+                glNode.BlendControllers.Clear();
+                glNode.BlendControllers.AddRange( animation.Controllers.Where( x => x.TargetKind == TargetKind.Node &&
+                                                                                    x.TargetName == glNode.Node.Name ) );
+            }
         }
 
         public void UnloadAnimation()
         {
             Animation = null;
+            BlendAnimation = null;
+
+            mMaterialControllers.Clear();
+
+            foreach ( var material in Materials.Values )
+            {
+                material.AnimatedAlpha = 1.0f;
+                material.UVOffset = System.Numerics.Vector2.Zero;
+                material.UVScale = System.Numerics.Vector2.One;
+                material.UVRotation = 0f;
+                material.UV1Offset = System.Numerics.Vector2.Zero;
+                material.UV1Scale = System.Numerics.Vector2.One;
+                material.UV1Rotation = 0f;
+            }
 
             foreach ( var glNode in Nodes )
             {
+                glNode.BlendControllers.Clear();
+
                 // Calculate current transform
                 var transform = Matrix4x4.CreateFromQuaternion( glNode.Node.Rotation ) * Matrix4x4.CreateScale( glNode.Node.Scale );
                 transform.Translation   = glNode.Node.Translation;
@@ -86,7 +263,7 @@ namespace GFDLibrary.Rendering.OpenGL
                     var oldGlMesh = glNode.Meshes[i];
                     if (oldGlMesh.Mesh != null)
                     {
-                        glNode.Meshes[i] = new GLMesh( oldGlMesh.Mesh, glNode.WorldTransform, ModelPack.Model.Bones, Nodes, Materials );
+                        glNode.Meshes[i] = new GLMesh( oldGlMesh.Mesh, glNode.WorldTransform, ModelPack.Model.Bones, Nodes, Materials, ModelPack.Version );
                     }
 
                     oldGlMesh.Dispose();
@@ -178,7 +355,7 @@ namespace GFDLibrary.Rendering.OpenGL
 
         public void Draw( DrawContext context )
         {
-            if ( Animation != null )
+            if ( Animation != null || BlendAnimation != null )
                 AnimateNodes( context.AnimationTime );
             context.ShaderRegistry.mDefaultShader.Use();
             context.ShaderRegistry.mDefaultShader.SetUniform( "uView", context.Camera.View );
@@ -284,7 +461,7 @@ namespace GFDLibrary.Rendering.OpenGL
 
                                 if ( nextPrsKey != null )
                                 {
-                                    InterpolateKeys( animationTime, layer, ref rotation, ref translation, ref scale, prsKey, nextPrsKey );
+                                    InterpolateKeys( animationTime, layer, ref rotation, ref translation, ref scale, prsKey, nextPrsKey, Animation.Duration );
                                 }
                                 else
                                 {
@@ -306,8 +483,54 @@ namespace GFDLibrary.Rendering.OpenGL
                     }
                 }
 
+                foreach ( var blendController in glNode.BlendControllers )
+                {
+                    foreach ( var layer in blendController.Layers )
+                    {
+                        Key curKey;
+                        Key nextKey = null;
+
+                        // Past the end of the blend animation the last key is held, rather than
+                        // wrapping round and interpolating towards the start again.
+                        if ( BlendAnimation.Duration > 0 && animationTime >= BlendAnimation.Duration )
+                            curKey = layer.Keys.LastOrDefault();
+                        else
+                            (curKey, nextKey) = GetCurrentAndNextKeys( layer, animationTime );
+
+                        if ( curKey == null || !layer.HasPRSKeyFrames )
+                            continue;
+
+                        var prsKey = ( PRSKey )curKey;
+                        var nextPrsKey = ( PRSKey )nextKey;
+
+                        if ( nextPrsKey != null )
+                        {
+                            var offsetRotation = Quaternion.Identity;
+                            var offsetTranslation = Vector3.Zero;
+                            var offsetScale = Vector3.Zero;
+
+                            InterpolateKeys( animationTime, layer, ref offsetRotation, ref offsetTranslation, ref offsetScale, prsKey, nextPrsKey, BlendAnimation.Duration );
+
+                            translation += offsetTranslation;
+                            rotation = Quaternion.Concatenate( offsetRotation, rotation );
+                            scale += offsetScale;
+                        }
+                        else
+                        {
+                            if ( prsKey.HasPosition )
+                                translation += prsKey.Position * layer.PositionScale;
+
+                            if ( prsKey.HasRotation )
+                                rotation = Quaternion.Concatenate( prsKey.Rotation, rotation );
+
+                            if ( prsKey.HasScale )
+                                scale += prsKey.Scale * layer.ScaleScale;
+                        }
+                    }
+                }
+
                 // Calculate current transform
-                var transform = Matrix4x4.CreateFromQuaternion( rotation ) * Matrix4x4.CreateScale( glNode.Node.Scale );
+                var transform = Matrix4x4.CreateFromQuaternion( rotation ) * Matrix4x4.CreateScale( scale );
                 transform.Translation   = translation;
                 glNode.CurrentTransform = transform;
 
@@ -315,15 +538,146 @@ namespace GFDLibrary.Rendering.OpenGL
                 glNode.WorldTransform =
                     glNode.Parent == null ? glNode.CurrentTransform : glNode.CurrentTransform * glNode.Parent.WorldTransform;
             }
+
+            AnimateMaterials( animationTime );
         }
 
-        private void InterpolateKeys( double animationTime, AnimationLayer layer, ref Quaternion rotation, ref Vector3 translation, ref Vector3 scale, PRSKey prsKey, PRSKey nextPrsKey )
+        /// <summary>
+        /// Applies the opacity and uv transform tracks to the materials they name. Both are
+        /// behind a material flag, which the game checks before it animates either.
+        /// </summary>
+        private void AnimateMaterials( double animationTime )
+        {
+            const int DiffusivityFlag = 1 << 6;
+            const int UVAnimationFlag = 1 << 7;
+
+            foreach ( var controller in mMaterialControllers )
+            {
+                if ( !Materials.TryGetValue( controller.TargetName, out var material ) )
+                    continue;
+
+                foreach ( var layer in controller.Layers )
+                {
+                    if ( layer.HasSingleKeyFrames && layer.KeyType == KeyType.Opacity )
+                    {
+                        if ( ( material.MatFlags & DiffusivityFlag ) == 0 )
+                            continue;
+
+                        AnimateOpacity( material, layer, animationTime );
+                    }
+                    else if ( layer.HasSingle5KeyFrames )
+                    {
+                        if ( ( material.MatFlags & UVAnimationFlag ) == 0 )
+                            continue;
+
+                        AnimateUVTransform( material, layer, animationTime );
+                    }
+                }
+            }
+        }
+
+        private void AnimateOpacity( GLBaseMaterial material, AnimationLayer layer, double animationTime )
+        {
+            var (curKey, nextKey) = GetCurrentAndNextKeys( layer, animationTime );
+
+            if ( curKey is not SingleKey singleKey )
+                return;
+
+            var alpha = singleKey.Value;
+
+            if ( nextKey is SingleKey nextSingleKey )
+            {
+                var blend = BlendBetween( singleKey.Time, nextSingleKey.Time, animationTime );
+                if ( blend.HasValue )
+                    alpha = singleKey.Value + ( nextSingleKey.Value - singleKey.Value ) * blend.Value;
+            }
+
+            material.AnimatedAlpha = alpha;
+        }
+
+        private void AnimateUVTransform( GLBaseMaterial material, AnimationLayer layer, double animationTime )
+        {
+            var (curKey, nextKey) = GetCurrentAndNextKeys( layer, animationTime );
+
+            if ( curKey is not Single5Key key )
+                return;
+
+            var offsetX = key.UVOffsetX;
+            var offsetY = key.UVOffsetY;
+            var scaleX = key.UVScaleX;
+            var scaleY = key.UVScaleY;
+            var rotation = key.UVRotation;
+
+            // Only the two interpolating key types blend towards the next key; the NoInterp
+            // pair hold their value until the next one starts.
+            var interpolates = layer.KeyType == KeyType.UV0Transform || layer.KeyType == KeyType.UV1Transform;
+
+            if ( interpolates && nextKey is Single5Key nextKeyValue )
+            {
+                var blend = BlendBetween( key.Time, nextKeyValue.Time, animationTime );
+
+                if ( blend.HasValue )
+                {
+                    offsetX = key.UVOffsetX + ( nextKeyValue.UVOffsetX - key.UVOffsetX ) * blend.Value;
+                    offsetY = key.UVOffsetY + ( nextKeyValue.UVOffsetY - key.UVOffsetY ) * blend.Value;
+                    scaleX = key.UVScaleX + ( nextKeyValue.UVScaleX - key.UVScaleX ) * blend.Value;
+                    scaleY = key.UVScaleY + ( nextKeyValue.UVScaleY - key.UVScaleY ) * blend.Value;
+                    rotation = key.UVRotation + ( nextKeyValue.UVRotation - key.UVRotation ) * blend.Value;
+                }
+            }
+
+            if ( layer.KeyType == KeyType.UV1Transform || layer.KeyType == KeyType.UV1TransformNoInterp )
+            {
+                material.UV1Offset = new System.Numerics.Vector2( offsetX, offsetY );
+                material.UV1Scale = new System.Numerics.Vector2( scaleX, scaleY );
+                material.UV1Rotation = rotation;
+            }
+            else
+            {
+                material.UVOffset = new System.Numerics.Vector2( offsetX, offsetY );
+                material.UVScale = new System.Numerics.Vector2( scaleX, scaleY );
+                material.UVRotation = rotation;
+            }
+        }
+
+        /// <summary>
+        /// How far between two key times the animation has got, or null when the pair gives
+        /// nothing to blend over. A next key earlier than the current one has wrapped past the
+        /// end of the animation.
+        /// </summary>
+        private float? BlendBetween( float keyTime, float nextKeyTime, double animationTime )
+        {
+            var nextTime = nextKeyTime < keyTime ? nextKeyTime + Animation.Duration : nextKeyTime;
+
+            if ( nextTime <= keyTime )
+                return null;
+
+            return ( float )( ( animationTime - keyTime ) / ( nextTime - keyTime ) );
+        }
+
+        private static void InterpolateKeys( double animationTime, AnimationLayer layer, ref Quaternion rotation, ref Vector3 translation, ref Vector3 scale, PRSKey prsKey, PRSKey nextPrsKey, float duration )
         {
             var nextTime = ( nextPrsKey.Time < prsKey.Time
-                ? ( nextPrsKey.Time + Animation.Duration )
+                ? ( nextPrsKey.Time + duration )
                 : nextPrsKey.Time );
 
-            var blend = ( float ) ( animationTime / nextTime );
+            var segmentLength = nextTime - prsKey.Time;
+
+            if ( segmentLength <= 0 )
+            {
+                if ( prsKey.HasRotation )
+                    rotation = prsKey.Rotation;
+
+                if ( prsKey.HasPosition )
+                    translation = prsKey.Position * layer.PositionScale;
+
+                if ( prsKey.HasScale )
+                    scale = prsKey.Scale * layer.ScaleScale;
+
+                return;
+            }
+
+            var blend = ( float ) ( ( animationTime - prsKey.Time ) / segmentLength );
 
             if ( prsKey.HasRotation )
                 rotation = Quaternion.Slerp( prsKey.Rotation, nextPrsKey.Rotation, blend );

@@ -52,6 +52,24 @@ namespace GFDStudio.Avalonia
             RequestNextFrameRendering();
         }
 
+        public void LoadBlendAnimation( Animation animation, bool reset = true )
+        {
+            mScene?.LoadBlendAnimation( animation, reset );
+            RequestNextFrameRendering();
+        }
+
+        /// <summary>
+        /// Sends the animation down whichever path suits it, since a blend animation offsets a
+        /// pose rather than replacing it.
+        /// </summary>
+        public void LoadAnyAnimation( Animation animation, bool reset = true )
+        {
+            if ( animation.IsBlendAnimation )
+                LoadBlendAnimation( animation, reset );
+            else
+                LoadAnimation( animation, reset );
+        }
+
         public bool HasModel => mLoadedModel != null || mPendingModel != null;
 
         public Animation Animation => mScene?.Animation;

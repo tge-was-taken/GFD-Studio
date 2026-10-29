@@ -11,6 +11,7 @@ namespace GFDLibrary.Rendering.OpenGL
         public GLNode Parent { get; set; }
         public Node Node { get; set; }
         public List<AnimationController> Controllers { get; }
+        public List<AnimationController> BlendControllers { get; }
         public Matrix4x4 CurrentTransform { get; set; }
         public Matrix4x4 WorldTransform { get; set; }
         public List<GLMesh> Meshes { get; }
@@ -22,6 +23,7 @@ namespace GFDLibrary.Rendering.OpenGL
             WorldTransform = node.WorldTransform;
             Meshes = new List<GLMesh>();
             Controllers = new List<AnimationController>();
+            BlendControllers = new List<AnimationController>();
         }
 
         #region IDisposable Support

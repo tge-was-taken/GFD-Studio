@@ -53,6 +53,7 @@ namespace GFDLibrary.Animations
             {
                 // Try to read blend animations
                 BlendAnimations = ReadAnimations( reader );
+                MarkBlendAnimations();
             }
             //catch ( Exception )
             //{
@@ -274,6 +275,20 @@ namespace GFDLibrary.Animations
 
             MergeAnimationLists(Animations, other.Animations);
             MergeAnimationLists(BlendAnimations, other.BlendAnimations);
+            MarkBlendAnimations();
+        }
+
+        /// <summary>
+        /// A blend animation holds an offset from the pose rather than the pose itself, which
+        /// the renderer has to know before it applies one.
+        /// </summary>
+        private void MarkBlendAnimations()
+        {
+            if ( BlendAnimations == null )
+                return;
+
+            foreach ( var animation in BlendAnimations )
+                animation.IsBlendAnimation = true;
         }
 
         private static void MergeAnimationLists(List<Animation> baseList, List<Animation> otherList)
