@@ -14,11 +14,13 @@ namespace GFDLibrary.Conversion.FbxSdk
     {
         private readonly IntPtr mScene;
         private readonly IReadOnlyDictionary<string, IntPtr> mNodesByName;
+        private readonly bool mAlignEulers;
 
-        public FbxSdkAnimationExporter( IntPtr scene, IReadOnlyDictionary<string, IntPtr> nodesByName )
+        public FbxSdkAnimationExporter( IntPtr scene, IReadOnlyDictionary<string, IntPtr> nodesByName, bool alignEulers = true )
         {
             mScene = scene;
             mNodesByName = nodesByName;
+            mAlignEulers = alignEulers;
         }
 
         public void Export( AnimationPack pack )
@@ -78,6 +80,8 @@ namespace GFDLibrary.Conversion.FbxSdk
             var scaleScale = source.ScaleScale;
             var euler = new double[3];
             var quaternion = new double[4];
+            var previousEuler = new double[3];
+            var hasPreviousEuler = false;
 
             foreach ( var key in keys )
             {
@@ -97,6 +101,10 @@ namespace GFDLibrary.Conversion.FbxSdk
                     // The SDK's own conversion, so the angles land in the order and units
                     // LclRotation expects.
                     FbxSdk.QuaternionToEulerDegrees( quaternion, euler );
+
+                    if ( mAlignEulers )
+                        AlignEuler( euler, previousEuler, ref hasPreviousEuler );
+
                     rotation.Add( key.Time, (float)euler[0], (float)euler[1], (float)euler[2] );
                 }
 
@@ -110,6 +118,23 @@ namespace GFDLibrary.Conversion.FbxSdk
             translation.Close();
             rotation.Close();
             scale.Close();
+        }
+
+        /// <summary>
+        /// Shifts each angle by whole turns so it sits next to the one before it. Without this a
+        /// track crossing 180 degrees reads as a jump to -180, and anything interpolating the
+        /// curve, 3ds Max included, spins the bone the long way round.
+        /// </summary>
+        private static void AlignEuler( double[] euler, double[] previousEuler, ref bool hasPreviousEuler )
+        {
+            if ( hasPreviousEuler )
+            {
+                for ( var i = 0; i < 3; i++ )
+                    euler[i] += 360.0 * Math.Round( ( previousEuler[i] - euler[i] ) / 360.0 );
+            }
+
+            Array.Copy( euler, previousEuler, 3 );
+            hasPreviousEuler = true;
         }
 
         /// <summary>

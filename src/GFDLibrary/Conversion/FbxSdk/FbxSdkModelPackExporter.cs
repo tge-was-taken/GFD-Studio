@@ -14,6 +14,12 @@ namespace GFDLibrary.Conversion.FbxSdk
 {
     public sealed class FbxSdkModelPackExporterConfig
     {
+        /// <summary>
+        /// Unwraps the exported euler angles so consecutive keys never jump a whole turn, which
+        /// is what makes 3ds Max interpolate them the short way round. Turn it off to get the
+        /// angles exactly as the conversion produced them.
+        /// </summary>
+        public bool AlignEulers { get; set; } = true;
     }
 
     public class FbxSdkModelPackExporterException : Exception
@@ -85,7 +91,7 @@ namespace GFDLibrary.Conversion.FbxSdk
             mTextureBaseDirectoryPath = Path.Combine( baseDirectoryPath ?? string.Empty, $"{fileName}_Textures" );
 
             ConvertToFbxScene( modelPack );
-            ExportAnimations( modelPack.AnimationPack );
+            ExportAnimations( modelPack.AnimationPack, config );
             ExportFbxScene();
         }
 
@@ -473,7 +479,7 @@ namespace GFDLibrary.Conversion.FbxSdk
         /// <summary>
         /// Animations go in as a take each, keyed against the nodes already in the scene.
         /// </summary>
-        private void ExportAnimations( AnimationPack pack )
+        private void ExportAnimations( AnimationPack pack, FbxSdkModelPackExporterConfig config )
         {
             var count = ( pack?.Animations?.Count ?? 0 ) + ( pack?.BlendAnimations?.Count ?? 0 );
 
@@ -488,7 +494,7 @@ namespace GFDLibrary.Conversion.FbxSdk
                     byName[pair.Key.Name] = pair.Value;
             }
 
-            new FbxSdkAnimationExporter( mScene, byName ).Export( pack );
+            new FbxSdkAnimationExporter( mScene, byName, config.AlignEulers ).Export( pack );
         }
 
         private void ExportFbxScene()
