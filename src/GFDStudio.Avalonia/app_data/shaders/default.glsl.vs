@@ -25,6 +25,10 @@ out vec4 fColor0;
 uniform mat4 uModel;
 uniform mat4 uView;
 uniform mat4 uProjection;
+uniform vec4 uUVTransform;
+uniform float uUVRotation;
+uniform vec4 uUV1Transform;
+uniform float uUV1Rotation;
 
 
 // skinning
@@ -70,8 +74,18 @@ void main() {
     fPosition = (uModelView * vec4(position, 1.0)).xyz;
     fNormal = normal;
     fFacingNormal = (uModelView * vec4(normal, 0.0)).xyz;
-    fTex0 = vTex0;
-    fTex1 = vTex1;
+    // UV animation: scale, then rotate, then offset, starting from a 0,0 origin.
+    vec2 uv0 = vTex0 * uUVTransform.zw;
+    float s0 = sin(uUVRotation);
+    float c0 = cos(uUVRotation);
+    uv0 = vec2(uv0.x * c0 - uv0.y * s0, uv0.x * s0 + uv0.y * c0);
+    fTex0 = uv0 + vec2( -uUVTransform.x, uUVTransform.y );
+
+    vec2 uv1 = vTex1 * uUV1Transform.zw;
+    float s1 = sin(uUV1Rotation);
+    float c1 = cos(uUV1Rotation);
+    uv1 = vec2(uv1.x * c1 - uv1.y * s1, uv1.x * s1 + uv1.y * c1);
+    fTex1 = uv1 + vec2( -uUV1Transform.x, uUV1Transform.y );
     fTex2 = vTex2;
     fColor0 = vColor0;
     gl_Position = uProjection * uModelView * vec4(position, 1.0);

@@ -47,6 +47,23 @@ namespace GFDLibrary.Rendering.OpenGL
         public bool RenderWireframe { get; set; }
         public bool EnableBackfaceCulling { get; set; }
 
+        // Set per frame from the material animation currently playing.
+        public float AnimatedAlpha { get; set; } = 1.0f;
+        public System.Numerics.Vector2 UVOffset { get; set; }
+        public System.Numerics.Vector2 UVScale { get; set; } = System.Numerics.Vector2.One;
+        public float UVRotation { get; set; }
+        public System.Numerics.Vector2 UV1Offset { get; set; }
+        public System.Numerics.Vector2 UV1Scale { get; set; } = System.Numerics.Vector2.One;
+        public float UV1Rotation { get; set; }
+
+        protected void BindUVTransforms( GLShaderProgram shaderProgram )
+        {
+            shaderProgram.SetUniform( "uUVTransform", new Vector4( UVOffset.X, UVOffset.Y, UVScale.X, UVScale.Y ) );
+            shaderProgram.SetUniform( "uUVRotation", UVRotation );
+            shaderProgram.SetUniform( "uUV1Transform", new Vector4( UV1Offset.X, UV1Offset.Y, UV1Scale.X, UV1Scale.Y ) );
+            shaderProgram.SetUniform( "uUV1Rotation", UV1Rotation );
+        }
+
         public GLBaseMaterial()
         {
         }
@@ -254,6 +271,7 @@ namespace GFDLibrary.Rendering.OpenGL
         public bool HasType1 { get; set; } = false;
         public bool HasType4 { get; set; } = false;
         public int Type0Flags { get; set; }
+        public bool HasType8 { get; set; } = false;
 
         public GLP5Material()
         {
@@ -303,19 +321,40 @@ namespace GFDLibrary.Rendering.OpenGL
                 ToonLightThreshold = type4.LightThreshold;
                 ToonLightFactor = type4.LightFactor;
             }
+
+            // Catherine Full Body puts its toon lighting in a type 8 attribute, which the
+            // Persona path can draw once it is told where to read it from.
+            if ( ResourceVersion.TreatAsCatherineFullBody && material.Attributes != null )
+            {
+                HasType8 = material.Attributes.Any( x => x.AttributeType == MaterialAttributeType.Type8 );
+
+                if ( HasType8 )
+                {
+                    HasType1 = true;
+                    MaterialAttributeType8 type8 = (MaterialAttributeType8)material.Attributes.Single(
+                        x => x.AttributeType == MaterialAttributeType.Type8 );
+                    ToonLightColor = new Vector4( type8.Field00.X, type8.Field00.Y, type8.Field00.Z, type8.Field0C );
+                    ToonLightThreshold = type8.Field10;
+                    ToonLightFactor = type8.Field14;
+                }
+            }
         }
 
         public override void Bind( GLShaderProgram shaderProgram )
         {
             base.Bind( shaderProgram );
             shaderProgram.SetUniform( "uMatAmbient", Ambient );
-            shaderProgram.SetUniform( "uMatDiffuse", Diffuse );
+
+            var animatedDiffuse = Diffuse;
+            animatedDiffuse.W *= AnimatedAlpha;
+            shaderProgram.SetUniform( "uMatDiffuse", animatedDiffuse );
             shaderProgram.SetUniform( "uMatSpecular", Specular );
             shaderProgram.SetUniform( "uMatEmissive", Emissive );
             shaderProgram.SetUniform( "uMatReflectivity", Reflectivity );
             shaderProgram.SetUniform( "uMatHasType0", HasType0 );
             shaderProgram.SetUniform( "uMatHasType1", HasType1 );
             shaderProgram.SetUniform( "uMatHasType4", HasType4 );
+            shaderProgram.SetUniform( "uMatHasType8", HasType8 );
             shaderProgram.SetUniform( "uMatType0Flags", Type0Flags );
             shaderProgram.SetUniform( "uMatToonLightColor", ToonLightColor );
             shaderProgram.SetUniform( "uMatToonLightFactor", ToonLightFactor );
@@ -323,8 +362,9 @@ namespace GFDLibrary.Rendering.OpenGL
             shaderProgram.SetUniform( "uMatToonShadowBrightness", ToonShadowBrightness );
             shaderProgram.SetUniform( "uMatToonShadowThreshold", ToonShadowThreshold );
             shaderProgram.SetUniform( "uMatToonShadowFactor", ToonShadowFactor );
+            BindUVTransforms( shaderProgram );
         }
-        public override bool IsMaterialTransparent() => DrawMethod != 0 || ( DrawMethod == 0 && Diffuse.W < 1.0 );
+        public override bool IsMaterialTransparent() => DrawMethod != 0 || ( DrawMethod == 0 && Diffuse.W * AnimatedAlpha < 1.0 );
     }
 
     public class GLMetaphorMaterial : GLBaseMaterial
@@ -353,6 +393,8 @@ namespace GFDLibrary.Rendering.OpenGL
                     shaderProgram.SetUniform( prop.GetCustomAttribute<ShaderUniformAttribute>().Uniform, (int)prop.GetValue( ParameterSet ) );
                 }
             }
+
+            BindUVTransforms( shaderProgram );
         }
         public override bool IsMaterialTransparent() => ParameterSet.IsMaterialTransparent();
     }
