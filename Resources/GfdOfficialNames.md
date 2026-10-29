@@ -8,10 +8,31 @@ Hex-Rays type information for the whole `gfd` runtime.
 
 ## What has been applied
 
-The renames carried into the code so far are the ten texture slots and their flags, the
-material `constant`, `culling` and multi blend mode, and the toon attribute thresholds. Each
-one keeps its old name as a `[FormerName]` alias, so YAML written before the rename still
-loads. Everything else below is still named `Field*` or `Bit*` in the code.
+Carried into the code so far:
+
+- The ten material texture slots and their flags, the material `constant`, `culling` and
+ multi blend mode, and the toon attribute thresholds.
+- The key type values and the material and uv key type names.
+- The two float triples on `Light`, which the old code shared between light types.
+- The members of ten Epl leaf classes: Camera, FlashPolygon, GlitterPolygon, Helper, Light,
+ LightningPolygon, Model, Particle, TrajectoryPolygon and WindPolygon. Only the members
+ common to every variant were done; the per variant tables below are still `Field*`.
+
+Each rename keeps its old name as a `[FormerName]` alias, so YAML written before it still
+loads.
+
+Not applied yet, in rough order of size:
+
+- `EplPostEffect` and its eight variants, which are fully documented here and entirely
+ untouched in the code.
+- The per variant members of the Epl leaf classes listed above, plus `EplBoardPolygon`,
+ `EplCirclePolygon` and `EplLeafBase`.
+- `TextureMap`, `MaterialAttributeType3`, `KeyType22`, `AnimationBit29Data`,
+ `AnimationBit31Data` and `Camera`.
+
+As of this writing the library declares 532 properties still named `Field*` or `Bit*`, and
+the tables below give an official name for roughly 394 of them, 365 of those in the Epl
+sections. The research is further along than the code is.
 
 ## What the evidence is
 
