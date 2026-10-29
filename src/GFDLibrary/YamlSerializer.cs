@@ -11,6 +11,14 @@ namespace GFDLibrary
 {
     public static class YamlSerializer
     {
+        /// <summary>
+        /// The layout of what we write. A file without the header is version 1, which is
+        /// everything written before members started being renamed into their official names.
+        /// </summary>
+        public const int FormatVersion = 2;
+
+        private const string FormatVersionKey = "FormatVersion";
+
         private static Lazy<ISerializer> sSerializer = new Lazy<ISerializer>( () =>
          {
              var builder = new SerializerBuilder();
@@ -18,15 +26,19 @@ namespace GFDLibrary
              return builder.Build();
          } );
 
-        private static Lazy<IDeserializer> sDeserializer = new Lazy<IDeserializer>( () =>
+        private static readonly Lazy<IDeserializer> sDeserializer = new( () => BuildDeserializer( FormatVersion ) );
+
+        private static readonly Lazy<IDeserializer> sLegacyDeserializer = new( () => BuildDeserializer( 1 ) );
+
+        private static IDeserializer BuildDeserializer( int version )
         {
             var builder = new DeserializerBuilder()
                     .IgnoreUnmatchedProperties()
-                    .WithTypeInspector( inner => new FormerNameTypeInspector( inner ) )
+                    .WithTypeInspector( inner => new FormerNameTypeInspector( inner, version ) )
                     .WithTypeConverter( new FormerNameEnumConverter() );
             AddAbstractTypeTagMappings( ref builder, true );
             return builder.Build();
-        } );
+        }
 
         /// <summary>
         /// Maps a tag to each concrete resource type. Only the reader takes the tags a type used
@@ -67,19 +79,46 @@ namespace GFDLibrary
         {
             using ( var writer = File.CreateText( filePath ) )
             {
-                var str = sSerializer.Value.Serialize( o );
-                writer.Write( str );
+                // The header is its own document so the payload keeps whatever shape it has,
+                // which is not always a mapping.
+                writer.Write( $"{FormatVersionKey}: {FormatVersion}\n---\n" );
+                writer.Write( sSerializer.Value.Serialize( o ) );
             }
         }
 
         public static T LoadYamlFile<T>( string filePath ) where T : Resource
         {
-            using ( var reader = File.OpenText( filePath ) )
-            {
-                var str = reader.ReadToEnd().Replace('\t', ' ');
-                return sDeserializer.Value.Deserialize<T>( str );
-            }
+            var (version, body) = ReadBody( filePath );
+            return DeserializerFor( version ).Deserialize<T>( body );
         }
+
+        /// <summary>
+        /// Takes the header off the front, if there is one. A file without it predates the
+        /// header and is read under the older meanings.
+        /// </summary>
+        private static (int Version, string Body) ReadBody( string filePath )
+        {
+            var text = File.ReadAllText( filePath ).Replace( '\t', ' ' );
+            var firstBreak = text.IndexOf( '\n' );
+
+            if ( firstBreak < 0 )
+                return (1, text);
+
+            var firstLine = text[..firstBreak].TrimEnd( '\r' ).Trim();
+            if ( !firstLine.StartsWith( FormatVersionKey + ":", StringComparison.Ordinal ) ||
+                 !int.TryParse( firstLine[( FormatVersionKey.Length + 1 )..].Trim(), out var version ) )
+                return (1, text);
+
+            var rest = text[( firstBreak + 1 )..];
+            var secondBreak = rest.IndexOf( '\n' );
+            if ( secondBreak < 0 || rest[..secondBreak].TrimEnd( '\r' ).Trim() != "---" )
+                return (1, text);
+
+            return (version, rest[( secondBreak + 1 )..]);
+        }
+
+        private static IDeserializer DeserializerFor( int version )
+            => version >= 2 ? sDeserializer.Value : sLegacyDeserializer.Value;
 
         /// <summary>
         /// Lets a file written before a rename still find its property. Only reading goes
@@ -88,14 +127,24 @@ namespace GFDLibrary
         private sealed class FormerNameTypeInspector : ITypeInspector
         {
             private readonly ITypeInspector mInner;
+            private readonly int mVersion;
 
-            public FormerNameTypeInspector( ITypeInspector inner ) => mInner = inner;
+            public FormerNameTypeInspector( ITypeInspector inner, int version )
+            {
+                mInner = inner;
+                mVersion = version;
+            }
 
             public IEnumerable<IPropertyDescriptor> GetProperties( Type type, object container )
                 => mInner.GetProperties( type, container );
 
             public IPropertyDescriptor GetProperty( Type type, object container, string name, bool ignoreUnmatched )
             {
+                // A name that changed meaning rather than just spelling cannot be resolved by
+                // the former name map, because both spellings are still in use.
+                if ( mVersion < 2 && LegacyNames.For( type ).TryGetValue( name, out var legacy ) )
+                    name = legacy;
+
                 var found = mInner.GetProperty( type, container, name, true );
 
                 if ( found == null && FormerNames.For( type ).TryGetValue( name, out var current ) )

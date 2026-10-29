@@ -28,6 +28,55 @@ namespace GFDLibrary.Tests
             }
         }
 
+        /// <summary>
+        /// The leaf header's two numbers swapped names, so which one a file means depends on
+        /// the version it was written under rather than on the key alone.
+        /// </summary>
+        [TestMethod]
+        public void A_version_1_leaf_header_keeps_the_old_meanings()
+        {
+            var leaf = RoundtripYaml<Effects.EplLeaf>(
+                "Name: leaf\nData: !EplParticle\n  Header:\n    Type: 1\n    Field04: 2\n" );
+
+            var header = ( (Effects.EplParticle)leaf.Data ).Header;
+            Assert.AreEqual( 1u, header.Category, "the old Type is the category" );
+            Assert.AreEqual( 2u, header.Type, "the old Field04 is the variant" );
+        }
+
+        [TestMethod]
+        public void A_version_2_leaf_header_takes_the_keys_as_written()
+        {
+            var leaf = RoundtripYaml<Effects.EplLeaf>(
+                "FormatVersion: 2\n---\nName: leaf\nData: !EplParticle\n  Header:\n    Category: 1\n    Type: 2\n" );
+
+            var header = ( (Effects.EplParticle)leaf.Data ).Header;
+            Assert.AreEqual( 1u, header.Category );
+            Assert.AreEqual( 2u, header.Type );
+        }
+
+        [TestMethod]
+        public void Saving_writes_the_format_version_and_reads_back()
+        {
+            var path = Path.Combine( Path.GetTempPath(), Path.GetRandomFileName() + ".yml" );
+
+            try
+            {
+                var header = new Effects.EplLeafDataHeader { Category = 7, Type = 3 };
+                header.SaveYamlFile( path );
+
+                var text = File.ReadAllText( path );
+                StringAssert.StartsWith( text, $"FormatVersion: {YamlSerializer.FormatVersion}" );
+
+                var loaded = YamlSerializer.LoadYamlFile<Effects.EplLeafDataHeader>( path );
+                Assert.AreEqual( 7u, loaded.Category );
+                Assert.AreEqual( 3u, loaded.Type );
+            }
+            finally
+            {
+                File.Delete( path );
+            }
+        }
+
         [TestMethod]
         public void Former_class_name_still_loads_as_a_tag()
         {
