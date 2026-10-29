@@ -265,9 +265,6 @@ namespace GFDLibrary.Materials
 
     public sealed class MaterialAttributeType1 : MaterialAttribute
     {
-        // 0C
-        public float Field0C { get; set; }
-        
         // 10
         public Vector4 LightColor { get; set; }
 
@@ -422,43 +419,56 @@ namespace GFDLibrary.Materials
     public sealed class MaterialAttributeType3 : MaterialAttribute
     {
         // 0C
-        public float Field0C { get; set; }
+        [FormerName( "Field0C" )]
+        public float WaveLengthX { get; set; }
 
         // 10
-        public float Field10 { get; set; }
+        [FormerName( "Field10" )]
+        public float WaveLengthY { get; set; }
 
         // 14
-        public float Field14 { get; set; }
+        [FormerName( "Field14" )]
+        public float WaveLengthZ { get; set; }
 
         // 18
-        public float Field18 { get; set; }
+        [FormerName( "Field18" )]
+        public float AmplitudeX { get; set; }
 
         // 1C
-        public float Field1C { get; set; }
+        [FormerName( "Field1C" )]
+        public float AmplitudeY { get; set; }
 
         // 20
-        public float Field20 { get; set; }
+        [FormerName( "Field20" )]
+        public float AmplitudeZ { get; set; }
 
         // 24
-        public float Field24 { get; set; }
+        [FormerName( "Field24" )]
+        public float SpeedX { get; set; }
 
         // 28
-        public float Field28 { get; set; }
+        [FormerName( "Field28" )]
+        public float SpeedY { get; set; }
 
         // 2C
-        public float Field2C { get; set; }
+        [FormerName( "Field2C" )]
+        public float SpeedZ { get; set; }
 
         // 30
-        public float Field30 { get; set; }
+        [FormerName( "Field30" )]
+        public float ReflectAlpha { get; set; }
 
         // 34
-        public float Field34 { get; set; }
+        [FormerName( "Field34" )]
+        public float RefractAlpha { get; set; }
 
         // 38
-        public float Field38 { get; set; }
+        [FormerName( "Field38" )]
+        public float RefractRatio { get; set; }
 
         // 3C
-        public int Field3C { get; set; }
+        [FormerName( "Field3C" )]
+        public int Type3Flags { get; set; }
 
         public MaterialAttributeType3() : base( MaterialAttributeFlags.Bit0, MaterialAttributeType.Type3 ) { }
 
@@ -470,36 +480,36 @@ namespace GFDLibrary.Materials
 
         protected override void ReadCore( ResourceReader reader )
         {
-            Field0C = reader.ReadSingle();
-            Field10 = reader.ReadSingle();
-            Field14 = reader.ReadSingle();
-            Field18 = reader.ReadSingle();
-            Field1C = reader.ReadSingle();
-            Field20 = reader.ReadSingle();
-            Field24 = reader.ReadSingle();
-            Field28 = reader.ReadSingle();
-            Field2C = reader.ReadSingle();
-            Field30 = reader.ReadSingle();
-            Field34 = reader.ReadSingle();
-            Field38 = reader.ReadSingle();
-            Field3C = reader.ReadInt32();
+            WaveLengthX = reader.ReadSingle();
+            WaveLengthY = reader.ReadSingle();
+            WaveLengthZ = reader.ReadSingle();
+            AmplitudeX = reader.ReadSingle();
+            AmplitudeY = reader.ReadSingle();
+            AmplitudeZ = reader.ReadSingle();
+            SpeedX = reader.ReadSingle();
+            SpeedY = reader.ReadSingle();
+            SpeedZ = reader.ReadSingle();
+            ReflectAlpha = reader.ReadSingle();
+            RefractAlpha = reader.ReadSingle();
+            RefractRatio = reader.ReadSingle();
+            Type3Flags = reader.ReadInt32();
         }
 
         protected override void WriteCore( ResourceWriter writer )
         {
-            writer.WriteSingle( Field0C );
-            writer.WriteSingle( Field10 );
-            writer.WriteSingle( Field14 );
-            writer.WriteSingle( Field18 );
-            writer.WriteSingle( Field1C );
-            writer.WriteSingle( Field20 );
-            writer.WriteSingle( Field24 );
-            writer.WriteSingle( Field28 );
-            writer.WriteSingle( Field2C );
-            writer.WriteSingle( Field30 );
-            writer.WriteSingle( Field34 );
-            writer.WriteSingle( Field38 );
-            writer.WriteInt32( Field3C );
+            writer.WriteSingle( WaveLengthX );
+            writer.WriteSingle( WaveLengthY );
+            writer.WriteSingle( WaveLengthZ );
+            writer.WriteSingle( AmplitudeX );
+            writer.WriteSingle( AmplitudeY );
+            writer.WriteSingle( AmplitudeZ );
+            writer.WriteSingle( SpeedX );
+            writer.WriteSingle( SpeedY );
+            writer.WriteSingle( SpeedZ );
+            writer.WriteSingle( ReflectAlpha );
+            writer.WriteSingle( RefractAlpha );
+            writer.WriteSingle( RefractRatio );
+            writer.WriteInt32( Type3Flags );
         }
     }
 

@@ -15,106 +15,106 @@ namespace GFDStudio.GUI.DataViewNodes
 
         // 0C
         [ Browsable( true ) ]
-        public float Field0C
+        public float WaveLengthX
         {
-            get => Data.Field0C;
-            set => Set( x => x.Field0C, value );
+            get => Data.WaveLengthX;
+            set => Set( x => x.WaveLengthX, value );
         }
 
         // 10
         [Browsable( true )]
-        public float Field10
+        public float WaveLengthY
         {
-            get => Data.Field10;
-            set => Set( x => x.Field10, value );
+            get => Data.WaveLengthY;
+            set => Set( x => x.WaveLengthY, value );
         }
 
         // 14
         [Browsable( true )]
-        public float Field14
+        public float WaveLengthZ
         {
-            get => Data.Field14;
-            set => Set( x => x.Field14, value );
+            get => Data.WaveLengthZ;
+            set => Set( x => x.WaveLengthZ, value );
         }
 
         // 18
         [Browsable( true )]
-        public float Field18
+        public float AmplitudeX
         {
-            get => Data.Field18;
-            set => Set( x => x.Field18, value );
+            get => Data.AmplitudeX;
+            set => Set( x => x.AmplitudeX, value );
         }
 
         // 1C
         [Browsable( true )]
-        public float Field1C
+        public float AmplitudeY
         {
-            get => Data.Field1C;
-            set => Set( x => x.Field1C, value );
+            get => Data.AmplitudeY;
+            set => Set( x => x.AmplitudeY, value );
         }
 
         // 20
         [Browsable( true )]
-        public float Field20
+        public float AmplitudeZ
         {
-            get => Data.Field20;
-            set => Set( x => x.Field20, value );
+            get => Data.AmplitudeZ;
+            set => Set( x => x.AmplitudeZ, value );
         }
 
         // 24
         [Browsable( true )]
-        public float Field24
+        public float SpeedX
         {
-            get => Data.Field24;
-            set => Set( x => x.Field24, value );
+            get => Data.SpeedX;
+            set => Set( x => x.SpeedX, value );
         }
 
         // 28
         [Browsable( true )]
-        public float Field28
+        public float SpeedY
         {
-            get => Data.Field28;
-            set => Set( x => x.Field28, value );
+            get => Data.SpeedY;
+            set => Set( x => x.SpeedY, value );
         }
 
         // 2C
         [Browsable( true )]
-        public float Field2C
+        public float SpeedZ
         {
-            get => Data.Field2C;
-            set => Set( x => x.Field2C, value );
+            get => Data.SpeedZ;
+            set => Set( x => x.SpeedZ, value );
         }
 
         // 30
         [Browsable( true )]
-        public float Field30
+        public float ReflectAlpha
         {
-            get => Data.Field30;
-            set => Set( x => x.Field30, value );
+            get => Data.ReflectAlpha;
+            set => Set( x => x.ReflectAlpha, value );
         }
 
         // 34
         [Browsable( true )]
-        public float Field34
+        public float RefractAlpha
         {
-            get => Data.Field34;
-            set => Set( x => x.Field34, value );
+            get => Data.RefractAlpha;
+            set => Set( x => x.RefractAlpha, value );
         }
 
         // 38
         [Browsable( true )]
-        public float Field38
+        public float RefractRatio
         {
-            get => Data.Field38;
-            set => Set( x => x.Field38, value );
+            get => Data.RefractRatio;
+            set => Set( x => x.RefractRatio, value );
         }
 
         // 3C
         [Browsable( true )]
-        public int Field3C
+        public int Type3Flags
         {
-            get => Data.Field3C;
-            set => Set( x => x.Field3C, value );
+            get => Data.Type3Flags;
+            set => Set( x => x.Type3Flags, value );
         }
 
 

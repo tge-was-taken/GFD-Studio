@@ -449,7 +449,6 @@ namespace GFDLibrary.Tests
                             var a2 = ( MaterialAttributeType1 )a[i];
                             var b2 = ( MaterialAttributeType1 )b[i];
 
-                            Assert.AreEqual( a2.Field0C, b2.Field0C);
                             Assert.AreEqual( a2.LightThreshold, b2.LightThreshold );
                             Assert.AreEqual( a2.LightFactor, b2.LightFactor );
                             Assert.AreEqual( a2.ShadowColor, b2.ShadowColor );
@@ -472,19 +471,19 @@ namespace GFDLibrary.Tests
                             var a2 = ( MaterialAttributeType3 )a[i];
                             var b2 = ( MaterialAttributeType3 )b[i];
 
-                            Assert.AreEqual( a2.Field0C, b2.Field0C );
-                            Assert.AreEqual( a2.Field10, b2.Field10 );
-                            Assert.AreEqual( a2.Field14, b2.Field14 );
-                            Assert.AreEqual( a2.Field18, b2.Field18 );
-                            Assert.AreEqual( a2.Field1C, b2.Field1C );
-                            Assert.AreEqual( a2.Field20, b2.Field20 );
-                            Assert.AreEqual( a2.Field24, b2.Field24 );
-                            Assert.AreEqual( a2.Field28, b2.Field28 );
-                            Assert.AreEqual( a2.Field2C, b2.Field2C );
-                            Assert.AreEqual( a2.Field30, b2.Field30 );
-                            Assert.AreEqual( a2.Field34, b2.Field34 );
-                            Assert.AreEqual( a2.Field38, b2.Field38 );
-                            Assert.AreEqual( a2.Field3C, b2.Field3C );
+                            Assert.AreEqual( a2.WaveLengthX, b2.WaveLengthX );
+                            Assert.AreEqual( a2.WaveLengthY, b2.WaveLengthY );
+                            Assert.AreEqual( a2.WaveLengthZ, b2.WaveLengthZ );
+                            Assert.AreEqual( a2.AmplitudeX, b2.AmplitudeX );
+                            Assert.AreEqual( a2.AmplitudeY, b2.AmplitudeY );
+                            Assert.AreEqual( a2.AmplitudeZ, b2.AmplitudeZ );
+                            Assert.AreEqual( a2.SpeedX, b2.SpeedX );
+                            Assert.AreEqual( a2.SpeedY, b2.SpeedY );
+                            Assert.AreEqual( a2.SpeedZ, b2.SpeedZ );
+                            Assert.AreEqual( a2.ReflectAlpha, b2.ReflectAlpha );
+                            Assert.AreEqual( a2.RefractAlpha, b2.RefractAlpha );
+                            Assert.AreEqual( a2.RefractRatio, b2.RefractRatio );
+                            Assert.AreEqual( a2.Type3Flags, b2.Type3Flags );
                         }
                         break;
                     case MaterialAttributeType.Type4:
