@@ -396,22 +396,22 @@ namespace GFDLibrary.Tests
             Assert.AreEqual( a.MagnificationFilter, b.MagnificationFilter );
             Assert.AreEqual( a.WrapModeU, b.WrapModeU );
             Assert.AreEqual( a.WrapModeV, b.WrapModeV );
-            Assert.AreEqual( a.Field4C, b.Field4C );
-            Assert.AreEqual( a.Field50, b.Field50 );
-            Assert.AreEqual( a.Field54, b.Field54 );
-            Assert.AreEqual( a.Field58, b.Field58 );
-            Assert.AreEqual( a.Field5C, b.Field5C );
-            Assert.AreEqual( a.Field60, b.Field60 );
-            Assert.AreEqual( a.Field64, b.Field64 );
-            Assert.AreEqual( a.Field68, b.Field68 );
-            Assert.AreEqual( a.Field6C, b.Field6C );
-            Assert.AreEqual( a.Field70, b.Field70 );
-            Assert.AreEqual( a.Field74, b.Field74 );
-            Assert.AreEqual( a.Field78, b.Field78 );
-            Assert.AreEqual( a.Field7C, b.Field7C );
-            Assert.AreEqual( a.Field80, b.Field80 );
-            Assert.AreEqual( a.Field84, b.Field84 );
-            Assert.AreEqual( a.Field88, b.Field88 );
+            Assert.AreEqual( a.TransformM11, b.TransformM11 );
+            Assert.AreEqual( a.TransformM12, b.TransformM12 );
+            Assert.AreEqual( a.TransformM13, b.TransformM13 );
+            Assert.AreEqual( a.TransformM14, b.TransformM14 );
+            Assert.AreEqual( a.TransformM21, b.TransformM21 );
+            Assert.AreEqual( a.TransformM22, b.TransformM22 );
+            Assert.AreEqual( a.TransformM23, b.TransformM23 );
+            Assert.AreEqual( a.TransformM24, b.TransformM24 );
+            Assert.AreEqual( a.TransformM31, b.TransformM31 );
+            Assert.AreEqual( a.TransformM32, b.TransformM32 );
+            Assert.AreEqual( a.TransformM33, b.TransformM33 );
+            Assert.AreEqual( a.TransformM34, b.TransformM34 );
+            Assert.AreEqual( a.TransformM41, b.TransformM41 );
+            Assert.AreEqual( a.TransformM42, b.TransformM42 );
+            Assert.AreEqual( a.TransformM43, b.TransformM43 );
+            Assert.AreEqual( a.TransformM44, b.TransformM44 );
 
         }
 
@@ -735,9 +735,9 @@ namespace GFDLibrary.Tests
                     }
                     else
                     {
-                        Assert.AreEqual( a.Field60, b.Field60 );
-                        Assert.AreEqual( a.Field64, b.Field64 );
-                        Assert.AreEqual( a.Field68, b.Field68 );
+                        Assert.AreEqual( a.AttenuationConstant, b.AttenuationConstant );
+                        Assert.AreEqual( a.AttenuationLinear, b.AttenuationLinear );
+                        Assert.AreEqual( a.AttenuationQuadratic, b.AttenuationQuadratic );
                     }
                     break;
                 case LightType.Spot:

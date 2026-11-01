@@ -66,115 +66,115 @@ namespace GFDStudio.GUI.DataViewNodes
         }
 
         [Browsable( true )]
-        public float Field4C
+        public float TransformM11
         {
-            get => Data.Field4C;
-            set => Set( x => x.Field4C, value );
+            get => Data.TransformM11;
+            set => Set( x => x.TransformM11, value );
         }
 
         [Browsable( true )]
-        public float Field50
+        public float TransformM12
         {
-            get => Data.Field50;
-            set => Set( x => x.Field50, value );
+            get => Data.TransformM12;
+            set => Set( x => x.TransformM12, value );
         }
 
         [Browsable( true )]
-        public float Field54
+        public float TransformM13
         {
-            get => Data.Field54;
-            set => Set( x => x.Field54, value );
+            get => Data.TransformM13;
+            set => Set( x => x.TransformM13, value );
         }
 
         [Browsable( true )]
-        public float Field58
+        public float TransformM14
         {
-            get => Data.Field58;
-            set => Set( x => x.Field58, value );
+            get => Data.TransformM14;
+            set => Set( x => x.TransformM14, value );
         }
 
         [Browsable( true )]
-        public float Field5C
+        public float TransformM21
         {
-            get => Data.Field5C;
-            set => Set( x => x.Field5C, value );
+            get => Data.TransformM21;
+            set => Set( x => x.TransformM21, value );
         }
 
         [Browsable( true )]
-        public float Field60
+        public float TransformM22
         {
-            get => Data.Field60;
-            set => Set( x => x.Field60, value );
+            get => Data.TransformM22;
+            set => Set( x => x.TransformM22, value );
         }
 
         [Browsable( true )]
-        public float Field64
+        public float TransformM23
         {
-            get => Data.Field64;
-            set => Set( x => x.Field64, value );
+            get => Data.TransformM23;
+            set => Set( x => x.TransformM23, value );
         }
 
         [Browsable( true )]
-        public float Field68
+        public float TransformM24
         {
-            get => Data.Field68;
-            set => Set( x => x.Field68, value );
+            get => Data.TransformM24;
+            set => Set( x => x.TransformM24, value );
         }
 
         [Browsable( true )]
-        public float Field6C
+        public float TransformM31
         {
-            get => Data.Field6C;
-            set => Set( x => x.Field6C, value );
+            get => Data.TransformM31;
+            set => Set( x => x.TransformM31, value );
         }
 
         [Browsable( true )]
-        public float Field70
+        public float TransformM32
         {
-            get => Data.Field70;
-            set => Set( x => x.Field70, value );
+            get => Data.TransformM32;
+            set => Set( x => x.TransformM32, value );
         }
 
         [Browsable( true )]
-        public float Field74
+        public float TransformM33
         {
-            get => Data.Field74;
-            set => Set( x => x.Field74, value );
+            get => Data.TransformM33;
+            set => Set( x => x.TransformM33, value );
         }
 
         [Browsable( true )]
-        public float Field78
+        public float TransformM34
         {
-            get => Data.Field78;
-            set => Set( x => x.Field78, value );
+            get => Data.TransformM34;
+            set => Set( x => x.TransformM34, value );
         }
 
         [Browsable( true )]
-        public float Field7C
+        public float TransformM41
         {
-            get => Data.Field7C;
-            set => Set( x => x.Field7C, value );
+            get => Data.TransformM41;
+            set => Set( x => x.TransformM41, value );
         }
 
         [Browsable( true )]
-        public float Field80
+        public float TransformM42
         {
-            get => Data.Field80;
-            set => Set( x => x.Field80, value );
+            get => Data.TransformM42;
+            set => Set( x => x.TransformM42, value );
         }
 
         [Browsable( true )]
-        public float Field84
+        public float TransformM43
         {
-            get => Data.Field84;
-            set => Set( x => x.Field84, value );
+            get => Data.TransformM43;
+            set => Set( x => x.TransformM43, value );
         }
 
         [Browsable( true )]
-        public float Field88
+        public float TransformM44
         {
-            get => Data.Field88;
-            set => Set( x => x.Field88, value );
+            get => Data.TransformM44;
+            set => Set( x => x.TransformM44, value );
         }
 
         public TextureMapViewNode( string text, TextureMap data ) : base( text, data )

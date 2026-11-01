@@ -94,16 +94,20 @@ namespace GFDLibrary.Effects
 
         [FormerName( "Field0C" )]
         public float Life { get; set; }
-        public Vector2 Field10 { get; set; }
+        [FormerName( "Field10" )]
+        public Vector2 Fade { get; set; }
         [FormerName( "Field18" )]
         public uint Ambient { get; set; }
         [FormerName( "Field1C" )]
         public uint Diffuse { get; set; }
         [FormerName( "Field20" )]
         public uint Specular { get; set; }
-        public float Field24 { get; set; }
-        public float Field28 { get; set; }
-        public float Field2C { get; set; }
+        [FormerName( "Field24" )]
+        public float RotateX { get; set; }
+        [FormerName( "Field28" )]
+        public float RotateY { get; set; }
+        [FormerName( "Field2C" )]
+        public float RotateZ { get; set; }
 
         public EplLightSceneData() { }
         public EplLightSceneData( uint Version ) : base( Version ) { }
@@ -112,30 +116,30 @@ namespace GFDLibrary.Effects
         protected override void ReadCore( ResourceReader reader )
         {
             Life = reader.ReadSingle();
-            Field10 = reader.ReadVector2();
+            Fade = reader.ReadVector2();
             Ambient = reader.ReadUInt32();
             Diffuse = reader.ReadUInt32();
             Specular = reader.ReadUInt32();
             if ( Version > 0x1104910 )
             {
-                Field24 = reader.ReadSingle();
-                Field28 = reader.ReadSingle();
-                Field2C = reader.ReadSingle();
+                RotateX = reader.ReadSingle();
+                RotateY = reader.ReadSingle();
+                RotateZ = reader.ReadSingle();
             }
         }
 
         protected override void WriteCore( ResourceWriter writer )
         {
             writer.WriteSingle( Life );
-            writer.WriteVector2( Field10 );
+            writer.WriteVector2( Fade );
             writer.WriteUInt32( Ambient );
             writer.WriteUInt32( Diffuse );
             writer.WriteUInt32( Specular );
             if ( Version > 0x1104910 )
             {
-                writer.WriteSingle( Field24 );
-                writer.WriteSingle( Field28 );
-                writer.WriteSingle( Field2C );
+                writer.WriteSingle( RotateX );
+                writer.WriteSingle( RotateY );
+                writer.WriteSingle( RotateZ );
             }
         }
     }

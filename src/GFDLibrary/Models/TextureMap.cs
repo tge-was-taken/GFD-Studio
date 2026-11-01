@@ -26,52 +26,68 @@ namespace GFDLibrary.Models
         public TextureWrapMethod WrapModeV { get; set; }
         
         // 0x4C
-        public float Field4C { get; set; }
+        [FormerName( "Field4C" )]
+        public float TransformM11 { get; set; }
 
         // 0x50
-        public float Field50 { get; set; }
+        [FormerName( "Field50" )]
+        public float TransformM12 { get; set; }
 
         // 0x54
-        public float Field54 { get; set; }
+        [FormerName( "Field54" )]
+        public float TransformM13 { get; set; }
 
         // 0x58
-        public float Field58 { get; set; }
+        [FormerName( "Field58" )]
+        public float TransformM14 { get; set; }
 
         // 0x5C
-        public float Field5C { get; set; }
+        [FormerName( "Field5C" )]
+        public float TransformM21 { get; set; }
 
         // 0x60
-        public float Field60 { get; set; }
+        [FormerName( "Field60" )]
+        public float TransformM22 { get; set; }
 
         // 0x64
-        public float Field64 { get; set; }
+        [FormerName( "Field64" )]
+        public float TransformM23 { get; set; }
 
         // 0x68
-        public float Field68 { get; set; }
+        [FormerName( "Field68" )]
+        public float TransformM24 { get; set; }
 
         // 0x6C
-        public float Field6C { get; set; }
+        [FormerName( "Field6C" )]
+        public float TransformM31 { get; set; }
 
         // 0x70
-        public float Field70 { get; set; }
+        [FormerName( "Field70" )]
+        public float TransformM32 { get; set; }
 
         // 0x74
-        public float Field74 { get; set; }
+        [FormerName( "Field74" )]
+        public float TransformM33 { get; set; }
 
         // 0x78
-        public float Field78 { get; set; }
+        [FormerName( "Field78" )]
+        public float TransformM34 { get; set; }
 
         // 0x7C
-        public float Field7C { get; set; }
+        [FormerName( "Field7C" )]
+        public float TransformM41 { get; set; }
 
         // 0x80
-        public float Field80 { get; set; }
+        [FormerName( "Field80" )]
+        public float TransformM42 { get; set; }
 
         // 0x84
-        public float Field84 { get; set; }
+        [FormerName( "Field84" )]
+        public float TransformM43 { get; set; }
 
         // 0x88
-        public float Field88 { get; set; }
+        [FormerName( "Field88" )]
+        public float TransformM44 { get; set; }
 
         [YamlIgnore]
         public MaterialParameterSetBase METAPHOR_ParentMaterialParameterSet { get; set; }
@@ -98,22 +114,22 @@ namespace GFDLibrary.Models
             MagnificationFilter = (TextureFilteringMethod)1;
             WrapModeU = (TextureWrapMethod)0;
             WrapModeV = (TextureWrapMethod)0;
-            Field4C = 1;
-            Field50 = 0;
-            Field54 = 0;
-            Field58 = 0;
-            Field5C = 0;
-            Field60 = 1;
-            Field64 = 0;
-            Field68 = 0;
-            Field6C = 0;
-            Field70 = 0;
-            Field74 = 0;
-            Field78 = 0;
-            Field7C = 0;
-            Field80 = 0;
-            Field84 = 0;
-            Field88 = 0;
+            TransformM11 = 1;
+            TransformM12 = 0;
+            TransformM13 = 0;
+            TransformM14 = 0;
+            TransformM21 = 0;
+            TransformM22 = 1;
+            TransformM23 = 0;
+            TransformM24 = 0;
+            TransformM31 = 0;
+            TransformM32 = 0;
+            TransformM33 = 0;
+            TransformM34 = 0;
+            TransformM41 = 0;
+            TransformM42 = 0;
+            TransformM43 = 0;
+            TransformM44 = 0;
         }
 
         protected override void ReadCore( ResourceReader reader )
@@ -124,22 +140,22 @@ namespace GFDLibrary.Models
             MagnificationFilter = (TextureFilteringMethod)reader.ReadByte();
             WrapModeU = (TextureWrapMethod)reader.ReadByte();
             WrapModeV = (TextureWrapMethod)reader.ReadByte();
-            Field4C = reader.ReadSingle();
-            Field50 = reader.ReadSingle();
-            Field54 = reader.ReadSingle();
-            Field58 = reader.ReadSingle();
-            Field5C = reader.ReadSingle();
-            Field60 = reader.ReadSingle();
-            Field64 = reader.ReadSingle();
-            Field68 = reader.ReadSingle();
-            Field6C = reader.ReadSingle();
-            Field70 = reader.ReadSingle();
-            Field74 = reader.ReadSingle();
-            Field78 = reader.ReadSingle();
-            Field7C = reader.ReadSingle();
-            Field80 = reader.ReadSingle();
-            Field84 = reader.ReadSingle();
-            Field88 = reader.ReadSingle();
+            TransformM11 = reader.ReadSingle();
+            TransformM12 = reader.ReadSingle();
+            TransformM13 = reader.ReadSingle();
+            TransformM14 = reader.ReadSingle();
+            TransformM21 = reader.ReadSingle();
+            TransformM22 = reader.ReadSingle();
+            TransformM23 = reader.ReadSingle();
+            TransformM24 = reader.ReadSingle();
+            TransformM31 = reader.ReadSingle();
+            TransformM32 = reader.ReadSingle();
+            TransformM33 = reader.ReadSingle();
+            TransformM34 = reader.ReadSingle();
+            TransformM41 = reader.ReadSingle();
+            TransformM42 = reader.ReadSingle();
+            TransformM43 = reader.ReadSingle();
+            TransformM44 = reader.ReadSingle();
         }
 
         protected override void WriteCore( ResourceWriter writer )
@@ -150,22 +166,22 @@ namespace GFDLibrary.Models
             writer.WriteByte( (byte)MagnificationFilter );
             writer.WriteByte( (byte)WrapModeU );
             writer.WriteByte( (byte)WrapModeV );
-            writer.WriteSingle( Field4C );
-            writer.WriteSingle( Field50 );
-            writer.WriteSingle( Field54 );
-            writer.WriteSingle( Field58 );
-            writer.WriteSingle( Field5C );
-            writer.WriteSingle( Field60 );
-            writer.WriteSingle( Field64 );
-            writer.WriteSingle( Field68 );
-            writer.WriteSingle( Field6C );
-            writer.WriteSingle( Field70 );
-            writer.WriteSingle( Field74 );
-            writer.WriteSingle( Field78 );
-            writer.WriteSingle( Field7C );
-            writer.WriteSingle( Field80 );
-            writer.WriteSingle( Field84 );
-            writer.WriteSingle( Field88 );
+            writer.WriteSingle( TransformM11 );
+            writer.WriteSingle( TransformM12 );
+            writer.WriteSingle( TransformM13 );
+            writer.WriteSingle( TransformM14 );
+            writer.WriteSingle( TransformM21 );
+            writer.WriteSingle( TransformM22 );
+            writer.WriteSingle( TransformM23 );
+            writer.WriteSingle( TransformM24 );
+            writer.WriteSingle( TransformM31 );
+            writer.WriteSingle( TransformM32 );
+            writer.WriteSingle( TransformM33 );
+            writer.WriteSingle( TransformM34 );
+            writer.WriteSingle( TransformM41 );
+            writer.WriteSingle( TransformM42 );
+            writer.WriteSingle( TransformM43 );
+            writer.WriteSingle( TransformM44 );
         }
     }
     public enum TextureFilteringMethod : byte

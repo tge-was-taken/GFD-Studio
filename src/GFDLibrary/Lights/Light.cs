@@ -36,11 +36,17 @@ namespace GFDLibrary.Lights
 
         public float AttenuationEnd { get; set; }
 
-        public float Field60 { get; set; }
+        [FormerName( "Field60" )]
 
-        public float Field64 { get; set; }
+        public float AttenuationConstant { get; set; }
 
-        public float Field68 { get; set; }
+        [FormerName( "Field64" )]
+
+        public float AttenuationLinear { get; set; }
+
+        [FormerName( "Field68" )]
+
+        public float AttenuationQuadratic { get; set; }
 
         public float AngleInnerCone { get; set; }
 
@@ -96,9 +102,9 @@ namespace GFDLibrary.Lights
                     }
                     else
                     {
-                        Field60 = reader.ReadSingle(); // 0
-                        Field64 = reader.ReadSingle(); // 0
-                        Field68 = reader.ReadSingle(); // 0
+                        AttenuationConstant = reader.ReadSingle(); // 0
+                        AttenuationLinear = reader.ReadSingle(); // 0
+                        AttenuationQuadratic = reader.ReadSingle(); // 0
                     }
                     break;
 
@@ -147,9 +153,9 @@ namespace GFDLibrary.Lights
                     }
                     else
                     {
-                        writer.WriteSingle( Field60 );
-                        writer.WriteSingle( Field64 );
-                        writer.WriteSingle( Field68 );
+                        writer.WriteSingle( AttenuationConstant );
+                        writer.WriteSingle( AttenuationLinear );
+                        writer.WriteSingle( AttenuationQuadratic );
                     }
                     break;
                 case LightType.Spot:

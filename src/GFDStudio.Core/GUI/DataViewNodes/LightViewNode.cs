@@ -110,22 +110,22 @@ namespace GFDStudio.GUI.DataViewNodes
             set => Set( x => x.AttenuationEnd, value );
         }
 
-        public float Field60
+        public float AttenuationConstant
         {
-            get => Data.Field60;
-            set => Set( x => x.Field60, value );
+            get => Data.AttenuationConstant;
+            set => Set( x => x.AttenuationConstant, value );
         }
 
-        public float Field64
+        public float AttenuationLinear
         {
-            get => Data.Field64;
-            set => Set( x => x.Field64, value );
+            get => Data.AttenuationLinear;
+            set => Set( x => x.AttenuationLinear, value );
         }
 
-        public float Field68
+        public float AttenuationQuadratic
         {
-            get => Data.Field68;
-            set => Set( x => x.Field68, value );
+            get => Data.AttenuationQuadratic;
+            set => Set( x => x.AttenuationQuadratic, value );
         }
 
         [DisplayName( "Angle inner cone" )]
